@@ -3,10 +3,19 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from skybot.models.position import Position
 
-from tno.models import (AsteroidJob, Asteroid, BspPlanetary, Catalog, JohnstonArchive,
-                        LeapSecond, Occultation, PredictionJob,
-                        PredictionJobResult, PredictionJobStatus, Profile)
-
+from tno.models import (
+    AsteroidJob,
+    Asteroid,
+    BspPlanetary,
+    Catalog,
+    JohnstonArchive,
+    LeapSecond,
+    Occultation,
+    PredictionJob,
+    PredictionJobResult,
+    PredictionJobStatus,
+    Profile,
+)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -17,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = ("username", "dashboard")
 
     def get_dashboard(self, obj):
-        if hasattr(obj, 'profile'):
+        if hasattr(obj, "profile"):
             return obj.profile.dashboard
         else:
             # creating a new profile if the user does not have one
@@ -55,46 +64,44 @@ class JohnstonArchiveSerializer(serializers.ModelSerializer):
 class LeapSecondSerializer(serializers.ModelSerializer):
     class Meta:
         model = LeapSecond
-        fields = '__all__'
+        fields = "__all__"
 
 
 class BspPlanetarySerializer(serializers.ModelSerializer):
     class Meta:
         model = BspPlanetary
-        fields = '__all__'
+        fields = "__all__"
 
 
 class CatalogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Catalog
-        fields = (
-            "id",
-            "name",
-            "display_name"
-        )
+        fields = ("id", "name", "display_name")
 
 
 class AsteroidJobSerializer(serializers.ModelSerializer):
     class Meta:
         model = AsteroidJob
-        fields = '__all__'
+        fields = "__all__"
+
 
 class AsteroidSerializer(serializers.ModelSerializer):
     class Meta:
         model = Asteroid
-        fields = '__all__'
+        fields = "__all__"
 
 
 class OccultationSerializer(serializers.ModelSerializer):
     map_url = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Occultation
         exclude = (
-            'occ_path_min_longitude', 
-            'occ_path_max_longitude', 
-            'occ_path_min_latitude', 
-            'occ_path_max_latitude')
+            "occ_path_min_longitude",
+            "occ_path_max_longitude",
+            "occ_path_min_latitude",
+            "occ_path_max_latitude",
+        )
 
     def get_map_url(self, obj):
         request = self.context.get("request")
@@ -107,9 +114,10 @@ class OccultationSerializer(serializers.ModelSerializer):
 
 class PredictionJobSerializer(serializers.ModelSerializer):
     owner = serializers.SerializerMethodField()
+
     class Meta:
         model = PredictionJob
-        fields = '__all__'
+        fields = "__all__"
 
     def get_owner(self, obj):
         try:
@@ -119,14 +127,15 @@ class PredictionJobSerializer(serializers.ModelSerializer):
 
 
 class PredictionJobResultSerializer(serializers.ModelSerializer):
-    predict_start_date = serializers.DateField(source='job.predict_start_date')
-    predict_end_date = serializers.DateField(source='job.predict_end_date')
+    predict_start_date = serializers.DateField(source="job.predict_start_date")
+    predict_end_date = serializers.DateField(source="job.predict_end_date")
+
     class Meta:
         model = PredictionJobResult
-        fields = '__all__'
+        fields = "__all__"
 
 
 class PredictionJobStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = PredictionJobStatus
-        fields = '__all__'
+        fields = "__all__"

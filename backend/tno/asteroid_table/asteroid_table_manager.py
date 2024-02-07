@@ -12,18 +12,22 @@ import traceback
 import humanize
 import colorlog
 
-from tno.asteroid_table.asteroid_table_build import asteroid_table_build, import_asteroid_table
+from tno.asteroid_table.asteroid_table_build import (
+    asteroid_table_build,
+    import_asteroid_table,
+)
 import sys
-class AsteroidTableManager():
 
+
+class AsteroidTableManager:
     def __init__(self, stdout=False):
-        
+
         # self.log = logging.getLogger("asteroids")
-        self.log = colorlog.getLogger('asteroids')
+        self.log = colorlog.getLogger("asteroids")
         if stdout:
             # consoleFormatter = logging.Formatter("[%(levelname)s] %(message)s")
             # consoleHandler = logging.StreamHandler(sys.stdout)
-            consoleFormatter = colorlog.ColoredFormatter('%(log_color)s%(message)s')
+            consoleFormatter = colorlog.ColoredFormatter("%(log_color)s%(message)s")
             consoleHandler = colorlog.StreamHandler(sys.stdout)
             consoleHandler.setFormatter(consoleFormatter)
             self.log.addHandler(consoleHandler)
@@ -39,7 +43,6 @@ class AsteroidTableManager():
         self.asteroids_before = 0
         self.asteroids_after = 0
 
-
     def run_update_asteroid_table(self):
         start = datetime.now(tz=timezone.utc)
         try:
@@ -47,12 +50,12 @@ class AsteroidTableManager():
 
             # Count how many asteroids are in the table
             self.asteroids_before = self.count_asteroids()
-            
-            # Create new job in database           
+
+            # Create new job in database
             self.job_id = self.create_job()
-            
-            self.log.debug(f"Asteroids before the update: [{self.asteroids_before}]")        
-            
+
+            self.log.debug(f"Asteroids before the update: [{self.asteroids_before}]")
+
             # Create path for input and outputs files.
             self.path.mkdir(parents=True, exist_ok=True)
 
@@ -79,61 +82,51 @@ class AsteroidTableManager():
         try:
             # Getting the number of asteroids before the update.
             count_before = self.ast_dao.count()
-            
+
             return count_before
         except Exception as e:
             raise Exception(f"Failed to get the number of asteroids in the table. {e}")
 
     def create_job(self):
         try:
-            job_id =  self.job_dao.insert(
-                self.asteroids_before,
-                str(self.filepath)
-            )
+            job_id = self.job_dao.insert(self.asteroids_before, str(self.filepath))
             self.log.debug(f"Asteroid Job ID: [{job_id}]")
             return job_id
         except Exception as e:
-            raise Exception(f"Failed to create the record in the asteroid job table. {e}")        
+            raise Exception(
+                f"Failed to create the record in the asteroid job table. {e}"
+            )
 
     def on_success(self):
         try:
             self.job_dao.update(
-                self.job_id,
-                status=3,
-                asteroids_after=self.asteroids_after
+                self.job_id, status=3, asteroids_after=self.asteroids_after
             )
         except Exception as e:
-            raise Exception(f"Failed to update the record in the asteroid job table.. {e}")    
+            raise Exception(
+                f"Failed to update the record in the asteroid job table.. {e}"
+            )
 
-    def on_failure(self, e):       
-        trace = traceback.format_exc()        
+    def on_failure(self, e):
+        trace = traceback.format_exc()
         self.log.error(trace)
 
         msg = f"Asteroid table update failed. {e}"
         self.log.error(msg)
 
-        self.job_dao.update(
-            self.job_id,
-            status=4,
-            error=msg,
-            traceback=trace
-        )
+        self.job_dao.update(self.job_id, status=4, error=msg, traceback=trace)
 
         self.rollback()
         raise Exception(msg)
-    
+
     def on_complete(self, start):
         try:
             end = datetime.now(tz=timezone.utc)
             tdelta = end - start
 
-
             new_records = self.asteroids_after - self.asteroids_before
             self.job_dao.update(
-                self.job_id,
-                end = end,
-                exec_time = tdelta,
-                new_records=new_records
+                self.job_id, end=end, exec_time=tdelta, new_records=new_records
             )
 
             self.log.info(f"Asteroid table update completed successfully.")
@@ -141,12 +134,15 @@ class AsteroidTableManager():
             self.log.info(f"Records After  Update: [{self.asteroids_after}]")
             self.log.info(f"New Records: [{new_records}]")
 
-            self.log.info("Job complete in %s" %
-                humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
-            
+            self.log.info(
+                "Job complete in %s"
+                % humanize.naturaldelta(tdelta, minimum_unit="milliseconds")
+            )
+
         except Exception as e:
-            raise Exception(f"Failed to record the end of the job in the asteroid job table. {e}")
-        
+            raise Exception(
+                f"Failed to record the end of the job in the asteroid job table. {e}"
+            )
 
     def rollback(self):
         try:
@@ -156,14 +152,19 @@ class AsteroidTableManager():
                 self.log.error(msg)
                 raise Exception(msg)
 
-            df = pd.read_csv(self.filepath)  
+            df = pd.read_csv(self.filepath)
             rows = import_asteroid_table(df, self.log)
 
             end = datetime.now(tz=timezone.utc)
             tdelta = end - start
 
-            self.log.warning("The asteroid table was recreated with data from previous runs.")
-            self.log.warning("Rollback successful with %s rows affected in %s." %(rows, humanize.naturaldelta(tdelta, minimum_unit="milliseconds")))
+            self.log.warning(
+                "The asteroid table was recreated with data from previous runs."
+            )
+            self.log.warning(
+                "Rollback successful with %s rows affected in %s."
+                % (rows, humanize.naturaldelta(tdelta, minimum_unit="milliseconds"))
+            )
 
         except Exception as e:
             raise Exception(f"Failed to rollback asteroid job table. {e}")

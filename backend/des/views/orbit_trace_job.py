@@ -1,4 +1,3 @@
-
 import json
 import os
 import threading
@@ -33,7 +32,20 @@ class OrbitTraceJobViewSet(
 
     queryset = OrbitTraceJob.objects.all()
     serializer_class = OrbitTraceJobSerializer
-    ordering_fields = ("id", "status", "start", "end", "exec_time", "count_asteroids", "count_ccds", "count_observations", "count_success", "count_failures", "avg_exec_time_asteroid", "avg_exec_time_ccd",)
+    ordering_fields = (
+        "id",
+        "status",
+        "start",
+        "end",
+        "exec_time",
+        "count_asteroids",
+        "count_ccds",
+        "count_observations",
+        "count_success",
+        "count_failures",
+        "avg_exec_time_asteroid",
+        "avg_exec_time_ccd",
+    )
     ordering = ("-start",)
 
     # def estimate_execution_time(self, to_execute):
@@ -77,11 +89,15 @@ class OrbitTraceJobViewSet(
 
         # end = datetime.strptime(date_final, "%Y-%m-%d").strftime("%Y-%m-%d 23:59:59")
 
-        bsp_planetary = BspPlanetary.objects.get(name=params["bsp_planetary"].replace("\'", "\""))
-        leap_seconds = LeapSecond.objects.get(name=params["leap_second"].replace("\'", "\""))
+        bsp_planetary = BspPlanetary.objects.get(
+            name=params["bsp_planetary"].replace("'", '"')
+        )
+        leap_seconds = LeapSecond.objects.get(
+            name=params["leap_second"].replace("'", '"')
+        )
         debug = params["debug"]
         # Estimativa de tempo baseada na qtd de exposures a serem executadas.
-        #estimated_time = self.estimate_execution_time(t_exposures)
+        # estimated_time = self.estimate_execution_time(t_exposures)
 
         # Criar um model Orbit Trace Job
         job = OrbitTraceJob(
@@ -89,8 +105,8 @@ class OrbitTraceJobViewSet(
             submit_time=datetime.now(),
             bsp_planetary=bsp_planetary,
             leap_seconds=leap_seconds,
-            filter_type=params["filter_type"].replace("\'", "\""),
-            filter_value=params["filter_value"].replace("\'", "\""),
+            filter_type=params["filter_type"].replace("'", '"'),
+            filter_value=params["filter_value"].replace("'", '"'),
             debug=debug,
             # bps_days_to_expire=params["bps_days_to_expire"].replace("\'", "\""),
             # parsl_init_blocks=params["parsl_init_blocks"].replace("\'", "\""),
@@ -115,8 +131,12 @@ class OrbitTraceJobViewSet(
 
         #     Returns:
         #         result (string): status do job.
-        #     """
-        job = OrbitTraceJob.objects.get(id=pk) if OrbitTraceJob.objects.filter(id=pk).exists() else None
+        #"""
+        job = (
+            OrbitTraceJob.objects.get(id=pk)
+            if OrbitTraceJob.objects.filter(id=pk).exists()
+            else None
+        )
         if job is not None:
             return Response(job.get_status_display())
         else:
@@ -141,5 +161,3 @@ class OrbitTraceJobViewSet(
             job.save()
         result = OrbitTraceJobSerializer(job)
         return Response(result.data)
-
-    

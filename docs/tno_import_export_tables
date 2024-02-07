@@ -1,6 +1,6 @@
 id, pfw_attempt_id, desfile_id, nite, date_obs, expnum, ccdnum, band, exptime, cloud_apass, cloud_nomad, t_eff, crossra0, radeg, decdeg, racmin, racmax, deccmin, deccmax, ra_cent, dec_cent, rac1, rac2, rac3, rac4, decc1, decc2, decc3, decc4, ra_size, dec_size, path, filename, compression, downloaded,
 
-id, num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, externallink, expnum, ccdnum, band, pointing_id, 
+id, num, name, dynclass, ra, dec, raj2000, decj2000, mv, errpos, d, dracosdec, ddec, dgeo, dhelio, phase, solelong, px, py, pz, vx, vy, vz, jdref, externallink, expnum, ccdnum, band, pointing_id,
 
 
 SELECT pfw_attempt_id, desfile_id, to_date(nite, 'YYYYMMDD'), to_date(date_obs, 'YYYYMMDD, expnum, ccdnum, band, exptime, cloud_apass, cloud_nomad, t_eff, crossra0, radeg, decdeg, racmin, racmax, deccmin, deccmax, ra_cent, dec_cent, rac1, rac2, rac3, rac4, decc1, decc2, decc3, decc4, ra_size, dec_size, path, filename, compression, downloaded FROM tno.pointings ORDER BY date_obs DESC limit 10;
@@ -47,7 +47,7 @@ SELECT a.id, a.name, b.id as pointing_id, c.download_start_time, c.download_fini
 
 
 
-# Objetos com apontamento e com ccd image baixado. 
+# Objetos com apontamento e com ccd image baixado.
 SELECT a.id, a.name, a.expnum, a.ccdnum, a.band FROM tno.tno_skybotoutput a LEFT JOIN tno.tno_pointing b ON (a.pointing_id = b.id) WHERE a.pointing_id is not null AND b.downloaded is true LIMIT 5;
 
 # Quantidade de Objetos que possuem ccd image baixado. (OBS: o numero de objetos e maior que o numero de imagem baixadas por que na mesma imagem pode haver mais de um objeto)

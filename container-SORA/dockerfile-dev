@@ -13,36 +13,36 @@ ARG GROUP_ID=1000
 ARG GROUP_NAME=tnogroup
 
 RUN addgroup -g $GROUP_ID $GROUP_NAME \
-    && adduser --shell /sbin/nologin --disabled-password --uid $USER_ID --ingroup $GROUP_NAME $USER_NAME \ 
+    && adduser --shell /sbin/nologin --disabled-password --uid $USER_ID --ingroup $GROUP_NAME $USER_NAME \
     #--no-create-home
     && chown -R $USER_ID:$GROUP_ID /home/$USER_NAME
 
 
-RUN  wget -O proj.tar.gz http://download.osgeo.org/proj/proj-4.9.3.tar.gz \ 
- && mkdir -p /usr/src/proj \ 
- && tar -xzf proj.tar.gz -C /usr/src/proj --strip-components=1 \ 
- && (cd /usr/src/proj; \ 
-     ./configure; \ 
-     make -j ${NPROC}; \ 
-     make install) \ 
- && rm -r /usr/src/proj \ 
- && rm -rf /usr/src/proj \ 
- && rm -rf /proj.tar.gz \ 
- && : "---------- geos (for gis module) ----------" \ 
- && wget -O geos.tar.bz2 http://download.osgeo.org/geos/geos-3.6.0.tar.bz2 \ 
- && mkdir -p /usr/src/geos \ 
- && tar -xjf geos.tar.bz2 -C /usr/src/geos --strip-components=1 \ 
- && (cd /usr/src/geos; \ 
-     ./configure; \ 
-     make -j ${NPROC}; \ 
-     make install) \ 
- && rm -r /usr/src/geos \ 
- && rm -rf /usr/src/geos \ 
- && rm -rf /geos.tar.bz2 
+RUN  wget -O proj.tar.gz http://download.osgeo.org/proj/proj-4.9.3.tar.gz \
+ && mkdir -p /usr/src/proj \
+ && tar -xzf proj.tar.gz -C /usr/src/proj --strip-components=1 \
+ && (cd /usr/src/proj; \
+     ./configure; \
+     make -j ${NPROC}; \
+     make install) \
+ && rm -r /usr/src/proj \
+ && rm -rf /usr/src/proj \
+ && rm -rf /proj.tar.gz \
+ && : "---------- geos (for gis module) ----------" \
+ && wget -O geos.tar.bz2 http://download.osgeo.org/geos/geos-3.6.0.tar.bz2 \
+ && mkdir -p /usr/src/geos \
+ && tar -xjf geos.tar.bz2 -C /usr/src/geos --strip-components=1 \
+ && (cd /usr/src/geos; \
+     ./configure; \
+     make -j ${NPROC}; \
+     make install) \
+ && rm -r /usr/src/geos \
+ && rm -rf /usr/src/geos \
+ && rm -rf /geos.tar.bz2
 
 ENV PATH=/home/$USER_NAME/.local/bin:$PATH
 
-USER $USER_NAME 
+USER $USER_NAME
 
 RUN python3.7 -m pip install --disable-pip-version-check --no-cache-dir --upgrade pip \
  && python3.7 -m pip install --upgrade Pillow \
@@ -65,9 +65,9 @@ RUN cd /home/$USER_NAME \
  && cd .. \
  && rm -rf SORA
 
-RUN python3.7 -m pip install bottle paste 
+RUN python3.7 -m pip install bottle paste
 
-USER root 
+USER root
 RUN mkdir /opt/server \
   && chown -R $USER_ID:$GROUP_ID /opt/server \
   && mkdir /home/$USER_NAME/media \
@@ -89,6 +89,6 @@ COPY ./src/*.py /opt/server/
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod 0775 /entrypoint.sh
 
-USER $USER_NAME 
+USER $USER_NAME
 
 ENTRYPOINT ["/entrypoint.sh"]

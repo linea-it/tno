@@ -7,7 +7,7 @@ class OrbitTraceJobSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = OrbitTraceJob
-        fields = '__all__'
+        fields = "__all__"
 
     def get_owner(self, obj):
         try:

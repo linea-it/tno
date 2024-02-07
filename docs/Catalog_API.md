@@ -25,15 +25,15 @@ Exemplo do resultado:
     "size": null
 },
 ```
-Pode ser feita uma busca pelo nome do catalogo ou nome da tabela, utilizando o parametro 'search' 
-Exemplo: 
+Pode ser feita uma busca pelo nome do catalogo ou nome da tabela, utilizando o parametro 'search'
+Exemplo:
 ```
 http://localhost:7001/catalog/?search=gaia
 ```
 
 
 ### Radial Query
-Descrição 
+Descrição
 
 | name | type | required | description |
 -------|------|----------|-------------|
@@ -57,9 +57,9 @@ curl -i \
     -d dec=-1.762072 \
     -d radius=0.01 \
     -d limit=10 \
-    -d columns=ra,dec 
+    -d columns=ra,dec
     -d mime_type=json
-``` 
+```
 
 Exemplo via brownser **Necessário estar logado**
 ```
@@ -70,6 +70,3 @@ Resultado deste exemplo com formato em Json
 ```
 {"success":true,"results":[{"ra":317.492794,"dec":-1.764518},{"ra":317.489643,"dec":-1.762129},{"ra":317.48935,"dec":-1.760044},{"ra":317.490934,"dec":-1.762553},{"ra":317.490884,"dec":-1.762072},{"ra":317.490916,"dec":-1.760281},{"ra":317.490936,"dec":-1.759468},{"ra":317.492251,"dec":-1.760094},{"ra":317.491961,"dec":-1.754819},{"ra":317.497475,"dec":-1.76731}],"count":10}
 ```
-
-
-

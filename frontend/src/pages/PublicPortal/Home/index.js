@@ -26,7 +26,7 @@ function Main() {
             </Grid>
             <Grid item xs={12}>
               <PredictionEventsDataGrid />
-            </Grid>        
+            </Grid>
           </Grid>
         </Grid>
       </Box>

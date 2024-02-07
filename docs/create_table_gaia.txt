@@ -216,4 +216,3 @@ CREATE TABLE gaia.dr2 (
 CREATE INDEX dr2b_ra_dec ON gaia.dr2 USING btree (q3c_ang2ipix(ra, "dec"));
 CREATE INDEX idx_gaia_dr2_hpix_32 ON gaia.dr2 USING btree (hpix_32);
 CREATE INDEX idx_gaia_dr2_hpix_4096 ON gaia.dr2 USING btree (hpix_4096);
-

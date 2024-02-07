@@ -18,5 +18,3 @@ then
 fi
 
 conda activate py3
-
-

@@ -12,6 +12,7 @@ from tno.models import PredictionJobResult
 from tno.models import Profile
 from tno.models import PredictionJobStatus
 
+
 @admin.register(Profile)
 class ProfileAdmin(admin.ModelAdmin):
     list_display = (
@@ -20,6 +21,7 @@ class ProfileAdmin(admin.ModelAdmin):
     )
 
     raw_id_fields = ("user",)
+
 
 @admin.register(AsteroidJob)
 class AsteroidJobAdmin(admin.ModelAdmin):
@@ -32,7 +34,7 @@ class AsteroidJobAdmin(admin.ModelAdmin):
         "asteroids_before",
         "asteroids_after",
         "new_records",
-        "error"
+        "error",
     )
 
 
@@ -61,7 +63,7 @@ class OccultationAdmin(admin.ModelAdmin):
         "dec_star_deg",
         "ra_target_deg",
         "dec_target_deg",
-        "created_at"
+        "created_at",
     )
     search_fields = ("name", "number")
 
@@ -103,6 +105,7 @@ class BspPlanetaryAdmin(admin.ModelAdmin):
     )
     search_fields = ("name", "display_name")
 
+
 @admin.register(Catalog)
 class CatalogAdmin(admin.ModelAdmin):
     list_display = (
@@ -113,7 +116,7 @@ class CatalogAdmin(admin.ModelAdmin):
         "tablename",
         "ra_property",
         "dec_property",
-        "registration_date"
+        "registration_date",
     )
     search_fields = ("name", "display_name")
 
@@ -133,7 +136,7 @@ class PredictionJobAdmin(admin.ModelAdmin):
         "count_success",
         "count_failures",
         "avg_exec_time",
-        "exec_time"
+        "exec_time",
     )
 
 
@@ -146,9 +149,8 @@ class PredictionJobResultAdmin(admin.ModelAdmin):
 
     # Troca o tipo de input de Select para um text field com botao de busca
     # para os campos de chave estrangeira que tem milhares de registros e causa tavamento da interface
-    raw_id_fields = (
-        "job",
-    )
+    raw_id_fields = ("job",)
+
 
 @admin.register(PredictionJobStatus)
 class PredictionJobStatusAdmin(admin.ModelAdmin):
@@ -161,5 +163,5 @@ class PredictionJobStatusAdmin(admin.ModelAdmin):
         "average_time",
         "time_estimate",
         "success",
-        "failures"
+        "failures",
     )

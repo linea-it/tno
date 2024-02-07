@@ -132,7 +132,7 @@ class GaiaDao(Dao):
             df_results = None
 
             print("GAIA Querys:")
-            print("-----------------------------------")            
+            print("-----------------------------------")
             # Agrupar clausulas em grupos para diminuir a quantidade de querys
             for gpos in self.chunks_positions(positions, self.POSITION_GROUP):
 
@@ -142,9 +142,9 @@ class GaiaDao(Dao):
                     clauses.append(self.q3c_clause(pos[0], pos[1], radius))
 
                 where = " OR ".join(clauses)
-        
+
                 if max_mag:
-                    where = ("%s AND (%s)" % (self.mag_max_clause(max_mag), where)) 
+                    where = ("%s AND (%s)" % (self.mag_max_clause(max_mag), where))
 
                 stm = """SELECT %s FROM %s WHERE %s """ % (
                     columns, tablename, where)
@@ -162,7 +162,7 @@ class GaiaDao(Dao):
 
                 del df_rows
                 del clauses
-            print("-----------------------------------")                            
+            print("-----------------------------------")
 
             if df_results.shape[0] >= 2100000:
                 pass

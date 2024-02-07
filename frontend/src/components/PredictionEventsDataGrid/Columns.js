@@ -3,11 +3,11 @@ import moment from 'moment';
 function ImageCell(props) {
   if (props.value == null) {
     return (
-      <Box 
+      <Box
       component="a"
       href={`/prediction-event-detail/${props.row.id}`}
       target="_blank"
-      >   
+      >
       <Box
       // width={props.colDef.computedWidth}
       // height={props.colDef.computedWidth}
@@ -19,7 +19,7 @@ function ImageCell(props) {
     )
   }
   return (
-    <Box 
+    <Box
       component="a"
       href={`/prediction-event-detail/${props.row.id}`}
       target="_blank"
@@ -56,10 +56,10 @@ export const NameCol = {
   align: 'center',
   valueGetter: (params) => {
     return params.row.number !== null ? `${params.row.name} (${params.row.number})` : `${params.row.name}`
-  },  
+  },
   renderCell: (params) => {
     return (
-      <Box 
+      <Box
       component="a"
       href={`/prediction-event-detail/${params.row.id}`}
       target="_blank"
@@ -113,7 +113,7 @@ export const PredictionEventsColumns = [
   //   valueGetter: (params) => {
   //     console.log(params)
   //     return  params.api.getRowIndexRelativeToVisibleRows(params.id)
-  //   },      
+  //   },
   // },
   {
     field: 'id',
@@ -156,7 +156,7 @@ export const PredictionEventsColumns = [
     width: 180,
     headerAlign: 'center',
     align: 'center',
-  },  
+  },
   {
     field: 'date_time',
     headerName: 'C/A Instant',

@@ -43,8 +43,8 @@ function PredictionEventDetail() {
   // const createJsonOcc = (occ) =>{
   //   return {'name': occ.name,
   //   'radius': occ.diameter?occ.diameter:0,
-  //   'coord': occ.ra_star_candidate + " " + occ.dec_star_candidate, 
-  //   'time': new Date(occ.date_time).toISOString(), 
+  //   'coord': occ.ra_star_candidate + " " + occ.dec_star_candidate,
+  //   'time': new Date(occ.date_time).toISOString(),
   //   'ca': occ.closest_approach,
   //   'pa': occ.position_angle,
   //   'vel': occ.velocity,
@@ -293,7 +293,7 @@ function PredictionEventDetail() {
                 height={800}
               >
               {occultation?.id !== undefined && (
-                <AladinV3 
+                <AladinV3
                   ra={occultation?.ra_star_deg}
                   dec={occultation?.dec_star_deg}
                   />
@@ -301,7 +301,7 @@ function PredictionEventDetail() {
               </Box>
             </CardContent>
           </Card>
-        </Grid>        
+        </Grid>
       </Grid>
 
       {/* {occultation.ra_star_candidate && occultation.dec_star_candidate ? ( */}

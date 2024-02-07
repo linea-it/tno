@@ -18,11 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libsasl2-dev \
     libldap2-dev \
     libssl-dev \
-    vim \    
+    vim \
     && rm -rf /var/lib/apt/lists/*
 
 FROM base AS python-deps
-# Install pipenv 
+# Install pipenv
 RUN pip install pipenv
 
 # Install python dependencies in /.venv

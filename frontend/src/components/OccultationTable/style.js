@@ -1,14 +1,14 @@
 import { makeStyles } from '@material-ui/core/styles';
 
-const styles = makeStyles({  
+const styles = makeStyles({
   grid: {
     margin: 'auto'
   },
-  titleItem: {    
+  titleItem: {
     marginTop: '10px',
     fontSize: '1.3em',
-    paddingTop: '0.5em',   
-    color: '#000000'    
+    paddingTop: '0.5em',
+    color: '#000000'
   },
   celula:{
     backgroundColor:'#cccccc',
@@ -28,7 +28,7 @@ const styles = makeStyles({
     height: 'calc(100% - 1px)'
   },
   progressWrapper: {
-    position: 'relative'    
+    position: 'relative'
   },
   gridTable: {
     display: 'table'
@@ -36,9 +36,9 @@ const styles = makeStyles({
   gridTableRow: {
     display: 'table-row'
   },
-  backdrop: {   
+  backdrop: {
     color: '#fff'
-  }, 
+  },
   errorText:{
     color: '#8B0000'
   },
@@ -52,10 +52,10 @@ const styles = makeStyles({
   },
   input:{
     borderRadius: 4,
-    position: 'relative',    
-    border: '1px solid #ced4da',   
-    width: 'auto',  
-    height: '43px'  
+    position: 'relative',
+    border: '1px solid #ced4da',
+    width: 'auto',
+    height: '43px'
   },
   loadingTable:{
     display: 'block !important',

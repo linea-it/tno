@@ -36,7 +36,7 @@ function PredictionAsteroid() {
             // date_time_after: dayjs(`${res.predict_start_date} 00:00:00+00:00`).utc().format(),
             // date_time_before: dayjs(`${res.predict_end_date} 23:59:59+00:00`).utc().format(),
             date_time_after: undefined,
-            date_time_before: undefined,            
+            date_time_before: undefined,
             filterType: 'name',
             filterValue: [{name:res.name}],
             maginitudeMax: undefined,
@@ -82,7 +82,7 @@ function PredictionAsteroid() {
         {
           title: 'Execution time',
           value: predictionJobResult.exec_time?predictionJobResult.exec_time.split('.')[0]:"-"
-        },        
+        },
         {
           title: 'Download BSP',
           value: predictionJobResult.bsp_jpl_dw_time?predictionJobResult.bsp_jpl_dw_time.split('.')[0]:"-"
@@ -110,7 +110,7 @@ function PredictionAsteroid() {
         {
           title: 'Path Coeff Execution Time',
           value: predictionJobResult.calc_path_coeff_exec_time?predictionJobResult.calc_path_coeff_exec_time.split('.')[0]:"-"
-        },        
+        },
         {
           title: 'Result Ingestion Execution Time',
           value: predictionJobResult.ing_occ_exec_time?predictionJobResult.ing_occ_exec_time.split('.')[0]:"-"
@@ -155,7 +155,7 @@ function PredictionAsteroid() {
         <Card>
           <CardHeader title='Summary' titleTypographyProps={{ variant: 'h6' }}/>
           <CardContent>
-              <List data={summary} />  
+              <List data={summary} />
           </CardContent>
         </Card>
       )}

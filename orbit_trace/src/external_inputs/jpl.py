@@ -39,17 +39,18 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         Path: file path for .bsp file.
     """
 
-    date1 = dt.strptime(initial_date, '%Y-%m-%d')
-    date2 = dt.strptime(final_date, '%Y-%m-%d')
+    date1 = dt.strptime(initial_date, "%Y-%m-%d")
+    date2 = dt.strptime(final_date, "%Y-%m-%d")
     diff = date2 - date1
 
     if diff.days <= 32:
         raise ValueError(
-            'The [final_date] must be more than 32 days later than [initial_date]')
+            "The [final_date] must be more than 32 days later than [initial_date]"
+        )
 
     path = pathlib.Path(directory)
     if not path.exists():
-        raise ValueError('The directory {} does not exist!'.format(path))
+        raise ValueError("The directory {} does not exist!".format(path))
 
     spk_file = path.joinpath(filename)
 
@@ -59,29 +60,31 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     # &COMMAND=chiron
     # &START_TIME=2023-Jan-01
     # &STOP_TIME=2023-Mar-30
-    
+
     # first we will assume the object is an asteroid or comet
-    urlJPL = 'https://ssd.jpl.nasa.gov/api/horizons.api'
+    urlJPL = "https://ssd.jpl.nasa.gov/api/horizons.api"
     parameters = {
-        'format': "json",
-        'EPHEM_TYPE': "SPK",
-        'OBJ_DATA': "YES",
-        'COMMAND': "'DES="+identifier+"'",
-        'START_TIME': date1.strftime('%Y-%b-%d'),
-        'STOP_TIME': date2.strftime('%Y-%b-%d'),
+        "format": "json",
+        "EPHEM_TYPE": "SPK",
+        "OBJ_DATA": "YES",
+        "COMMAND": "'DES=" + identifier + "'",
+        "START_TIME": date1.strftime("%Y-%b-%d"),
+        "STOP_TIME": date2.strftime("%Y-%b-%d"),
     }
     r = requests.get(urlJPL, params=parameters, stream=True)
-        
+
     # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
-    if 'No matches found.' in json.loads(r.text)['result']:
-        parameters['COMMAND'] = "'"+identifier+";'"
+    if "No matches found." in json.loads(r.text)["result"]:
+        parameters["COMMAND"] = "'" + identifier + ";'"
         r = requests.get(urlJPL, params=parameters, stream=True)
 
-    
-    if r.status_code == requests.codes.ok and r.headers['Content-Type'] == 'application/json':
+    if (
+        r.status_code == requests.codes.ok
+        and r.headers["Content-Type"] == "application/json"
+    ):
         try:
             data = json.loads(r.text)
-            
+
             # If the SPK file was generated, decode it and write it to the output file:
             if "spk" in data:
                 with open(spk_file, "wb") as f:
@@ -89,7 +92,7 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
                     f.write(base64.b64decode(data["spk"]))
                     f.close()
 
-                return spk_file 
+                return spk_file
             else:
                 # Otherwise, the SPK file was not generated so output an error:
                 raise Exception(f"SPK file not generated: {r.text}")
@@ -98,12 +101,14 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         except OSError as e:
             raise Exception(f"Unable to create file '{spk_file}': {e}")
         except Exception as e:
-            raise(e)
+            raise (e)
     elif r.status_code == 400:
         raise Exception("Bad Request code 400 - {r.text}")
     else:
         raise Exception(
-            f"It was not able to download the bsp file for object. Error: {r.status_code}")
+            f"It was not able to download the bsp file for object. Error: {r.status_code}"
+        )
+
 
 def findSPKID(bsp):
     """Search the spk id of a small Solar System object from bsp file
@@ -116,17 +121,17 @@ def findSPKID(bsp):
     """
 
     spice.furnsh([bsp])
-    kind = 'spk'
+    kind = "spk"
 
     fillen = 256
     typlen = 33
     srclen = 256
-    keys = ['Target SPK ID   :', 'ASTEROID_SPK_ID =']
+    keys = ["Target SPK ID   :", "ASTEROID_SPK_ID ="]
     n = len(keys[0])
 
     name, kind, source, loc = spice.kdata(0, kind, fillen, typlen, srclen)
     flag = False
-    spk = ''
+    spk = ""
     while not flag:
         try:
             m, header, flag = spice.dafec(loc, 1)
@@ -139,7 +144,7 @@ def findSPKID(bsp):
 
     spice.kclear()
 
-    if spk == '':
+    if spk == "":
         return None
 
     return str(spk)

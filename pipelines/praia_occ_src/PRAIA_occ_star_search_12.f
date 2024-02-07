@@ -1,19 +1,19 @@
 c
 c     Program PRAIA_occ_star_search
 c
-c     
+c
 c
 c     Identify occultation candidate stars from body ephemeris and "xy"
 c     output file from PRAIA astrometric reductions.
 c
 c
 c     Valid xy files: PRAIA_astrometry version 12 (or earlier) and
-c     PRAIA_global_reduction version 14.  
+c     PRAIA_global_reduction version 14.
 c
 C
 c     This version.
 c
-c     Quadrant of chord checked. Normalized R magnitude to 20km/s computed. 
+c     Quadrant of chord checked. Normalized R magnitude to 20km/s computed.
 c
 c     A mini version of the full (RA,DEC) catalog of positions is also
 c     output for plot purposes.
@@ -42,7 +42,7 @@ c
 c
 c     In this version, the geocentric astrometric TNO (RA,DEC) position,
 c     corrected by the ephemeris offsets, is furnished for the instant of
-c     occultation. 
+c     occultation.
 c
 c
 c     In this version, the ephemeris can be furnished in any given time
@@ -113,11 +113,11 @@ c
 
 c
 
-      write (*,*) 
-      write (*,*) 
+      write (*,*)
+      write (*,*)
       write (*,*) 'PRAIA occultation candidate stars search'
-      write (*,*) 
-      write (*,*) 
+      write (*,*)
+      write (*,*)
 
 c
 c     Read input data
@@ -138,7 +138,7 @@ c     open (5,file='PRAIA_occ_star_search_10.dat')
       read (5,1) mcata
       read (5,1) star
       read (5,1) output
-      read (5,1) dplot 
+      read (5,1) dplot
 
       read (5,*) sradius
       read (5,*) oraio
@@ -167,7 +167,7 @@ c
 
 c
 
-   
+
       raio=sradius**2
       draio=(sradius/3600.d0)**2
       doraio=(oraio/3600.d0)**2
@@ -203,7 +203,7 @@ c
 
 
 c
-c     Reads star catalogue 
+c     Reads star catalogue
 c
 
       open (1,file=catal)
@@ -386,7 +386,7 @@ c
 
 c
 c     Computes least distance of star to the straight line connecting
-c     the two closest ephemeris points. 
+c     the two closest ephemeris points.
 c
 
 
@@ -400,7 +400,7 @@ c
       enddo
 
       call ordem (m,ior,val)
-      
+
       m1=ior(1)+j1-1
       m2=ior(2)+j1-1
 
@@ -427,17 +427,17 @@ c
       enddo
 
  30   i1=ii
- 
- 
+
+
        do ii=iiii,neph
        dttt=1440.d0*dabs(dj(iiii)-dj(ii))
        if (dttt.gt.30.d0) go to 31
        enddo
- 
+
   31   i2=ii
-  
- 
- 
+
+
+
 c     i1=iiii-30
 c     i2=iiii+30
 
@@ -583,7 +583,7 @@ c
       pdis(nn)=(epdis(i2)+epdis(i1))/2.d0
 
       endif
-      
+
 
 c
 c     Astrometric (RA,DEC) velocity of target (arcsec/min)
@@ -596,7 +596,7 @@ c
 c
 c     Apparent velocity of central point across the plane of sky (km/s)
 c     (roughly the velocity of the central point across Earth surphace)
-c 
+c
 
 c     vsky(nn)=2.d0*au*pdis(nn)*dabs(dtan(grarad*yy/3600.d0))/
 c    ?((tf-ti)*86400.d0)
@@ -761,7 +761,7 @@ c
       write (88,*)'J, H, K: 2MASS magnitudes (50.0 = not in 2MASS)'
       write (88,*)'R*, J*, H*, K* are normalized magnitudes to a common'
       write (88,*)'shadown velocity of 20 km/sec by the relationship:'
-      write (88,*)'Mag* = Mag_actual + 2.5*log10[velocity/20 (km/sec)]'  
+      write (88,*)'Mag* = Mag_actual + 2.5*log10[velocity/20 (km/sec)]'
       write (88,*)'Delta: Planet range to Earth, AU'
       write (88,*)'long: East longitude of sub-planet point, deg, positi
      ?ve towards East'
@@ -774,12 +774,12 @@ c
      ?radius,' arcsec'
       write (88,110) tsol1,tsol2
  110  format(' Day light exclusion (range loc. t.): ',f4.1,'hs to ',f4.1
-     ?,' hs (t1 = t2 -> no exclusions)') 
+     ?,' hs (t1 = t2 -> no exclusions)')
       write (88,*)'List below has: ',ntotal, ' entries'
       write (88,*)'Reference ephemeris: ',label
-      write (88,*)'Offset applied to ephemeris off_ra(mas) = A * (t-t0) 
+      write (88,*)'Offset applied to ephemeris off_ra(mas) = A * (t-t0)
      ?+ B '
-      write (88,*)'Offset applied to ephemeris off_de(mas) = C * (t-t0) 
+      write (88,*)'Offset applied to ephemeris off_de(mas) = C * (t-t0)
      ?+ D '
       write (88,*)'t0 = ',tim0,' yrs'
       write (88,*)'A = ',aofra,' (mas/yr)'
@@ -797,7 +797,7 @@ c
       write (88,*)'5 - fs position from entry with brightest R mag.'
       write (88,*)'6 - fs position from average over all entries'
       write (88,*)'(see details in Assafin et al. 2009)'
-      write (88,*)'E_ra, E_de: error of star position (mas); (9999 = no 
+      write (88,*)'E_ra, E_de: error of star position (mas); (9999 = no
      ?estimation)'
       write (88,*)'pmra, pmde: star proper motion (mas); (9999 = no prop
      ?er motion)'
@@ -805,8 +805,8 @@ c
      ?------------------------------------------------------------------
      ?------------------------------------------------------------------
      ?-------'
-      write (88,*)' d  m year  h:m:s UT     ra___dec___J2000_candidate  
-     ?   ra_dec_J2000_target_geocen     C/A    P/A     vel  Delta  R*   
+      write (88,*)' d  m year  h:m:s UT     ra___dec___J2000_candidate
+     ?   ra_dec_J2000_target_geocen     C/A    P/A     vel  Delta  R*
      ?J*   H*   K*   long  loc. t.  off_ra   off_de pm ct f E_ra E_de pm
      ?ra pmde'
       write (88,*)'-----------------------------------------------------
@@ -845,10 +845,10 @@ c
       iam=am
       sa =(am-iam)*60.d0
       if (deco.lt.0.d0) then
-      isig='-'  
+      isig='-'
       deco=-deco
       else
-      isig='+' 
+      isig='+'
       endif
       idg=deco
       dm=(deco-idg)*60.d0
@@ -871,10 +871,10 @@ c
       iamb=amb
       sab =(amb-iamb)*60.d0
       if (deco.lt.0.d0) then
-      isigb='-'  
+      isigb='-'
       deco=-deco
       else
-      isigb='+' 
+      isigb='+'
       endif
       idgb=deco
       dmb=(deco-idgb)*60.d0
@@ -973,7 +973,7 @@ c
 
 
       write (*,*) 'Number of events = ',ntotal
-      write (*,*) 
+      write (*,*)
 
 c
 
@@ -1009,7 +1009,7 @@ c     key: ephemeris format: 1 - NAIF ; 2 - Horizons general format;
 c                            3 -  Horizons Pluto and satellites format
 c
 c
-c 
+c
 c     Last update:  06/Nov/2009  M. Assafin
 c
 c
@@ -1045,7 +1045,7 @@ c
 
       idmax=2100001
 
-      
+
 
 c
 c     Reads Ephemerides
@@ -1058,7 +1058,7 @@ c
       do i=1,3
       read (3,*)
       enddo
-      endif 
+      endif
 
 c
 
@@ -1157,7 +1157,7 @@ c
       do j=1,12
       if (metab2(j).eq.kmes) go to 35
       enddo
-      endif 
+      endif
 
 
  35   iutmes=j
@@ -1178,11 +1178,11 @@ c
       call iau_CAL2JD (iutano,iutmes,iutdia,djm0,djm,iflago)
 
       djm=djm+fd
-            
+
       dj(i)=djm+djm0
 
 
-      enddo  
+      enddo
 
 c
 
@@ -2052,6 +2052,6 @@ c       if(jstack.gt.NSTACK)pause 'NSTACK too small in ordem'
 *
 *-----------------------------------------------------------------------
 
-  
+
 
       END

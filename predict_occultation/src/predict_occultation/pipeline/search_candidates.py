@@ -27,7 +27,9 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
         stars_catalog_mini_filename = "g4_micro_catalog_JOHNSTON_2018"
         stars_catalog_xy_filename = "g4_occ_catalog_JOHNSTON_2018"
         stars_parameters_of_occultation_filename = "g4_occ_data_JOHNSTON_2018"
-        stars_parameters_of_occultation_plot_filename = "g4_occ_data_JOHNSTON_2018_table"
+        stars_parameters_of_occultation_plot_filename = (
+            "g4_occ_data_JOHNSTON_2018_table"
+        )
 
         with open("praia_occ_input_template.txt") as file:
 
@@ -35,8 +37,7 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
 
             data = data.replace("{stellar_catalog}", star_catalog.ljust(50))
 
-            data = data.replace("{object_ephemeris}",
-                                object_ephemeris.ljust(50))
+            data = data.replace("{object_ephemeris}", object_ephemeris.ljust(50))
 
             name = os.path.join(data_dir, stars_catalog_mini_filename)
             data = data.replace("{stars_catalog_mini}", name.ljust(50))
@@ -44,15 +45,13 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
             name = os.path.join(data_dir, stars_catalog_xy_filename)
             data = data.replace("{stars_catalog_xy}", name.ljust(50))
 
-            name = os.path.join(
-                data_dir, stars_parameters_of_occultation_filename)
-            data = data.replace(
-                "{stars_parameters_of_occultation}", name.ljust(50))
+            name = os.path.join(data_dir, stars_parameters_of_occultation_filename)
+            data = data.replace("{stars_parameters_of_occultation}", name.ljust(50))
 
-            name = os.path.join(
-                data_dir, stars_parameters_of_occultation_plot_filename)
+            name = os.path.join(data_dir, stars_parameters_of_occultation_plot_filename)
             data = data.replace(
-                "{stars_parameters_of_occultation_plot}", name.ljust(50))
+                "{stars_parameters_of_occultation_plot}", name.ljust(50)
+            )
 
             with open(output, "w") as new_file:
                 new_file.write(data)
@@ -71,7 +70,9 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
         raise (e)
 
 
-def run_praia_occ(input, ):
+def run_praia_occ(
+    input,
+):
 
     data_dir = os.environ.get("DIR_DATA").rstrip("/")
     log = os.path.join(data_dir, "praia_star_search.log")
@@ -80,7 +81,8 @@ def run_praia_occ(input, ):
         p = subprocess.Popen(
             "PRAIA_occ_star_search_12 < " + input,
             stdin=subprocess.PIPE,
-            shell=True, stdout=fp
+            shell=True,
+            stdout=fp,
         )
         p.communicate()
 
@@ -100,8 +102,7 @@ def fix_table(filename):
     contents[27] = contents[27][:-1] + b" (not applicable here)\n"
     contents[35] = contents[35][:34] + b"10)\n"
     contents[36] = contents[36][:41] + b"\n"
-    contents[37] = contents[37][:36] + \
-        b"/yr); (0 when not provided by Gaia DR1)\n"
+    contents[37] = contents[37][:36] + b"/yr); (0 when not provided by Gaia DR1)\n"
     contents[39] = contents[39][:115] + b"G" + contents[39][116:]
 
     for i in range(41, len(contents)):
@@ -115,7 +116,7 @@ def fix_table(filename):
 
 def get_position_from_occ_table(data_array, index_list):
     """Function to extract right ascension or declination from a array
-    The index of specific columns (RA or Dec) is defined inside of index_list     
+    The index of specific columns (RA or Dec) is defined inside of index_list
     Args:
         data_array ([type]): [description]
         index_list ([type]): [description]
@@ -123,7 +124,7 @@ def get_position_from_occ_table(data_array, index_list):
     Returns:
         [type]: [description]
     """
-    return [' '.join(pos) for pos in data_array[:, index_list]]
+    return [" ".join(pos) for pos in data_array[:, index_list]]
 
 
 def ascii_to_csv(inputFile, outputFile):
@@ -140,10 +141,10 @@ def ascii_to_csv(inputFile, outputFile):
     # To avoid 60 in seconds (provided by PRAIA occ),
     date = []
     for d in data[:, range(6)]:
-        if d[5] == '60.':
+        if d[5] == "60.":
             d[4] = int(d[4]) + 1
-            d[5] = '00.'
-        date.append(datetime.strptime(' '.join(d), "%d %m %Y %H %M %S."))
+            d[5] = "00."
+        date.append(datetime.strptime(" ".join(d), "%d %m %Y %H %M %S."))
 
     # use this definition when seconds = 0..59
     # date = [datetime.strptime(' '.join(d), "%d %m %Y %H %M %S.") for d in data[:,range(6)]]
@@ -153,8 +154,7 @@ def ascii_to_csv(inputFile, outputFile):
 
     # Extracting positions of stars and objects and save it in a array
     for i in range(6, 17, 3):
-        dateAndPositions.append(
-            get_position_from_occ_table(data, [i, i+1, i+2]))
+        dateAndPositions.append(get_position_from_occ_table(data, [i, i + 1, i + 2]))
 
     dateAndPositions = np.array(dateAndPositions)
     dateAndPositions = dateAndPositions.T
@@ -165,11 +165,13 @@ def ascii_to_csv(inputFile, outputFile):
     newData = np.concatenate((dateAndPositions, otherParameters), 1)
 
     # Defining the column's names
-    colNames = "occultation_date;ra_star_candidate;dec_star_candidate;ra_object;" \
-        "dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;" \
+    colNames = (
+        "occultation_date;ra_star_candidate;dec_star_candidate;ra_object;"
+        "dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;"
         "off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde"
+    )
 
-    np.savetxt(outputFile, newData, fmt='%s', header=colNames, delimiter=';')
+    np.savetxt(outputFile, newData, fmt="%s", header=colNames, delimiter=";")
 
 
 def search_candidates(star_catalog, object_ephemeris, filename):
@@ -182,14 +184,16 @@ def search_candidates(star_catalog, object_ephemeris, filename):
         out_link = os.path.join(app_path, filename)
 
         # Path do arquivo de tabela gerado pelo PRAIA OCC.
-        stars_parameters_of_occultation_plot_filename = "g4_occ_data_JOHNSTON_2018_table"
+        stars_parameters_of_occultation_plot_filename = (
+            "g4_occ_data_JOHNSTON_2018_table"
+        )
         praia_occ_table = os.path.join(
-            data_dir, stars_parameters_of_occultation_plot_filename)
+            data_dir, stars_parameters_of_occultation_plot_filename
+        )
 
         # Criar arquivo .dat baseado no template.
         search_input = praia_occ_input_file(
-            star_catalog=star_catalog,
-            object_ephemeris=object_ephemeris
+            star_catalog=star_catalog, object_ephemeris=object_ephemeris
         )
 
         print("PRAIA OCC .DAT: [%s]" % search_input)
@@ -199,8 +203,12 @@ def search_candidates(star_catalog, object_ephemeris, filename):
 
         # Depois de executar o PRAIA OCC, verifica se o arquivo de tabela foi gerado.
         if not os.path.exists(praia_occ_table):
-            raise (Exception("%s not generated. [%s]" % (
-                stars_parameters_of_occultation_plot_filename, praia_occ_table)))
+            raise (
+                Exception(
+                    "%s not generated. [%s]"
+                    % (stars_parameters_of_occultation_plot_filename, praia_occ_table)
+                )
+            )
 
         fix_table(praia_occ_table)
 
@@ -216,8 +224,12 @@ def search_candidates(star_catalog, object_ephemeris, filename):
             os.symlink(output, out_link)
 
             # PRAIA OCC gera varios arquivos de saida alterar a permissão desses arquivos.
-            files = ["g4_micro_catalog_JOHNSTON_2018", "g4_occ_catalog_JOHNSTON_2018",
-                     "g4_occ_data_JOHNSTON_2018", "g4_occ_data_JOHNSTON_2018_table"]
+            files = [
+                "g4_micro_catalog_JOHNSTON_2018",
+                "g4_occ_catalog_JOHNSTON_2018",
+                "g4_occ_data_JOHNSTON_2018",
+                "g4_occ_data_JOHNSTON_2018_table",
+            ]
             for f in files:
                 os.chmod(os.path.join(data_dir, f), 0o664)
 

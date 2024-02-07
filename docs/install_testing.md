@@ -1,19 +1,19 @@
 # Install TNO in Testing enviroment
 
-### Create Docker Compose file 
+### Create Docker Compose file
 
-### Create and edit a .env 
+### Create and edit a .env
 Configure
-- database credentials. 
+- database credentials.
 - paths
 - Theads Min and max
 - Log Level
 
 
-### Start 
+### Start
 ```docker-compose up```
 
-### Create superuser in Django 
+### Create superuser in Django
 
 
 ### Import Database
@@ -40,13 +40,13 @@ in admin interface:
 
     ```
     name: naif0012
-    display name: naif0012   
+    display name: naif0012
     url: https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
     file: Download file fron this url and upload in this field
     ```
 
 - Home › Predict › Bsp planetarys › Add bsp planetary - Create a BSP Planetary record (**Temporary**)
-  
+
   ```
   name: de435
   display name: de435

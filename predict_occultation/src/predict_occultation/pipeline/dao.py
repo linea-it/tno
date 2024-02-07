@@ -14,7 +14,7 @@ class MissingDBURIException(Exception):
     pass
 
 
-class Dao():
+class Dao:
 
     engine = None
 
@@ -26,28 +26,25 @@ class Dao():
 
         # DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
         try:
-            db_uri = os.environ['DB_URI']
+            db_uri = os.environ["DB_URI"]
             return db_uri
         except:
             raise MissingDBURIException(
                 "Required environment variable with URI to access the database where GAIA DR2 is."
-                "example DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME")
+                "example DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
+            )
 
     def get_db_engine(self):
 
         if self.engine is None:
 
-            self.engine = create_engine(
-                self.get_db_uri(),
-                poolclass=NullPool
-            )
+            self.engine = create_engine(self.get_db_uri(), poolclass=NullPool)
 
         return self.engine
 
     def get_table(self, tablename, schema=None):
         engine = self.get_db_engine()
-        tbl = Table(
-            tablename, MetaData(engine), autoload=True, schema=schema)
+        tbl = Table(tablename, MetaData(engine), autoload=True, schema=schema)
         return tbl
 
     def fetch_all_dict(self, stm):
@@ -83,37 +80,55 @@ class GaiaDao(Dao):
     def __init__(self):
         self.catalog_name = "GAIA DR2"
 
-        self.catalog = dict({
-            "schema": "gaia",
-            "tablename": "dr2",
-            "ra_property": "ra",
-            "dec_property": "dec"
-        })
+        self.catalog = dict(
+            {
+                "schema": "gaia",
+                "tablename": "dr2",
+                "ra_property": "ra",
+                "dec_property": "dec",
+            }
+        )
 
         self.gaia_properties = [
-            "source_id", "ra", "ra_error", "dec", "dec_error", "parallax", "pmra", "pmra_error", "pmdec",
-            "pmdec_error", "duplicated_source", "phot_g_mean_flux", "phot_g_mean_flux_error",
-            "phot_g_mean_mag", "phot_variable_flag"
+            "source_id",
+            "ra",
+            "ra_error",
+            "dec",
+            "dec_error",
+            "parallax",
+            "pmra",
+            "pmra_error",
+            "pmdec",
+            "pmdec_error",
+            "duplicated_source",
+            "phot_g_mean_flux",
+            "phot_g_mean_flux_error",
+            "phot_g_mean_mag",
+            "phot_variable_flag",
         ]
 
         # Quantas posições por query.
         self.POSITION_GROUP = 5
 
-
     def chunks_positions(self, l, n):
         n = max(1, n)
-        return (l[i:i+n] for i in range(0, len(l), n))
+        return (l[i : i + n] for i in range(0, len(l), n))
 
     def q3c_clause(self, ra, dec, radius):
 
         clause = 'q3c_radial_query("%s", "%s", %s, %s, %s)' % (
-            self.catalog["ra_property"], self.catalog["dec_property"], ra, dec, radius)
+            self.catalog["ra_property"],
+            self.catalog["dec_property"],
+            ra,
+            dec,
+            radius,
+        )
 
         return clause
 
     def mag_max_clause(self, mag_max):
 
-        clause = 'phot_g_mean_mag <= %f' % (mag_max)
+        clause = "phot_g_mean_mag <= %f" % (mag_max)
 
         return clause
 
@@ -123,7 +138,9 @@ class GaiaDao(Dao):
 
             if self.catalog["schema"] is not None:
                 tablename = "%s.%s" % (
-                    self.catalog["schema"], self.catalog["tablename"])
+                    self.catalog["schema"],
+                    self.catalog["tablename"],
+                )
             else:
                 tablename = self.catalog["tablename"]
 
@@ -132,7 +149,7 @@ class GaiaDao(Dao):
             df_results = None
 
             print("GAIA Querys:")
-            print("-----------------------------------")            
+            print("-----------------------------------")
             # Agrupar clausulas em grupos para diminuir a quantidade de querys
             for gpos in self.chunks_positions(positions, self.POSITION_GROUP):
 
@@ -142,12 +159,11 @@ class GaiaDao(Dao):
                     clauses.append(self.q3c_clause(pos[0], pos[1], radius))
 
                 where = " OR ".join(clauses)
-        
-                if max_mag:
-                    where = ("%s AND (%s)" % (self.mag_max_clause(max_mag), where)) 
 
-                stm = """SELECT %s FROM %s WHERE %s """ % (
-                    columns, tablename, where)
+                if max_mag:
+                    where = "%s AND (%s)" % (self.mag_max_clause(max_mag), where)
+
+                stm = """SELECT %s FROM %s WHERE %s """ % (columns, tablename, where)
 
                 print(text(stm))
                 df_rows = pd.read_sql(text(stm), con=self.get_db_engine())
@@ -157,12 +173,15 @@ class GaiaDao(Dao):
                 else:
                     # Concatena o resultado da nova query com os resultados anteriores.
                     # Tratando possiveis duplicatas.
-                    df_results = pd.concat(
-                        [df_results, df_rows]).drop_duplicates().reset_index(drop=True)
+                    df_results = (
+                        pd.concat([df_results, df_rows])
+                        .drop_duplicates()
+                        .reset_index(drop=True)
+                    )
 
                 del df_rows
                 del clauses
-            print("-----------------------------------")                            
+            print("-----------------------------------")
 
             if df_results.shape[0] >= 2100000:
                 pass
@@ -194,8 +213,8 @@ class GaiaDao(Dao):
         # Gmag      = phot_g_mean_mag        = 12
         # Var       = phot_variable_flag     = 13
 
-        app_path = os.environ.get("APP_PATH").rstrip('/')
-        data_dir = os.environ.get("DIR_DATA").rstrip('/')
+        app_path = os.environ.get("APP_PATH").rstrip("/")
+        data_dir = os.environ.get("DIR_DATA").rstrip("/")
 
         output = os.path.join(data_dir, filename)
         out_link = os.path.join(app_path, filename)
@@ -204,7 +223,7 @@ class GaiaDao(Dao):
         JD = 15.0 * 365.25 + 2451545
 
         # filename = os.path.join(path, "gaia_catalog.cat")
-        with open(output, 'w') as fp:
+        with open(output, "w") as fp:
             for row in rows:
 
                 # Converter os valores nulos para 0
@@ -213,7 +232,7 @@ class GaiaDao(Dao):
                         row[prop] = 0
 
                 fp.write(" ".ljust(64))
-                fp.write(("%.3f" % row['phot_g_mean_mag']).rjust(6))
+                fp.write(("%.3f" % row["phot_g_mean_mag"]).rjust(6))
                 fp.write(" ".ljust(7))
                 fp.write(" " + ("%.3f" % magJ).rjust(6))
                 fp.write(" " + ("%.3f" % magH).rjust(6))
@@ -221,10 +240,8 @@ class GaiaDao(Dao):
                 fp.write(" ".rjust(35))
                 fp.write(" " + ("%.3f" % (row["pmra"] / 1000.0)).rjust(7))
                 fp.write(" " + ("%.3f" % (row["pmdec"] / 1000.0)).rjust(7))
-                fp.write(" " + ("%.3f" %
-                         (row["pmra_error"] / 1000.0)).rjust(7))
-                fp.write(" " + ("%.3f" %
-                         (row["pmdec_error"] / 1000.0)).rjust(7))
+                fp.write(" " + ("%.3f" % (row["pmra_error"] / 1000.0)).rjust(7))
+                fp.write(" " + ("%.3f" % (row["pmdec_error"] / 1000.0)).rjust(7))
                 fp.write(" ".rjust(71))
                 fp.write(" " + ("%.9f" % (row["ra"] / 15.0)).rjust(13))
                 fp.write(" " + ("%.9f" % row["dec"]).rjust(13))
@@ -232,8 +249,7 @@ class GaiaDao(Dao):
                 fp.write(("%.8f" % JD).rjust(16))
                 fp.write(" ".ljust(119))
                 fp.write("  " + ("%.3f" % (row["ra_error"] / 1000.0)).rjust(6))
-                fp.write("  " + ("%.3f" %
-                         (row["dec_error"] / 1000.0)).rjust(6))
+                fp.write("  " + ("%.3f" % (row["dec_error"] / 1000.0)).rjust(6))
                 fp.write("\n")
 
             fp.close()
@@ -250,8 +266,8 @@ class GaiaDao(Dao):
 
     def gaia_catalog_to_csv(self, df_catalog, filename):
 
-        app_path = os.environ.get("APP_PATH").rstrip('/')
-        data_dir = os.environ.get("DIR_DATA").rstrip('/')
+        app_path = os.environ.get("APP_PATH").rstrip("/")
+        data_dir = os.environ.get("DIR_DATA").rstrip("/")
 
         output = os.path.join(data_dir, filename)
         out_link = os.path.join(app_path, filename)
@@ -267,6 +283,7 @@ class GaiaDao(Dao):
             return output
         else:
             raise (Exception("Gaia Catalog file not generated. [%s]" % output))
+
 
 # if __name__ == "__main__":
 

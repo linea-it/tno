@@ -1,4 +1,3 @@
-
 from django.db import models
 
 
@@ -43,10 +42,8 @@ class JohnstonArchive(models.Model):
         blank=True,
         default=None,
     )
-    a = models.FloatField(verbose_name="a (AU)",
-                          null=True, blank=True, default=None)
-    e = models.FloatField(verbose_name="e", null=True,
-                          blank=True, default=None)
+    a = models.FloatField(verbose_name="a (AU)", null=True, blank=True, default=None)
+    e = models.FloatField(verbose_name="e", null=True, blank=True, default=None)
     perihelion_distance = models.FloatField(
         verbose_name="perihelion distance",
         help_text="q (AU) perihelion distance",
@@ -61,8 +58,7 @@ class JohnstonArchive(models.Model):
         blank=True,
         default=None,
     )
-    i = models.FloatField(verbose_name="i (deg)",
-                          null=True, blank=True, default=None)
+    i = models.FloatField(verbose_name="i (deg)", null=True, blank=True, default=None)
     diameter = models.FloatField(
         verbose_name="Diameter (Km)", null=True, blank=True, default=None
     )

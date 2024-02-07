@@ -29,7 +29,7 @@ and the results can be easly accessed for furhter analysis.
 
 
 
- 
+
 The package
 
 
@@ -56,7 +56,7 @@ unchanged.
 Which program does what?
 
 
-PRAIA_header_extraction_11                        : data extraction of fits images headers 
+PRAIA_header_extraction_11                        : data extraction of fits images headers
 PRAIA_JPL_ephem_batch_2.f, PRAIA_targets_JPL_1.f  : JPL ephemeris generation
 PRAIA_targets_skybot_1.f                          : SKYBOT (IMCCE) ephemeris generation
 PRAIA_astrometry_11.f                             : astrometry of individual fields
@@ -200,10 +200,10 @@ output file (see comments about output files at the appropriate section further 
 
     PRAIA can search the targets during, or after, the execution of its main astrometric programs:
 
- 
+
               PRAIA_astrometry_11
 
-              PRAIA_global_reduction_14 
+              PRAIA_global_reduction_14
 
 
 
@@ -246,7 +246,7 @@ then run PRAIA_targets_skybot_1. Something like this should be displayed:
 
 
 
-  
+
 
 
                        PRAIA automatic ephemeris extraction by SKYBOT
@@ -375,7 +375,7 @@ weird effects in the generated file names)
  In general, multiple batch files may be created according to the number of images. This is because
 JPL accepts batches with up to 200 entries only at a time. In that case, each created batch file must
 be separately sent by email to the JPL server.
- 
+
 
   In our example, we have only one file to send:
 
@@ -502,7 +502,7 @@ Single field astrometric reductions
   Let's start with the astrometric reduction of single fields. After that, we will see how to
 reduce mosaics of CCDs (overlapping).
 
-  Briefely speaking, PRAIA performs automatic astrometric reductions of fields. It automatically 
+  Briefely speaking, PRAIA performs automatic astrometric reductions of fields. It automatically
 identifies objects in the CCD image and then fits 2-D symetric Gaussians to these objects,  within 1 FWHM
 of radius. Then it automatically identifies among these objects the stars from the reference catalogs.
 
@@ -510,8 +510,8 @@ of radius. Then it automatically identifies among these objects the stars from t
 computed: 2MASS in original form, 2MASS corrected toward the UCAC2 by the tangent plane techinique
 (Assafin et al 1997, AJ) and this 2MASS further corrected by UCAC2 proper motions. Thus, a total of 4
 sets of positions are actually generated for any object on the fields. Magnitudes (PSF photometry) are
-also computed in the UCAC2 system. 
- 
+also computed in the UCAC2 system.
+
 
   To make the astrometric reduction of single images, one uses program PRAIA_astrometry_11. Following our
 example, let's reduce image 1013384p_10.fits. The extracted header info is in file header_extraction.dat
@@ -590,7 +590,7 @@ This produces a logfile containing extra info about the reductions as PRAIA runs
 
 
 
-      PRAIA_astrometry_11 < PRAIA_astrometry_11.dat 
+      PRAIA_astrometry_11 < PRAIA_astrometry_11.dat
 
 
 
@@ -651,7 +651,7 @@ or
 Astrometric reductions of mosaics
 
 
-   
+
 
    Take, for example, the complete set of CCDs obtained from a single CFHT/MegaCam shoot. Supose now
 that many such exposures were made in an overlapping fashion such that a number of mosaics of CCDs were
@@ -664,7 +664,7 @@ observed in such mosaics of CCDs. The reduction is automatic and very fast. It i
    The first step consists in runing PRAIA on all the single CCDs from all observed mosaics. This is
 done by runing the program PRAIA_astrometry_11 over the CCDs exactly as described before.
 
-   
+
    The second step performs the global reduction technique proper. It takes the solutions of the
 single frames from the first step as a starting point and then continues to solve the mosaics in a
 iterative procedure. The procedure is such that the entire region of the sky covered by the mosaics is
@@ -673,7 +673,7 @@ The final result is a coherent set of positions from a large area of the sky pra
 zero-point errors from the reference catalog (the UCAC2 in the case).
 
 
-   Thus, the first step is runing PRAIA_astrometry_11 and performing the single field astrometry.  
+   Thus, the first step is runing PRAIA_astrometry_11 and performing the single field astrometry.
 For the 2nd step, edit PRAIA_global_reduction_14.dat :
 
 
@@ -797,7 +797,7 @@ astrometry_reduction_2m_sample, astrometry_reduction_mp_sample, astrometry_reduc
 
    Gives general astrometric information for each field, regarding mainly the (RA,DEC)
 reductions using UCAC2 and 2MASS (original, "mp" or "mp_med" as designated before). All this general
-field information is nevertheless also present in the respective "total" files. 
+field information is nevertheless also present in the respective "total" files.
 
 
 
@@ -823,7 +823,7 @@ directory "./". After running PRAIA, one should find:
                              to the 2-D Gaussian fitted area f the object
 
 1013384p_10.2mass.red.xy   - (x,y) of all measured objects in the field, (RA,DEC) reduction
-                             information (reference catalogue = original 2MASS) 
+                             information (reference catalogue = original 2MASS)
 
 1013384p_10.2mass.rmp.xy   - same as before, but reference catalogue = 2MASS corrected toward UCAC2
                              only by the tangent plane technique.
@@ -833,15 +833,15 @@ directory "./". After running PRAIA, one should find:
                              to all non-common 2MASS stars
 
 1013384p_10.ucac2.red.xy   - the same, with UCAC2 as the reference catalogue
- 
-    
+
+
 
     One can easely retrieve the measured (x,y)s and reference catalogue (RA,Dec)s from
 files "xy". The (x,y) are directly given. The reference catalogue (RA,DEC) positions for
 the CCD epoch (ie, corrected by proper motions) can be derived from the given observed
 (RA,Dec) reference star position and from the listed (O-C) residuals for each coordinate
 (see more tips about this below). This also holds for retrieving the star positions of the
-2MASS corrected versions.   
+2MASS corrected versions.
 
 
 
@@ -851,10 +851,10 @@ Output File Formats
 
 
 
-   The seeing estimated for the entire field comes from histogram statistics from the FWHM of 
+   The seeing estimated for the entire field comes from histogram statistics from the FWHM of
 the field stars (FWHM are individually given for each field star in the "xy" files). They can be
 easely retrieved for each field from the "photometry" files (1rst and 2nd columns give
-respectivelly the seeing and the standard-deviation in arcsecs, one field per line). 
+respectivelly the seeing and the standard-deviation in arcsecs, one field per line).
 
 
    Below, we give the file formats for the most important files which give the astrometric results.
@@ -888,7 +888,7 @@ Read format (identical for 2MASS* reductions and UCAC2 reductions):
 
 
 
-Note-1: Cols 03 and 04 are the measured (x,y)s 
+Note-1: Cols 03 and 04 are the measured (x,y)s
 Note-2: Cols 33, 34, 36, 37 allows retrieving the used reference catalogue (RA,DEC)s
 Note-3: Be aware that Cols 01 and 02 below are only present on files "total" - THEY
         DO NOT EXIST on "xy" FILES! Avoid column numbering mis-readings!
@@ -917,7 +917,7 @@ col 09 fumag2 = sky background magnitude based in 2MASS star J magnitudes,
                 converted to UCAC2 magnitudes by common 2MASS/UCAC2 stars
 
 col 10 xmgu   = UCAC2 star magnitude (if UCAC2 star)
-                
+
 col 11 cudmg  = object magnitude based in UCAC2 star magnitudes (PSF photometry)
 
 col 12 cudmg2 = object magnitude as in col 09
@@ -928,9 +928,9 @@ col 14 xmgj   = H magnitude 2MASS (if 2MASS star)
 
 col 15 xmgj   = K magnitude 2MASS (if 2MASS star)
 
-col 16 res2mg = error of object magnitude (UCAC2-based) 
+col 16 res2mg = error of object magnitude (UCAC2-based)
 
-col 17 resmg2 = error of object magnitude (2MASS/UCAC2-based as in col 09) 
+col 17 resmg2 = error of object magnitude (2MASS/UCAC2-based as in col 09)
 
 col 18 ermgj  = J magnitude error from 2MASS
 
@@ -957,7 +957,7 @@ col 27 erau   = standard error (RA) (arcsec) from variance-covariance matrix of 
                 (Eichorn & Willians, AJ, 1963)
 
 col 28 edeu   = same as before for DEC (arcsec)
-       
+
 
 col 29 alfsiu = mean error (RA) (arcsec) from (RA,Dec) reductions
                 (i.e., standard-deviation from the (O-C) residuals
@@ -986,7 +986,7 @@ col 36 ra     = target CCD right ascension (RA) (hours and fraction)
 
 col 37 de     = target CCD declination  (DEC) (degrees and fraction)
                 (if target is a reference star, the DEC catalogue position can be retrieved
-                 using the (O-C), ie, DEC_ref_cat = de - desiu 
+                 using the (O-C), ie, DEC_ref_cat = de - desiu
 
 
 col 38 iuth   = UT instant of exposition (hours)
@@ -1015,4 +1015,3 @@ col 49, 50 nx, ny = CCD or field size in pixels in x and y
 
 
 ***********************************************************************************
-

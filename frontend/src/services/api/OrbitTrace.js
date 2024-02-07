@@ -68,4 +68,3 @@ export const getPlotObservationByAsteroid = (name) => {
 }
 
 export const cancelOrbitTraceJobById = (id) => api.post(`/des/orbit_trace_job/${id}/cancel_job/`).then((res) => res.data)
-

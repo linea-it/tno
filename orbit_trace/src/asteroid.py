@@ -23,6 +23,7 @@ from external_inputs.jpl import get_bsp_from_jpl, findSPKID
 from occviz import occultation_path_coeff
 from typing import Optional
 
+
 def serialize(obj):
     """JSON serializer for objects not serializable by default json code"""
 
@@ -64,10 +65,10 @@ class Asteroid:
     name: str
     number: str
     alias: str
-    spkid: Optional[str]    
+    spkid: Optional[str]
     base_dynclass: str
     dynclass: str
-    path: pathlib.Path 
+    path: pathlib.Path
 
     ot_query_ccds: dict
     ot_theo_pos: dict
@@ -84,15 +85,9 @@ class Asteroid:
     messages: list
     exec_time: float
 
-    def __init__(
-        self,
-        name,
-        base_path,
-        log,
-        new_run=False
-    ):
+    def __init__(self, name, base_path, log, new_run=False):
 
-        self.__BASE_PATH = base_path        
+        self.__BASE_PATH = base_path
         self.set_log(log)
 
         # Status
@@ -101,7 +96,7 @@ class Asteroid:
         # 2 = Failure
         self.status = 0
 
-        # Instantiate Asteroid Data Access Object 
+        # Instantiate Asteroid Data Access Object
         self.__dao = AsteroidDao()
 
         # Query asteroid mpc data from tno portal asteroid table.
@@ -110,19 +105,19 @@ class Asteroid:
         # self.__log.debug(ast_data)
 
         # Remove o atributo ID (interno do portal)
-        ast_data.pop('id', None)
+        ast_data.pop("id", None)
 
-        # Guarda a lista de atributos do asteroid, para facilitar 
+        # Guarda a lista de atributos do asteroid, para facilitar
         # a criacao do dataframe de predicoes.
         self.__ast_data_columns = list(ast_data.keys())
 
         # Setando os astributos de identificação do asteroid.
-        self.name = ast_data['name']
-        self.number = str(ast_data['number'])
-        self.alias = ast_data['alias']
+        self.name = ast_data["name"]
+        self.number = str(ast_data["number"])
+        self.alias = ast_data["alias"]
         self.spkid = None
-        self.base_dynclass = ast_data['base_dynclass']
-        self.dynclass = ast_data['dynclass']
+        self.base_dynclass = ast_data["base_dynclass"]
+        self.dynclass = ast_data["dynclass"]
 
         # Adiciona todos os campos retornados na query
         # Como atributos da instancia dessa classe.
@@ -142,7 +137,7 @@ class Asteroid:
         if new_run:
             self.remove_previus_results(remove_inputs=True)
 
-        # Se existir arquivo json para o objeto carrega o seu conteudo 
+        # Se existir arquivo json para o objeto carrega o seu conteudo
         # Atualizando/Adicionando atributos na class.
         self.__log.info("Loading information from asteroid.json if it exists.")
         json_data = self.read_asteroid_json()
@@ -153,7 +148,6 @@ class Asteroid:
 
     def __getitem__(self, item):
         return self.__dict__[item]
-
 
     def to_dict(self):
         dcopy = self.__dict__.copy()
@@ -447,10 +441,7 @@ class Asteroid:
             orb_ele = dict()
 
             # Verificar insformações sobre Orbital Elements no Json
-            if (
-                self.orbital_elements
-                and "filename" in self.orbital_elements
-            ):
+            if self.orbital_elements and "filename" in self.orbital_elements:
                 # Já existe Informações de Orbital Elements
 
                 # Path para o arquivo
@@ -672,10 +663,7 @@ class Asteroid:
 
             observations = dict()
             # Verificar insformações sobre DES Observations no Json
-            if (
-                self.des_observations 
-                and "filename" in self.des_observations
-            ):
+            if self.des_observations and "filename" in self.des_observations:
                 # Já existe Informações
 
                 # Path para o arquivo
@@ -850,7 +838,7 @@ class Asteroid:
             # Remover valores como -- ou -
             df["ct"] = df["ct"].str.replace("--", "")
             df["f"] = df["f"].str.replace("-", "")
-       
+
             # Altera o nome das colunas
             df = df.rename(
                 columns={
@@ -874,55 +862,69 @@ class Asteroid:
 
             # Correcao de valores nao validos
             # Fix https://github.com/linea-it/tno_pipelines/issues/10.
-            df.loc[df['j_star'] == 50, 'j_star'] = None
-            df.loc[df['h_star'] == 50, 'h_star'] = None
-            df.loc[df['k_star'] == 50, 'k_star'] = None
+            df.loc[df["j_star"] == 50, "j_star"] = None
+            df.loc[df["h_star"] == 50, "h_star"] = None
+            df.loc[df["k_star"] == 50, "k_star"] = None
 
-            #-------------------------------------------------
-            # Coeff paths 
-            #-------------------------------------------------
+            # -------------------------------------------------
+            # Coeff paths
+            # -------------------------------------------------
             coeff_paths = []
 
-            # Para cada Ocultacao e necessario calcular o occultation path. 
+            # Para cada Ocultacao e necessario calcular o occultation path.
             for row in df.to_dict(orient="records"):
 
                 new_row = {
                     "have_path_coeff": False,
                     "occ_path_min_longitude": None,
-                    "occ_path_max_longitude":  None,
-                    "occ_path_min_latitude":  None,
-                    "occ_path_max_latitude":  None,   
-                    "occ_path_is_nightside":  None,
-                    "occ_path_coeff": {}
+                    "occ_path_max_longitude": None,
+                    "occ_path_min_latitude": None,
+                    "occ_path_max_latitude": None,
+                    "occ_path_is_nightside": None,
+                    "occ_path_coeff": {},
                 }
 
                 occ_coeff = occultation_path_coeff(
-                    date_time=dt.strptime(row['date_time'], '%Y-%m-%d %H:%M:%S').replace(tzinfo=timezone.utc).isoformat(), 
-                    ra_star_candidate=row['ra_star_candidate'],
-                    dec_star_candidate=row['dec_star_candidate'],
-                    closest_approach=row['closest_approach'], 
-                    position_angle=row['position_angle'], 
-                    velocity=row['velocity'], 
-                    delta_distance=row['delta'], 
-                    offset_ra=row['off_ra'], 
-                    offset_dec=row['off_dec'], 
-                    object_diameter=row.get('diameter', None), 
-                    ring_radius=None
+                    date_time=dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S")
+                    .replace(tzinfo=timezone.utc)
+                    .isoformat(),
+                    ra_star_candidate=row["ra_star_candidate"],
+                    dec_star_candidate=row["dec_star_candidate"],
+                    closest_approach=row["closest_approach"],
+                    position_angle=row["position_angle"],
+                    velocity=row["velocity"],
+                    delta_distance=row["delta"],
+                    offset_ra=row["off_ra"],
+                    offset_dec=row["off_dec"],
+                    object_diameter=row.get("diameter", None),
+                    ring_radius=None,
                 )
 
+                if (
+                    len(occ_coeff["coeff_latitude"]) > 0
+                    and len(occ_coeff["coeff_longitude"]) > 0
+                ):
+                    new_row.update(
+                        {
+                            "have_path_coeff": True,
+                            "occ_path_min_longitude": float(occ_coeff["min_longitude"])
+                            if occ_coeff["min_longitude"] != None
+                            else None,
+                            "occ_path_max_longitude": float(occ_coeff["max_longitude"])
+                            if occ_coeff["max_longitude"] != None
+                            else None,
+                            "occ_path_min_latitude": float(occ_coeff["min_latitude"])
+                            if occ_coeff["min_latitude"] != None
+                            else None,
+                            "occ_path_max_latitude": float(occ_coeff["max_latitude"])
+                            if occ_coeff["max_latitude"] != None
+                            else None,
+                            "occ_path_is_nightside": bool(occ_coeff["nightside"]),
+                            "occ_path_coeff": json.dumps(occ_coeff),
+                        }
+                    )
 
-                if len(occ_coeff['coeff_latitude']) > 0  and len(occ_coeff['coeff_longitude']) > 0:
-                    new_row.update({
-                        "have_path_coeff": True,
-                        "occ_path_min_longitude": float(occ_coeff['min_longitude']) if occ_coeff['min_longitude'] != None else None,
-                        "occ_path_max_longitude": float(occ_coeff['max_longitude']) if occ_coeff['max_longitude'] != None else None,
-                        "occ_path_min_latitude":  float(occ_coeff['min_latitude']) if occ_coeff['min_latitude'] != None else None,
-                        "occ_path_max_latitude":  float(occ_coeff['max_latitude']) if occ_coeff['max_latitude'] != None else None,   
-                        "occ_path_is_nightside":  bool(occ_coeff['nightside']),
-                        "occ_path_coeff": json.dumps(occ_coeff)
-                    })
-              
-                coeff_paths.append(new_row)        
+                coeff_paths.append(new_row)
 
             if len(coeff_paths) > 0:
                 df_coeff = pd.DataFrame.from_dict(coeff_paths)
@@ -936,7 +938,7 @@ class Asteroid:
                 df["occ_path_min_latitude"] = df_coeff["occ_path_min_latitude"]
 
                 del df_coeff
-            else:           
+            else:
                 df["have_path_coeff"] = False
                 df["occ_path_max_longitude"] = None
                 df["occ_path_min_longitude"] = None
@@ -945,40 +947,54 @@ class Asteroid:
                 df["occ_path_max_latitude"] = None
                 df["occ_path_min_latitude"] = None
 
-            #-------------------------------------------------
+            # -------------------------------------------------
             # MPC asteroid data used for prediction
-            #-------------------------------------------------
+            # -------------------------------------------------
             for column in self.__ast_data_columns:
                 df[column] = self.__dict__.get(column)
 
-            #-------------------------------------------------
+            # -------------------------------------------------
             # Provenance Fields
-            # Adiciona algumas informacoes de Proveniencia a cada evento de predicao                
-            #-------------------------------------------------
-            df["catalog"] = self.predict_occultation['catalog']
-            df["predict_step"] = self.predict_occultation['predict_step']
-            df["bsp_source"] = self.bsp_jpl['source']
-            df["obs_source"] = self.observations['source']
-            df["orb_ele_source"] = self.orbital_elements['source']
-            df["bsp_planetary"] = self.predict_occultation['bsp_planetary']
-            df["leap_seconds"] = self.predict_occultation['leap_seconds']
-            df["nima"] = self.predict_occultation['nima']
+            # Adiciona algumas informacoes de Proveniencia a cada evento de predicao
+            # -------------------------------------------------
+            df["catalog"] = self.predict_occultation["catalog"]
+            df["predict_step"] = self.predict_occultation["predict_step"]
+            df["bsp_source"] = self.bsp_jpl["source"]
+            df["obs_source"] = self.observations["source"]
+            df["orb_ele_source"] = self.orbital_elements["source"]
+            df["bsp_planetary"] = self.predict_occultation["bsp_planetary"]
+            df["leap_seconds"] = self.predict_occultation["leap_seconds"]
+            df["nima"] = self.predict_occultation["nima"]
             df["created_at"] = dt.now(tz=timezone.utc)
             df["job_id"] = jobid
 
-            #------------------------------------------------------
+            # ------------------------------------------------------
             # Colunas que aparentemente não esto sendo preenchidas
-            #------------------------------------------------------
+            # ------------------------------------------------------
             columns_for_future = [
-                'g_mag_vel_corrected', 'rp_mag_vel_corrected', 'h_mag_vel_corrected', 'magnitude_drop', 
-                'instant_uncertainty', 'ra_star_with_pm', 'dec_star_with_pm', 'ra_star_to_date', 
-                'dec_star_to_date', 'aparent_diameter', 'ra_target_apparent', 'dec_target_apparent', 
-                'e_ra_target', 'e_dec_target', 'apparent_magnitude', 'ephemeris_version', 'eccentricity', 
-                'perihelion', 'aphelion' 
+                "g_mag_vel_corrected",
+                "rp_mag_vel_corrected",
+                "h_mag_vel_corrected",
+                "magnitude_drop",
+                "instant_uncertainty",
+                "ra_star_with_pm",
+                "dec_star_with_pm",
+                "ra_star_to_date",
+                "dec_star_to_date",
+                "aparent_diameter",
+                "ra_target_apparent",
+                "dec_target_apparent",
+                "e_ra_target",
+                "e_dec_target",
+                "apparent_magnitude",
+                "ephemeris_version",
+                "eccentricity",
+                "perihelion",
+                "aphelion",
             ]
-            for column in  columns_for_future: 
+            for column in columns_for_future:
                 df[column] = None
-            
+
             # Altera a ordem das colunas para coincidir com a da tabela
             df = df.reindex(
                 columns=[
@@ -1035,24 +1051,24 @@ class Asteroid:
                     "ra_target_apparent",
                     "rp_mag_vel_corrected",
                     "semimajor_axis",
-                    "have_path_coeff", 
+                    "have_path_coeff",
                     "occ_path_max_longitude",
                     "occ_path_min_longitude",
                     "occ_path_coeff",
                     "occ_path_is_nightside",
                     "occ_path_max_latitude",
                     "occ_path_min_latitude",
-                    "base_dynclass", 
+                    "base_dynclass",
                     "bsp_planetary",
                     "bsp_source",
                     "catalog",
-                    "dynclass", 
+                    "dynclass",
                     "job_id",
-                    "leap_seconds", 
-                    "nima", 
+                    "leap_seconds",
+                    "nima",
                     "obs_source",
-                    "orb_ele_source", 
-                    "predict_step", 
+                    "orb_ele_source",
+                    "predict_step",
                     "albedo",
                     "albedo_err_max",
                     "albedo_err_min",
@@ -1127,7 +1143,7 @@ class Asteroid:
                     "exec_time": tdelta.total_seconds(),
                 }
             )
-            
+
             # Atualiza o Json do Asteroid
             self.write_asteroid_json()
 
@@ -1296,7 +1312,7 @@ class Asteroid:
             if self.status == 2:
                 a["status"] = 2
             else:
-                # Se nao foi marcado com erro ate aqui entao 
+                # Se nao foi marcado com erro ate aqui entao
                 # Pode ser considerado Sucesso!
                 self.set_success()
                 a["status"] = 1

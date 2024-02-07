@@ -2,10 +2,10 @@
 
 Configurar o Docker cliente da maquina host para aceitar comando no ip e porta configurado.
 
-Para o host local pode configurar só a porta, mais para ambientes de produção e testing tem que configurar para 
-aceitar apenas da rede do docker. 
+Para o host local pode configurar só a porta, mais para ambientes de produção e testing tem que configurar para
+aceitar apenas da rede do docker.
 
-Baseado no How to: 
+Baseado no How to:
 enable the remote API for dockerd: https://success.docker.com/article/how-do-i-enable-the-remote-api-for-dockerd
 
 Testado no Ubuntu
@@ -38,10 +38,10 @@ https://docker-py.readthedocs.io/en/stable/
 
 Exemplo:
 
-entrei em um container python qualquer e 
+entrei em um container python qualquer e
 instalei a biblioteca docker.
 
-tem que descobrir qual o ip da maquina host, dentro do container. 
+tem que descobrir qual o ip da maquina host, dentro do container.
 nesse caso era: 172.19.0.1
 
 para descobrir use este comando com o container ligado
@@ -52,11 +52,11 @@ docker inspect -f '{{range .NetworkSettings.Networks}}{{.Gateway}}{{end}}' <cont
 ```
 pip install docker
 ```
-executei do terminal python 
+executei do terminal python
 ```
 import docker
 client = docker.DockerClient(base_url='tcp://172.19.0.1:2376')
 client.containers.run('alpine', 'echo hello world')
 ```
 
-dessa forma eu consegui fazer um container criar outro no Host e executar. 
+dessa forma eu consegui fazer um container criar outro no Host e executar.

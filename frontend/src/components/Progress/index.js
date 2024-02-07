@@ -35,7 +35,7 @@ Progress.propTypes = {
   title: PropTypes.string,
   variant: PropTypes.string,
   total: PropTypes.number.isRequired,
-  current: PropTypes.number.isRequired  
+  current: PropTypes.number.isRequired
 }
 
 Progress.defaultProps = {

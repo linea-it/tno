@@ -16,10 +16,10 @@ function PublicBanner() {
         <Grid item xs={12} container className={classes.bannerWrapper}>
           <div className="container textBanner" style={{ borderRadius: '6px', width: '45vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' }}>
             <Grid item xs={12} className={classes.textOcultatiom}>
-              <label>This is a database of predictions for 
-                stellar occultations by small Solar System objects, calculated from the legacy positions 
-                provided by the Dark Energy Survey (DES) and the constantly updated positions from the 
-                Minor Planet Center (MPC). These predictions are regularly updated. Use our advanced filters 
+              <label>This is a database of predictions for
+                stellar occultations by small Solar System objects, calculated from the legacy positions
+                provided by the Dark Energy Survey (DES) and the constantly updated positions from the
+                Minor Planet Center (MPC). These predictions are regularly updated. Use our advanced filters
                 to refine your search and find more suitable events.
               </label>
             </Grid>

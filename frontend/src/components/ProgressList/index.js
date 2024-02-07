@@ -19,14 +19,14 @@ function ProgressList({ lista }) {
                   label={`teste`}
                   total={item.count}
                   current={item.current}
-                /> 
+                />
                 <label >{item.current}/{item.count}</label><br/>
                 <div>
                 <i className={classes.labelInfo}>Success: {item.success} / Failures: {item.failures}</i>
                 <i className={classes.labelTimes}>Average Time: {moment.utc(((item.average_time) * 1000)).format("HH:mm:ss")} / Estimated Time: {moment.utc(((item.time_estimate) * 1000)).format("HH:mm:ss")}</i>
-  
+
                 </div>
-                              
+
             </Grid>
         ))}
     </>
@@ -34,7 +34,7 @@ function ProgressList({ lista }) {
 }
 
 Progress.propTypes = {
-  lista: PropTypes.array, 
+  lista: PropTypes.array,
 }
 
 Progress.defaultProps = {

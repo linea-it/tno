@@ -40,7 +40,7 @@ function MonthlyForecast() {
                 </Typography>
                 <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '1rem' }}>
                     <strong>Next Month:</strong> {isLoading ? <Skeleton /> : data?.next_month_count}
-                </Typography>    
+                </Typography>
             </CardContent>
         </Card>
     )

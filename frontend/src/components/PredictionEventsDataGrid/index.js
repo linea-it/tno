@@ -58,7 +58,7 @@ export function PredictionEventsDataGrid() {
       sx={{minHeight: '500px'}}
       disableColumnFilter
       disableRowSelectionOnClick
-      getRowHeight={() => 75} 
+      getRowHeight={() => 75}
       // getRowHeight={() => 'auto'}
       // getEstimatedRowHeight={() => 48}
       pagination
@@ -105,7 +105,7 @@ export function PredictionEventsDataGrid() {
       }}
     />
     </CardContent>
-  </Card>    
+  </Card>
   );
 
 }

@@ -6,7 +6,7 @@ import AsteroidJobHistory from './AsteroidJobHistory'
 function AsteroidJob() {
 
 
-    return (   
+    return (
       <Grid container spacing={3}>
         <Grid item xs={12}>
             <Card>

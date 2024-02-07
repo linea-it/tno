@@ -1,4 +1,3 @@
-
 from django.db import models
 
 
@@ -37,10 +36,10 @@ class Asteroid(models.Model):
         help_text="",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
     # TODO: Renomear este campo, Impacto grande.
-    # 'skybot_dynbaseclass', 
+    # 'skybot_dynbaseclass',
     base_dynclass = models.CharField(
         max_length=35,
         verbose_name="Object's base dynamical classification as defined by Skybot",
@@ -63,7 +62,7 @@ class Asteroid(models.Model):
         db_index=True,
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     astorb_dynsubclass = models.CharField(
@@ -73,229 +72,229 @@ class Asteroid(models.Model):
         db_index=True,
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     h = models.FloatField(
-        verbose_name = "H",
+        verbose_name="H",
         help_text="Absolute magnitude",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     g = models.FloatField(
-        verbose_name = "G",
+        verbose_name="G",
         help_text="Phase slope parameter",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
-    
+
     epoch = models.FloatField(
-        verbose_name = "Epoch of the orbit",
+        verbose_name="Epoch of the orbit",
         help_text="Epoch of the orbit (Julian Date)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     semimajor_axis = models.FloatField(
-        verbose_name = "Semimajor axis",
+        verbose_name="Semimajor axis",
         help_text="Semimajor axis (AU)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     excentricity = models.FloatField(
-        verbose_name = "Excentricity",
+        verbose_name="Excentricity",
         help_text="Excentricity",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     inclination = models.FloatField(
-        verbose_name = "Inclination",
+        verbose_name="Inclination",
         help_text="Inclination (degres)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     long_asc_node = models.FloatField(
-        verbose_name = "Longitude of the ascending node",
+        verbose_name="Longitude of the ascending node",
         help_text="Longitude of the ascending node, J2000.0 (degrees)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     arg_perihelion = models.FloatField(
-        verbose_name = "Argument of perihelion",
+        verbose_name="Argument of perihelion",
         help_text="Argument of perihelion, J2000.0 (degrees)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     mean_anomaly = models.FloatField(
-        verbose_name = "Mean anomaly",
+        verbose_name="Mean anomaly",
         help_text="Mean anomaly at the epoch (degrees)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
-    
+
     mean_daily_motion = models.FloatField(
-        verbose_name = "Mean daily motion",
+        verbose_name="Mean daily motion",
         help_text="Mean daily motion (degrees/day)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     perihelion_dist = models.FloatField(
-        verbose_name = "Perihelion distance",
+        verbose_name="Perihelion distance",
         help_text="Perihelion distance (AU)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     aphelion_dist = models.FloatField(
-        verbose_name = "Aphelion distance",
+        verbose_name="Aphelion distance",
         help_text="Aphelion distance (AU)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     rms = models.FloatField(
-        verbose_name = "r.m.s. residual",
+        verbose_name="r.m.s. residual",
         help_text="r.m.s. residual of the fit (arcsec)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     last_obs_included = models.DateField(
-        verbose_name = "Date of last observation included",
+        verbose_name="Date of last observation included",
         help_text="Date of last observation included in MPC orbit solution (YYYY-MM-DD format)",
         null=True,
         blank=True,
-        default=None,        
+        default=None,
     )
 
     pha_flag = models.BooleanField(
-        verbose_name = "pha_flag",
+        verbose_name="pha_flag",
         help_text="Potentially Hazardous Asteroid Flag",
-        default=False
+        default=False,
     )
 
     mpc_critical_list = models.BooleanField(
-        verbose_name = "mpc_critical_list",
+        verbose_name="mpc_critical_list",
         help_text="Critical objects numbered on the MPC list are those whose orbits require improvement",
-        default=False
+        default=False,
     )
 
     albedo = models.FloatField(
-        verbose_name = "albedo",
+        verbose_name="albedo",
         help_text="Asteroid's surface reflectivity or brightness.",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     albedo_err_min = models.FloatField(
-        verbose_name = "albedo_err_min",
+        verbose_name="albedo_err_min",
         help_text="Albedo lower error",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     albedo_err_max = models.FloatField(
-        verbose_name = "albedo_err_max",
+        verbose_name="albedo_err_max",
         help_text="Albedo upper error",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     density = models.FloatField(
-        verbose_name = "density",
+        verbose_name="density",
         help_text="Density (kg/m^3)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     density_err_min = models.FloatField(
-        verbose_name = "density_err_min",
+        verbose_name="density_err_min",
         help_text="Density lower error (kg/m^3)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     density_err_max = models.FloatField(
-        verbose_name = "density_err_max",
+        verbose_name="density_err_max",
         help_text="Density upper error (kg/m^3)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     diameter = models.FloatField(
-        verbose_name = "diameter",
+        verbose_name="diameter",
         help_text="Diameter (km)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     diameter_err_min = models.FloatField(
-        verbose_name = "diameter_err_min",
+        verbose_name="diameter_err_min",
         help_text="Diameter lower error (km)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     diameter_err_max = models.FloatField(
-        verbose_name = "diameter_err_max",
+        verbose_name="diameter_err_max",
         help_text="Diameter upper error (km)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     mass = models.FloatField(
-        verbose_name = "mass",
+        verbose_name="mass",
         help_text="Mass (kg)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
 
     mass_err_min = models.FloatField(
-        verbose_name = "mass_err_min",
+        verbose_name="mass_err_min",
         help_text="Mass lower error (kg)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
-    
+
     mass_err_max = models.FloatField(
-        verbose_name = "mass_err_max",
+        verbose_name="mass_err_max",
         help_text="Mass upper error (kg)",
         null=True,
         blank=True,
-        default=None, 
+        default=None,
     )
- 
+
     def __str__(self):
         if self.number:
             return "%s (%s)" % (self.name, self.number)
@@ -303,5 +302,10 @@ class Asteroid(models.Model):
             return self.name
 
     def get_alias(self):
-        alias = self.name.replace(" ", "").replace("_", "").replace("-", "").replace("/", "")
+        alias = (
+            self.name.replace(" ", "")
+            .replace("_", "")
+            .replace("-", "")
+            .replace("/", "")
+        )
         return alias

@@ -52,22 +52,22 @@ function ClearDesDataPreparation() {
             </li>
             <li>
               <strong>Des Skybot Position:</strong> Todas as posições retornadas pelo skybot que estão dentro dos ccds do DES.
-            </li>                        
+            </li>
             <li>
               <strong>Skybot Position:</strong> Todas as posições retornadas pelo skybot.
             </li>
             <li>
               <strong>Des Skybot Summary by Dynclass:</strong>
-            </li>                        
+            </li>
             <li>
               <strong>Des Skybot by Dynclass:</strong>
-            </li>            
+            </li>
             <li>
               <strong>Des Skybot by Year:</strong>
             </li>
             <li>
               <strong>Observation:</strong> Posições encontradas pelo pipeline Orbit Trace.
-            </li>                   
+            </li>
           </ul>
           Após está operação será necessário:
           <ul>

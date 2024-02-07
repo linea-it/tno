@@ -70,7 +70,7 @@ const routes = [
   { path: '/dashboard/data-preparation/des/discovery', title: 'Skybot Discovery' },
   { path: '/dashboard/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
   { path: '/dashboard/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
-  { path: '/dashboard/data-preparation/des/statistics', title: 'Skybot Statistics' },  
+  { path: '/dashboard/data-preparation/des/statistics', title: 'Skybot Statistics' },
   { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
   { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
   { path: '/dashboard/prediction-of-occultation', title: 'Predict Occultation' },
@@ -82,7 +82,7 @@ const routes = [
   { path: '/dashboard/data-preparation/des/orbittrace-detail/:id', title: 'Orbit Trace Details' },
   { path: '/dashboard/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
   { path: '/dashboard/asteroid_job', title: 'Asteroid Job' },
-  { path: '/dashboard/asteroid_job/:id', title: 'Asteroid Job Detail' },  
+  { path: '/dashboard/asteroid_job/:id', title: 'Asteroid Job Detail' },
 ]
 
 const useCurrentPath = () => {
@@ -180,7 +180,7 @@ export default function PersistentDrawerLeft({ children }) {
               </ListItemButton>
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/statistics')}>
                 <ListItemText primary='Skybot Statistics' />
-              </ListItemButton>                            
+              </ListItemButton>
               <ListItemButton sx={{ pl: 4 }} onClick={() => navigate('/dashboard/data-preparation/des/orbittrace')}>
                 <ListItemText primary='Orbit Trace' />
               </ListItemButton>
@@ -204,7 +204,7 @@ export default function PersistentDrawerLeft({ children }) {
           </ListItemButton>
           <ListItemButton onClick={() => navigate('/dashboard/asteroid_job')}>
             <ListItemText primary='Asteroid Jobs' />
-          </ListItemButton>                    
+          </ListItemButton>
         </List>
       </Drawer>
       <Main open={open}>

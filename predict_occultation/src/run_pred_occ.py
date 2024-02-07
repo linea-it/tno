@@ -23,6 +23,7 @@ import shutil
 import tqdm
 import subprocess
 from dao import AsteroidDao
+
 try:
     from predict_occultation.app import run_pipeline
     from predict_occultation.parsl_config import get_config
@@ -46,6 +47,7 @@ class AbortError(Exception):
     def __str__(self):
         return str(self.message)
 
+
 def get_logger(path, filename="refine.log", debug=False):
     import logging
     import colorlog
@@ -59,7 +61,7 @@ def get_logger(path, filename="refine.log", debug=False):
     file_handler.setFormatter(formatter)
 
     # Stdout handler
-    consoleFormatter = colorlog.ColoredFormatter('%(log_color)s%(message)s')
+    consoleFormatter = colorlog.ColoredFormatter("%(log_color)s%(message)s")
     consoleHandler = colorlog.StreamHandler(sys.stdout)
     consoleHandler.setFormatter(consoleFormatter)
 
@@ -153,9 +155,11 @@ def predict_job_queue():
     # print("Deveria executar o job com ID: %s" % to_run.get("id"))
     run_job(to_run.get("id"))
 
+
 def write_job_file(path, data):
     with open(os.path.join(path, "job.json"), "w") as json_file:
         json.dump(data, json_file)
+
 
 def make_job_json_file(job, path):
     job_data = dict(
@@ -197,6 +201,7 @@ def make_job_json_file(job, path):
     write_job_file(path, job_data)
     update_job(job_data)
 
+
 def read_inputs(path, filename="job.json"):
     import os
     import json
@@ -205,6 +210,7 @@ def read_inputs(path, filename="job.json"):
         data = json.load(json_file)
 
     return data
+
 
 def remove_job_directory(jobid):
     # Apaga o diretorio usando rm pq o diretorio tem links simbolicos.
@@ -237,6 +243,7 @@ def get_job_path(jobid):
     print(f"Job Path: {job_path}")
     return job_path
 
+
 def retrieve_asteroids(type, values):
 
     dao = AsteroidDao()
@@ -252,10 +259,13 @@ def retrieve_asteroids(type, values):
 
     for asteroid in asteroids:
         asteroid.update(
-            {"status": "running",}
+            {
+                "status": "running",
+            }
         )
 
     return asteroids
+
 
 def rerun_job(jobid: int):
     """Apaga os dados no DB referente ao job e remove o diretorio.
@@ -389,7 +399,7 @@ def ingest_job_results(job_path, job_id):
             "ing_occ_exec_time",
             "calc_path_coeff_start",
             "calc_path_coeff_finish",
-            "calc_path_coeff_exec_time"
+            "calc_path_coeff_exec_time",
         ]
     )
 
@@ -619,9 +629,12 @@ def submit_tasks(jobid: int):
             PREDICT_END = PREDICT_END.replace(hour=23, minute=59, second=59)
         log.debug("Predict End Date: [%s]" % PREDICT_END)
 
-        job.update({
+        job.update(
+            {
                 "predict_start_date": str(PREDICT_START.date()),
-                "predict_end_date": str(PREDICT_END.date()),})
+                "predict_end_date": str(PREDICT_END.date()),
+            }
+        )
 
         PREDICT_STEP = int(job.get("predict_step", 600))
         log.debug("Predict Step: [%s]" % PREDICT_STEP)
@@ -633,7 +646,7 @@ def submit_tasks(jobid: int):
 
         LEAP_SECOND = job["leap_seconds"]["filename"]
         log.debug("LEAP_SECOND: [%s]" % LEAP_SECOND)
-       
+
         # Remove resultados e inputs de execuções anteriores
         # Durante o desenvolvimento é util não remover os inputs pois acelera o processamento
         # No uso normal é recomendado sempre regerar os inputs
@@ -651,11 +664,13 @@ def submit_tasks(jobid: int):
         log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
 
         # ======================= Generate dates file =======================
-        # Arquivo de datas pode ser o mesmo para todos os asteroids. 
-        # Executa o programa fortran geradata. 
+        # Arquivo de datas pode ser o mesmo para todos os asteroids.
+        # Executa o programa fortran geradata.
         # O arquivo de datas será copiado para cada asteroid.
         step_t0 = datetime.now(tz=timezone.utc)
-        dates_filepath = generate_dates_file(PREDICT_START, PREDICT_END, PREDICT_STEP, current_path.joinpath("dates.txt"))
+        dates_filepath = generate_dates_file(
+            PREDICT_START, PREDICT_END, PREDICT_STEP, current_path.joinpath("dates.txt")
+        )
         step_t1 = datetime.now(tz=timezone.utc)
         step_tdelta = step_t1 - step_t0
         log.debug(f"Dates file: [{dates_filepath.name}] created in {step_tdelta}")
@@ -730,7 +745,7 @@ def submit_tasks(jobid: int):
                 log=log,
                 # FORCE_REFRESH_INPUTS = TRUE  também serão removidos
                 # Remove Arquivos da execução anterior, inputs, resultados e logs
-                new_run=FORCE_REFRESH_INPUTS
+                new_run=FORCE_REFRESH_INPUTS,
             )
 
             # Remove Previus Results ----------------------------------
@@ -810,7 +825,7 @@ def submit_tasks(jobid: int):
                 step1_failures += 1
                 # Ignora as proximas etapas para este asteroid.
                 continue
-            
+
             step1_success += 1
             current_idx += 1
 
@@ -915,7 +930,9 @@ def submit_tasks(jobid: int):
                     else:
                         status = task.result()
 
-                    ast_obj = Asteroid(name=proc["name"], base_path=ASTEROID_PATH, log=log)
+                    ast_obj = Asteroid(
+                        name=proc["name"], base_path=ASTEROID_PATH, log=log
+                    )
 
                     step2_current_idx += 1
 
@@ -1177,7 +1194,6 @@ def complete_job(job, log, status):
     count_failures = int(l_status.count(2))
     occultations = int(df["ing_occ_count"].sum())
     ast_with_occ = int((df["ing_occ_count"] != 0).sum())
-     
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)
@@ -1214,30 +1230,36 @@ def complete_job(job, log, status):
         shutil.rmtree(asteroid_path)
         log.info("Directory of asteroids has been removed!")
 
-
     log.debug(f"Total Asteroids: [{job['count_asteroids']}]")
     log.debug(f"Asteroids Success: [{count_success}]")
     log.debug(f"Asteroids Failure: [{count_failures}]")
-    log.debug(f"Asteroids With Events: [{ast_with_occ}]")  
+    log.debug(f"Asteroids With Events: [{ast_with_occ}]")
     log.info(f"Predict Events: [{occultations}]")
 
     log.info("Execution Time: %s" % tdelta)
     log.info("Predict Occultation is done!.")
 
-def generate_dates_file(start_date: str, final_date: str, step: int, filepath: pathlib.Path):
-    
+
+def generate_dates_file(
+    start_date: str, final_date: str, step: int, filepath: pathlib.Path
+):
+
     original_path = os.getcwd()
 
     try:
         # Altera o path de execução
-        # A raiz agora é o path passado como parametro.        
-        pipeline_path = os.getenv("PIPELINE_PATH", "/app/src/predict_occultation/pipeline").rstrip('/')
+        # A raiz agora é o path passado como parametro.
+        pipeline_path = os.getenv(
+            "PIPELINE_PATH", "/app/src/predict_occultation/pipeline"
+        ).rstrip("/")
         os.chdir(pipeline_path)
 
-        with open(filepath, 'w') as fp:
+        with open(filepath, "w") as fp:
             parameters = [start_date, final_date, step]
-            strParameters = '\n'.join(map(str, parameters))
-            p = subprocess.Popen('geradata', stdin=subprocess.PIPE, stdout=fp, shell=True)
+            strParameters = "\n".join(map(str, parameters))
+            p = subprocess.Popen(
+                "geradata", stdin=subprocess.PIPE, stdout=fp, shell=True
+            )
             p.communicate(str.encode(strParameters))
 
         if filepath.exists():

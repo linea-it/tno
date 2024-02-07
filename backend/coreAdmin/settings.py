@@ -175,15 +175,14 @@ DATABASES = {
         # IF Need Schema
         # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
     },
-    'catalog': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'database',
-        'PORT': 5432,
-    }, 
-  
+    "catalog": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": "postgres",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "database",
+        "PORT": 5432,
+    },
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -247,7 +246,7 @@ REST_FRAMEWORK = {
     ),
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     # https://www.django-rest-framework.org/api-guide/relations/#select-field-cutoffs
-    "HTML_SELECT_CUTOFF": 50
+    "HTML_SELECT_CUTOFF": 50,
 }
 
 # CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
@@ -277,8 +276,10 @@ if DES_ARCHIVE_URL is not None:
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
-CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost")
-CELERY_RESULT_BACKEND = 'django-db'
+CELERY_BROKER_URL = os.getenv(
+    "CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost"
+)
+CELERY_RESULT_BACKEND = "django-db"
 
 # Autenticacao com Shibboleth desativada por padrão
 SHIBBOLETH_ENABLED = False
@@ -374,7 +375,7 @@ LOGGING = {
             "backupCount": 5,
             "filename": os.path.join(LOG_DIR, "garbage_collector.log"),
             "formatter": "standard",
-        }, 
+        },
         "predict_maps": {
             "level": LOGGING_LEVEL,
             "class": "logging.handlers.RotatingFileHandler",
@@ -390,7 +391,7 @@ LOGGING = {
             "backupCount": 5,
             "filename": os.path.join(LOG_DIR, "predict_events.log"),
             "formatter": "standard",
-        },                        
+        },
     },
     "loggers": {
         "django": {
@@ -427,16 +428,16 @@ LOGGING = {
             "handlers": ["garbage_collector"],
             "level": LOGGING_LEVEL,
             "propagate": False,
-        },        
+        },
         "predict_maps": {
             "handlers": ["predict_maps"],
             "level": LOGGING_LEVEL,
             "propagate": False,
-        },        
+        },
         "predict_events": {
             "handlers": ["predict_events"],
             "level": LOGGING_LEVEL,
             "propagate": False,
-        },        
+        },
     },
 }

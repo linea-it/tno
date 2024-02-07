@@ -34,8 +34,8 @@ export default function Mapsdata() {
           titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color:'#4f4e4e'}}
       />
       <CardContent>
-        <Typography 
-          variant="h3" 
+        <Typography
+          variant="h3"
           sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '20px', color: '#4dabf5' }}>
           {isLoading ? ( <Skeleton /> ) : (data?.maps_stats.total_count)}
         </Typography>
@@ -47,9 +47,9 @@ export default function Mapsdata() {
         {isLoading ? (
           <></>
           ) : (
-              <UsagePlot 
-              maxSize={data?.maps_stats.folder_max_size} 
-              used={data?.maps_stats.total_size} />            
+              <UsagePlot
+              maxSize={data?.maps_stats.folder_max_size}
+              used={data?.maps_stats.total_size} />
           )}
       </CardContent>
     </Card>

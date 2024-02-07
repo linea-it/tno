@@ -89,7 +89,7 @@ function OrbitTraceDetail() {
     {
       name: 'error',
       title: 'Messages',
-      width: 720            
+      width: 720
     },
   ]
 
@@ -167,7 +167,7 @@ function OrbitTraceDetail() {
     const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
-    
+
     getOrbitTraceResultByJobId({ id, page, pageSize, ordering }, true).then((res) => {
       setTableData(res.results)
       setTotalCount(res.count);
@@ -358,8 +358,8 @@ function OrbitTraceDetail() {
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
               <ProgressList
-                lista={progress}    
-              /> 
+                lista={progress}
+              />
               {orbitTraceJob.status == 1 && progress.length == 0 ? (
                 <CircularProgress className={classes.circularProgress} disableShrink size={50} />
               ) : null}
@@ -410,7 +410,7 @@ function OrbitTraceDetail() {
               <CardHeader title='Asteroid Results' />
               <CardContent>
                 <Table
-                
+
                   columns={tableColumns}
                   data={tableData}
                   loadData={loadDataSuccess}

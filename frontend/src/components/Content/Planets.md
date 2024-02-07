@@ -1,6 +1,6 @@
 # Planets of the Solar System
 
-Each planet in our solar system has unique characteristics and atmospheres. 
+Each planet in our solar system has unique characteristics and atmospheres.
 
 ## The Planets
 1. **Mercury**: The smallest and closest to the Sun.

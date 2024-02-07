@@ -105,11 +105,8 @@ publicar no ducker hub
 obs: para saber o image_id de um docker images
    docker tag image_id   mozaru/carto-sora:latest
    docker tag 265bfe59c9b6 mozaru/carto-sora:latest
-   
+
 4. enviar
     docker push mozaru/carto-sora:latest
 
 https://github.com/linea-it/tno
-   
-
-

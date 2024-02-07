@@ -11,7 +11,8 @@ from sqlalchemy import exc as sa_exc
 class MissingDBURIException(Exception):
     pass
 
-class DBBase():
+
+class DBBase:
 
     con = None
 
@@ -23,22 +24,20 @@ class DBBase():
 
         # DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
         try:
-            db_uri = os.environ['DB_URI_ADMIN']
+            db_uri = os.environ["DB_URI_ADMIN"]
             return db_uri
         except:
             raise MissingDBURIException(
                 "Required environment variable with URI to access the database."
-                "example DB_URI_ADMIN=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME")
+                "example DB_URI_ADMIN=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
+            )
 
     def get_db_engine(self):
         # Carrega as variaveis de configuração do arquivo config.ini
         config = configparser.ConfigParser()
-        config.read(os.path.join(os.environ['EXECUTION_PATH'], 'config.ini'))
+        config.read(os.path.join(os.environ["EXECUTION_PATH"], "config.ini"))
 
-        engine = create_engine(
-            self.get_db_uri(),
-            poolclass=NullPool
-        )
+        engine = create_engine(self.get_db_uri(), poolclass=NullPool)
 
         return engine
 
@@ -55,8 +54,7 @@ class DBBase():
             warnings.simplefilter("ignore", category=sa_exc.SAWarning)
 
             engine = self.get_db_engine()
-            tbl = Table(
-                tablename, MetaData(engine), autoload=True, schema=schema)
+            tbl = Table(tablename, MetaData(engine), autoload=True, schema=schema)
             return tbl
 
     def fetch_all_dict(self, stm):
@@ -93,7 +91,7 @@ class DBBase():
 
     def get_job_by_id(self, id):
 
-        tbl = self.get_table(tablename='des_astrometryjob')
+        tbl = self.get_table(tablename="des_astrometryjob")
         stm = select(tbl.c).where(and_(tbl.c.id == int(id)))
 
         return self.fetch_one_dict(stm)
@@ -102,12 +100,12 @@ class DBBase():
         """
             This method is recommended for importing large volumes of data. using the postgresql COPY method.
 
-            The method is useful to handle all the parameters that PostgreSQL makes available 
+            The method is useful to handle all the parameters that PostgreSQL makes available
             in COPY statement: https://www.postgresql.org/docs/current/sql-copy.html
 
             it is necessary that the from clause is reading from STDIN.
 
-            example: 
+            example:
             sql = COPY <table> (<columns) FROM STDIN with (FORMAT CSV, DELIMITER '|', HEADER);
 
             Parameters:
@@ -116,7 +114,7 @@ class DBBase():
             Returns:
                 rowcount (int):  the number of rows that the last execute*() produced (for DQL statements like SELECT) or affected (for DML statements like UPDATE or INSERT)
 
-        References: 
+        References:
             https://www.psycopg.org/docs/cursor.html#cursor.copy_from
             https://stackoverflow.com/questions/30050097/copy-data-from-csv-to-postgresql-using-python
             https://stackoverflow.com/questions/13125236/sqlalchemy-psycopg2-and-postgresql-copy

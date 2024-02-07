@@ -8,5 +8,3 @@ class OrbitTraceJobStatusViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OrbitTraceJobStatusSerializer
     ordering_fields = ("job_id", "step")
     ordering = ("job_id", "step")
-
-

@@ -42,7 +42,7 @@ function WeeklyForecast() {
                     <strong>This Week:</strong> {isLoading ? <Skeleton /> : data?.week_count}
                 </Typography>
                 <Typography variant="body2"  sx={{ margin: '5px 0', fontSize: '1rem' }}>
-                    <strong>Next Week:</strong> {isLoading ? <Skeleton /> : data?.next_week_count}    
+                    <strong>Next Week:</strong> {isLoading ? <Skeleton /> : data?.next_week_count}
                 </Typography>
             </CardContent>
         </Card>

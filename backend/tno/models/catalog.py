@@ -3,8 +3,7 @@ from django.db import models
 
 class Catalog(models.Model):
     name = models.CharField(max_length=128, verbose_name="Internal Name")
-    display_name = models.CharField(
-        max_length=128, verbose_name="Display Name")
+    display_name = models.CharField(max_length=128, verbose_name="Display Name")
     database = models.CharField(
         max_length=128,
         verbose_name="Database",

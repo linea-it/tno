@@ -11,7 +11,7 @@ function DesManagement() {
       <Grid container spacing={2} alignItems='stretch'>
         <Grid item xs={12} md={6} lg={4}>
           <ClearDesDataPreparation></ClearDesDataPreparation>
-        </Grid>  
+        </Grid>
         <Grid item xs={12} md={6} lg={4}>
           <SubmitSkybotJobs></SubmitSkybotJobs>
         </Grid>

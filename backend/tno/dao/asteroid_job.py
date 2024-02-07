@@ -29,42 +29,34 @@ class AsteroidJobDao(DBBase):
     def count(self):
         return self.get_count(self.get_tbl())
 
-    def insert(self,
-               asteroids_before, 
-               path, 
-               ):
+    def insert(
+        self,
+        asteroids_before,
+        path,
+    ):
 
         insert_stm = insert(self.tbl).values(
-            status=2, 
-            start = datetime.now(tz=timezone.utc), 
-            asteroids_before=asteroids_before, 
+            status=2,
+            start=datetime.now(tz=timezone.utc),
+            asteroids_before=asteroids_before,
             asteroids_after=None,
-            path=path 
+            path=path,
         )
 
         result = self.execute(insert_stm)
         row = result.inserted_primary_key
         return row.id
 
-    def update(self,
-            id,
-            **kwargs
-        ):
+    def update(self, id, **kwargs):
 
-        update_stm = (
-            update(self.tbl)
-            .where(self.tbl.c.id == id)
-            .values(**kwargs)
-        )
+        update_stm = update(self.tbl).where(self.tbl.c.id == id).values(**kwargs)
 
         self.execute(update_stm)
 
-
-    def delete_all(self):      
+    def delete_all(self):
         # ! Deleta todos os registros na TNO_Occultations
 
         tbl = self.get_tbl()
         stm = delete(tbl)
 
         return self.execute(stm)
-    

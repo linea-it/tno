@@ -26,7 +26,7 @@ from des.views import (
     OrbitTraceJobViewSet,
     OrbitTraceJobResultViewSet,
     SummaryDynclassViewSet,
-    ObservationViewSet
+    ObservationViewSet,
 )
 from django.conf import settings
 from django.conf.urls.static import static
@@ -36,7 +36,17 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
 from skybot.views import PositionViewSet
-from tno.views import AsteroidJobViewSet, AsteroidViewSet, UserViewSet, OccultationViewSet, LeapSecondViewSet, BspPlanetaryViewSet, CatalogViewSet, PredictionJobViewSet, PredictionJobResultViewSet
+from tno.views import (
+    AsteroidJobViewSet,
+    AsteroidViewSet,
+    UserViewSet,
+    OccultationViewSet,
+    LeapSecondViewSet,
+    BspPlanetaryViewSet,
+    CatalogViewSet,
+    PredictionJobViewSet,
+    PredictionJobResultViewSet,
+)
 
 router = DefaultRouter()
 router.register(r"users", UserViewSet)
@@ -54,7 +64,6 @@ router.register(r"des/summary_dynclass", SummaryDynclassViewSet)
 router.register(r"des/dashboard/skybot_by_year", SkybotByYearViewSet)
 router.register(r"des/dashboard/skybot_by_dynclass", SkybotByDynclassViewSet)
 router.register(r"des/observation", ObservationViewSet)
-
 
 
 router.register(r"skybot/position", PositionViewSet)

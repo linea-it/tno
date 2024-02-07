@@ -671,7 +671,7 @@ def submit_tasks(jobid: int):
                 log=log,
                 # FORCE_REFRESH_INPUTS = TRUE  também serão removidos
                 # Remove Arquivos da execução anterior, inputs, resultados e logs
-                new_run=FORCE_REFRESH_INPUTS
+                new_run=FORCE_REFRESH_INPUTS,
             )
 
             # Remove Previus Results ----------------------------------
@@ -852,7 +852,9 @@ def submit_tasks(jobid: int):
                     else:
                         status = task.result()
 
-                    ast_obj = Asteroid(name=proc["name"], base_path=ASTEROID_PATH, log=log)
+                    ast_obj = Asteroid(
+                        name=proc["name"], base_path=ASTEROID_PATH, log=log
+                    )
 
                     step2_current_idx += 1
 
@@ -1111,7 +1113,6 @@ def complete_job(job, log, status):
     count_failures = int(l_status.count(2))
     occultations = int(df["ing_occ_count"].sum())
     ast_with_occ = int((df["ing_occ_count"] != 0).sum())
-     
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)
@@ -1148,11 +1149,10 @@ def complete_job(job, log, status):
         shutil.rmtree(asteroid_path)
         log.info("Directory of asteroids has been removed!")
 
-
     log.debug(f"Total Asteroids: [{job['count_asteroids']}]")
     log.debug(f"Asteroids Success: [{count_success}]")
     log.debug(f"Asteroids Failure: [{count_failures}]")
-    log.debug(f"Asteroids With Events: [{ast_with_occ}]")  
+    log.debug(f"Asteroids With Events: [{ast_with_occ}]")
     log.info(f"Predict Events: [{occultations}]")
 
     log.info("Execution Time: %s" % tdelta)

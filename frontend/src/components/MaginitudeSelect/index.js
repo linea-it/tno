@@ -46,4 +46,3 @@ MaginitudeSelect.propTypes = {
 };
 
 export default MaginitudeSelect
-

@@ -1,4 +1,3 @@
-
 import json
 import os
 import threading
@@ -19,21 +18,27 @@ from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+
 class OrbitTraceJobResultFilter(django_filters.FilterSet):
-    job = django_filters.NumberFilter(field_name='job__id', lookup_expr='exact')
-    status = django_filters.CharFilter(field_name='status', lookup_expr='exact')
+    job = django_filters.NumberFilter(field_name="job__id", lookup_expr="exact")
+    status = django_filters.CharFilter(field_name="status", lookup_expr="exact")
+
     class Meta:
         model = OrbitTraceJobResult
-        fields = ['job', 'status']
+        fields = ["job", "status"]
 
-class OrbitTraceJobResultViewSet(
-    viewsets.ReadOnlyModelViewSet
-):
-    
+
+class OrbitTraceJobResultViewSet(viewsets.ReadOnlyModelViewSet):
+
     queryset = OrbitTraceJobResult.objects.all()
     serializer_class = OrbitTraceJobResultSerializer
     filterset_class = OrbitTraceJobResultFilter
-    ordering_fields = ("name", "number", "base_dynclass", "dynclass", "observations", "ccds")
-    ordering = ("name",)   
-
-
+    ordering_fields = (
+        "name",
+        "number",
+        "base_dynclass",
+        "dynclass",
+        "observations",
+        "ccds",
+    )
+    ordering = ("name",)

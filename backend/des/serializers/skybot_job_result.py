@@ -13,13 +13,9 @@ class SkybotJobResultSerializer(serializers.ModelSerializer):
     #     queryset=Exposure.objects.all(), many=False
     # )
 
-    job = serializers.PrimaryKeyRelatedField(
-        read_only=True
-    )
+    job = serializers.PrimaryKeyRelatedField(read_only=True)
 
-    exposure = serializers.PrimaryKeyRelatedField(
-        read_only=True
-    )
+    exposure = serializers.PrimaryKeyRelatedField(read_only=True)
 
     ticket = serializers.SerializerMethodField()
 

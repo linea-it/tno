@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   padDropBox:{
     paddingTop:'2px',
     paddingBottom:'2px'
-  },  
+  },
   loadingPlot:{
     margin: '150px auto',
   },

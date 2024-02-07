@@ -1,8 +1,8 @@
-
 from django.conf import settings
 from django.db import models
 
-class AsteroidJob (models.Model):
+
+class AsteroidJob(models.Model):
 
     # Status da execução.
     status = models.IntegerField(
@@ -45,7 +45,7 @@ class AsteroidJob (models.Model):
         help_text="Total asteroids após a execução",
         default=None,
         null=True,
-        blank=True
+        blank=True,
     )
 
     new_records = models.IntegerField(
@@ -53,7 +53,7 @@ class AsteroidJob (models.Model):
         help_text="Quantidade de registros adicionados ou removidos em relação a execução anterior.",
         default=None,
         null=True,
-        blank=True
+        blank=True,
     )
 
     # Pasta onde estão os dados do Job.
@@ -62,13 +62,12 @@ class AsteroidJob (models.Model):
         help_text="Path to the directory where the job data is located.",
         max_length=2048,
         null=True,
-        blank=True
+        blank=True,
     )
 
     error = models.TextField(verbose_name="Error", null=True, blank=True)
 
-    traceback = models.TextField(
-        verbose_name="Traceback", null=True, blank=True)
+    traceback = models.TextField(verbose_name="Traceback", null=True, blank=True)
 
     def __str__(self):
         return str(self.id)

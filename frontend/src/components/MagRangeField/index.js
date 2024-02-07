@@ -37,4 +37,3 @@ MagRangeField.propTypes = {
 };
 
 export default MagRangeField
-

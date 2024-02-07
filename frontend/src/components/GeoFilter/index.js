@@ -175,4 +175,3 @@ GeoFilter.propTypes = {
 };
 
 export default GeoFilter
-

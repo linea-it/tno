@@ -35,14 +35,14 @@ def get_config(key):
                 min_blocks=3,
                 max_blocks=12,
                 parallelism=1,
-                walltime='15:00:00',
+                walltime="15:00:00",
                 worker_init=f'source {"/".join([slurm_dir, "cluster.sh"])}\n',
                 channel=SSHChannel(
                     hostname="loginapl01",
                     username="app.tno",
                     key_filename=sshkey,
                     script_dir=f'{"/".join([slurm_dir, "script_dir"])}',
-                )
+                ),
             ),
         ),
         "local": HighThroughputExecutor(

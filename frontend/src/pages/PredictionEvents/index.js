@@ -9,7 +9,7 @@ function PredictionEvents() {
 
 
     return (
-    
+
     <Grid>
       <Grid container spacing={3}>
         <Grid item xs={12}>
@@ -21,7 +21,7 @@ function PredictionEvents() {
         </Grid>
         <Grid item xs={12}>
           <PredictionEventsDataGrid />
-        </Grid>        
+        </Grid>
       </Grid>
     </Grid>
   )

@@ -4,33 +4,34 @@ import pathlib
 from datetime import datetime, timezone
 
 from external_inputs.jpl import get_bsp_from_jpl
-from external_inputs.mpc import (generate_resumed_orbital_elements,
-                                 get_mpc_observations,
-                                 get_mpc_orbital_elements)
-from external_inputs.astdys import (
-    get_astdys_orbital_elements, get_astdys_observations)
+from external_inputs.mpc import (
+    generate_resumed_orbital_elements,
+    get_mpc_observations,
+    get_mpc_orbital_elements,
+)
+from external_inputs.astdys import get_astdys_orbital_elements, get_astdys_observations
 
 
-class AsteroidExternalInputs():
+class AsteroidExternalInputs:
 
-    BSP_START_PERIOD = '2012-01-01'
+    BSP_START_PERIOD = "2012-01-01"
     BSP_YEARS_AHEAD = 1
     BSP_YEARS_BEHIND = 1
     BSP_DAYS_TO_EXPIRE = 60
     MPC_DAYS_TO_EXPIRE = 30
 
     # Email utilizado para baixar os BSP do JPL
-    JPL_EMAIL = 'sso-portal@linea.gov.br'
+    JPL_EMAIL = "sso-portal@linea.gov.br"
 
     def __init__(self, name, asteroid_path, number=None, logname="refine"):
 
         self.name = name
 
         self.number = None
-        if number is not None and number != '-' and number != '':
+        if number is not None and number != "-" and number != "":
             self.number = str(number)
 
-        self.alias = name.replace(' ', '')
+        self.alias = name.replace(" ", "")
 
         self.log = logging.getLogger(logname)
 
@@ -39,25 +40,25 @@ class AsteroidExternalInputs():
         self.path = asteroid_path
 
     def get_bsp_path(self):
-        filename = '{}.bsp'.format(self.alias)
+        filename = "{}.bsp".format(self.alias)
         filepath = self.path.joinpath(filename)
 
         return filepath
 
     def get_orbital_elements_path(self, source):
-        if source == 'AstDys':
-            filename = '{}.eq0'.format(self.alias)
+        if source == "AstDys":
+            filename = "{}.eq0".format(self.alias)
         else:
-            filename = '{}.eqm'.format(self.alias)
+            filename = "{}.eqm".format(self.alias)
         filepath = self.path.joinpath(filename)
 
         return filepath
 
     def get_observations_path(self, source):
-        if source == 'AstDys':
-            filename = '{}.rwo'.format(self.alias)
+        if source == "AstDys":
+            filename = "{}.rwo".format(self.alias)
         else:
-            filename = '{}.rwm'.format(self.alias)
+            filename = "{}.rwm".format(self.alias)
 
         filepath = self.path.joinpath(filename)
 
@@ -149,22 +150,18 @@ class AsteroidExternalInputs():
 
         t0 = datetime.now(tz=timezone.utc)
 
-        fpath = self.get_orbital_elements_path(source='MPC')
+        fpath = self.get_orbital_elements_path(source="MPC")
         if fpath.exists() and force is True:
             fpath.unlink()
 
         fpath = get_mpc_orbital_elements(
-            name=self.name,
-            number=self.number,
-            output_path=self.path
+            name=self.name, number=self.number, output_path=self.path
         )
 
         if fpath is not None:
 
             eqm_path = generate_resumed_orbital_elements(
-                name=self.name,
-                input_file=fpath,
-                output_path=self.path
+                name=self.name, input_file=fpath, output_path=self.path
             )
             # Remove o arquivo Json que foi baixado
             fpath.unlink()
@@ -174,15 +171,17 @@ class AsteroidExternalInputs():
 
             self.log.info("Orbital Elements Downloaded in %s" % tdelta)
 
-            data = dict({
-                'source': 'MPC',
-                'filename': eqm_path.name,
-                'size': eqm_path.stat().st_size,
-                'dw_start': t0.isoformat(),
-                'dw_finish': t1.isoformat(),
-                'dw_time': tdelta.total_seconds(),
-                'downloaded_in_this_run': True,
-            })
+            data = dict(
+                {
+                    "source": "MPC",
+                    "filename": eqm_path.name,
+                    "size": eqm_path.stat().st_size,
+                    "dw_start": t0.isoformat(),
+                    "dw_finish": t1.isoformat(),
+                    "dw_time": tdelta.total_seconds(),
+                    "downloaded_in_this_run": True,
+                }
+            )
 
             return data
         else:
@@ -199,9 +198,7 @@ class AsteroidExternalInputs():
         t0 = datetime.now(tz=timezone.utc)
 
         fpath = get_mpc_observations(
-            name=self.name,
-            number=self.number,
-            output_path=self.path
+            name=self.name, number=self.number, output_path=self.path
         )
 
         t1 = datetime.now(tz=timezone.utc)
@@ -209,31 +206,31 @@ class AsteroidExternalInputs():
 
         self.log.info("MPC Observations Downloaded in %s" % tdelta)
 
-        data = dict({
-            'source': 'MPC',
-            'filename': fpath.name,
-            'size': fpath.stat().st_size,
-            'dw_start': t0.isoformat(),
-            'dw_finish': t1.isoformat(),
-            'dw_time': tdelta.total_seconds(),
-            'downloaded_in_this_run': True
-        })
+        data = dict(
+            {
+                "source": "MPC",
+                "filename": fpath.name,
+                "size": fpath.stat().st_size,
+                "dw_start": t0.isoformat(),
+                "dw_finish": t1.isoformat(),
+                "dw_time": tdelta.total_seconds(),
+                "downloaded_in_this_run": True,
+            }
+        )
 
         return data
 
     def download_astdys_orbital_elements(self, force=False):
         self.log.debug("Retriving AstDys Orbital Elements started")
 
-        fpath = self.get_orbital_elements_path(source='AstDys')
+        fpath = self.get_orbital_elements_path(source="AstDys")
         if fpath.exists() and force is True:
             fpath.unlink()
 
         t0 = datetime.now(tz=timezone.utc)
 
         fpath = get_astdys_orbital_elements(
-            name=self.name,
-            number=self.number,
-            output_path=self.path
+            name=self.name, number=self.number, output_path=self.path
         )
 
         if fpath is not None:
@@ -243,15 +240,17 @@ class AsteroidExternalInputs():
 
             self.log.info("Orbital Elements Downloaded in %s" % tdelta)
 
-            data = dict({
-                'source': 'AstDys',
-                'filename': fpath.name,
-                'size': fpath.stat().st_size,
-                'dw_start': t0.isoformat(),
-                'dw_finish': t1.isoformat(),
-                'dw_time': tdelta.total_seconds(),
-                'downloaded_in_this_run': True,
-            })
+            data = dict(
+                {
+                    "source": "AstDys",
+                    "filename": fpath.name,
+                    "size": fpath.stat().st_size,
+                    "dw_start": t0.isoformat(),
+                    "dw_finish": t1.isoformat(),
+                    "dw_time": tdelta.total_seconds(),
+                    "downloaded_in_this_run": True,
+                }
+            )
 
             return data
         else:
@@ -261,16 +260,14 @@ class AsteroidExternalInputs():
 
         self.log.debug("Retriving AstDys Observations started")
 
-        fpath = self.get_observations_path(source='AstDys')
+        fpath = self.get_observations_path(source="AstDys")
         if fpath.exists() and force is True:
             fpath.unlink()
 
         t0 = datetime.now(tz=timezone.utc)
 
         fpath = get_astdys_observations(
-            name=self.name,
-            number=self.number,
-            output_path=self.path
+            name=self.name, number=self.number, output_path=self.path
         )
 
         t1 = datetime.now(tz=timezone.utc)
@@ -278,15 +275,17 @@ class AsteroidExternalInputs():
 
         self.log.info("AstDys Observations Downloaded in %s" % tdelta)
         if fpath is not None:
-            data = dict({
-                'source': 'AstDys',
-                'filename': fpath.name,
-                'size': fpath.stat().st_size,
-                'dw_start': t0.isoformat(),
-                'dw_finish': t1.isoformat(),
-                'dw_time': tdelta.total_seconds(),
-                'downloaded_in_this_run': True
-            })
+            data = dict(
+                {
+                    "source": "AstDys",
+                    "filename": fpath.name,
+                    "size": fpath.stat().st_size,
+                    "dw_start": t0.isoformat(),
+                    "dw_finish": t1.isoformat(),
+                    "dw_time": tdelta.total_seconds(),
+                    "downloaded_in_this_run": True,
+                }
+            )
 
             return data
         else:

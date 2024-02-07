@@ -6,19 +6,19 @@ import subprocess
 
 def generate_dates_file(start_date, final_date, step, filename):
 
-    app_path = os.environ.get("APP_PATH").rstrip('/')
-    data_dir = os.environ.get("DIR_DATA").rstrip('/')
+    app_path = os.environ.get("APP_PATH").rstrip("/")
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
     output = os.path.join(data_dir, filename)
 
-    with open(output, 'w') as fp:
+    with open(output, "w") as fp:
 
         parameters = [start_date, final_date, step]
-        strParameters = '\n'.join(map(str, parameters))
+        strParameters = "\n".join(map(str, parameters))
         # p = subprocess.Popen('./geradata', stdin=subprocess.PIPE, stdout=fp)
-        p = subprocess.Popen('geradata', stdin=subprocess.PIPE, stdout=fp)
+        p = subprocess.Popen("geradata", stdin=subprocess.PIPE, stdout=fp)
         p.communicate(strParameters)
 
-    os.chmod(output, 0664)
+    os.chmod(output, 766)
 
     if os.path.exists(output):
 

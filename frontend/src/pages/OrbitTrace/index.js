@@ -509,7 +509,7 @@ function OrbitTrace() {
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth>
-                          
+
                         <FormGroup>
                           <FormControlLabel
                             control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}

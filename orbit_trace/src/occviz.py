@@ -16,7 +16,15 @@ import numpy as np
 import astropy.units as u
 import astropy.constants as const
 from astropy.time import Time
-from astropy.coordinates import SkyCoord, Angle, GCRS, ITRS, get_sun, EarthLocation, SkyOffsetFrame
+from astropy.coordinates import (
+    SkyCoord,
+    Angle,
+    GCRS,
+    ITRS,
+    get_sun,
+    EarthLocation,
+    SkyOffsetFrame,
+)
 from scipy.interpolate import CubicSpline
 from typing import Optional, Union
 from datetime import datetime, timezone
@@ -39,7 +47,7 @@ def _calculate_r2(x, y):
     numpy.ndarray
         Calculated r2 values.
     """
-    r2 = const.R_earth.to_value(u.m)**2 - (x**2 + y**2)
+    r2 = const.R_earth.to_value(u.m) ** 2 - (x**2 + y**2)
     return r2
 
 
@@ -88,14 +96,19 @@ def _transform_coordinates(r, x, y, time, loncen, latcen, true_idx, r2):
     """
     if (not time.isscalar) and (len(time) == len(r2)):
         time, loncen, latcen = time[true_idx], loncen[true_idx], latcen[true_idx]
-        site_cen = EarthLocation(loncen*u.deg, latcen*u.deg)
+        site_cen = EarthLocation(loncen * u.deg, latcen * u.deg)
         itrs_cen = site_cen.get_itrs(obstime=time)
         gcrs_cen = itrs_cen.transform_to(GCRS(obstime=time))
         center_frame = SkyOffsetFrame(origin=gcrs_cen)
 
         for n in range(5):
             new_pos = SkyCoord(
-                r*u.m, x*u.m, y*u.m, representation_type='cartesian', frame=center_frame)
+                r * u.m,
+                x * u.m,
+                y * u.m,
+                representation_type="cartesian",
+                frame=center_frame,
+            )
             n_coord = new_pos.transform_to(GCRS(obstime=time))
             n_itrs = n_coord.transform_to(ITRS(obstime=time))
             n_site = n_itrs.earth_location
@@ -138,11 +151,12 @@ def _xy2latlon(x, y, loncen, latcen, time):
 
     true_idx = _get_valid_indices(r2)
     r, x, y = np.sqrt(r2[true_idx]), x[true_idx], y[true_idx]
-    lon, lat = np.full(len(r2), 1e+31), np.full(len(r2), 1e+31)
+    lon, lat = np.full(len(r2), 1e31), np.full(len(r2), 1e31)
 
     if len(r) > 0:
         lon[true_idx], lat[true_idx] = _transform_coordinates(
-            r, x, y, time, loncen, latcen, true_idx, r2)
+            r, x, y, time, loncen, latcen, true_idx, r2
+        )
     return lon, lat
 
 
@@ -198,7 +212,7 @@ def _handle_longitude_discontinuities(lon):
 
     # Calculate the differences between consecutive longitude values
     differences = np.diff(lon)
-    threshold = 300                    # Set a threshold to detect discontinuities
+    threshold = 300  # Set a threshold to detect discontinuities
     # Find indices where differences exceed the threshold
     factor_index = np.where(abs(differences) > threshold)
 
@@ -207,15 +221,13 @@ def _handle_longitude_discontinuities(lon):
         # Initialize a factor to adjust longitude values
         factor = 1
         if differences[factor_index][0] > 0:
-            index = _get_increasing_discontinuity_indices(
-                factor_index, len(lon))
+            index = _get_increasing_discontinuity_indices(factor_index, len(lon))
         else:
-            index = _get_decreasing_discontinuity_indices(
-                factor_index, len(lon))
+            index = _get_decreasing_discontinuity_indices(factor_index, len(lon))
     else:
         # No discontinuities detected, no adjustment needed
         factor = 0
-        index = (0)
+        index = 0
 
     lon[index] += factor * 360
 
@@ -299,8 +311,10 @@ def _interpolate_coordinates(lon, lat, times):
     return lon_interp, lat_interp
 
 
-def _path_latlon(instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=0, interpolate=True):
-    '''
+def _path_latlon(
+    instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=0, interpolate=True
+):
+    """
     Private function that provides the latitudes and longitudes for the path.
 
     Parameters:
@@ -337,16 +351,20 @@ def _path_latlon(instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=
     lon, lat = _path_latlon(instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius, interpolate)
 
     In this example, the function is called with the input parameters to calculate the latitudes and longitudes for the given path. The resulting lon and lat arrays will contain the longitude and latitude values respectively.
-    '''
+    """
 
     arc_x, arc_y = _calculate_arc_coordinates(
-        delta, ca, pa, dtimes, vel, pa_plus, radius)
+        delta, ca, pa, dtimes, vel, pa_plus, radius
+    )
 
-    lon, lat = _xy2latlon(arc_x, arc_y, centers.lon.value,
-                          centers.lat.value, instants)
+    lon, lat = _xy2latlon(arc_x, arc_y, centers.lon.value, centers.lat.value, instants)
 
-    valid_coordinates = (lon < 1e+31)
-    lon, lat, times = lon[valid_coordinates], lat[valid_coordinates], dtimes[valid_coordinates] - dtimes[0]
+    valid_coordinates = lon < 1e31
+    lon, lat, times = (
+        lon[valid_coordinates],
+        lat[valid_coordinates],
+        dtimes[valid_coordinates] - dtimes[0],
+    )
     if interpolate and (len(lon) > 2) and (len(lat) > 2):
         lonbkp = lon.copy()
         try:
@@ -358,7 +376,15 @@ def _path_latlon(instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=
         return [lon, lat]
 
 
-def _setup_initial_variables(date_time, star_coordinates, delta_distance, velocity, position_angle, closest_approach, offset):
+def _setup_initial_variables(
+    date_time,
+    star_coordinates,
+    delta_distance,
+    velocity,
+    position_angle,
+    closest_approach,
+    offset,
+):
     """
     Set up initial variables for the occultation path calculation.
 
@@ -385,16 +411,18 @@ def _setup_initial_variables(date_time, star_coordinates, delta_distance, veloci
         Initial variables for the occultation path calculation.
     """
     instant = Time(date_time)
-    star = SkyCoord(star_coordinates, frame='icrs',
-                    unit=(u.hourangle, u.degree))
+    star = SkyCoord(star_coordinates, frame="icrs", unit=(u.hourangle, u.degree))
     delta = delta_distance * u.AU
     vel = velocity * (u.km / u.s)
     pa = Angle(position_angle * u.deg)
-    pa.wrap_at('180d', inplace=True)
+    pa.wrap_at("180d", inplace=True)
     off_ra, off_dec = (offset[0] * u.mas, offset[1] * u.mas)
     delta_ca = off_ra * np.sin(pa) + off_dec * np.cos(pa)
-    delta_instant = (-(off_ra * np.cos(pa) - off_dec * np.sin(pa)
-                       ).to(u.rad) * delta.to(u.km) / abs(vel)).value * u.s
+    delta_instant = (
+        -(off_ra * np.cos(pa) - off_dec * np.sin(pa)).to(u.rad)
+        * delta.to(u.km)
+        / abs(vel)
+    ).value * u.s
     ca = closest_approach * u.arcsec + delta_ca
     instant = instant + delta_instant
 
@@ -461,12 +489,15 @@ def _create_star_positions_array(star, instants):
     EarthLocation
         Star positions in the ITRS frame.
     """
-    star_ras, star_decs = np.repeat(star.ra, len(
-        instants)), np.repeat(star.dec, len(instants))
-    centers_gcrs = GCRS(ra=star_ras, dec=star_decs,
-                        distance=1 * u.R_earth, obstime=instants)
+    star_ras, star_decs = np.repeat(star.ra, len(instants)), np.repeat(
+        star.dec, len(instants)
+    )
+    centers_gcrs = GCRS(
+        ra=star_ras, dec=star_decs, distance=1 * u.R_earth, obstime=instants
+    )
     centers_itrs = centers_gcrs.transform_to(ITRS(obstime=instants))
     return centers_itrs.earth_location
+
 
 def _latlon_circle(latitude_c, longitude_c, radius, angle):
     """
@@ -486,10 +517,16 @@ def _latlon_circle(latitude_c, longitude_c, radius, angle):
     delta_lambda = delta_phi / np.cos(np.radians(latitude_c))
 
     # Calculate the new coordinates
-    new_latitude = np.degrees(np.arcsin(np.sin(np.radians(latitude_c)) * np.cos(delta_phi) + np.cos(np.radians(latitude_c)) * np.sin(delta_phi) * np.cos(angle)))
+    new_latitude = np.degrees(
+        np.arcsin(
+            np.sin(np.radians(latitude_c)) * np.cos(delta_phi)
+            + np.cos(np.radians(latitude_c)) * np.sin(delta_phi) * np.cos(angle)
+        )
+    )
     new_longitude = longitude_c + np.degrees(delta_lambda * np.sin(angle))
 
     return new_latitude, new_longitude
+
 
 def _check_nighttime(location, instant):
     """
@@ -510,10 +547,16 @@ def _check_nighttime(location, instant):
     try:
         sun = get_sun(instant)
         sun_lat = sun.dec
-        sun_lon = sun.ra - instant.sidereal_time('mean', 'greenwich')
-        sun_theta = np.arccos(np.sin(location.lat)*np.sin(sun_lat) + np.cos(
-            location.lat)*np.cos(sun_lat)*np.cos(abs(location.lon-sun_lon)))
-        return any(sun_theta.to_value('deg') > 89.47) # 90 deg from sun dist - 0.53 deg from sun apparent size
+        sun_lon = sun.ra - instant.sidereal_time("mean", "greenwich")
+        sun_theta = np.arccos(
+            np.sin(location.lat) * np.sin(sun_lat)
+            + np.cos(location.lat)
+            * np.cos(sun_lat)
+            * np.cos(abs(location.lon - sun_lon))
+        )
+        return any(
+            sun_theta.to_value("deg") > 89.47
+        )  # 90 deg from sun dist - 0.53 deg from sun apparent size
     except:
         return True
 
@@ -530,12 +573,18 @@ def _path_arc(location, path_location):
     path_arc (Quantity): The linear distance between the observer's location and the point on the Earth's surface, in kilometers.
     """
 
-    path_theta = np.arccos(np.sin(location.lat)*np.sin(path_location.lat) + np.cos(
-        location.lat)*np.cos(path_location.lat)*np.cos(abs(location.lon-path_location.lon)))
+    path_theta = np.arccos(
+        np.sin(location.lat) * np.sin(path_location.lat)
+        + np.cos(location.lat)
+        * np.cos(path_location.lat)
+        * np.cos(abs(location.lon - path_location.lon))
+    )
     return path_theta.value * const.R_earth.to_value(u.km) * u.km
 
 
-def _calculate_path_visibility(location, path, radius, latitudinal=False, additional_path=None, ext_radius=0):
+def _calculate_path_visibility(
+    location, path, radius, latitudinal=False, additional_path=None, ext_radius=0
+):
     """
     Calculate if the central path is within range.
 
@@ -548,8 +597,8 @@ def _calculate_path_visibility(location, path, radius, latitudinal=False, additi
     radius : Quantity
         The radius of visibility around the observer's location.
     latitudinal : bool, optional
-        If True, calculate the distance between the observer's longitude and the path's longitude. 
-        If any of the distances are greater than the radius, return True. 
+        If True, calculate the distance between the observer's longitude and the path's longitude.
+        If any of the distances are greater than the radius, return True.
         If False, check if there is an additional path (e.g., ring or body limits).
     additional_path : list, optional
         The longitude and latitude of an additional path.
@@ -563,16 +612,23 @@ def _calculate_path_visibility(location, path, radius, latitudinal=False, additi
     """
 
     path_location = EarthLocation.from_geodetic(
-        lat=path[1]*u.deg, lon=path[0]*u.deg, height=0*u.m)
+        lat=path[1] * u.deg, lon=path[0] * u.deg, height=0 * u.m
+    )
 
     if latitudinal:
-        path_distances = abs(
-            path_location.lon - location.lon).to_value(u.rad) * const.R_earth.to_value('km') * u.km
+        path_distances = (
+            abs(path_location.lon - location.lon).to_value(u.rad)
+            * const.R_earth.to_value("km")
+            * u.km
+        )
         return len(path_distances) > 0 and any(path_distances > radius)
     else:
         if additional_path is not None:
             add_path_location = EarthLocation.from_geodetic(
-                lat=additional_path[1]*u.deg, lon=additional_path[0]*u.deg, height=0*u.m)
+                lat=additional_path[1] * u.deg,
+                lon=additional_path[0] * u.deg,
+                height=0 * u.m,
+            )
             add_path_arc = _path_arc(location, add_path_location)
             add_arc = add_path_arc.min()
             if len(add_path_arc) > 0 and (add_arc <= radius):
@@ -580,7 +636,7 @@ def _calculate_path_visibility(location, path, radius, latitudinal=False, additi
             else:
                 path_arc = _path_arc(location, path_location)
                 tot_arc = add_arc + path_arc.min()
-                return len(path_arc) > 0 and (tot_arc <= (ext_radius*u.km + radius))
+                return len(path_arc) > 0 and (tot_arc <= (ext_radius * u.km + radius))
         else:
             path_arc = _path_arc(location, path_location)
             return len(path_arc) > 0 and (path_arc.min() <= radius)
@@ -601,8 +657,20 @@ def _polynomial_fit(x, y, degree):
     return np.polyfit(x, y, degree)
 
 
-def _path_latlon_coeff(instants, central_instant, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=0, degree=19):
-    '''Private function that calculates the latitude and longitude values for a given path based on the coefficients of a polynomial fit.
+def _path_latlon_coeff(
+    instants,
+    central_instant,
+    dtimes,
+    centers,
+    delta,
+    ca,
+    vel,
+    pa,
+    pa_plus,
+    radius=0,
+    degree=19,
+):
+    """Private function that calculates the latitude and longitude values for a given path based on the coefficients of a polynomial fit.
 
     Args:
         instants (list): A list of astropy `Time` objects representing the time instants.
@@ -623,23 +691,39 @@ def _path_latlon_coeff(instants, central_instant, dtimes, centers, delta, ca, ve
             lon_max (float): The maximum longitude value.
             lon_min (float): The minimum longitude value.
             nightside (bool): True if any part of the path is at earth's nightside
-    '''
+    """
 
-    arc_x, arc_y = _calculate_arc_coordinates(delta, ca, pa, dtimes, vel, pa_plus, radius)
+    arc_x, arc_y = _calculate_arc_coordinates(
+        delta, ca, pa, dtimes, vel, pa_plus, radius
+    )
 
     lon, lat = _xy2latlon(arc_x, arc_y, centers.lon.value, centers.lat.value, instants)
 
-    valid_coordinates = (lon < 1e+31)
-    lon, lat, times = lon[valid_coordinates], lat[valid_coordinates], dtimes[valid_coordinates] - dtimes[0]
-    if (len(lon) > degree+1) and (len(lat) > degree+1):
+    valid_coordinates = lon < 1e31
+    lon, lat, times = (
+        lon[valid_coordinates],
+        lat[valid_coordinates],
+        dtimes[valid_coordinates] - dtimes[0],
+    )
+    if (len(lon) > degree + 1) and (len(lat) > degree + 1):
         try:
             # check if it happens at nighttime
-            location = EarthLocation.from_geodetic(lat=lat*u.deg, lon=lon*u.deg, height=0*u.m)
+            location = EarthLocation.from_geodetic(
+                lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m
+            )
             nighttime = _check_nighttime(location, central_instant)
             lon = _handle_longitude_discontinuities(lon)
             lon_coeff = _polynomial_fit(times, lon, degree)
             lat_coeff = _polynomial_fit(times, lat, degree)
-            return lon_coeff.tolist(), lat_coeff.tolist(), lon.max(), lon.min(), lat.max(), lat.min(), nighttime
+            return (
+                lon_coeff.tolist(),
+                lat_coeff.tolist(),
+                lon.max(),
+                lon.min(),
+                lat.max(),
+                lat.min(),
+                nighttime,
+            )
         except:
             return [], [], None, None, None, None, False
     else:
@@ -674,20 +758,26 @@ def _build_path_from_coeff(lon_coeff, lat_coeff, t0, t1, n_elements):
         return None
 
     try:
-        t0 = Time(datetime.fromisoformat(t0).replace(
-            tzinfo=None), format='datetime', scale='utc')
-        t1 = Time(datetime.fromisoformat(t1).replace(
-            tzinfo=None), format='datetime', scale='utc')
+        t0 = Time(
+            datetime.fromisoformat(t0).replace(tzinfo=None),
+            format="datetime",
+            scale="utc",
+        )
+        t1 = Time(
+            datetime.fromisoformat(t1).replace(tzinfo=None),
+            format="datetime",
+            scale="utc",
+        )
 
         degree = len(lon_coeff) - 1
-        times = np.linspace(0, (t1-t0).value*86400, n_elements)
+        times = np.linspace(0, (t1 - t0).value * 86400, n_elements)
 
         latitude = np.zeros(len(times))
         longitude = np.zeros(len(times))
 
         for i in range(len(lon_coeff)):
-            latitude += lat_coeff[i] * times**(degree-i)
-            longitude += lon_coeff[i] * times**(degree-i)
+            latitude += lat_coeff[i] * times ** (degree - i)
+            longitude += lon_coeff[i] * times ** (degree - i)
 
         return longitude, latitude
     except Exception as e:
@@ -695,8 +785,19 @@ def _build_path_from_coeff(lon_coeff, lat_coeff, t0, t1, n_elements):
         return None
 
 
-def occultation_path(date_time, star_coordinates, closest_approach, position_angle, velocity, delta_distance, offset=[0, 0], object_radius=None, ring_radius=None, interpolate=True):
-    '''
+def occultation_path(
+    date_time,
+    star_coordinates,
+    closest_approach,
+    position_angle,
+    velocity,
+    delta_distance,
+    offset=[0, 0],
+    object_radius=None,
+    ring_radius=None,
+    interpolate=True,
+):
+    """
     Returns the occultation paths, and upper and lower limits when object and/or ring radius is provided.
 
     Args:
@@ -717,34 +818,111 @@ def occultation_path(date_time, star_coordinates, closest_approach, position_ang
         list: The upper and lower limits for the occultation path when ring radius is provided.
 
     This code borrows heavily from SORA.
-    '''
+    """
     instant, star, delta, vel, pa, ca = _setup_initial_variables(
-        date_time, star_coordinates, delta_distance, velocity, position_angle, closest_approach, offset)
+        date_time,
+        star_coordinates,
+        delta_distance,
+        velocity,
+        position_angle,
+        closest_approach,
+        offset,
+    )
     pa_plus = _calculate_position_angle(pa)
     dtimes = _generate_instants_array(vel)
     centers = _create_star_positions_array(star, instant + dtimes)
     instants = dtimes + instant
-    upper_limit, lower_limit, ring_upper_limit, ring_lower_limit = None, None, None, None
-    path = _path_latlon(instants, dtimes, centers, delta, ca,
-                        vel, pa, pa_plus, radius=0, interpolate=interpolate)
+    upper_limit, lower_limit, ring_upper_limit, ring_lower_limit = (
+        None,
+        None,
+        None,
+        None,
+    )
+    path = _path_latlon(
+        instants,
+        dtimes,
+        centers,
+        delta,
+        ca,
+        vel,
+        pa,
+        pa_plus,
+        radius=0,
+        interpolate=interpolate,
+    )
 
     if object_radius is not None:
-        upper_limit = _path_latlon(instants, dtimes, centers, delta, ca,
-                                   vel, pa, pa_plus, radius=object_radius, interpolate=interpolate)
-        lower_limit = _path_latlon(instants, dtimes, centers, delta, ca,
-                                   vel, pa, pa_plus, radius=-object_radius, interpolate=interpolate)
+        upper_limit = _path_latlon(
+            instants,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=object_radius,
+            interpolate=interpolate,
+        )
+        lower_limit = _path_latlon(
+            instants,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=-object_radius,
+            interpolate=interpolate,
+        )
 
     if ring_radius is not None:
         ring_upper_limit = _path_latlon(
-            instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=ring_radius, interpolate=interpolate)
+            instants,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=ring_radius,
+            interpolate=interpolate,
+        )
         ring_lower_limit = _path_latlon(
-            instants, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=-ring_radius, interpolate=interpolate)
+            instants,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=-ring_radius,
+            interpolate=interpolate,
+        )
 
     return [path, [upper_limit, lower_limit], [ring_upper_limit, ring_lower_limit]]
 
 
-def visibility(latitude, longitude, radius, date_time, star_coordinates, closest_approach, position_angle, velocity, delta_distance, offset=[0, 0], object_radius=None, ring_radius=None, latitudinal=False, interpolate=True):
-    '''
+def visibility(
+    latitude,
+    longitude,
+    radius,
+    date_time,
+    star_coordinates,
+    closest_approach,
+    position_angle,
+    velocity,
+    delta_distance,
+    offset=[0, 0],
+    object_radius=None,
+    ring_radius=None,
+    latitudinal=False,
+    interpolate=True,
+):
+    """
     Computes the visibility of an occultation event given the latitude, longitude, and radius of a location.
 
     Args:
@@ -766,74 +944,123 @@ def visibility(latitude, longitude, radius, date_time, star_coordinates, closest
     Returns:
         visibility (bool): True if the occultation event is visible, False otherwise.
         info (str): Additional information about the visibility.
-    '''
+    """
 
-    info = ''
-    kstr = ''
+    info = ""
+    kstr = ""
 
-    latitudes, longitudes = _latlon_circle(latitude, longitude, radius, np.arange(0,360,0.1))
+    latitudes, longitudes = _latlon_circle(
+        latitude, longitude, radius, np.arange(0, 360, 0.1)
+    )
 
     location_c = EarthLocation.from_geodetic(
-        lat=latitudes*u.deg, lon=longitudes*u.deg, height=0*u.m)
-    
+        lat=latitudes * u.deg, lon=longitudes * u.deg, height=0 * u.m
+    )
+
     location = EarthLocation.from_geodetic(
-        lat=latitude*u.deg, lon=longitude*u.deg, height=0*u.m)
+        lat=latitude * u.deg, lon=longitude * u.deg, height=0 * u.m
+    )
 
     radius = radius * u.km
-    nighttime = _check_nighttime(location_c, Time(
-        date_time))
+    nighttime = _check_nighttime(location_c, Time(date_time))
 
-    path, object_limits, ring_limits = occultation_path(date_time, star_coordinates, closest_approach, position_angle, velocity,
-                                                        delta_distance, offset=offset, object_radius=object_radius, ring_radius=ring_radius, interpolate=interpolate)
+    path, object_limits, ring_limits = occultation_path(
+        date_time,
+        star_coordinates,
+        closest_approach,
+        position_angle,
+        velocity,
+        delta_distance,
+        offset=offset,
+        object_radius=object_radius,
+        ring_radius=ring_radius,
+        interpolate=interpolate,
+    )
 
     # check if the ring is passing over the location
     upper_ring_visibility, lower_ring_visibility = False, False
     if ring_limits[0] is not None:
         upper_ring_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=ring_limits[0], ext_radius=ring_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=ring_limits[0],
+            ext_radius=ring_radius,
+        )
     if ring_limits[1] is not None:
         lower_ring_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=ring_limits[1], ext_radius=ring_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=ring_limits[1],
+            ext_radius=ring_radius,
+        )
     if upper_ring_visibility or lower_ring_visibility:
         info += "Body's ring(s) shadow pass within selected area."
-        kstr = ' '
+        kstr = " "
 
     # check if the object is passing over the location
     obj_upperlim_visibility, obj_lowerlim_visibility = False, False
     if object_limits[0] is not None:
         obj_upperlim_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=object_limits[0], ext_radius=object_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=object_limits[0],
+            ext_radius=object_radius,
+        )
     if object_limits[1] is not None:
         obj_lowerlim_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=object_limits[1], ext_radius=object_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=object_limits[1],
+            ext_radius=object_radius,
+        )
     if obj_upperlim_visibility or obj_lowerlim_visibility:
-        info += kstr+'Main body shadow passes within selected area.'
+        info += kstr + "Main body shadow passes within selected area."
 
     # if the object has a radius and passes over the location there is no need to compute the central path,
     # however, if there is no radius information, check if the central path passes over the location
     path_visibility = False
     if not (obj_upperlim_visibility and obj_lowerlim_visibility):
         path_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal)
+            location, path, radius, latitudinal=latitudinal
+        )
 
-    visibility = np.logical_or.reduce(np.array(
-        [path_visibility, obj_upperlim_visibility, obj_lowerlim_visibility, upper_ring_visibility, lower_ring_visibility]))
+    visibility = np.logical_or.reduce(
+        np.array(
+            [
+                path_visibility,
+                obj_upperlim_visibility,
+                obj_lowerlim_visibility,
+                upper_ring_visibility,
+                lower_ring_visibility,
+            ]
+        )
+    )
 
     return np.logical_and(nighttime, visibility), info
 
+
 def occultation_path_coeff(
-        date_time: Union[datetime, str],
-        ra_star_candidate: str,
-        dec_star_candidate: str,
-        closest_approach: float,
-        position_angle: float,
-        velocity: float,
-        delta_distance: float,
-        offset_ra: float,
-        offset_dec: float,
-        object_diameter: Optional[float] = None,
-        ring_radius: Optional[float] = None,
-        degree: float = 19):
+    date_time: Union[datetime, str],
+    ra_star_candidate: str,
+    dec_star_candidate: str,
+    closest_approach: float,
+    position_angle: float,
+    velocity: float,
+    delta_distance: float,
+    offset_ra: float,
+    offset_dec: float,
+    object_diameter: Optional[float] = None,
+    ring_radius: Optional[float] = None,
+    degree: float = 19,
+):
     """
         Args:
         date_time (Union[datetime, str]): The date and time of the observation in the format 'YYYY-MM-DDTHH:MM:SS'.
@@ -872,56 +1099,77 @@ def occultation_path_coeff(
     if isinstance(date_time, str):
         date_time = datetime.fromisoformat(date_time)
     date_time = date_time.isoformat().replace("+00:00", "Z")
-    
+
     star_coordinates = f"{ra_star_candidate} {dec_star_candidate}"
     offset = (offset_ra, offset_dec)
 
-    object_radius = float(
-        object_diameter / 2) if object_diameter != None else None
+    object_radius = float(object_diameter / 2) if object_diameter != None else None
 
     instant, star, delta, vel, pa, ca = _setup_initial_variables(
-        date_time, star_coordinates, delta_distance, velocity, position_angle, closest_approach, offset)
-    
+        date_time,
+        star_coordinates,
+        delta_distance,
+        velocity,
+        position_angle,
+        closest_approach,
+        offset,
+    )
+
     pa_plus = _calculate_position_angle(pa)
     dtimes = _generate_instants_array(vel)
     centers = _create_star_positions_array(star, instant + dtimes)
     instants = dtimes + instant
-    upper_limit, lower_limit, ring_upper_limit, ring_lower_limit = None, None, None, None
+    upper_limit, lower_limit, ring_upper_limit, ring_lower_limit = (
+        None,
+        None,
+        None,
+        None,
+    )
 
     lons, lats, nightside = [], [], []
 
     output = {
-        't0': None,
-        't1': None,
-        'coeff_latitude': [],
-        'coeff_longitude': [],
-        'body_upper_coeff_latitude': [],
-        'body_upper_coeff_longitude': [],
-        'body_lower_coeff_latitude': [],
-        'body_lower_coeff_longitude': [],
-        'ring_upper_coeff_latitude': [],
-        'ring_upper_coeff_longitude': [],
-        'ring_lower_coeff_latitude': [],
-        'ring_lower_coeff_longitude': [],
-        'min_longitude': None,
-        'max_longitude': None,
-        'min_latitude': None,
-        'max_latitude': None,
-        'nightside': False
+        "t0": None,
+        "t1": None,
+        "coeff_latitude": [],
+        "coeff_longitude": [],
+        "body_upper_coeff_latitude": [],
+        "body_upper_coeff_longitude": [],
+        "body_lower_coeff_latitude": [],
+        "body_lower_coeff_longitude": [],
+        "ring_upper_coeff_latitude": [],
+        "ring_upper_coeff_longitude": [],
+        "ring_lower_coeff_latitude": [],
+        "ring_lower_coeff_longitude": [],
+        "min_longitude": None,
+        "max_longitude": None,
+        "min_latitude": None,
+        "max_latitude": None,
+        "nightside": False,
     }
 
-    output.update({
-        't0': instants[0].datetime.astimezone(tz=timezone.utc).isoformat(),
-        't1': instants[-1].datetime.astimezone(tz=timezone.utc).isoformat()
-    })
+    output.update(
+        {
+            "t0": instants[0].datetime.astimezone(tz=timezone.utc).isoformat(),
+            "t1": instants[-1].datetime.astimezone(tz=timezone.utc).isoformat(),
+        }
+    )
 
     result = _path_latlon_coeff(
-        instants, instant, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=0, degree=degree)
+        instants,
+        instant,
+        dtimes,
+        centers,
+        delta,
+        ca,
+        vel,
+        pa,
+        pa_plus,
+        radius=0,
+        degree=degree,
+    )
 
-    output.update({
-        'coeff_latitude': result[1],
-        'coeff_longitude': result[0]
-    })
+    output.update({"coeff_latitude": result[1], "coeff_longitude": result[0]})
     lons.append([result[2], result[3]])
     lats.append([result[4], result[5]])
 
@@ -929,67 +1177,156 @@ def occultation_path_coeff(
 
     if object_radius is not None:
         upper_limit = _path_latlon_coeff(
-            instants, instant, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=object_radius, degree=degree)
-        output.update({
-            'body_upper_coeff_latitude': upper_limit[1],
-            'body_upper_coeff_longitude': upper_limit[0]
-        })
+            instants,
+            instant,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=object_radius,
+            degree=degree,
+        )
+        output.update(
+            {
+                "body_upper_coeff_latitude": upper_limit[1],
+                "body_upper_coeff_longitude": upper_limit[0],
+            }
+        )
         lower_limit = _path_latlon_coeff(
-            instants, instant, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=-object_radius, degree=degree)
-        output.update({
-            'body_lower_coeff_latitude': lower_limit[1],
-            'body_lower_coeff_longitude': lower_limit[0]
-        })
-        lons.append([upper_limit[2], upper_limit[3],
-                     lower_limit[2], lower_limit[3]])
-        lats.append([upper_limit[4], upper_limit[5],
-                     lower_limit[4], lower_limit[5]])
+            instants,
+            instant,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=-object_radius,
+            degree=degree,
+        )
+        output.update(
+            {
+                "body_lower_coeff_latitude": lower_limit[1],
+                "body_lower_coeff_longitude": lower_limit[0],
+            }
+        )
+        lons.append([upper_limit[2], upper_limit[3], lower_limit[2], lower_limit[3]])
+        lats.append([upper_limit[4], upper_limit[5], lower_limit[4], lower_limit[5]])
         nightside.append([upper_limit[6], lower_limit[6]])
 
     if ring_radius is not None:
         ring_upper_limit = _path_latlon_coeff(
-            instants, instant, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=ring_radius, degree=degree)
-        output.update({
-            'ring_upper_coeff_latitude': ring_upper_limit[1],
-            'ring_upper_coeff_longitude': ring_upper_limit[0]
-        })
+            instants,
+            instant,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=ring_radius,
+            degree=degree,
+        )
+        output.update(
+            {
+                "ring_upper_coeff_latitude": ring_upper_limit[1],
+                "ring_upper_coeff_longitude": ring_upper_limit[0],
+            }
+        )
         ring_lower_limit = _path_latlon_coeff(
-            instants, instant, dtimes, centers, delta, ca, vel, pa, pa_plus, radius=-ring_radius, degree=degree)
-        output.update({
-            'ring_lower_coeff_latitude': ring_lower_limit[1],
-            'ring_lower_coeff_longitude': ring_lower_limit[0]
-        })
-        lons.append([ring_upper_limit[2], ring_upper_limit[3],
-                     ring_lower_limit[2], ring_lower_limit[3]])
-        lats.append([ring_upper_limit[4], ring_upper_limit[5],
-                     ring_lower_limit[4], ring_lower_limit[5]])
+            instants,
+            instant,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=-ring_radius,
+            degree=degree,
+        )
+        output.update(
+            {
+                "ring_lower_coeff_latitude": ring_lower_limit[1],
+                "ring_lower_coeff_longitude": ring_lower_limit[0],
+            }
+        )
+        lons.append(
+            [
+                ring_upper_limit[2],
+                ring_upper_limit[3],
+                ring_lower_limit[2],
+                ring_lower_limit[3],
+            ]
+        )
+        lats.append(
+            [
+                ring_upper_limit[4],
+                ring_upper_limit[5],
+                ring_lower_limit[4],
+                ring_lower_limit[5],
+            ]
+        )
         nightside.append([ring_upper_limit[6], ring_lower_limit[6]])
 
     longitudes = np.array(
-        [item for sublist in lons if sublist is not None for item in sublist if item is not None])
+        [
+            item
+            for sublist in lons
+            if sublist is not None
+            for item in sublist
+            if item is not None
+        ]
+    )
     index = np.where(longitudes > 180)
     longitudes[index] -= 360
 
     latitudes = np.array(
-        [item for sublist in lats if sublist is not None for item in sublist if item is not None])
-    
+        [
+            item
+            for sublist in lats
+            if sublist is not None
+            for item in sublist
+            if item is not None
+        ]
+    )
+
     try:
-        output.update({'min_longitude': longitudes.min(),
-                       'max_longitude': longitudes.max(),
-                       'min_latitude': latitudes.min(),
-                       'max_latitude': latitudes.max()
-                       })
+        output.update(
+            {
+                "min_longitude": longitudes.min(),
+                "max_longitude": longitudes.max(),
+                "min_latitude": latitudes.min(),
+                "max_latitude": latitudes.max(),
+            }
+        )
     except:
-        output.update({'min_longitude': None,
-                       'max_longitude': None,
-                       'min_latitude': None,
-                       'max_latitude': None  
-                       })
+        output.update(
+            {
+                "min_longitude": None,
+                "max_longitude": None,
+                "min_latitude": None,
+                "max_latitude": None,
+            }
+        )
 
     nightsides = np.array(
-        [item for sublist in nightside if sublist is not None for item in sublist if item is not None])
+        [
+            item
+            for sublist in nightside
+            if sublist is not None
+            for item in sublist
+            if item is not None
+        ]
+    )
 
-    output.update({'nightside': any(nightsides)})
+    output.update({"nightside": any(nightsides)})
 
     return output
 
@@ -1003,9 +1340,9 @@ def visibility_from_coeff(
     n_elements: int = 1500,
     object_diameter: Optional[float] = None,
     ring_radius: Optional[float] = None,
-    latitudinal: bool = False
+    latitudinal: bool = False,
 ):
-    '''
+    """
     Computes the visibility of an occultation event given its latitude, longitude, and radius around a specific location.
 
     Parameters:
@@ -1022,7 +1359,7 @@ def visibility_from_coeff(
 
     Returns:
     tuple: A tuple containing the visibility status (boolean) and additional information about the visibility conditions (string).
-    '''
+    """
     if isinstance(date_time, str):
         date_time = datetime.fromisoformat(date_time)
     date_time = date_time.isoformat().replace("+00:00", "Z")
@@ -1030,61 +1367,129 @@ def visibility_from_coeff(
     if isinstance(inputdict, str):
         inputdict = json.loads(inputdict)
 
-    object_radius = float(
-        object_diameter / 2) if object_diameter != None else None
+    object_radius = float(object_diameter / 2) if object_diameter != None else None
 
-    info = ''
-    kstr = ''
+    info = ""
+    kstr = ""
 
-    latitudes, longitudes = _latlon_circle(latitude, longitude, radius, np.arange(0,360,0.1))
+    latitudes, longitudes = _latlon_circle(
+        latitude, longitude, radius, np.arange(0, 360, 0.1)
+    )
 
     location_c = EarthLocation.from_geodetic(
-        lat=latitudes*u.deg, lon=longitudes*u.deg, height=0*u.m)
-    
+        lat=latitudes * u.deg, lon=longitudes * u.deg, height=0 * u.m
+    )
+
     location = EarthLocation.from_geodetic(
-        lat=latitude*u.deg, lon=longitude*u.deg, height=0*u.m)
-    
+        lat=latitude * u.deg, lon=longitude * u.deg, height=0 * u.m
+    )
+
     radius = radius * u.km
 
     nighttime = _check_nighttime(location_c, Time(date_time))
-    
-    path = _build_path_from_coeff(
-        inputdict['coeff_longitude'], inputdict['coeff_latitude'], inputdict['t0'], inputdict['t1'], n_elements)
 
-    object_upper_limit = _build_path_from_coeff(inputdict['body_upper_coeff_longitude'], inputdict['body_upper_coeff_latitude'],
-                                                inputdict['t0'], inputdict['t1'], n_elements) if 'body_upper_coeff_longitude' in inputdict else None
-    object_lower_limit = _build_path_from_coeff(inputdict['body_lower_coeff_longitude'], inputdict['body_lower_coeff_latitude'],
-                                                inputdict['t0'], inputdict['t1'], n_elements) if 'body_lower_coeff_longitude' in inputdict else None
+    path = _build_path_from_coeff(
+        inputdict["coeff_longitude"],
+        inputdict["coeff_latitude"],
+        inputdict["t0"],
+        inputdict["t1"],
+        n_elements,
+    )
+
+    object_upper_limit = (
+        _build_path_from_coeff(
+            inputdict["body_upper_coeff_longitude"],
+            inputdict["body_upper_coeff_latitude"],
+            inputdict["t0"],
+            inputdict["t1"],
+            n_elements,
+        )
+        if "body_upper_coeff_longitude" in inputdict
+        else None
+    )
+    object_lower_limit = (
+        _build_path_from_coeff(
+            inputdict["body_lower_coeff_longitude"],
+            inputdict["body_lower_coeff_latitude"],
+            inputdict["t0"],
+            inputdict["t1"],
+            n_elements,
+        )
+        if "body_lower_coeff_longitude" in inputdict
+        else None
+    )
     object_limits = [object_upper_limit, object_lower_limit]
 
-    ring_upper_limit = _build_path_from_coeff(inputdict['ring_upper_coeff_longitude'], inputdict['ring_upper_coeff_latitude'],
-                                              inputdict['t0'], inputdict['t1'], n_elements) if 'ring_upper_coeff_longitude' in inputdict else None
-    ring_lower_limit = _build_path_from_coeff(inputdict['ring_lower_coeff_longitude'], inputdict['ring_lower_coeff_latitude'],
-                                              inputdict['t0'], inputdict['t1'], n_elements) if 'ring_lower_coeff_longitude' in inputdict else None
+    ring_upper_limit = (
+        _build_path_from_coeff(
+            inputdict["ring_upper_coeff_longitude"],
+            inputdict["ring_upper_coeff_latitude"],
+            inputdict["t0"],
+            inputdict["t1"],
+            n_elements,
+        )
+        if "ring_upper_coeff_longitude" in inputdict
+        else None
+    )
+    ring_lower_limit = (
+        _build_path_from_coeff(
+            inputdict["ring_lower_coeff_longitude"],
+            inputdict["ring_lower_coeff_latitude"],
+            inputdict["t0"],
+            inputdict["t1"],
+            n_elements,
+        )
+        if "ring_lower_coeff_longitude" in inputdict
+        else None
+    )
     ring_limits = [ring_upper_limit, ring_lower_limit]
 
     # check if the ring is passing over the location
     upper_ring_visibility, lower_ring_visibility = False, False
     if (ring_limits[0] is not None) and (ring_radius is not None):
         upper_ring_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=ring_limits[0], ext_radius=ring_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=ring_limits[0],
+            ext_radius=ring_radius,
+        )
     if (ring_limits[1] is not None) and (ring_radius is not None):
         lower_ring_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=ring_limits[1], ext_radius=ring_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=ring_limits[1],
+            ext_radius=ring_radius,
+        )
     if upper_ring_visibility or lower_ring_visibility:
         info += "Body's ring(s) shadow pass within selected area."
-        kstr = ' '
+        kstr = " "
 
     # check if the object is passing over the location
     obj_upperlim_visibility, obj_lowerlim_visibility = False, False
     if (object_limits[0] is not None) and (object_radius is not None):
         obj_upperlim_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=object_limits[0], ext_radius=object_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=object_limits[0],
+            ext_radius=object_radius,
+        )
     if (object_limits[1] is not None) and (object_radius is not None):
         obj_lowerlim_visibility = _calculate_path_visibility(
-            location, path, radius, latitudinal=latitudinal, additional_path=object_limits[1], ext_radius=object_radius)
+            location,
+            path,
+            radius,
+            latitudinal=latitudinal,
+            additional_path=object_limits[1],
+            ext_radius=object_radius,
+        )
     if obj_upperlim_visibility or obj_lowerlim_visibility:
-        info += kstr+'Main body shadow passes within selected area.'
+        info += kstr + "Main body shadow passes within selected area."
 
     # if the object has a radius and passes over the location there is no need to compute the central path,
     # however, if there is no radius information, check if the central path passes over the location
@@ -1092,11 +1497,21 @@ def visibility_from_coeff(
     try:
         if not (obj_upperlim_visibility and obj_lowerlim_visibility):
             path_visibility = _calculate_path_visibility(
-                location, path, radius, latitudinal=latitudinal)
+                location, path, radius, latitudinal=latitudinal
+            )
     except:
         pass
 
-    visibility = np.logical_or.reduce(np.array(
-        [path_visibility, obj_upperlim_visibility, obj_lowerlim_visibility, upper_ring_visibility, lower_ring_visibility]))
+    visibility = np.logical_or.reduce(
+        np.array(
+            [
+                path_visibility,
+                obj_upperlim_visibility,
+                obj_lowerlim_visibility,
+                upper_ring_visibility,
+                lower_ring_visibility,
+            ]
+        )
+    )
 
     return bool(np.logical_and(nighttime, visibility)), info

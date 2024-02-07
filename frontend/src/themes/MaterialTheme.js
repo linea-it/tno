@@ -17,7 +17,7 @@
 //     main: '#d32f2f',
 //     dark: '#c62828',
 //     contrastText: '#fff'
-//   },     
+//   },
 //   palette: {
 //     // background: '#151515', Cor utilizada nos outros apps
 //     // decidi usar a cor da palleta não percebi muita diferença.
@@ -27,7 +27,7 @@
 //       main: '#d32f2f',
 //       dark: '#c62828',
 //       contrastText: '#fff'
-//     },    
+//     },
 //   },
 //   initContainer: {
 //     paddingTop: 20,

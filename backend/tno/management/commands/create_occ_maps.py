@@ -1,7 +1,12 @@
 from django.core.management.base import BaseCommand
 from datetime import datetime, timezone
-from tno.tasks import upcoming_events_to_create_maps, create_occ_map_task, prediction_maps_log_error
+from tno.tasks import (
+    upcoming_events_to_create_maps,
+    create_occ_map_task,
+    prediction_maps_log_error,
+)
 from celery import group
+
 
 class Command(BaseCommand):
     help = "Create Occultation Maps by Period."
@@ -16,28 +21,39 @@ class Command(BaseCommand):
             "--end",
             default=None,
             help="End Data in format YYYY-MM-DD",
-        )        
+        )
 
         parser.add_argument(
             "--limit",
             default=1000,
             type=int,
             help="Maximum number of jobs to be submitted, default is 1000",
-        )        
+        )
 
     def handle(self, *args, **options):
 
-        start = datetime.strptime(options["start"], '%Y-%m-%d').astimezone(tz=timezone.utc)
-        end = datetime.strptime(options.get("end"), '%Y-%m-%d').replace(hour=23, minute=59, second=59).astimezone(tz=timezone.utc) if options.get("end", None) != None else None
-        limit = options['limit']
+        start = datetime.strptime(options["start"], "%Y-%m-%d").astimezone(
+            tz=timezone.utc
+        )
+        end = (
+            datetime.strptime(options.get("end"), "%Y-%m-%d")
+            .replace(hour=23, minute=59, second=59)
+            .astimezone(tz=timezone.utc)
+            if options.get("end", None) != None
+            else None
+        )
+        limit = options["limit"]
 
         if end == None:
-            self.stdout.write(f"Submitting background tasks to create occultation maps for date {start}")
+            self.stdout.write(
+                f"Submitting background tasks to create occultation maps for date {start}"
+            )
         else:
-            self.stdout.write(f"Submitting background tasks to create occultation maps for period {start} to {end}")
-            
-        to_run = upcoming_events_to_create_maps(
-            start, end, limit)
+            self.stdout.write(
+                f"Submitting background tasks to create occultation maps for period {start} to {end}"
+            )
+
+        to_run = upcoming_events_to_create_maps(start, end, limit)
         self.stdout.write(f"Tasks to be executed in this block: [{len(to_run)}].")
 
         # Celery tasks signature
