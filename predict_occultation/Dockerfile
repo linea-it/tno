@@ -71,16 +71,19 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # This option has no effect on the stdin stream.
 ENV PYTHONUNBUFFERED=1
 
+ENV BSP_PLANETARY_NAME=de440.bsp
+ENV LEAP_SECOND_NAME=naif0012.tls
+
 # Download da BSP planetary
 # OBS. o Download demora bastante!
 RUN wget --no-verbose --show-progress \
     --progress=bar:force:noscroll \
-    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/de440.bsp
+    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/planets/$BSP_PLANETARY_NAME
 
 # Download Leap Second
 RUN wget --no-verbose --show-progress \
     --progress=bar:force:noscroll \
-    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/naif0012.tls
+    https://naif.jpl.nasa.gov/pub/naif/generic_kernels/lsk/$LEAP_SECOND_NAME
 
 # PRAIA OCC binaries
 COPY --from=praia_occ /tmp/praia_occ/* /usr/local/bin
@@ -138,20 +141,27 @@ COPY --chown=${USERNAME}:ton --chmod=775 entrypoint.sh ${APP_HOME}
 
 RUN chmod =2775 ${PIPELINE_ROOT} \
     && chmod =2775 ${APP_HOME} \
-    && mv de440.bsp ${PIPELINE_PATH}/de440.bsp \
-    && mv naif0012.tls ${PIPELINE_PATH}/naif0012.tls
+    && mv de440.bsp ${PIPELINE_PATH}/$BSP_PLANETARY_NAME \
+    && mv naif0012.tls ${PIPELINE_PATH}/$LEAP_SECOND_NAME
 
 WORKDIR ${APP_HOME}
 
 USER apptno
+# RUN /bin/bash --login -c "conda init bash \
+#     && echo 'conda activate py3' >> ~/.bashrc \
+#     && source ~/.bashrc"
 RUN /bin/bash --login -c "conda init bash \
-    && echo 'conda activate py3' >> ~/.bashrc \
+    && echo 'source /app/src/env.sh' >> ~/.bashrc \
     && source ~/.bashrc"
 ENV PATH=${PATH}:/home/apptno/.local/bin
 
+# USER ${USERNAME}
+# RUN /bin/bash --login -c "conda init bash \
+#     && echo 'conda activate py3' >> ~/.bashrc \
+#     && source ~/.bashrc"
 USER ${USERNAME}
 RUN /bin/bash --login -c "conda init bash \
-    && echo 'conda activate py3' >> ~/.bashrc \
+    && echo 'source /app/src/env.sh' >> ~/.bashrc \
     && source ~/.bashrc"
 ENV PATH=${PATH}:/home/${USERNAME}/.local/bin
 

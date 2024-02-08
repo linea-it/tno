@@ -3,6 +3,7 @@
 echo "Activating py3 environment"
 conda activate py3
 
+echo "Setup PYTHONPATH"
 export PYTHONPATH=${PYTHONPATH}:${PIPELINE_ROOT}:${PIPELINE_PREDIC_OCC}:${PIPELINE_PATH}
 
 if [[ "$PARSL_ENV" = "linea" ]]

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash  --login
 
 set -o errexit
 set -o pipefail
