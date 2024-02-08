@@ -1,7 +1,15 @@
 /* eslint-disable max-len */
 import React from 'react'
-import { Grid, Container, Typography, Breadcrumbs, Link, IconButton } from '@material-ui/core'
-import { YouTube, Twitter, GitHub } from '@material-ui/icons'
+
+import IconButton from '@mui/material/IconButton'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Breadcrumbs from '@mui/material/Breadcrumbs'
+import Link from '@mui/material/Link'
+import YouTubeIcon from '@mui/icons-material/YouTube';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import GitHubIcon from '@mui/icons-material/GitHub';
 import styles from './styles'
 
 function PublicAboutUs() {
@@ -64,7 +72,7 @@ function PublicAboutUs() {
                   aria-label='YouTube'
                   component='span'
                 >
-                  <YouTube />
+                  <YouTubeIcon />
                 </IconButton>
                 <IconButton
                   className={classes.icon}
@@ -75,7 +83,7 @@ function PublicAboutUs() {
                   aria-label='Twitter'
                   component='span'
                 >
-                  <Twitter />
+                  <TwitterIcon />
                 </IconButton>
                 <IconButton
                   className={classes.icon}
@@ -86,7 +94,7 @@ function PublicAboutUs() {
                   aria-label='GitHub'
                   component='span'
                 >
-                  <GitHub />
+                  <GitHubIcon />
                 </IconButton>
               </>
             </div>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import './predict.css'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
 import {

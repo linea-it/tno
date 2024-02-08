@@ -7,7 +7,6 @@ import { useLocation } from 'react-router-dom'
 import List from '@material-ui/core/List'
 import ListItem from '@material-ui/core/ListItem'
 import styles from './styles'
-import './header.css'
 import { useNavigate } from '../../../../node_modules/react-router-dom/dist/index'
 
 function PublicHeader() {

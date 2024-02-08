@@ -2,39 +2,30 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 import Dashboard from '../pages/Dashboard'
-// import Skybot from '../pages/Skybot'
-// import SkybotDetail from '../pages/Skybot/Detail'
-// import SkybotAsteroid from '../pages/Skybot/Asteroid'
-// import SkybotStatistics from '../pages/Skybot/Statistics'
-// import OrbitTrace from '../pages/OrbitTrace/'
-// import DesManagement from '../pages/DesManagement'
+import Skybot from '../pages/Skybot'
+import SkybotDetail from '../pages/Skybot/Detail'
+import SkybotAsteroid from '../pages/Skybot/Asteroid'
+import SkybotStatistics from '../pages/Skybot/Statistics'
+import OrbitTrace from '../pages/OrbitTrace/'
+import DesManagement from '../pages/DesManagement'
 
 import PredictOccultation from '../pages/PredictOccultation'
 import PredictDetail from '../pages/PredictOccultation/Detail'
 import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
 
-
-import Home from '../pages/LandingPage/Home'
 import { useAuth } from '../contexts/AuthContext.js'
 import Header from '../components/LandingPage/Header'
 import Footer from '../components/LandingPage/Footer'
 import PersistentDrawerLeft from '../components/Drawer'
-// import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
-// import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
-import PublicHeader from '../components/PublicPortal/Header/index'
-import PublicHome from '../pages/PublicPortal/Home'
-import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
-
-import PublicDocumentation from '../pages/PublicPortal/documentation/index'
-import PublicContact from '../pages/PublicPortal/Contact/index'
-import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
+import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
+import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
 import PredictionEvents from '../pages/PredictionEvents/index'
-import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
 import AsteroidJob from '../pages/AsteroidJob/index'
 import AsteroidJobDetail from '../pages/AsteroidJob/AsteroidJobDetail'
+import Home from '../pages/LandingPage/Home'
 
-export default function AppRoutes() {
+export default function DashboardRoutes() {
   const { isAuthenticated, signIn } = useAuth()
 
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
@@ -47,97 +38,6 @@ export default function AppRoutes() {
         <Header />
         {children}
         <Footer />
-      </>
-    )
-  }
-
-  const PublicPortalPage = ({ children }) => {
-    return (
-      <>
-        <PublicHeader />
-        {children}
-        <FooterSupporte />
-      </>
-    )
-  }
-
-
-
-  const PublicPageRoutes = () => {
-    return (
-      <>
-        {/* Public Portal  Layout*/}
-        <Route
-          isHomePage
-          exact
-          path='/'
-          element={
-            <PublicPortalPage>
-              <PublicHome />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          exact
-          path='/prediction-event-detail/:id'
-          element={
-            <PublicPortalPage>
-              <PredictionEventDetail />
-            </PublicPortalPage>
-          }
-        />
-
-        <Route
-          isHomePage
-          exact
-          path='/about-us'
-          element={
-            <PublicPortalPage>
-              <PublicAboutUs />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/contact-us'
-          element={
-            <PublicPortalPage>
-              <PublicContact />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/documentation'
-          element={
-            <PublicPortalPage>
-              <PublicDocumentation />
-            </PublicPortalPage>
-          }
-        />
-        {/* Landing Page  Layout*/}
-        <Route
-          isHomePage
-          exact
-          path='/'
-          element={
-            <PublicPortalPage>
-              <PublicHome />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/dashboard'
-          element={
-            <LandingPage>
-              <Home />
-            </LandingPage>
-          }
-        />
       </>
     )
   }
@@ -167,7 +67,7 @@ export default function AppRoutes() {
             </DashboardPage>
           }
         />
-        {/* <Route
+        <Route
           isPrivate
           exact
           path='/dashboard/data-preparation/des/discovery'
@@ -256,7 +156,7 @@ export default function AppRoutes() {
                 <DesManagement />
               </DashboardPage>
           }
-        /> */}
+        />
         <Route
           isPrivate
           exact
@@ -317,15 +217,24 @@ export default function AppRoutes() {
               </DashboardPage>
           }
         />
+        <Route
+          isHomePage
+          exact
+          path='/dashboard'
+          element={
+            <LandingPage>
+              <Home />
+            </LandingPage>
+          }
+        />
       </>
     )
   }
 
   return (
     <Routes>
-      {PublicPageRoutes()}
       {DashboardPageRoutes()}
-      <Route path='*' element={<Navigate to='/' />} />
+      <Route path='*' element={<Navigate to='/dashboard' />} />
     </Routes>
   )
 }

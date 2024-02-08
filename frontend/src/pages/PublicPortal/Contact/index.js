@@ -3,7 +3,13 @@
 /* eslint-disable react/jsx-indent */
 /* eslint-disable max-len */
 import React from 'react'
-import { Grid, Container, Typography, Card, CardContent, Breadcrumbs, Link } from '@material-ui/core'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Breadcrumbs from '@mui/material/Breadcrumbs'
+import Link from '@mui/material/Link'
 import styles from './styles'
 
 function PublicContact() {

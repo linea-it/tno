@@ -1,10 +1,10 @@
-import React, { useEffect, useState, Component } from 'react'
-import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, InputLabel, MenuItem, TextField, FormGroup, FormControlLabel, Typography, Switch, OutlinedInput, IconButton, Tooltip } from '../../../node_modules/@material-ui/core/index'
+import React, { useEffect, useState } from 'react'
+// import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, FormGroup, FormControlLabel, Switch, IconButton, Tooltip } from '../../../node_modules/@material-ui/core/index'
+import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, FormGroup, FormControlLabel, Switch, IconButton, Tooltip } from '@mui/material'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
-import { useNavigate } from '../../../node_modules/react-router-dom/dist/index'
-
+import { useNavigate } from 'react-router-dom'
 import {
   getLeapSecondList,
   getBspPlanetaryList,
@@ -17,13 +17,11 @@ import {
   getAsteroidsList,
   getFilteredAsteroidsList,
 } from '../../services/api/Asteroid'
-import { Alert } from '../../../node_modules/@material-ui/lab/index'
+import Alert from '@mui/material/Alert';
 import ColumnStatus from '../../components/Table/ColumnStatus'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Select from 'react-select'
-import './orbittrace.css'
 import useInterval from '../../hooks/useInterval'
-import { Pages } from '../../../node_modules/@mui/icons-material/index'
 
 function OrbitTrace() {
   const navigate = useNavigate();

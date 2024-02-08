@@ -199,7 +199,7 @@ export default function PersistentDrawerLeft({ children }) {
           <ListItemButton onClick={() => navigate('/dashboard/occultation')}>
             <ListItemText primary='Occultation' />
           </ListItemButton>
-          <ListItemButton onClick={() => navigate('/')}>
+          <ListItemButton onClick={() => navigate('/public_home')}>
             <ListItemText primary='Public Page' />
           </ListItemButton>
           <ListItemButton onClick={() => navigate('/dashboard/asteroid_job')}>

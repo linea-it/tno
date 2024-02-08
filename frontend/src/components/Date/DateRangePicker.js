@@ -2,9 +2,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import { DateRange } from 'react-date-range'
-import 'react-date-range/dist/styles.css' // main css file
-import 'react-date-range/dist/theme/default.css' // theme css file
-import './styles.css'
+// import 'react-date-range/dist/styles.css' // main css file
+// import 'react-date-range/dist/theme/default.css' // theme css file
+
 
 function DateRangePicker({ selectedDate, setSelectedDate, minDate, maxDate }) {
   const handleChange = ({ selection }) => {

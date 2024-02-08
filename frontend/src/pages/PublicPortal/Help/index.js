@@ -1,6 +1,10 @@
 /* eslint-disable max-len */
 import React from 'react'
-import { Grid, Container, Typography } from '@material-ui/core'
+
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+
 import styles from './styles'
 
 function PublicHelp() {

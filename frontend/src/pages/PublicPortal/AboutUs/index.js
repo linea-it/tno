@@ -3,7 +3,13 @@
 /* eslint-disable react/jsx-indent */
 /* eslint-disable max-len */
 import React from 'react'
-import { Grid, Container, Typography, Breadcrumbs, Link, Card, CardContent } from '@material-ui/core'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Breadcrumbs from '@mui/material/Breadcrumbs'
+import Link from '@mui/material/Link'
 import styles from './styles'
 
 function PublicAboutUs() {
@@ -42,7 +48,7 @@ function PublicAboutUs() {
                   find patterns of cosmic structure and study the dark energy. However, as a subproduct,thousands of small Solar
                   System bodies are found in the DES images. Therefore, part of our team of researchers identified the
                   known ones in those images, measured their positions, refined their orbits, and predicted stellar occultations
-                   by them that are publicly available on the TNO portal.
+                  by them that are publicly available on the TNO portal.
                   </p>
                   <p>
                   Soon, this portal will also publish the stellar occultation events by small solar system bodies detected by the

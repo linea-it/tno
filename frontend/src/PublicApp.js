@@ -2,14 +2,15 @@ import React from 'react'
 import { MuiThemeProvider } from '@material-ui/core/styles'
 import { BrowserRouter } from 'react-router-dom'
 import light from './themes/light'
-import AppRoutes from './routes'
+// import AppRoutes from './routes'
 import history from './services/history'
 import { AuthProvider } from './contexts/AuthContext.js'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { PredictionEventsProvider } from './contexts/PredictionContext'
+import PublicRoutes from './routes/public_page'
 
 const queryClient = new QueryClient()
-function App() {
+function PublicApp() {
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -17,7 +18,8 @@ function App() {
         <AuthProvider>
           <PredictionEventsProvider>
             <BrowserRouter history={history}>
-              <AppRoutes />
+              {/* <AppRoutes /> */}
+              <PublicRoutes />
             </BrowserRouter>
           </PredictionEventsProvider>
         </AuthProvider>
@@ -26,4 +28,4 @@ function App() {
   )
 }
 
-export default App
+export default PublicApp
