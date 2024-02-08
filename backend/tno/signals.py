@@ -1,16 +1,17 @@
-from django.db.models.signals import post_save, pre_delete
-from django.contrib.auth.models import User
-from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
+import errno
 
 # from .models import CustomList, Proccess
 # from .skybotoutput import FilterObjects
 # from tno.proccess import ProccessManager
 import logging
 import os
-import errno
-from django.conf import settings
 from concurrent import futures
+
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save, pre_delete
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 
 @receiver(post_save, sender=User)

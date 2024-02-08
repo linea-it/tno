@@ -1,8 +1,11 @@
+import logging
 from datetime import datetime, timezone
 
 import django_filters
+import humanize
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.db.models import F, FloatField, Value
 from rest_framework import viewsets
 from rest_framework.authentication import (
     BasicAuthentication,
@@ -12,17 +15,12 @@ from rest_framework.authentication import (
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
 from tno.db import CatalogDB
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
 from tno.tasks import create_occ_map_task, create_prediction_maps
-
-from django.db.models import F, Value, FloatField
-import logging
-import humanize
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):

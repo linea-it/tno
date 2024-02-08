@@ -1,6 +1,6 @@
+from des.models import Ccd, Exposure
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection
-from des.models import Exposure, Ccd
 from skybot.models import Position
 from tno.models import Occultation
 

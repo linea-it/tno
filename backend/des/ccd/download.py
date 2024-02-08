@@ -1,9 +1,3 @@
-from des.ccd.notify import (
-    notify_start_job,
-    notify_fail_job,
-    notify_finish_job,
-    notify_abort_job,
-)
 import logging
 import os
 import shutil
@@ -13,13 +7,18 @@ from datetime import datetime, timedelta, timezone
 
 import humanize
 import pandas as pd
+from common.download import Download
+from common.unpack_fz import funpack
+from des.ccd.notify import (
+    notify_abort_job,
+    notify_fail_job,
+    notify_finish_job,
+    notify_start_job,
+)
+from des.dao import DesSkybotPositionDao, DownloadCcdJobDao, DownloadCcdJobResultDao
 from django.conf import settings
 from matplotlib import dates as dt
 from matplotlib import pyplot as plt
-
-from common.download import Download
-from common.unpack_fz import funpack
-from des.dao import DesSkybotPositionDao, DownloadCcdJobDao, DownloadCcdJobResultDao
 
 logger = logging.getLogger("download_ccds")
 

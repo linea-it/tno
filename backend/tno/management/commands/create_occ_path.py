@@ -1,8 +1,9 @@
-from django.core.management.base import BaseCommand
 from datetime import datetime, timezone
-from tno.tasks import calculate_occultation_path
+
 from celery import group
+from django.core.management.base import BaseCommand
 from tno.models import Occultation
+from tno.tasks import calculate_occultation_path
 
 
 class Command(BaseCommand):

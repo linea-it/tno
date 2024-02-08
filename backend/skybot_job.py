@@ -1,8 +1,8 @@
+from datetime import datetime
+
 from sqlalchemy import desc
 from sqlalchemy.sql import and_, select
-
 from tno.db import DBBase
-from datetime import datetime
 
 
 class DesSkybotJobDao(DBBase):

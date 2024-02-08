@@ -4,18 +4,16 @@ from datetime import datetime
 
 import humanize
 import pandas as pd
-
-from des.models import SkybotByYear
-from des.models import SkybotByDynclass
-
 from des.dao import (
-    ExposureDao,
     CcdDao,
     DesSkybotJobResultDao,
-    SkybotByYearDao,
+    DesSkybotPositionDao,
     DesSummaryDynclassDao,
+    ExposureDao,
+    SkybotByDynclassDao,
+    SkybotByYearDao,
 )
-from des.dao import SkybotByDynclassDao, DesSkybotPositionDao
+from des.models import SkybotByDynclass, SkybotByYear
 
 
 class SummaryResult:

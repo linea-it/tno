@@ -1,7 +1,6 @@
-from rest_framework import viewsets
-
 from des.models import SkybotByDynclass
 from des.serializers import SkybotByDynclassSerializer
+from rest_framework import viewsets
 
 
 class SkybotByDynclassViewSet(viewsets.ReadOnlyModelViewSet):

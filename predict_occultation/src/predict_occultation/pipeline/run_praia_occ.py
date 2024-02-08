@@ -1,20 +1,21 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
-import traceback
-import os
 import argparse
+import os
+import sys
+import traceback
+from datetime import datetime
+
+from dao import GaiaDao, MissingDBURIException
+from generate_dates import generate_dates_file
+from generate_ephemeris import centers_positions_to_deg, generate_ephemeris, run_elimina
 from library import (
-    check_leapsec,
-    check_bsp_planetary,
     check_bsp_object,
+    check_bsp_planetary,
+    check_leapsec,
     clear_for_rerun,
 )
-from generate_dates import generate_dates_file
-from generate_ephemeris import generate_ephemeris, run_elimina, centers_positions_to_deg
 from search_candidates import search_candidates
-from dao import GaiaDao, MissingDBURIException
-from datetime import datetime
-import sys
 
 parser = argparse.ArgumentParser()
 parser.add_argument("name", help="Object name without spaces")

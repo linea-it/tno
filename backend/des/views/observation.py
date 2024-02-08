@@ -1,17 +1,15 @@
 import json
 import os
 import threading
+
 import django_filters
-
-from rest_framework import viewsets
-
 from des.models import Observation
 from des.serializers import ObservationSerializer
+from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from tno.models import Asteroid
-from des.models import Observation
 from tno.asteroid_utils import plot_observations_by_asteroid
+from tno.models import Asteroid
 
 # class ObservationFilter(django_filters.FilterSet):
 #     asteroid_id = django_filters.NumberFilter(field_name='asteroid__id', lookup_expr='exact')

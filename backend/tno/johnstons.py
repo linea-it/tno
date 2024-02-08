@@ -1,10 +1,11 @@
-from xml.etree.ElementTree import ElementTree
-from lxml import html
-from urllib.request import urlopen
 import csv
-from django.conf import settings
 import os
 from datetime import datetime
+from urllib.request import urlopen
+from xml.etree.ElementTree import ElementTree
+
+from django.conf import settings
+from lxml import html
 
 
 class JhonstonArchive:

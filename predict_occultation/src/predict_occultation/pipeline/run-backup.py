@@ -4,17 +4,16 @@
 import argparse
 import os
 import traceback
-import os
-import argparse
 from datetime import datetime, timedelta
-from run_nima import start_nima
-from run_praia_occ import start_praia_occ
+
 from library import (
-    read_asteroid_json,
-    write_asteroid_json,
     count_lines,
     create_nima_input,
+    read_asteroid_json,
+    write_asteroid_json,
 )
+from run_nima import start_nima
+from run_praia_occ import start_praia_occ
 
 parser = argparse.ArgumentParser()
 parser.add_argument("name", help="Object name without spaces. example '1999RB216'")

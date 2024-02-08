@@ -1,7 +1,8 @@
-from django.core.management.base import BaseCommand
 from datetime import datetime, timezone
-from tno.tasks import garbage_collector
+
 from celery import group
+from django.core.management.base import BaseCommand
+from tno.tasks import garbage_collector
 
 
 class Command(BaseCommand):

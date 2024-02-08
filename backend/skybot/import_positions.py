@@ -6,7 +6,6 @@ from io import StringIO
 import humanize
 import pandas as pd
 from django.conf import settings
-
 from tno.db import DBBase
 
 

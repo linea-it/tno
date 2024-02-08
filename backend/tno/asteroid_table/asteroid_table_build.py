@@ -33,22 +33,23 @@ The actual data URLs and specific processing steps might need updates based on t
 changes or additional requirements in the future.
 """
 
-import requests
-import os
+import functools
 import logging
+import os
+import shutil
 import time
-import pandas as pd
-import numpy as np
+import traceback
 from datetime import datetime, timezone
-from tno.dao import AsteroidDao, AsteroidJobDao
 from io import StringIO
 from pathlib import Path
-import traceback
-import humanize
 
-import functools
+import humanize
+import numpy as np
+import pandas as pd
+import requests
 import tqdm
-import shutil
+from tno.dao import AsteroidDao, AsteroidJobDao
+
 
 # Function to download the file if it doesn't exist or if it has changed
 def download_file_if_not_exists_or_changed(url, directory_path, filename, log):

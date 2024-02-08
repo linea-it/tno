@@ -1,10 +1,11 @@
+import datetime
+import json
+import os
+
+import restApi
 import workAssyncFile
 from sora.prediction import prediction
 from sora.prediction.occmap import plot_occ_map as occmap
-import json
-import datetime
-import restApi
-import os
 
 
 def __clearName(name):

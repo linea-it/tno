@@ -9,9 +9,10 @@
 
 def get_logger(path, filename="refine.log", debug=False):
     import logging
-    import colorlog
     import os
     import sys
+
+    import colorlog
 
     # File Handler
     logfile = os.path.join(path, filename)
@@ -55,8 +56,8 @@ def get_logger(path, filename="refine.log", debug=False):
 
 
 def read_inputs(path, filename="job.json"):
-    import os
     import json
+    import os
 
     with open(os.path.join(path, filename)) as json_file:
         data = json.load(json_file)
@@ -185,10 +186,11 @@ def dec_hms_to_deg(dec):
 
 def submit_job(name, number, start, end, step, path):
 
-    from condor import Condor
-    import pathlib
     import configparser
     import os
+    import pathlib
+
+    from condor import Condor
 
     # Carrega as variaveis de configuração do arquivo config.ini
     config = configparser.ConfigParser()
@@ -251,10 +253,11 @@ def count_lines(filepath):
 
 def ingest_occultations(asteroid_id, name, number, filepath, start_period, end_period):
 
-    import pandas as pd
     from io import StringIO
+
+    import pandas as pd
     from dao import OccultationDao
-    from library import ra_hms_to_deg, dec_hms_to_deg
+    from library import dec_hms_to_deg, ra_hms_to_deg
 
     dao = OccultationDao()
 
@@ -435,9 +438,9 @@ def geo_topo_vector(longitude, latitude, elevation, jd):
     Transformation from [longitude, latitude, elevation] to [x,y,z]
     """
 
+    import numpy as np
     from astropy.coordinates import GCRS, EarthLocation
     from astropy.time import Time
-    import numpy as np
 
     loc = EarthLocation(longitude, latitude, elevation)
 
@@ -473,8 +476,8 @@ def compute_theoretical_positions(
     # except Exception as e:
     #     log.error("Failed to download finals2000A.all Error: %s" % e)
 
-    import spiceypy as spice
     import numpy as np
+    import spiceypy as spice
     from library import geo_topo_vector
 
     # Limpar o Kernel antes por garantia.
@@ -550,10 +553,11 @@ def compute_theoretical_positions(
 def ingest_observations(path, observations):
 
     import pathlib
-    import pandas as pd
-    from io import StringIO
-    from dao import ObservationDao
     from datetime import datetime, timezone
+    from io import StringIO
+
+    import pandas as pd
+    from dao import ObservationDao
 
     result = dict()
     tp0 = datetime.now(tz=timezone.utc)

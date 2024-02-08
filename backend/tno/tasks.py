@@ -1,18 +1,17 @@
 # Create your tasks here
 import logging
 from datetime import datetime
+from time import sleep
 from typing import Optional
 
 from celery import group, shared_task
-
+from tno.models import Occultation
+from tno.occviz import occultation_path_coeff2, visibility_from_coeff
 from tno.prediction_map import (
     garbage_collector_maps,
     sora_occultation_map,
     upcoming_events_to_create_maps,
 )
-from tno.occviz import occultation_path_coeff2, visibility_from_coeff
-from tno.models import Occultation
-from time import sleep
 
 
 @shared_task

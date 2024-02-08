@@ -1,5 +1,6 @@
-from run_pred_occ import rerun_job
 from sys import argv
+
+from run_pred_occ import rerun_job
 
 
 def main():

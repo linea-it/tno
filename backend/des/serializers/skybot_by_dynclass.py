@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from des.models import SkybotByDynclass
+from rest_framework import serializers
 
 
 class SkybotByDynclassSerializer(serializers.ModelSerializer):

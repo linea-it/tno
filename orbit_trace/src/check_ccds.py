@@ -1,13 +1,14 @@
 # Exemplo URL para Download dos ccds.
 # https://desar2.cosmology.illinois.edu/DESFiles/desarchive/OPS/finalcut/Y5A1/r3516/20171021/D00689749/p01/cat/D00689749_z_c24_r3516p01_red-fullcat.fits
-from library import retrieve_asteroids
+import csv
 import os
-from asteroid import Asteroid
 import pathlib
 import urllib.parse
-import csv
-from external_inputs.download import Download
+
 import humanize
+from asteroid import Asteroid
+from external_inputs.download import Download
+from library import retrieve_asteroids
 
 original_path = os.getcwd()
 os.environ["EXECUTION_PATH"] = original_path

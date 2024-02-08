@@ -14,10 +14,11 @@ from rest_framework.response import Response
 def teste(request):
     if request.method == "GET":
 
-        import pandas as pd
-        from tno.occviz import visibility_from_coeff
         from datetime import datetime, timezone
+
+        import pandas as pd
         from tno.models import Occultation
+        from tno.occviz import visibility_from_coeff
 
         lat = -22.90278
         long = -43.2075

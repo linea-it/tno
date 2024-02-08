@@ -1,6 +1,6 @@
+from des.models import OrbitTraceJob
 from django.conf import settings
 from django.db import models
-from des.models import OrbitTraceJob
 
 
 class OrbitTraceJobStatus(models.Model):

@@ -1,10 +1,11 @@
-from asteroid import Asteroid
-from pathlib import Path
 import logging
+import shutil
 import sys
 import traceback
+from pathlib import Path
+
 import colorlog
-import shutil
+from asteroid import Asteroid
 
 # log = logging.getLogger("teste")
 # log.setLevel(logging.DEBUG)

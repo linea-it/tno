@@ -1,18 +1,16 @@
 import logging
+from datetime import datetime
 
+import humanize
+from des.models import Observation
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
 from tno.dao.asteroids import AsteroidDao
 from tno.models import Asteroid, Occultation, PredictionJobResult
-from des.models import Observation
 from tno.serializers import AsteroidSerializer
-from rest_framework.pagination import PageNumberPagination
-
-from datetime import datetime
-import humanize
 
 
 class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):

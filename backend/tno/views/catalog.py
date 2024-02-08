@@ -1,15 +1,13 @@
 import logging
 
 from rest_framework import viewsets
-
-from tno.models import Catalog
-
-from tno.serializers import CatalogSerializer
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from tno.db import CatalogDB
+from tno.models import Catalog
+from tno.serializers import CatalogSerializer
 
 
 class CatalogViewSet(viewsets.ReadOnlyModelViewSet):

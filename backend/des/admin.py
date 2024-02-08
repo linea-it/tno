@@ -3,16 +3,16 @@ from django.contrib import admin
 from .models import (
     Ccd,
     Exposure,
-    SkybotJob,
+    Observation,
     OrbitTraceJob,
     OrbitTraceJobResult,
     OrbitTraceJobStatus,
+    SkybotByDynclass,
+    SkybotByYear,
+    SkybotJob,
     SkybotJobResult,
     SkybotPosition,
     SummaryDynclass,
-    SkybotByYear,
-    SkybotByDynclass,
-    Observation,
 )
 
 

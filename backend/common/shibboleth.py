@@ -1,7 +1,6 @@
 import logging
 
 from django.contrib.auth.models import Group
-
 from shibboleth.middleware import ShibbolethRemoteUserMiddleware
 
 

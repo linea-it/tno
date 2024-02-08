@@ -5,8 +5,8 @@ from typing import Optional
 
 from django.conf import settings
 from django.db import models
-
 from tno.models import Asteroid
+
 
 # TODO Squash Migrations:
 # https://coderbook.com/@marcus/how-to-squash-and-merge-django-migrations/

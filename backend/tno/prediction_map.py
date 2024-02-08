@@ -1,19 +1,16 @@
 import logging
+import os
 from datetime import datetime, timezone
+from itertools import groupby
+from operator import itemgetter
 from pathlib import Path
 from typing import Optional, Union
 
 import humanize
+import numpy as np
 from django.conf import settings
 from sora.prediction.occmap import plot_occ_map as occmap
-
 from tno.models import Occultation
-import os
-
-import numpy as np
-from itertools import groupby
-from operator import itemgetter
-import humanize
 
 
 def get_size_of_map_folder():

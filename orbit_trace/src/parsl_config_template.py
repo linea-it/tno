@@ -1,10 +1,9 @@
+from parsl.addresses import address_by_hostname, address_by_query
+from parsl.channels import LocalChannel, SSHChannel
 from parsl.config import Config
-from parsl.channels import LocalChannel
 from parsl.executors import HighThroughputExecutor
 from parsl.monitoring.monitoring import MonitoringHub
-from parsl.providers import LocalProvider, CondorProvider
-from parsl.channels import SSHChannel
-from parsl.addresses import address_by_hostname, address_by_query
+from parsl.providers import CondorProvider, LocalProvider
 
 # PARSL Config
 htex_config = Config(

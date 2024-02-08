@@ -1,5 +1,5 @@
-from matplotlib import pyplot as plt
 import numpy as np
+from matplotlib import pyplot as plt
 
 
 # Function to do a translation in RA from [pi --> 2pi | 0 --> pi] to [-pi --> 0 --> pi]

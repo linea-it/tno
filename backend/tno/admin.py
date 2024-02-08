@@ -1,16 +1,17 @@
 from django.contrib import admin
-
-from tno.models import JohnstonArchive
-from tno.models import AsteroidJob
-from tno.models import Asteroid
-from tno.models import BspPlanetary
-from tno.models import LeapSecond
-from tno.models import Occultation
-from tno.models import Catalog
-from tno.models import PredictionJob
-from tno.models import PredictionJobResult
-from tno.models import Profile
-from tno.models import PredictionJobStatus
+from tno.models import (
+    Asteroid,
+    AsteroidJob,
+    BspPlanetary,
+    Catalog,
+    JohnstonArchive,
+    LeapSecond,
+    Occultation,
+    PredictionJob,
+    PredictionJobResult,
+    PredictionJobStatus,
+    Profile,
+)
 
 
 @admin.register(Profile)

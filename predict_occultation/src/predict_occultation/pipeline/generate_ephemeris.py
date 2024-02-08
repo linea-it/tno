@@ -7,7 +7,6 @@ import os
 import subprocess
 
 import spiceypy as spice
-
 from library import HMS2deg
 
 

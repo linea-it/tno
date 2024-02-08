@@ -1,7 +1,7 @@
+from des.models import OrbitTraceJob
 from django.conf import settings
 from django.db import models
 from tno.models import Asteroid
-from des.models import OrbitTraceJob
 
 
 class OrbitTraceJobResult(models.Model):

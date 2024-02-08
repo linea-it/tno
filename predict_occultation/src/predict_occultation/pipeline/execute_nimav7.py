@@ -1,7 +1,8 @@
-from datetime import datetime
-import numpy as np
-import subprocess
 import os
+import subprocess
+from datetime import datetime
+
+import numpy as np
 
 
 # Function to execute scripts, the parameters must be an numpy array

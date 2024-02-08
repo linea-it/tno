@@ -1,9 +1,8 @@
+import logging
+
 from sqlalchemy import Date, cast, func
 from sqlalchemy.sql import and_, select
-
 from tno.db import DBBase
-
-import logging
 
 
 class ExposureDao(DBBase):

@@ -1,6 +1,7 @@
+from des.models.exposure import Exposure
+from des.models.skybot_jobs import SkybotJob
 from django.conf import settings
 from django.db import models
-from des.models import SkybotJob, Exposure
 from skybot.models import Position
 
 

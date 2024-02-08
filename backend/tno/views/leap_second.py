@@ -1,9 +1,7 @@
 import logging
 
 from rest_framework import viewsets
-
 from tno.models import LeapSecond
-
 from tno.serializers import LeapSecondSerializer
 
 

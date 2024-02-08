@@ -16,6 +16,5 @@ class DesConfig(AppConfig):
 
         # Inicia a Scheduler do Download CCD
         # import des.ccd.daemon
-
         # Inicia a Scheduler do Des Astrometry (Orbit Trace)
         # import old_apps.astrometry_daemon

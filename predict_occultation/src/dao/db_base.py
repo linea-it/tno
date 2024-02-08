@@ -1,11 +1,12 @@
-from sqlalchemy import create_engine, Table, MetaData
-from sqlalchemy.sql import select, and_
 import collections
 import configparser
 import os
-from sqlalchemy.pool import NullPool
 import warnings
+
+from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy import exc as sa_exc
+from sqlalchemy.pool import NullPool
+from sqlalchemy.sql import and_, select
 
 
 class MissingDBURIException(Exception):

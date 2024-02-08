@@ -1,5 +1,5 @@
 from django.db import models
-from tno.models import PredictionJob, Asteroid
+from tno.models import Asteroid, PredictionJob
 
 
 class PredictionJobResult(models.Model):

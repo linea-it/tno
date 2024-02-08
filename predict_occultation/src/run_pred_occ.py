@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 
-import os
-import time
-from datetime import datetime, timezone
-import traceback
-import pathlib
-import json
-import humanize
-import pathlib
-import pandas as pd
 import configparser
+import json
+import os
+import pathlib
+import shutil
+import subprocess
+import time
+import traceback
+from datetime import datetime, timezone
+from io import StringIO
+
+import humanize
 import pandas as pd
+import tqdm
 from asteroid import Asteroid
 from dao import (
+    AsteroidDao,
     PredictOccultationJobDao,
     PredictOccultationJobResultDao,
     PredictOccultationJobStatusDao,
 )
-from io import StringIO
-
-import shutil
-import tqdm
-import subprocess
-from dao import AsteroidDao
 
 try:
     from predict_occultation.app import run_pipeline
@@ -50,9 +48,10 @@ class AbortError(Exception):
 
 def get_logger(path, filename="refine.log", debug=False):
     import logging
-    import colorlog
     import os
     import sys
+
+    import colorlog
 
     # File Handler
     logfile = os.path.join(path, filename)
@@ -203,8 +202,8 @@ def make_job_json_file(job, path):
 
 
 def read_inputs(path, filename="job.json"):
-    import os
     import json
+    import os
 
     with open(os.path.join(path, filename)) as json_file:
         data = json.load(json_file)

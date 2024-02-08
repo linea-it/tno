@@ -1,5 +1,6 @@
-from download import Download
 import pathlib
+
+from download import Download
 
 
 def getFileURL(name, number, key, ext):

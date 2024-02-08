@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 import os
+
 from parsl import python_app
 
 
 @python_app()
 def theoretical_positions(asteroid, bsp_planetary, leap_second, observatory_location):
 
-    from library import compute_theoretical_positions, get_logger
     import traceback
     from datetime import datetime, timezone
+
+    from library import compute_theoretical_positions, get_logger
 
     tp0 = datetime.now(tz=timezone.utc)
 
@@ -57,14 +59,13 @@ def theoretical_positions(asteroid, bsp_planetary, leap_second, observatory_loca
 def observed_positions(idx, name, asteroid_id, ccd, asteroid_path, radius=2):
 
     import os
-    import numpy as np
-    from astropy.io import fits
-    from library import get_logger
+    import traceback
 
     import numpy as np
     from astropy import units as u
     from astropy.coordinates import SkyCoord
-    import traceback
+    from astropy.io import fits
+    from library import get_logger
 
     obs_coordinates = None
 

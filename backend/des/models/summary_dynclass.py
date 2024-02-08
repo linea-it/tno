@@ -1,6 +1,6 @@
+from des.models import SkybotJob
 from django.conf import settings
 from django.db import models
-from des.models import SkybotJob
 
 
 class SummaryDynclass(models.Model):

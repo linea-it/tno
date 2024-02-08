@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from des.models import SkybotByYear
+from rest_framework import serializers
 
 
 class SkybotByYearSerializer(serializers.ModelSerializer):

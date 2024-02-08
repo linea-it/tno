@@ -1,8 +1,9 @@
+import functools
 import os
-import requests
 import shutil
 from datetime import datetime
-import functools
+
+import requests
 import tqdm
 
 

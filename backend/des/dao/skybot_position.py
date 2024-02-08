@@ -1,7 +1,6 @@
-from sqlalchemy import Date, cast, column, literal, literal_column, text, func
-from sqlalchemy.sql import and_, select
-
 from skybot.dao.skybot_positions import SkybotPositionsDao
+from sqlalchemy import Date, cast, column, func, literal, literal_column, text
+from sqlalchemy.sql import and_, select
 from tno.db import DBBase
 
 

@@ -1,5 +1,6 @@
-from predict_occultation import rerun_job
 from sys import argv
+
+from predict_occultation import rerun_job
 
 
 def main():

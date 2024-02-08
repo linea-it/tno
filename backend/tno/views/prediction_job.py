@@ -2,15 +2,16 @@ import json
 import os
 import threading
 from datetime import datetime, timedelta
+
 import humanize
 import numpy as np
 import pandas as pd
-from tno.models import PredictionJob, Catalog, PredictionJobStatus
-from tno.serializers import PredictionJobSerializer, PredictionJobStatusSerializer
 from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from tno.models import Catalog, PredictionJob, PredictionJobStatus
+from tno.serializers import PredictionJobSerializer, PredictionJobStatusSerializer
 
 
 class PredictionJobViewSet(

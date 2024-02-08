@@ -6,8 +6,9 @@ import os
 import shutil
 import subprocess
 import sys
-from datetime import datetime
 import traceback
+from datetime import datetime
+
 import numpy as np
 import spiceypy as spice
 

@@ -11,13 +11,12 @@ import dateutil.parser
 import humanize
 import pandas as pd
 import pytz
-from django.conf import settings
-
 from common.notify import Notify
-from des.dao import DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao, CcdDao
+from des.dao import CcdDao, DesSkybotJobDao, DesSkybotJobResultDao, ExposureDao
 from des.models import SummaryDynclass
 from des.skybot.import_positions import DESImportSkybotPositions
 from des.summary import SummaryResult
+from django.conf import settings
 from skybot.skybot_server import SkybotServer
 from tno.dao.asteroids import AsteroidDao
 

@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from des.models import SkybotJob
+from rest_framework import serializers
 
 
 class SkybotJobSerializer(serializers.ModelSerializer):
