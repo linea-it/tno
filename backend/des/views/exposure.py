@@ -1,14 +1,13 @@
 from datetime import datetime, timedelta
 
 import pandas as pd
-from rest_framework import viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 from common.dates_interval import get_days_interval
 from des.dao.exposure import ExposureDao
 from des.models import Exposure
 from des.serializers import ExposureSerializer
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class ExposureViewSet(viewsets.ReadOnlyModelViewSet):

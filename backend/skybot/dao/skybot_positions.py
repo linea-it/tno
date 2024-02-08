@@ -1,7 +1,6 @@
-from tno.db import DBBase
-
-from sqlalchemy.sql import and_, select
 from sqlalchemy import func
+from sqlalchemy.sql import and_, select
+from tno.db import DBBase
 
 
 class SkybotPositionsDao(DBBase):

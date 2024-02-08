@@ -1,6 +1,6 @@
+from rest_framework import mixins, viewsets
 from tno.models import PredictionJobStatus
 from tno.serializers import PredictionJobStatusSerializer
-from rest_framework import mixins, viewsets
 
 
 class PredictionJobStatusViewSet(viewsets.ReadOnlyModelViewSet):

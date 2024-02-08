@@ -2,7 +2,6 @@
 
 
 from apscheduler.schedulers.background import BackgroundScheduler
-
 from des.skybot.pipeline import DesSkybotPipeline
 
 

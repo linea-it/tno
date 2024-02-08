@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from des.models import SkybotJob, SummaryDynclass
+from rest_framework import serializers
 
 
 class SummaryDynclassSerializer(serializers.ModelSerializer):

@@ -61,10 +61,11 @@ def count_lines(filepath):
 
 def ingest_occultations(asteroid_id, name, number, filepath, start_period, end_period):
 
-    import pandas as pd
     from io import StringIO
+
+    import pandas as pd
     from dao import OccultationDao
-    from library import ra_hms_to_deg, dec_hms_to_deg
+    from library import dec_hms_to_deg, ra_hms_to_deg
 
     dao = OccultationDao()
 

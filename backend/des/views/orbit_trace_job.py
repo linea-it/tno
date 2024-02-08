@@ -9,8 +9,7 @@ from common.dates_interval import get_days_interval
 from common.read_csv import csv_to_dataframe
 from des.dao import CcdDao, DesSkybotJobResultDao, ExposureDao
 from des.models import OrbitTraceJob
-from des.serializers import OrbitTraceJobSerializer
-from des.serializers import OrbitTraceJobStatusSerializer
+from des.serializers import OrbitTraceJobSerializer, OrbitTraceJobStatusSerializer
 from des.skybot.pipeline import DesSkybotPipeline
 from des.summary import SummaryResult
 from django.core.paginator import Paginator

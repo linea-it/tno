@@ -1,12 +1,13 @@
-from sqlalchemy import create_engine, Table, MetaData
-from sqlalchemy.sql import select, delete, update, insert, and_
 import collections
 import configparser
 import os
-from sqlalchemy.pool import NullPool
 import warnings
+from datetime import datetime, timedelta, timezone
+
+from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy import exc as sa_exc
-from datetime import datetime, timezone, timedelta
+from sqlalchemy.pool import NullPool
+from sqlalchemy.sql import and_, delete, insert, select, update
 
 
 class MissingDBURIException(Exception):

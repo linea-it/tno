@@ -1,17 +1,17 @@
 import json
 import os
 import threading
-import django_filters
 from datetime import datetime, timedelta
 
+import django_filters
 import numpy as np
 import pandas as pd
-from tno.models import PredictionJobResult
-from tno.serializers import PredictionJobResultSerializer
 from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from tno.models import PredictionJobResult
+from tno.serializers import PredictionJobResultSerializer
 
 
 class PredictionJobResultFilter(django_filters.FilterSet):

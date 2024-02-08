@@ -1,5 +1,6 @@
-from external_inputs.download import Download
 import pathlib
+
+from external_inputs.download import Download
 
 
 def getFileURL(name, number, key, ext):

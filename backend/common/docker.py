@@ -2,11 +2,11 @@
     Funcoes para converter as estatisticas de um container,
     retiradas deste repositorio: https://github.com/TomasTomecek/sen/blob/master/sen/util.py#L162
 """
-import os
-import logging
 import functools
-import traceback
+import logging
+import os
 import time
+import traceback
 from datetime import datetime
 
 from docker.errors import APIError

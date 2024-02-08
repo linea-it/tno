@@ -1,5 +1,5 @@
-from sqlalchemy.sql import delete, and_
 from dao.db_base import DBBase
+from sqlalchemy.sql import and_, delete
 
 
 class OccultationDao(DBBase):

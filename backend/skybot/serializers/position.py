@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from skybot.models.position import Position
 
 

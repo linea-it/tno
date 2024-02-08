@@ -14,8 +14,8 @@ from sqlalchemy import (
     Table,
     create_engine,
 )
-from sqlalchemy import func, inspect
 from sqlalchemy import exc as sa_exc
+from sqlalchemy import func, inspect
 
 # from sqlalchemy.dialects import oracle
 from sqlalchemy.dialects import postgresql, sqlite
@@ -23,12 +23,7 @@ from sqlalchemy.ext.compiler import compiles
 from sqlalchemy.pool import NullPool
 from sqlalchemy.schema import Sequence
 from sqlalchemy.sql import and_, select, text
-from sqlalchemy.sql.expression import (
-    ClauseElement,
-    Executable,
-    between,
-    literal_column,
-)
+from sqlalchemy.sql.expression import ClauseElement, Executable, between, literal_column
 
 
 class DBBase:

@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from des.models import OrbitTraceJob
+from rest_framework import serializers
 
 
 class OrbitTraceJobSerializer(serializers.ModelSerializer):

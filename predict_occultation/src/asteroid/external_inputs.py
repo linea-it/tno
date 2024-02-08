@@ -3,13 +3,13 @@ import logging
 import pathlib
 from datetime import datetime, timezone
 
+from asteroid.astdys import get_astdys_observations, get_astdys_orbital_elements
 from asteroid.jpl import get_bsp_from_jpl
 from asteroid.mpc import (
     generate_resumed_orbital_elements,
     get_mpc_observations,
     get_mpc_orbital_elements,
 )
-from asteroid.astdys import get_astdys_orbital_elements, get_astdys_observations
 
 
 class AsteroidExternalInputs:

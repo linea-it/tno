@@ -1,6 +1,5 @@
-from django.db import models
-
 from des.models import Ccd, Exposure
+from django.db import models
 from skybot.models import Position
 from tno.models import Asteroid
 

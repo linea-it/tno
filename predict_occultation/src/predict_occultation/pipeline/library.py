@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
 import os
+
 import numpy as np
 
 
@@ -147,8 +148,8 @@ def read_asteroid_json(asteroid_name):
 
 
 def write_asteroid_json(asteroid_name, data, callback_path=None):
-    import os
     import json
+    import os
 
     path = os.environ.get("DIR_DATA").rstrip("/")
     alias = asteroid_name.replace(" ", "").replace("_", "")

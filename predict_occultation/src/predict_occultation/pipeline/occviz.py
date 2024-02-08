@@ -11,24 +11,25 @@
 # from astropy.config import set_temp_cache
 # set_temp_cache('/app/shared/cache')
 
+import json
 import os
-import numpy as np
-import astropy.units as u
+from datetime import datetime, timezone
+from typing import Optional, Union
+
 import astropy.constants as const
-from astropy.time import Time
+import astropy.units as u
+import numpy as np
 from astropy.coordinates import (
-    SkyCoord,
-    Angle,
     GCRS,
     ITRS,
-    get_sun,
+    Angle,
     EarthLocation,
+    SkyCoord,
     SkyOffsetFrame,
+    get_sun,
 )
+from astropy.time import Time
 from scipy.interpolate import CubicSpline
-from typing import Optional, Union
-from datetime import datetime, timezone
-import json
 
 
 def _calculate_r2(x, y):

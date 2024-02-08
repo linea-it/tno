@@ -5,7 +5,6 @@ from io import StringIO
 
 import humanize
 import pandas as pd
-
 from des.dao import CcdDao, DesSkybotPositionDao
 from skybot.dao import SkybotPositionsDao
 from skybot.import_positions import ImportSkybotPositions

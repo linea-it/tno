@@ -3,7 +3,6 @@ from io import StringIO
 
 from sqlalchemy import Date, cast, desc, func
 from sqlalchemy.sql import and_, select, text
-
 from tno.db import DBBase
 
 

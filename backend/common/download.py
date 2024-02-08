@@ -1,7 +1,8 @@
 import os
-import requests
 import shutil
 from datetime import datetime
+
+import requests
 
 
 class Download:

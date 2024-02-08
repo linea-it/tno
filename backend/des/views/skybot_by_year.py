@@ -1,7 +1,6 @@
-from rest_framework import viewsets
-
 from des.models import SkybotByYear
 from des.serializers import SkybotByYearSerializer
+from rest_framework import viewsets
 
 
 class SkybotByYearViewSet(viewsets.ReadOnlyModelViewSet):

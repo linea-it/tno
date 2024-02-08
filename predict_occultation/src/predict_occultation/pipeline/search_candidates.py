@@ -6,7 +6,6 @@ import subprocess
 from datetime import datetime
 
 import numpy as np
-
 from library import HMS2deg
 
 

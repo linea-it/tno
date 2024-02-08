@@ -1,9 +1,7 @@
-from sqlalchemy import func
-from sqlalchemy.sql import and_, select, text
-from sqlalchemy import delete
-
-
 import warnings
+
+from sqlalchemy import delete, func
+from sqlalchemy.sql import and_, select, text
 
 with warnings.catch_warnings():
     warnings.simplefilter("ignore")

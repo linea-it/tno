@@ -2,7 +2,6 @@ import logging
 import traceback
 
 import humanize
-
 from common.notify import Notify
 from des.dao import DownloadCcdJobDao
 

@@ -1,6 +1,5 @@
 from sqlalchemy import Date, cast, func
 from sqlalchemy.sql import and_, select
-
 from tno.db import DBBase
 
 

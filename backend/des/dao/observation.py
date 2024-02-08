@@ -1,6 +1,6 @@
 from sqlalchemy import delete
-from tno.db import DBBase
 from sqlalchemy.sql import and_, select
+from tno.db import DBBase
 
 
 class DesObservationDao(DBBase):

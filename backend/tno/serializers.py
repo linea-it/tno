@@ -2,10 +2,9 @@ import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from skybot.models.position import Position
-
 from tno.models import (
-    AsteroidJob,
     Asteroid,
+    AsteroidJob,
     BspPlanetary,
     Catalog,
     JohnstonArchive,

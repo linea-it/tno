@@ -1,17 +1,17 @@
-from rest_framework.decorators import api_view, renderer_classes
-from rest_framework.response import Response
-from rest_framework.renderers import JSONRenderer
 from des.models import (
-    SkybotJobResult,
-    SummaryDynclass,
-    SkybotJob,
-    SkybotPosition as DesSkybotPosition,
     Observation,
     SkybotByDynclass,
     SkybotByYear,
+    SkybotJob,
+    SkybotJobResult,
 )
-from skybot.models import Position
+from des.models import SkybotPosition as DesSkybotPosition
+from des.models import SummaryDynclass
 from django.db import connection
+from rest_framework.decorators import api_view, renderer_classes
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from skybot.models import Position
 
 
 @api_view(["POST"])

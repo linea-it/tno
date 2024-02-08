@@ -1,6 +1,6 @@
-from rest_framework import viewsets
 from des.models import OrbitTraceJobStatus
 from des.serializers import OrbitTraceJobStatusSerializer
+from rest_framework import viewsets
 
 
 class OrbitTraceJobStatusViewSet(viewsets.ReadOnlyModelViewSet):

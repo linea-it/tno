@@ -1,9 +1,10 @@
-from astroquery.mpc import MPC
-from datetime import datetime as dt
-import numpy as np
-import astropy
-import pathlib
 import json
+import pathlib
+from datetime import datetime as dt
+
+import astropy
+import numpy as np
+from astroquery.mpc import MPC
 
 astropy.utils.data.clear_download_cache()
 

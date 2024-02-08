@@ -1,9 +1,10 @@
-from parsl.config import Config
-from parsl.providers import SlurmProvider, LocalProvider
+import os
+
 from parsl.channels import SSHChannel
+from parsl.config import Config
 from parsl.executors import HighThroughputExecutor
 from parsl.launchers import SrunLauncher
-import os
+from parsl.providers import LocalProvider, SlurmProvider
 
 
 def get_config(key):

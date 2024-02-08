@@ -129,18 +129,16 @@ services:
     network_mode: "host"
     volumes:
       - ./predict_occultation:/app
-      - ./archive:/app/outputs
+      - ./archive/predict_occultation:/app/outputs/predict_occultation
     environment:
       # Acesso ao DB de Catalogo e Administrativo, caso localhost não funcione utilizar o host.docker.internal.
       # Usando Localhost
       - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
-      - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@localhost:3307/tnodbdev
+      - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@localhost:5432/postgres
       # # Usando host.docker.internal
       # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
       # - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@host.docker.internal:5432/postgres
-      - USER=apptno
       - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
-      - PREDICT_OUTPUTS=/app/outputs/predict_occultation
 
 volumes:
   rabbitmq-data:

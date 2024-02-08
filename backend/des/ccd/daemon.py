@@ -1,5 +1,4 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-
 from des.ccd import start_pipeline
 
 

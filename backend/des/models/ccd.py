@@ -1,6 +1,5 @@
+from des.models.exposure import Exposure
 from django.db import models
-
-from des.models import Exposure
 
 
 class Ccd(models.Model):

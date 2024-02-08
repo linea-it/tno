@@ -1,22 +1,22 @@
-import requests
-import os
 import logging
+import os
+import sys
 import time
-import pandas as pd
-import numpy as np
+import traceback
 from datetime import datetime, timezone
-from tno.dao import AsteroidDao, AsteroidJobDao
 from io import StringIO
 from pathlib import Path
-import traceback
-import humanize
-import colorlog
 
+import colorlog
+import humanize
+import numpy as np
+import pandas as pd
+import requests
 from tno.asteroid_table.asteroid_table_build import (
     asteroid_table_build,
     import_asteroid_table,
 )
-import sys
+from tno.dao import AsteroidDao, AsteroidJobDao
 
 
 class AsteroidTableManager:

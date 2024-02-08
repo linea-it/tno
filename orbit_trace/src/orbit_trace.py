@@ -1,36 +1,36 @@
 # -*- coding: utf-8 -*-
 import argparse
 import configparser
+import csv
 import json
 import os
 import pathlib
+import shutil
+import subprocess
+import sys
 import time
 import traceback
-import csv
+import uuid
 from datetime import datetime, timezone
+from io import StringIO
+from pathlib import Path
 
 import humanize
+import pandas as pd
 import parsl
-import sys
 from asteroid import Asteroid
+from dao import OrbitTraceJobDao, OrbitTraceJobResultDao
 from library import (
+    get_configs,
     get_logger,
+    ingest_observations,
     read_inputs,
     retrieve_asteroids,
     write_job_file,
-    ingest_observations,
     write_json,
-    get_configs,
 )
 from orbit_trace_apps import observed_positions, theoretical_positions
 from parsl_config import htex_config
-from dao import OrbitTraceJobDao, OrbitTraceJobResultDao
-import pandas as pd
-from io import StringIO
-from pathlib import Path
-import shutil
-import subprocess
-import uuid
 
 
 def update_job(job) -> None:

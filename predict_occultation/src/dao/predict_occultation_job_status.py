@@ -1,7 +1,7 @@
-from sqlalchemy.sql import select, delete, update, insert, and_
 from datetime import datetime, timezone
 
 from dao.db_base import DBBase
+from sqlalchemy.sql import and_, delete, insert, select, update
 
 
 class PredictOccultationJobStatusDao(DBBase):

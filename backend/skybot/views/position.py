@@ -1,6 +1,5 @@
 from django.shortcuts import render
 from rest_framework import viewsets
-
 from skybot.models import Position
 from skybot.serializers import PositionSerializer
 

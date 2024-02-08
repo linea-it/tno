@@ -14,24 +14,24 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))y
 """
 from common import views as common_views
-from des.views import management_tables as des_management_views
 from des.views import (
     CcdViewSet,
     DesSkybotPositionViewSet,
     ExposureViewSet,
+    ObservationViewSet,
+    OrbitTraceJobResultViewSet,
+    OrbitTraceJobViewSet,
     SkybotByDynclassViewSet,
     SkybotByYearViewSet,
     SkybotJobResultViewSet,
     SkybotJobViewSet,
-    OrbitTraceJobViewSet,
-    OrbitTraceJobResultViewSet,
     SummaryDynclassViewSet,
-    ObservationViewSet,
 )
+from des.views import management_tables as des_management_views
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, re_path, include
+from django.urls import include, path, re_path
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter
@@ -39,13 +39,13 @@ from skybot.views import PositionViewSet
 from tno.views import (
     AsteroidJobViewSet,
     AsteroidViewSet,
-    UserViewSet,
-    OccultationViewSet,
-    LeapSecondViewSet,
     BspPlanetaryViewSet,
     CatalogViewSet,
-    PredictionJobViewSet,
+    LeapSecondViewSet,
+    OccultationViewSet,
     PredictionJobResultViewSet,
+    PredictionJobViewSet,
+    UserViewSet,
 )
 
 router = DefaultRouter()

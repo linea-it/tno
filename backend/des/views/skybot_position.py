@@ -1,8 +1,7 @@
-from django_filters import rest_framework as filters
-from rest_framework import viewsets
-
 from des.models import SkybotPosition
 from des.serializers import SkybotPositionSerializer
+from django_filters import rest_framework as filters
+from rest_framework import viewsets
 
 
 class DesSkybotPositionViewSet(viewsets.ReadOnlyModelViewSet):

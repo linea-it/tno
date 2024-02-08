@@ -2,8 +2,8 @@ import json
 import os
 import threading
 from datetime import datetime, timedelta
-import django_filters
 
+import django_filters
 import numpy as np
 import pandas as pd
 from common.dates_interval import get_days_interval

@@ -1,6 +1,6 @@
+from des.models.ccd import Ccd
+from des.models.exposure import Exposure
 from django.db import models
-
-from des.models import Ccd, Exposure
 from skybot.models import Position
 
 

@@ -1,7 +1,6 @@
-from rest_framework import viewsets
-
 from des.models import SummaryDynclass
 from des.serializers import SummaryDynclassSerializer
+from rest_framework import viewsets
 
 
 class SummaryDynclassViewSet(viewsets.ReadOnlyModelViewSet):

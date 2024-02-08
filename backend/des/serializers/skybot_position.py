@@ -1,6 +1,5 @@
-from rest_framework import serializers
-
 from des.models import Ccd, Exposure, SkybotPosition
+from rest_framework import serializers
 from skybot.models import Position
 
 

@@ -1,11 +1,12 @@
-from django.core.management.base import BaseCommand
 from datetime import datetime, timezone
+
+from celery import group
+from django.core.management.base import BaseCommand
 from tno.tasks import (
-    upcoming_events_to_create_maps,
     create_occ_map_task,
     prediction_maps_log_error,
+    upcoming_events_to_create_maps,
 )
-from celery import group
 
 
 class Command(BaseCommand):

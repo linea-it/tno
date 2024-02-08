@@ -1,6 +1,6 @@
-from django.core.management.base import BaseCommand
 from datetime import datetime, timezone
 
+from django.core.management.base import BaseCommand
 from tno.asteroid_table.asteroid_table_manager import AsteroidTableManager
 
 

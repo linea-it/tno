@@ -4,21 +4,20 @@
 import argparse
 import os
 import traceback
-import os
-import argparse
 from datetime import datetime, timedelta
-from run_nima import start_nima
-from run_praia_occ import start_praia_occ
+from pathlib import Path
+
+from dao import GaiaDao
 from library import (
-    read_asteroid_json,
-    write_asteroid_json,
+    ast_visual_mag_from_astdys,
     count_lines,
     create_nima_input,
-    ast_visual_mag_from_astdys,
+    read_asteroid_json,
+    write_asteroid_json,
 )
-from dao import GaiaDao
 from occ_path_coeff import run_occultation_path_coeff
-from pathlib import Path
+from run_nima import start_nima
+from run_praia_occ import start_praia_occ
 
 parser = argparse.ArgumentParser()
 parser.add_argument("name", help="Object name without spaces. example '1999RB216'")
