@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable max-len */
 import React, { useRef } from 'react'
-import { Grid, Container, Typography, TextField, Button, Breadcrumbs, Link, Snackbar } from '@material-ui/core'
+import { Grid, Container, Typography, TextField, Button, Breadcrumbs, Link, Snackbar } from '@mui/material'
 import { Alert, AlertTitle } from '@material-ui/lab'
 import EmailIcon from '@mui/icons-material/Email'
 import styles from './styles'

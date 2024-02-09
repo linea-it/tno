@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { AppBar, Tabs as MuiTabs, Tab, Box } from '@material-ui/core'
+import { AppBar, Tabs as MuiTabs, Tab, Box } from '@mui/material'
 import useStyles from './styles'
 
 function a11yProps(i) {

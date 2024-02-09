@@ -6,7 +6,7 @@ import {
   Card,
   CardHeader,
   CardContent
-} from '@material-ui/core';
+} from '@mui/material';
 import Box from '@mui/material/Box';
 import List from '../../components/List';
 
@@ -292,12 +292,12 @@ function PredictionEventDetail() {
               <Box
                 height={800}
               >
-              {occultation?.id !== undefined && (
-                <AladinV3
-                  ra={occultation?.ra_star_deg}
-                  dec={occultation?.dec_star_deg}
+                {occultation?.id !== undefined && (
+                  <AladinV3
+                    ra={occultation?.ra_star_deg}
+                    dec={occultation?.dec_star_deg}
                   />
-              ) }
+                )}
               </Box>
             </CardContent>
           </Card>

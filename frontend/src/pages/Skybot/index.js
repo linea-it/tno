@@ -19,7 +19,7 @@ import {
   ListItemText,
   Backdrop,
   CircularProgress
-} from '@material-ui/core'
+} from '@mui/material'
 import Plot from 'react-plotly.js'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Table from '../../components/Table'
@@ -139,7 +139,7 @@ function Skybot() {
   }, [executedNightsByPeriod, currentSelectedDateYear, chartType, exposuresByPeriod])
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     getSkybotRunList({
       page: currentPage + 1,
       pageSize,
@@ -452,7 +452,7 @@ function Skybot() {
           </Grid>
         </Grid>
 
-        <Grid item xs={12} md={8} lg={9}open>
+        <Grid item xs={12} md={8} lg={9} open>
           <Card>
             <CardHeader title='Number of Exposures in Selected Period' />
             <CardContent>{renderExposurePlot()}</CardContent>

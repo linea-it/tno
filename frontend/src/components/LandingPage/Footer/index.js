@@ -1,5 +1,5 @@
 import React from 'react'
-import { Typography, Grid } from '@material-ui/core'
+import { Typography, Grid } from '@mui/material'
 import clsx from 'clsx'
 import logo from '../../../assets/img/linea-logo-mini.png'
 import useStyles from './styles'

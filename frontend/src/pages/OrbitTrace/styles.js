@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -28,25 +28,25 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.error.light} !important`,
     borderColor: `${theme.palette.error.light} !important`
   },
-  errorText:{
+  errorText: {
     color: '#8B0000'
   },
-  pad:{
-    paddingTop:'10px',
-    paddingBottom:'10px'
+  pad: {
+    paddingTop: '10px',
+    paddingBottom: '10px'
   },
-  padDropBox:{
-    paddingTop:'2px',
-    paddingBottom:'2px'
+  padDropBox: {
+    paddingTop: '2px',
+    paddingBottom: '2px'
   },
-  loadingPlot:{
+  loadingPlot: {
     margin: '150px auto',
   },
   tooltip: {
     fontSize: "1.4em",
   },
-  MuiIconButtonRoot:{
-padding:'0px !Important',
+  MuiIconButtonRoot: {
+    padding: '0px !Important',
   }
 }))
 

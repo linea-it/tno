@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import Paper from '@material-ui/core/Paper'
-import FormGroup from '@material-ui/core/FormGroup'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
+import Paper from '@mui/material/Paper'
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Checkbox from '@mui/material/Checkbox'
 import { ColumnChooser } from '@devexpress/dx-react-grid-material-ui'
-import Divider from '@material-ui/core/Divider'
-import { withStyles } from '@material-ui/core/styles'
+import Divider from '@mui/material/Divider'
+import { withStyles } from '@mui/styles';
 
 const styles = {
   chooserPaperWrapper: {

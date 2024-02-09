@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import AppBar from '@material-ui/core/AppBar'
-import { Typography, Toolbar } from '@material-ui/core'
+import AppBar from '@mui/material/AppBar'
+import { Typography, Toolbar } from '@mui/material'
 import logo from '../../assets/img/logo-mini.png'
 import useStyles from './styles'
 

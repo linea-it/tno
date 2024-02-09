@@ -5,7 +5,8 @@ import {
   Grid,
   Card,
   CardHeader,
-  CardContent} from '@material-ui/core';
+  CardContent
+} from '@mui/material';
 import List from '../../components/List';
 
 import Aladin from '../../components/AladinV2_Exemplo/index';

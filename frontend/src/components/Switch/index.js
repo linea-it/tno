@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Grid, FormControlLabel, Switch as MuiSwitch, Typography } from '@material-ui/core'
+import { Grid, FormControlLabel, Switch as MuiSwitch, Typography } from '@mui/material'
 import useStyles from './styles'
 
 function Switch({ isGrid, setIsGrid, titleOn, titleOff }) {

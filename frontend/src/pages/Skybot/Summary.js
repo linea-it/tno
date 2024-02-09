@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, Card, CardHeader, CardContent } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent } from '@mui/material'
 import Table from '../../components/Table'
 
 import { getResultsByYear } from '../../services/api/Dashboard'

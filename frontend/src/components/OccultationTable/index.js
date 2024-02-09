@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import Table from '../../components/Table'
-import { Card, CardContent, CardHeader, Button, CircularProgress } from '../../../node_modules/@material-ui/core/index'
+import { Card, CardContent, CardHeader, Button } from '@mui/material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import { useNavigate } from 'react-router-dom'
-import moment from '../../../node_modules/moment/moment'
+import moment from 'moment'
 import styles from './style'
 
 

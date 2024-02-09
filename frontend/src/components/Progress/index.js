@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { LinearProgress, Box, Typography } from '@material-ui/core'
+import { LinearProgress, Box, Typography } from '@mui/material'
 import useStyles from './styles'
 
 function Progress({ title, variant, total, current }) {

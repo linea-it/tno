@@ -1,5 +1,5 @@
-import { makeStyles } from '@material-ui/core/styles'
-import { deepOrange } from '@material-ui/core/colors'
+import { makeStyles } from '@mui/styles'
+import { deepOrange } from '@mui/material/colors'
 
 const useStyles = makeStyles((theme) => ({
   appBar: {

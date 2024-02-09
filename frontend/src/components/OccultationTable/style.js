@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
 const styles = makeStyles({
   grid: {
@@ -10,16 +10,16 @@ const styles = makeStyles({
     paddingTop: '0.5em',
     color: '#000000'
   },
-  celula:{
-    backgroundColor:'#cccccc',
+  celula: {
+    backgroundColor: '#cccccc',
     textAlign: 'center',
     padding: '10px'
   },
-  mouse:{
+  mouse: {
     cursor: 'pointer'
   },
-  btnPeriod:{
-    paddingTop:'7px'
+  btnPeriod: {
+    paddingTop: '7px'
   },
   formControl: {
     minWidth: 113
@@ -39,36 +39,36 @@ const styles = makeStyles({
   backdrop: {
     color: '#fff'
   },
-  errorText:{
+  errorText: {
     color: '#8B0000'
   },
-  pad:{
-    paddingTop:'10px',
-    paddingBottom:'10px'
+  pad: {
+    paddingTop: '10px',
+    paddingBottom: '10px'
   },
-  padDropBox:{
-    paddingTop:'2px',
-    paddingBottom:'2px'
+  padDropBox: {
+    paddingTop: '2px',
+    paddingBottom: '2px'
   },
-  input:{
+  input: {
     borderRadius: 4,
     position: 'relative',
     border: '1px solid #ced4da',
     width: 'auto',
     height: '43px'
   },
-  loadingTable:{
+  loadingTable: {
     display: 'block !important',
     marginLeft: 'auto !important',
     marginRight: 'auto !important',
     fontSize: '40px'
   },
-  selected:{
-    backgroundColor:'#9b9a9a',
+  selected: {
+    backgroundColor: '#9b9a9a',
     textAlign: 'center',
     padding: '10px'
   },
-  imgThumb:{
+  imgThumb: {
     width: '50%'
   }
 })

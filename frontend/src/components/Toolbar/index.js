@@ -1,14 +1,14 @@
 import * as React from 'react'
+import { useAuth } from '../../contexts/AuthContext.js'
 import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
-import { useAuth } from '../../contexts/AuthContext.js'
 import styles from './styles'
-import Button from '@material-ui/core/Button'
-import Popover from '@material-ui/core/Popover'
-import List from '@material-ui/core/List'
-import ListItem from '@material-ui/core/ListItem'
+import Button from '@mui/material/Button'
+import Popover from '@mui/material/Popover';
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 
 function DashToolbar({ open, handleDrawerOpen, title }) {

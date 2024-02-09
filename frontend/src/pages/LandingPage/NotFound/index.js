@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 import React from 'react'
-import { Grid, Container, Typography, Breadcrumbs, Link, IconButton } from '@material-ui/core'
+import { Grid, Container, Typography, Breadcrumbs, Link, IconButton } from '@mui/material'
 import { YouTube, Twitter, GitHub } from '@material-ui/icons'
 import styles from './styles'
 

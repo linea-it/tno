@@ -1,10 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { TableHeaderRow } from '@devexpress/dx-react-grid-material-ui'
-import Tooltip from '@material-ui/core/Tooltip'
+import Tooltip from '@mui/material/Tooltip'
 import ArrowDownward from '@mui/icons-material/ArrowDownward'
 import ArrowUpward from '@mui/icons-material/ArrowUpward'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles({
   invisibleButton: {
@@ -41,7 +41,7 @@ const SortingIcon = ({ direction }) =>
 const SortLabel = ({ onSort, children, direction, ...restProps }) => {
   const classes = useStyles()
   return (
-    <Tooltip title={restProps.column.tooltip?restProps.column.tooltip: children.props.children}>
+    <Tooltip title={restProps.column.tooltip ? restProps.column.tooltip : children.props.children}>
       <span
         onClick={!restProps.disabled ? onSort : null}
         className={classes.invisibleButton}

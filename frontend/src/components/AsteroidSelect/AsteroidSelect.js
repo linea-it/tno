@@ -1,14 +1,8 @@
 
 import PropTypes from 'prop-types';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import TextField from '@mui/material/TextField';
-import { Stack } from '../../../node_modules/@mui/material/index';
+import Stack from '@mui/material/Stack';
 import FilterTypeSelect from './FilterTypeSelect';
 import AsteroidNameSelect from './AsteroidNameSelect';
-import { useState } from 'react';
 import BaseDynclassSelect from './BaseDynclassSelect';
 import DynclassSelect from './DynclassSelect';
 

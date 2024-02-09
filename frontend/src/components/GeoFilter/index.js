@@ -1,7 +1,7 @@
 
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import { Stack } from '../../../node_modules/@mui/material/index';
+import Stack from '@mui/material/Stack';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useEffect, useState } from 'react';
@@ -49,115 +49,115 @@ function GeoFilter({ value, onChange }) {
     }
   }
 
-// const isValid = () => {
-//   console.log("isValid")
-//   if (value.geo) {
-//     if ((value.latitude === undefined) || (value.latitude === '')) {
-//       setError(true)
-//       return
-//     }
-//     if ((value.latitude < -90 || value.latitude > 90)) {
-//       setError(true)
-//       return
-//     }
+  // const isValid = () => {
+  //   console.log("isValid")
+  //   if (value.geo) {
+  //     if ((value.latitude === undefined) || (value.latitude === '')) {
+  //       setError(true)
+  //       return
+  //     }
+  //     if ((value.latitude < -90 || value.latitude > 90)) {
+  //       setError(true)
+  //       return
+  //     }
 
-//     if ((value.longitude === undefined) || (value.longitude === '')) {
-//       setError(true)
-//       return
-//     }
+  //     if ((value.longitude === undefined) || (value.longitude === '')) {
+  //       setError(true)
+  //       return
+  //     }
 
-//     if ((value.longitude < -180 || value.longitude > 180)) {
-//       setError(true)
-//       return
-//     }
-//     setError(false)
-//   } else {
-//     setError(false)
-//   }
-// }
+  //     if ((value.longitude < -180 || value.longitude > 180)) {
+  //       setError(true)
+  //       return
+  //     }
+  //     setError(false)
+  //   } else {
+  //     setError(false)
+  //   }
+  // }
 
-useEffect( () => {
-  // isValid()
-  setError(!geoFilterIsValid(value))
+  useEffect(() => {
+    // isValid()
+    setError(!geoFilterIsValid(value))
 
-}, [value.latitude, value.longitude])
+  }, [value.latitude, value.longitude])
 
-return (
-  <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
-    <FormControlLabel control={
-      <Switch
-        checked={value.geo}
+  return (
+    <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
+      <FormControlLabel control={
+        <Switch
+          checked={value.geo}
+          onChange={(event) => {
+            handleChange({
+              ...value,
+              geo: event.target.checked
+            })
+          }}
+        />} label="Geo Filter" />
+      <TextField
+        type="number"
+        label="Latitude (deg)"
+        variant="outlined"
+        required
+        disabled={!value.geo}
+        value={value.latitude === undefined ? '' : value.latitude}
+        min={-90}
+        max={90}
         onChange={(event) => {
           handleChange({
             ...value,
-            geo: event.target.checked
+            latitude: event.target.value
           })
         }}
-      />} label="Geo Filter" />
-    <TextField
-      type="number"
-      label="Latitude (deg)"
-      variant="outlined"
-      required
-      disabled={!value.geo}
-      value={value.latitude === undefined ? '' : value.latitude}
-      min={-90}
-      max={90}
-      onChange={(event) => {
-        handleChange({
-          ...value,
-          latitude: event.target.value
-        })
-      }}
-      error={error}
-      helperText={error ? 'must be a value between -90 and 90' : ''}
-      sx={{ minWidth: '25ch' }}
-    />
-    <TextField
-      type="number"
-      label="Longitude (deg)"
-      variant="outlined"
-      required
-      disabled={!value.geo}
-      value={value.longitude === undefined ? '' : value.longitude}
-      min={0}
-      max={360}
-      onChange={(event) => {
-        handleChange({
-          ...value,
-          longitude: event.target.value
-        })
-      }}
-      error={error}
-      helperText={error ? 'must be a value between -180 and 180' : ''}
-      sx={{ minWidth: '25ch' }}
-    />
-    <FormControl sx={{ minWidth: '18ch' }}>
-      <InputLabel id="radius-select-label">Radius (Km)</InputLabel>
-      <Select
-        labelId="radius-select--label"
+        error={error}
+        helperText={error ? 'must be a value between -90 and 90' : ''}
+        sx={{ minWidth: '25ch' }}
+      />
+      <TextField
+        type="number"
+        label="Longitude (deg)"
         variant="outlined"
-        id="radius-select-"
-        value={value.radius === undefined ? '' : value.radius}
-        label="Radius (Km)"
+        required
         disabled={!value.geo}
+        value={value.longitude === undefined ? '' : value.longitude}
+        min={0}
+        max={360}
         onChange={(event) => {
           handleChange({
             ...value,
-            radius: event.target.value
+            longitude: event.target.value
           })
-        }
-        }
-      >
-        {(
-          options.map(row => {
-            return (<MenuItem key={row} value={row}>{row}</MenuItem>)
-          })
-        )}
-      </Select>
-    </FormControl>
-  </Stack>
-)
+        }}
+        error={error}
+        helperText={error ? 'must be a value between -180 and 180' : ''}
+        sx={{ minWidth: '25ch' }}
+      />
+      <FormControl sx={{ minWidth: '18ch' }}>
+        <InputLabel id="radius-select-label">Radius (Km)</InputLabel>
+        <Select
+          labelId="radius-select--label"
+          variant="outlined"
+          id="radius-select-"
+          value={value.radius === undefined ? '' : value.radius}
+          label="Radius (Km)"
+          disabled={!value.geo}
+          onChange={(event) => {
+            handleChange({
+              ...value,
+              radius: event.target.value
+            })
+          }
+          }
+        >
+          {(
+            options.map(row => {
+              return (<MenuItem key={row} value={row}>{row}</MenuItem>)
+            })
+          )}
+        </Select>
+      </FormControl>
+    </Stack>
+  )
 }
 
 GeoFilter.defaultProps = {

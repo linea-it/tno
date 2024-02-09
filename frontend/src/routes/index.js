@@ -21,13 +21,13 @@ import Footer from '../components/LandingPage/Footer'
 import PersistentDrawerLeft from '../components/Drawer'
 // import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
 // import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
-import PublicHeader from '../components/PublicPortal/Header/index'
+import PublicHeader from '../pages/PublicPortal/Header/index'
 import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
-
 import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
-import FooterSupporte from '../components/PublicPortal/Footer/FooterSupporters'
+import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
+
 import PredictionEvents from '../pages/PredictionEvents/index'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
@@ -56,7 +56,7 @@ export default function AppRoutes() {
       <>
         <PublicHeader />
         {children}
-        <FooterSupporte />
+        <FooterSupporters />
       </>
     )
   }
@@ -262,9 +262,9 @@ export default function AppRoutes() {
           exact
           path='/dashboard/prediction-of-occultation'
           element={
-              <DashboardPage>
-                <PredictOccultation />
-              </DashboardPage>
+            <DashboardPage>
+              <PredictOccultation />
+            </DashboardPage>
           }
         />
         <Route
@@ -272,9 +272,9 @@ export default function AppRoutes() {
           exact
           path='/dashboard/data-preparation/predict-detail/:id'
           element={
-              <DashboardPage>
-                <PredictDetail />
-              </DashboardPage>
+            <DashboardPage>
+              <PredictDetail />
+            </DashboardPage>
           }
         />
         <Route
@@ -282,9 +282,9 @@ export default function AppRoutes() {
           exact
           path='/dashboard/data-preparation/predict-asteroid/:id'
           element={
-              <DashboardPage>
-                <PredictionAsteroid />
-              </DashboardPage>
+            <DashboardPage>
+              <PredictionAsteroid />
+            </DashboardPage>
           }
         />
         <Route
@@ -292,9 +292,9 @@ export default function AppRoutes() {
           exact
           path='/dashboard/occultation'
           element={
-              <DashboardPage>
-                <PredictionEvents />
-              </DashboardPage>
+            <DashboardPage>
+              <PredictionEvents />
+            </DashboardPage>
           }
         />
         <Route
@@ -302,9 +302,9 @@ export default function AppRoutes() {
           exact
           path='/dashboard/asteroid_job'
           element={
-              <DashboardPage>
-                <AsteroidJob />
-              </DashboardPage>
+            <DashboardPage>
+              <AsteroidJob />
+            </DashboardPage>
           }
         />
         <Route
@@ -312,9 +312,9 @@ export default function AppRoutes() {
           exact
           path='/dashboard/asteroid_job/:id'
           element={
-              <DashboardPage>
-                <AsteroidJobDetail />
-              </DashboardPage>
+            <DashboardPage>
+              <AsteroidJobDetail />
+            </DashboardPage>
           }
         />
       </>

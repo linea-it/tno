@@ -12,7 +12,7 @@ import {
   Snackbar,
   Backdrop,
   CircularProgress
-} from '@material-ui/core'
+} from '@mui/material'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
@@ -574,13 +574,13 @@ function PredictOccultation() {
                         </Grid>
                         <Grid item xs={12} sm={6} md={4} lg={4}>
                           <Box sx={{ minWidth: 120 }}>
-                          <FormControl fullWidth>
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
-                                label='Debug mode'
-                              />
-                            </FormGroup> </FormControl>
+                            <FormControl fullWidth>
+                              <FormGroup>
+                                <FormControlLabel
+                                  control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
+                                  label='Debug mode'
+                                />
+                              </FormGroup> </FormControl>
                           </Box>
                         </Grid>
                       </Grid>

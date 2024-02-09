@@ -12,7 +12,7 @@ import {
   Toolbar,
   Typography,
   CircularProgress,
-} from '@material-ui/core';
+} from '@mui/material';
 import ListIcon from '@mui/icons-material/List';
 import BugReportIcon from '@mui/icons-material/BugReport';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
@@ -56,7 +56,7 @@ function PredictDetail() {
 
   const handleBackNavigation = () => navigate(-1);
 
-  const loadDataProgress = (id) =>{
+  const loadDataProgress = (id) => {
     getPredictionJobProgressById({ id }).then((res) => {
       setProgress(res)
     })
@@ -202,7 +202,7 @@ function PredictDetail() {
   }, 2000)
 
   useEffect(() => {
-    if(predictionJob.status){
+    if (predictionJob.status) {
       setSummaryExecution([
         {
           title: 'Status',
@@ -217,7 +217,7 @@ function PredictDetail() {
         },
         {
           title: 'Start',
-          value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD HH:mm:ss'):"Not started"
+          value: predictionJob.start ? moment(predictionJob.start).format('YYYY-MM-DD HH:mm:ss') : "Not started"
         },
         {
           title: 'Finish',
@@ -225,11 +225,11 @@ function PredictDetail() {
         },
         {
           title: 'Start Period',
-          value: predictionJob.predict_start_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss'):""
+          value: predictionJob.predict_start_date ? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss') : ""
         },
         {
           title: 'End Period',
-          value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD 23:59:59'):""
+          value: predictionJob.predict_end_date ? moment(predictionJob.predict_end_date).format('YYYY-MM-DD 23:59:59') : ""
         },
         {
           title: 'Execution Time',
@@ -262,7 +262,7 @@ function PredictDetail() {
 
 
   const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
@@ -273,7 +273,7 @@ function PredictDetail() {
   }
 
   const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
@@ -327,7 +327,7 @@ function PredictDetail() {
           <CardHeader title='Progress' />
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
-            <ProgressList
+              <ProgressList
                 lista={progress}
               />
               {predictionJob.status == 1 && progress.length == 0 ? (
@@ -338,8 +338,8 @@ function PredictDetail() {
         </Card>
       </Grid>
       <>
-      {
-        totalCount > 0 &&
+        {
+          totalCount > 0 &&
           <Grid item xs={12}>
             <Card>
               <CardHeader title='Asteroid Results' />
@@ -358,28 +358,28 @@ function PredictDetail() {
               </CardContent>
             </Card>
           </Grid>
-      }
-      {
-        totalErrorCount > 0 &&
+        }
+        {
+          totalErrorCount > 0 &&
           <Grid item xs={12}>
-              <Card>
-                <CardHeader title='Asteroid Failures' />
-                <CardContent>
-                  <Table
-                    columns={tableErrorColumns}
-                    data={tableErrorData}
-                    loadData={loadDataFailure}
-                    totalCount={totalErrorCount}
-                    hasSearching={false}
-                    hasFiltering={false}
-                    hasColumnVisibility={true}
-                    hasToolbar={true}
-                    defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
-                  />
-                </CardContent>
-              </Card>
+            <Card>
+              <CardHeader title='Asteroid Failures' />
+              <CardContent>
+                <Table
+                  columns={tableErrorColumns}
+                  data={tableErrorData}
+                  loadData={loadDataFailure}
+                  totalCount={totalErrorCount}
+                  hasSearching={false}
+                  hasFiltering={false}
+                  hasColumnVisibility={true}
+                  hasToolbar={true}
+                  defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
+                />
+              </CardContent>
+            </Card>
           </Grid>
-      }
+        }
       </>
     </Grid>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, Card, CardHeader, CardContent, Icon, Button, ButtonGroup, Chip, Typography, CircularProgress } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Icon, Button, ButtonGroup, Chip, Typography, CircularProgress } from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -164,7 +164,7 @@ function OrbitTraceDetail() {
   ]
 
   const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
@@ -175,7 +175,7 @@ function OrbitTraceDetail() {
   }
 
   const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
@@ -281,7 +281,7 @@ function OrbitTraceDetail() {
     }
   }, [orbitTraceJob])
 
-  const loadDataProgress = (id) =>{
+  const loadDataProgress = (id) => {
     getOrbitTraceProgressById({ id }).then((res) => {
       setProgress(res)
     })
@@ -403,8 +403,8 @@ function OrbitTraceDetail() {
         </Grid>
       </Grid>
       <>
-      {
-        totalCount > 0 &&
+        {
+          totalCount > 0 &&
           <Grid item xs={12}>
             <Card>
               <CardHeader title='Asteroid Results' />
@@ -423,29 +423,29 @@ function OrbitTraceDetail() {
               </CardContent>
             </Card>
           </Grid>
-      }
-      {
-        totalErrorCount > 0 &&
+        }
+        {
+          totalErrorCount > 0 &&
           <Grid item xs={12}>
-              <Card>
-                <CardHeader title='Asteroid Failures' />
-                <CardContent>
-                  <Table
-                    columns={tableErrorColumns}
+            <Card>
+              <CardHeader title='Asteroid Failures' />
+              <CardContent>
+                <Table
+                  columns={tableErrorColumns}
 
-                    data={tableErrorData}
-                    loadData={loadDataFailure}
-                    totalCount={totalErrorCount}
-                    hasSearching={false}
-                    hasFiltering={false}
-                    hasColumnVisibility={true}
-                    hasToolbar={true}
-                    defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
-                  />
-                </CardContent>
-              </Card>
+                  data={tableErrorData}
+                  loadData={loadDataFailure}
+                  totalCount={totalErrorCount}
+                  hasSearching={false}
+                  hasFiltering={false}
+                  hasColumnVisibility={true}
+                  hasToolbar={true}
+                  defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
+                />
+              </CardContent>
+            </Card>
           </Grid>
-      }
+        }
       </>
     </Grid>
   )
