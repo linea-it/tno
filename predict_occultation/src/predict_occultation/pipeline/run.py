@@ -12,7 +12,7 @@ from library import (
     create_nima_input,
     read_asteroid_json,
     write_asteroid_json,
-    check_bsp_object
+    check_bsp_object,
 )
 from occ_path_coeff import run_occultation_path_coeff
 from run_nima import start_nima
@@ -203,10 +203,10 @@ if __name__ == "__main__":
         obj_data["refine_orbit"] = nima_result
 
         # ============== Executar o PRAIA OCC ==============
-        
+
         # Checa o arquivo bsp_object
         if bsp_object_filename is None:
-            bsp_object_filename = "%s.bsp" % name    
+            bsp_object_filename = "%s.bsp" % name
         bsp_object = check_bsp_object(bsp_object_filename)
 
         praia_t0 = datetime.now()
@@ -278,7 +278,7 @@ if __name__ == "__main__":
 
         # Checa o arquivo bsp_object
         if bsp_object_filename is None:
-            bsp_object_filename = "%s.bsp" % name        
+            bsp_object_filename = "%s.bsp" % name
         # bsp_object = check_bsp_object(bsp_object_filename)
 
         # Executar o calculo Coeff Path
@@ -287,7 +287,6 @@ if __name__ == "__main__":
             obj_data["calculate_path_coeff"] = run_occultation_path_coeff(
                 Path(occultation_file), obj_data
             )
-
 
         # Escreve os dados da execução no arquivo json do objeto.
         write_asteroid_json(name, obj_data, callback_path)
@@ -304,4 +303,3 @@ if __name__ == "__main__":
         t1 = datetime.now()
         td = t1 - t0
         print("Predict Occultation Done in %s" % td)
-

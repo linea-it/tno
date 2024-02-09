@@ -3,15 +3,20 @@ from datetime import datetime as dt
 from datetime import timezone
 from pathlib import Path
 
-import pandas as pd
-from library import dec_hms_to_deg, ra_hms_to_deg, asteroid_visual_magnitude, compute_magnitude_drop
-from occviz import occultation_path_coeff
 import numpy as np
-
+import pandas as pd
 import spiceypy as spice
+from library import (
+    asteroid_visual_magnitude,
+    compute_magnitude_drop,
+    dec_hms_to_deg,
+    ra_hms_to_deg,
+)
+from occviz import occultation_path_coeff
+
 
 def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
-    
+
     calculate_path_coeff = {}
     t0 = dt.now(tz=timezone.utc)
 
@@ -100,33 +105,42 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
 
         # Para cada Ocultacao e necessario calcular o occultation path.
         for row in df.to_dict(orient="records"):
-            
+
             # ------------------------------------------------------------------------
             # Calcula a magnitude visual do asteroide no instante da ocultação
             # Alerta: os arquivos bsp estão na memoria global por alguma razão,
             #         convém analisar esse comportamente no futuro.
             # ------------------------------------------------------------------------
             try:
-                ast_vis_mag = asteroid_visual_magnitude(obj_data['bsp_jpl']['filename'], 
-                                                obj_data['predict_occultation']['leap_seconds']+".bsp", 
-                                                obj_data['predict_occultation']['bsp_planetary']+".bsp", 
-                                                dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"), 
-                                                h=obj_data['h'], 
-                                                g=obj_data['g'], spice_global=True)
+                ast_vis_mag = asteroid_visual_magnitude(
+                    obj_data["bsp_jpl"]["filename"],
+                    obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
+                    obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
+                    dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
+                    h=obj_data["h"],
+                    g=obj_data["g"],
+                    spice_global=True,
+                )
             except:
                 ast_vis_mag = None
-            df['apparent_magnitude'] = ast_vis_mag
+            df["apparent_magnitude"] = ast_vis_mag
 
             # Calcula a queda em magnitude durante a ocultacao
             try:
-                magnitude_drop = compute_magnitude_drop(ast_vis_mag, row['g_star']) 
+                magnitude_drop = compute_magnitude_drop(ast_vis_mag, row["g_star"])
             except:
-                magnitude_drop = None            
+                magnitude_drop = None
             df["magnitude_drop"] = magnitude_drop
 
             # Calcula o diametro apararente do objeto se o diametro em km existe
             if obj_data["diameter"] is not None:
-                df["aparent_diameter"] = 2 * np.arctan(0.5*obj_data["diameter"]/(row["delta"] * 149_597_870.7))  * 206_264_806
+                df["aparent_diameter"] = (
+                    2
+                    * np.arctan(
+                        0.5 * obj_data["diameter"] / (row["delta"] * 149_597_870.7)
+                    )
+                    * 206_264_806
+                )
             else:
                 df["aparent_diameter"] = None
 
@@ -139,7 +153,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "occ_path_is_nightside": None,
                 "occ_path_coeff": {},
             }
-            
+
             occ_coeff = occultation_path_coeff(
                 date_time=dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S")
                 .replace(tzinfo=timezone.utc)
@@ -163,18 +177,26 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 new_row.update(
                     {
                         "have_path_coeff": True,
-                        "occ_path_min_longitude": float(occ_coeff["min_longitude"])
-                        if occ_coeff["min_longitude"] != None
-                        else None,
-                        "occ_path_max_longitude": float(occ_coeff["max_longitude"])
-                        if occ_coeff["max_longitude"] != None
-                        else None,
-                        "occ_path_min_latitude": float(occ_coeff["min_latitude"])
-                        if occ_coeff["min_latitude"] != None
-                        else None,
-                        "occ_path_max_latitude": float(occ_coeff["max_latitude"])
-                        if occ_coeff["max_latitude"] != None
-                        else None,
+                        "occ_path_min_longitude": (
+                            float(occ_coeff["min_longitude"])
+                            if occ_coeff["min_longitude"] != None
+                            else None
+                        ),
+                        "occ_path_max_longitude": (
+                            float(occ_coeff["max_longitude"])
+                            if occ_coeff["max_longitude"] != None
+                            else None
+                        ),
+                        "occ_path_min_latitude": (
+                            float(occ_coeff["min_latitude"])
+                            if occ_coeff["min_latitude"] != None
+                            else None
+                        ),
+                        "occ_path_max_latitude": (
+                            float(occ_coeff["max_latitude"])
+                            if occ_coeff["max_latitude"] != None
+                            else None
+                        ),
                         "occ_path_is_nightside": bool(occ_coeff["nightside"]),
                         "occ_path_coeff": json.dumps(occ_coeff),
                     }
@@ -246,21 +268,21 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         ]
         for column in ast_data_columns:
             df[column] = obj_data.get(column)
-        
+
         # -------------------------------------------------
         # Realocação de valores em colunas repetidas
         # -------------------------------------------------
-        df['eccentricity'] = obj_data.get('excentricity')
-        df["perihelion"] = obj_data.get('perihelion_dist')
-        df["aphelion"] = obj_data.get('aphelion_dist')
+        df["eccentricity"] = obj_data.get("excentricity")
+        df["perihelion"] = obj_data.get("perihelion_dist")
+        df["aphelion"] = obj_data.get("aphelion_dist")
 
         # -------------------------------------------------
         # Colunas duplicadas sendo decomissionadas e que
         # deverão ser removidas no futuro e as fontes corrigidas
         # ------------------------------------------------
-        df['excentricity'] = None
-        df['perihelion_dist'] = None
-        df['aphelion_dist'] = None
+        df["excentricity"] = None
+        df["perihelion_dist"] = None
+        df["aphelion_dist"] = None
 
         # -------------------------------------------------
         # Provenance Fields
@@ -295,7 +317,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             "dec_target_apparent",
             "e_ra_target",
             "e_dec_target",
-            "ephemeris_version"
+            "ephemeris_version",
         ]
         for column in columns_for_future:
             df[column] = None

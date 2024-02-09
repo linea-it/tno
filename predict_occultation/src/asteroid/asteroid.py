@@ -551,14 +551,15 @@ class Asteroid:
 
             if ignore:
                 msg = "The download of observations was skipped."
-                observations = {'source': 'Ignored', 
-                                'filename': '', 
-                                'size': 0, 
-                                'dw_start': dt.now(), 
-                                'dw_finish': dt.now(), 
-                                'dw_time': 0, 
-                                'downloaded_in_this_run': False
-                                }
+                observations = {
+                    "source": "Ignored",
+                    "filename": "",
+                    "size": 0,
+                    "dw_start": dt.now(),
+                    "dw_finish": dt.now(),
+                    "dw_time": 0,
+                    "downloaded_in_this_run": False,
+                }
                 log.warning("%s" % (msg))
             else:
                 if not observations:
@@ -601,8 +602,6 @@ class Asteroid:
             )
 
             self.write_asteroid_json()
-
-            
 
     def get_des_observations_path(self):
         filename = "{}.txt".format(self.alias)

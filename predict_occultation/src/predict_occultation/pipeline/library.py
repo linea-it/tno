@@ -1,9 +1,11 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
 import os
+import re
+
 import numpy as np
 import spiceypy as spice
-import re
+
 
 def check_leapsec(filename):
     """
@@ -149,8 +151,8 @@ def read_asteroid_json(asteroid_name):
 
 
 def write_asteroid_json(asteroid_name, data, callback_path=None):
-    import os
     import json
+    import os
 
     path = os.environ.get("DIR_DATA").rstrip("/")
     alias = asteroid_name.replace(" ", "").replace("_", "")
@@ -261,11 +263,13 @@ def get_position_vector(target, observer, et, spice_object):
     Returns:
         numpy.array: A 3-element array representing the position vector.
     """
-    state, ltime = spice_object.spkezr(target, et, 'J2000', 'NONE', observer)
+    state, ltime = spice_object.spkezr(target, et, "J2000", "NONE", observer)
     return state[:3]
 
-    
-def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None, spice_global=False):
+
+def asteroid_visual_magnitude(
+    asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None, spice_global=False
+):
     """
     Calculate the visual magnitude of an asteroid at a specific instant.
 
@@ -280,23 +284,23 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
     Returns:
         float or None: The visual magnitude at the given instant, or None if an error occurs.
     """
-    
+
     # Retrieve information from bsp header
-    
+
     bsp_header = get_bsp_header_values(asteroid_bsp)
-    
+
     if h is None:
         try:
-            h = bsp_header['bsp_absmag']
+            h = bsp_header["bsp_absmag"]
         except:
             h = None
-    
+
     if g is None:
         try:
-            g = bsp_header['bsp_gcoeff']
+            g = bsp_header["bsp_gcoeff"]
         except:
-            g = None    
-    
+            g = None
+
     try:
         # # Load necessary SPICE kernels
         if not spice_global:
@@ -304,23 +308,23 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
 
         # Convert instant to ephemeris time
         et = spice.str2et(instant.strftime("%Y-%b-%d %H:%M"))
-        
+
         # Define the target object (asteroid)
-        target = bsp_header['bsp_spkid']
+        target = bsp_header["bsp_spkid"]
 
         # Calculate heliocentric distance
-        r_vec = get_position_vector(target, 'SUN', et, spice)
+        r_vec = get_position_vector(target, "SUN", et, spice)
         r_mod = np.sqrt(np.sum(np.array(r_vec**2)))
-        r = r_mod/149597870.7  # Convert to astronomical units (AU)
+        r = r_mod / 149597870.7  # Convert to astronomical units (AU)
 
         # Calculate geocentric distance
-        delta_vec = get_position_vector(target, '399', et, spice)
+        delta_vec = get_position_vector(target, "399", et, spice)
         delta_mod = np.sqrt(np.sum(np.array(delta_vec**2)))
-        delta = delta_mod/149597870.7 # Convert to astronomical units (AU)
-        
+        delta = delta_mod / 149597870.7  # Convert to astronomical units (AU)
+
         # Calculate solar phase angle
         prod_scalar = np.dot(r_vec, delta_vec)
-        costheta = prod_scalar/(r_mod*delta_mod)
+        costheta = prod_scalar / (r_mod * delta_mod)
         phase_angle = np.arccos(costheta)
 
         # Calculate the apparent magnitude
@@ -331,7 +335,11 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
         gcoeff = 0.15 if g is None else g  # Default or specified slope parameter
 
         # Calculate the apparent magnitude using the standard formula
-        apmag = h + 5 * np.log10(delta * r) - 2.5 * np.log10((1 - gcoeff) * phi1 + gcoeff * phi2)
+        apmag = (
+            h
+            + 5 * np.log10(delta * r)
+            - 2.5 * np.log10((1 - gcoeff) * phi1 + gcoeff * phi2)
+        )
 
         # Unload SPICE kernels
         # spice.kclear()
@@ -360,76 +368,78 @@ def get_bsp_header_values(asteroid_bsp):
         bsp_values = get_bsp_header_values('3031857.bsp')
     """
     try:
-        with open(asteroid_bsp, 'rb') as binary_file:
+        with open(asteroid_bsp, "rb") as binary_file:
             # Read the binary data into a bytearray
             binary_data = bytearray(binary_file.read())
 
         # Convert the bytearray to a string using the appropriate encoding
-        texto = binary_data.decode('latin')
+        texto = binary_data.decode("latin")
 
         # Extract header information
         # texto = decoded_string.split('SPK file contents:')[1]
         bspdict = {}
 
         # Extract target body name
-        target_body_match = re.search(r'\s*Target\s+body\s+:\s+\((.*?)\)', texto)
+        target_body_match = re.search(r"\s*Target\s+body\s+:\s+\((.*?)\)", texto)
         if target_body_match:
             target_body_value = target_body_match.group(1).strip()
-            bspdict['bsp_target_body'] = target_body_value
+            bspdict["bsp_target_body"] = target_body_value
         else:
-            bspdict['bsp_target_body'] = None
+            bspdict["bsp_target_body"] = None
 
         # Extract SPK ID
-        spkid_match = re.search(r'\s*Target\s+SPK\s+ID\s+:\s+(\d+)', texto)
+        spkid_match = re.search(r"\s*Target\s+SPK\s+ID\s+:\s+(\d+)", texto)
         if spkid_match:
             spkid_value = spkid_match.group(1).strip()
-            bspdict['bsp_spkid'] = str(spkid_value)
+            bspdict["bsp_spkid"] = str(spkid_value)
         else:
-            bspdict['bsp_spkid'] = None
-        
-        # This part is commented because the dates in the header seem not to match with the time range 
-        # validity of the file. However, the code is kept for it may be useful in terms of pattern search 
+            bspdict["bsp_spkid"] = None
+
+        # This part is commented because the dates in the header seem not to match with the time range
+        # validity of the file. However, the code is kept for it may be useful in terms of pattern search
         # inside bsps.
 
-#         # Extract start time
-#         start_time_match = re.search(r'\s*Start\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
-#         if start_time_match:
-#             start_time_value = start_time_match.group(1).strip('A.D.').strip()
-#             bspdict['bsp_start_time'] = datetime.strptime(start_time_value, '%Y-%b-%d %H:%M:%S.%f')
-#         else:
-#             bspdict['bsp_start_time'] = None
+        #         # Extract start time
+        #         start_time_match = re.search(r'\s*Start\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
+        #         if start_time_match:
+        #             start_time_value = start_time_match.group(1).strip('A.D.').strip()
+        #             bspdict['bsp_start_time'] = datetime.strptime(start_time_value, '%Y-%b-%d %H:%M:%S.%f')
+        #         else:
+        #             bspdict['bsp_start_time'] = None
 
-#         # Extract stop time
-#         stop_time_match = re.search(r'\s*Stop\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
-#         if stop_time_match:
-#             stop_time_value = stop_time_match.group(1).strip('A.D.').strip()
-#             bspdict['bsp_stop_time'] = datetime.strptime(stop_time_value, '%Y-%b-%d %H:%M:%S.%f')
-#         else:
-#             bspdict['bsp_stop_time'] = None
+        #         # Extract stop time
+        #         stop_time_match = re.search(r'\s*Stop\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
+        #         if stop_time_match:
+        #             stop_time_value = stop_time_match.group(1).strip('A.D.').strip()
+        #             bspdict['bsp_stop_time'] = datetime.strptime(stop_time_value, '%Y-%b-%d %H:%M:%S.%f')
+        #         else:
+        #             bspdict['bsp_stop_time'] = None
 
         # Extract absolute magnitude
-        absmag_match = re.search(r'\s+H=\s+([\d.]+)', texto)
+        absmag_match = re.search(r"\s+H=\s+([\d.]+)", texto)
         if absmag_match:
             absmag_value = absmag_match.group(1).strip()
-            bspdict['bsp_absmag'] = float(absmag_value)
+            bspdict["bsp_absmag"] = float(absmag_value)
         else:
-            bspdict['bsp_absmag'] = None
+            bspdict["bsp_absmag"] = None
 
         # Extract gravitational coefficient
-        gcoeff_match = re.search(r'\s+G=\s+([\d.]+)', texto)
+        gcoeff_match = re.search(r"\s+G=\s+([\d.]+)", texto)
         if gcoeff_match:
             gcoeff_value = gcoeff_match.group(1).strip()
-            bspdict['bsp_gcoeff'] = float(gcoeff_value)
+            bspdict["bsp_gcoeff"] = float(gcoeff_value)
         else:
-            bspdict['bsp_gcoeff'] = None
+            bspdict["bsp_gcoeff"] = None
 
         return bspdict
 
     except FileNotFoundError:
-        raise FileNotFoundError(f"The specified SPK file '{asteroid_bsp}' does not exist.")
+        raise FileNotFoundError(
+            f"The specified SPK file '{asteroid_bsp}' does not exist."
+        )
     except Exception as e:
         raise ValueError(f"Error parsing SPK file: {str(e)}")
-    
+
 
 def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     """
@@ -442,6 +452,6 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     Returns:
     - float: The magnitude drop of the asteroid relative to the star.
     """
-    delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude    
-    drop_magnitude = 2.5 * np.log10( 1 + 10**(delta_magnitude*0.4))
+    delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude
+    drop_magnitude = 2.5 * np.log10(1 + 10 ** (delta_magnitude * 0.4))
     return drop_magnitude
