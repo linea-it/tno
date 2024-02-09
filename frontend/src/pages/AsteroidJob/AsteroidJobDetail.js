@@ -21,7 +21,6 @@ function AsteroidJob() {
     staleTime: 1 * 60 * 60 * 1000,
   })
 
-  console.log(data)
   return (
     <Grid container spacing={2}>
       {data !== undefined && data.status === 4 && (
@@ -94,7 +93,7 @@ function AsteroidJob() {
             />
             <TextField
               label="Traceback"
-              value={data?.traceback}
+              value={data?.traceback !== null ? data.traceback : ''}
               multiline
               rows={4}
               InputProps={{

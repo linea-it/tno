@@ -25,7 +25,7 @@ import AsteroidJob from '../pages/AsteroidJob/index'
 import AsteroidJobDetail from '../pages/AsteroidJob/AsteroidJobDetail'
 import Home from '../pages/LandingPage/Home'
 
-export default function DashboardRoutes() {
+export function DashboardPageRoutes() {
   const { isAuthenticated, signIn } = useAuth()
 
   const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
@@ -52,185 +52,185 @@ export default function DashboardRoutes() {
     )
   }
 
-  const DashboardPageRoutes = () => {
-    return (
-      <>
-        {/* Dashboard  Layout*/}
-        <Route
-          isHomePage
-          isPrivate
-          exact
-          path='/dashboard/stats'
-          element={
-            <DashboardPage>
-              <Dashboard />
-            </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/discovery'
-          element={
-              <DashboardPage>
-                <Skybot />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/discovery/:id'
-          element={
-              <DashboardPage>
-                <SkybotDetail />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/statistics'
-          element={
-              <DashboardPage>
-                <SkybotStatistics />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/orbittrace-detail/:id'
-          element={
-              <DashboardPage>
-                <OrbitTraceDetail />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/discovery/asteroid/:id'
-          element={
-              <DashboardPage>
-                <SkybotAsteroid />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/orbittrace/asteroid/:id'
-          element={
-              <DashboardPage>
-                <OrbitTraceAsteroid />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/orbittrace'
-          element={
-              <DashboardPage>
-                <OrbitTrace />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/management'
-          element={
-              <DashboardPage>
-                <DesManagement />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/management'
-          element={
-              <DashboardPage>
-                <DesManagement />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/prediction-of-occultation'
-          element={
-              <DashboardPage>
-                <PredictOccultation />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/predict-detail/:id'
-          element={
-              <DashboardPage>
-                <PredictDetail />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/predict-asteroid/:id'
-          element={
-              <DashboardPage>
-                <PredictionAsteroid />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/occultation'
-          element={
-              <DashboardPage>
-                <PredictionEvents />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/asteroid_job'
-          element={
-              <DashboardPage>
-                <AsteroidJob />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/asteroid_job/:id'
-          element={
-              <DashboardPage>
-                <AsteroidJobDetail />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/dashboard'
-          element={
-            <LandingPage>
-              <Home />
-            </LandingPage>
-          }
-        />
-      </>
-    )
-  }
+  return (
+    <>
+      {/* Dashboard  Layout*/}
+      <Route
+        isHomePage
+        isPrivate
+        exact
+        path='/dashboard/stats'
+        element={
+          <DashboardPage>
+            <Dashboard />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/discovery'
+        element={
+          <DashboardPage>
+            <Skybot />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/discovery/:id'
+        element={
+          <DashboardPage>
+            <SkybotDetail />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/statistics'
+        element={
+          <DashboardPage>
+            <SkybotStatistics />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/orbittrace-detail/:id'
+        element={
+          <DashboardPage>
+            <OrbitTraceDetail />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/discovery/asteroid/:id'
+        element={
+          <DashboardPage>
+            <SkybotAsteroid />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/orbittrace/asteroid/:id'
+        element={
+          <DashboardPage>
+            <OrbitTraceAsteroid />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/orbittrace'
+        element={
+          <DashboardPage>
+            <OrbitTrace />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/management'
+        element={
+          <DashboardPage>
+            <DesManagement />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/des/management'
+        element={
+          <DashboardPage>
+            <DesManagement />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/prediction-of-occultation'
+        element={
+          <DashboardPage>
+            <PredictOccultation />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/predict-detail/:id'
+        element={
+          <DashboardPage>
+            <PredictDetail />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/data-preparation/predict-asteroid/:id'
+        element={
+          <DashboardPage>
+            <PredictionAsteroid />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/occultation'
+        element={
+          <DashboardPage>
+            <PredictionEvents />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/asteroid_job'
+        element={
+          <DashboardPage>
+            <AsteroidJob />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/asteroid_job/:id'
+        element={
+          <DashboardPage>
+            <AsteroidJobDetail />
+          </DashboardPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/dashboard'
+        element={
+          <LandingPage>
+            <Home />
+          </LandingPage>
+        }
+      />
+    </>
+  )
+}
 
+export default function DashboardRoutes() {
   return (
     <Routes>
       {DashboardPageRoutes()}

@@ -34,292 +34,295 @@ import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 import AsteroidJob from '../pages/AsteroidJob/index'
 import AsteroidJobDetail from '../pages/AsteroidJob/AsteroidJobDetail'
 
+import { PublicPageRoutes } from './public_page'
+import { DashboardPageRoutes } from './dashboard'
+
 export default function AppRoutes() {
   const { isAuthenticated, signIn } = useAuth()
 
-  const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
-    return isAuthenticated ? children : signIn()
-  }
+  // const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
+  //   return isAuthenticated ? children : signIn()
+  // }
 
-  const LandingPage = ({ children }) => {
-    return (
-      <>
-        <Header />
-        {children}
-        <Footer />
-      </>
-    )
-  }
+  // const LandingPage = ({ children }) => {
+  //   return (
+  //     <>
+  //       <Header />
+  //       {children}
+  //       <Footer />
+  //     </>
+  //   )
+  // }
 
-  const PublicPortalPage = ({ children }) => {
-    return (
-      <>
-        <PublicHeader />
-        {children}
-        <FooterSupporters />
-      </>
-    )
-  }
+  // const PublicPortalPage = ({ children }) => {
+  //   return (
+  //     <>
+  //       <PublicHeader />
+  //       {children}
+  //       <FooterSupporters />
+  //     </>
+  //   )
+  // }
 
 
 
-  const PublicPageRoutes = () => {
-    return (
-      <>
-        {/* Public Portal  Layout*/}
-        <Route
-          isHomePage
-          exact
-          path='/'
-          element={
-            <PublicPortalPage>
-              <PublicHome />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          exact
-          path='/prediction-event-detail/:id'
-          element={
-            <PublicPortalPage>
-              <PredictionEventDetail />
-            </PublicPortalPage>
-          }
-        />
+  // const PublicPageRoutes = () => {
+  //   return (
+  //     <>
+  //       {/* Public Portal  Layout*/}
+  //       <Route
+  //         isHomePage
+  //         exact
+  //         path='/'
+  //         element={
+  //           <PublicPortalPage>
+  //             <PublicHome />
+  //           </PublicPortalPage>
+  //         }
+  //       />
+  //       <Route
+  //         exact
+  //         path='/prediction-event-detail/:id'
+  //         element={
+  //           <PublicPortalPage>
+  //             <PredictionEventDetail />
+  //           </PublicPortalPage>
+  //         }
+  //       />
 
-        <Route
-          isHomePage
-          exact
-          path='/about-us'
-          element={
-            <PublicPortalPage>
-              <PublicAboutUs />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/contact-us'
-          element={
-            <PublicPortalPage>
-              <PublicContact />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/documentation'
-          element={
-            <PublicPortalPage>
-              <PublicDocumentation />
-            </PublicPortalPage>
-          }
-        />
-        {/* Landing Page  Layout*/}
-        <Route
-          isHomePage
-          exact
-          path='/'
-          element={
-            <PublicPortalPage>
-              <PublicHome />
-            </PublicPortalPage>
-          }
-        />
-        <Route
-          isHomePage
-          exact
-          path='/dashboard'
-          element={
-            <LandingPage>
-              <Home />
-            </LandingPage>
-          }
-        />
-      </>
-    )
-  }
+  //       <Route
+  //         isHomePage
+  //         exact
+  //         path='/about-us'
+  //         element={
+  //           <PublicPortalPage>
+  //             <PublicAboutUs />
+  //           </PublicPortalPage>
+  //         }
+  //       />
+  //       <Route
+  //         isHomePage
+  //         exact
+  //         path='/contact-us'
+  //         element={
+  //           <PublicPortalPage>
+  //             <PublicContact />
+  //           </PublicPortalPage>
+  //         }
+  //       />
+  //       <Route
+  //         isHomePage
+  //         exact
+  //         path='/documentation'
+  //         element={
+  //           <PublicPortalPage>
+  //             <PublicDocumentation />
+  //           </PublicPortalPage>
+  //         }
+  //       />
+  //       {/* Landing Page  Layout*/}
+  //       <Route
+  //         isHomePage
+  //         exact
+  //         path='/'
+  //         element={
+  //           <PublicPortalPage>
+  //             <PublicHome />
+  //           </PublicPortalPage>
+  //         }
+  //       />
+  //       <Route
+  //         isHomePage
+  //         exact
+  //         path='/dashboard'
+  //         element={
+  //           <LandingPage>
+  //             <Home />
+  //           </LandingPage>
+  //         }
+  //       />
+  //     </>
+  //   )
+  // }
 
-  const DashboardPage = ({ children }) => {
-    return (
-      <>
-        <PrivateRoute auth={{ isAuthenticated }}>
-          <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
-        </PrivateRoute>
-      </>
-    )
-  }
+  // const DashboardPage = ({ children }) => {
+  //   return (
+  //     <>
+  //       <PrivateRoute auth={{ isAuthenticated }}>
+  //         <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
+  //       </PrivateRoute>
+  //     </>
+  //   )
+  // }
 
-  const DashboardPageRoutes = () => {
-    return (
-      <>
-        {/* Dashboard  Layout*/}
-        <Route
-          isHomePage
-          isPrivate
-          exact
-          path='/dashboard/stats'
-          element={
-            <DashboardPage>
-              <Dashboard />
-            </DashboardPage>
-          }
-        />
-        {/* <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/discovery'
-          element={
-              <DashboardPage>
-                <Skybot />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/discovery/:id'
-          element={
-              <DashboardPage>
-                <SkybotDetail />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/statistics'
-          element={
-              <DashboardPage>
-                <SkybotStatistics />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/orbittrace-detail/:id'
-          element={
-              <DashboardPage>
-                <OrbitTraceDetail />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/discovery/asteroid/:id'
-          element={
-              <DashboardPage>
-                <SkybotAsteroid />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/orbittrace/asteroid/:id'
-          element={
-              <DashboardPage>
-                <OrbitTraceAsteroid />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/orbittrace'
-          element={
-              <DashboardPage>
-                <OrbitTrace />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/management'
-          element={
-              <DashboardPage>
-                <DesManagement />
-              </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/des/management'
-          element={
-              <DashboardPage>
-                <DesManagement />
-              </DashboardPage>
-          }
-        /> */}
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/prediction-of-occultation'
-          element={
-            <DashboardPage>
-              <PredictOccultation />
-            </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/predict-detail/:id'
-          element={
-            <DashboardPage>
-              <PredictDetail />
-            </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/data-preparation/predict-asteroid/:id'
-          element={
-            <DashboardPage>
-              <PredictionAsteroid />
-            </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/occultation'
-          element={
-            <DashboardPage>
-              <PredictionEvents />
-            </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/asteroid_job'
-          element={
-            <DashboardPage>
-              <AsteroidJob />
-            </DashboardPage>
-          }
-        />
-        <Route
-          isPrivate
-          exact
-          path='/dashboard/asteroid_job/:id'
-          element={
-            <DashboardPage>
-              <AsteroidJobDetail />
-            </DashboardPage>
-          }
-        />
-      </>
-    )
-  }
+  // const DashboardPageRoutes = () => {
+  //   return (
+  //     <>
+  //       {/* Dashboard  Layout*/}
+  //       <Route
+  //         isHomePage
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/stats'
+  //         element={
+  //           <DashboardPage>
+  //             <Dashboard />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //       {/* <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/discovery'
+  //         element={
+  //             <DashboardPage>
+  //               <Skybot />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/discovery/:id'
+  //         element={
+  //             <DashboardPage>
+  //               <SkybotDetail />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/statistics'
+  //         element={
+  //             <DashboardPage>
+  //               <SkybotStatistics />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/orbittrace-detail/:id'
+  //         element={
+  //             <DashboardPage>
+  //               <OrbitTraceDetail />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/discovery/asteroid/:id'
+  //         element={
+  //             <DashboardPage>
+  //               <SkybotAsteroid />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/orbittrace/asteroid/:id'
+  //         element={
+  //             <DashboardPage>
+  //               <OrbitTraceAsteroid />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/orbittrace'
+  //         element={
+  //             <DashboardPage>
+  //               <OrbitTrace />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/management'
+  //         element={
+  //             <DashboardPage>
+  //               <DesManagement />
+  //             </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/des/management'
+  //         element={
+  //             <DashboardPage>
+  //               <DesManagement />
+  //             </DashboardPage>
+  //         }
+  //       /> */}
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/prediction-of-occultation'
+  //         element={
+  //           <DashboardPage>
+  //             <PredictOccultation />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/predict-detail/:id'
+  //         element={
+  //           <DashboardPage>
+  //             <PredictDetail />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/data-preparation/predict-asteroid/:id'
+  //         element={
+  //           <DashboardPage>
+  //             <PredictionAsteroid />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/occultation'
+  //         element={
+  //           <DashboardPage>
+  //             <PredictionEvents />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/asteroid_job'
+  //         element={
+  //           <DashboardPage>
+  //             <AsteroidJob />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //       <Route
+  //         isPrivate
+  //         exact
+  //         path='/dashboard/asteroid_job/:id'
+  //         element={
+  //           <DashboardPage>
+  //             <AsteroidJobDetail />
+  //           </DashboardPage>
+  //         }
+  //       />
+  //     </>
+  //   )
+  // }
 
   return (
     <Routes>

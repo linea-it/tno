@@ -199,11 +199,13 @@ export default function PersistentDrawerLeft({ children }) {
           <ListItemButton onClick={() => navigate('/dashboard/occultation')}>
             <ListItemText primary='Occultation' />
           </ListItemButton>
-          <ListItemButton onClick={() => navigate('/public_home')}>
-            <ListItemText primary='Public Page' />
-          </ListItemButton>
+          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           <ListItemButton onClick={() => navigate('/dashboard/asteroid_job')}>
             <ListItemText primary='Asteroid Jobs' />
+          </ListItemButton>
+          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <ListItemButton onClick={() => navigate('/public_home')}>
+            <ListItemText primary='Public Page' />
           </ListItemButton>
         </List>
       </Drawer>
