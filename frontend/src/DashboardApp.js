@@ -1,5 +1,5 @@
 import React from 'react'
-import { MuiThemeProvider } from '@material-ui/core/styles'
+import { ThemeProvider } from '@mui/styles';
 import { BrowserRouter } from 'react-router-dom'
 import light from './themes/light'
 // import AppRoutes from './routes'
@@ -13,7 +13,7 @@ function DashboardApp() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <MuiThemeProvider theme={light}>
+      <ThemeProvider theme={light}>
         <AuthProvider>
           <PredictionEventsProvider>
             <BrowserRouter history={history}>
@@ -21,7 +21,7 @@ function DashboardApp() {
             </BrowserRouter>
           </PredictionEventsProvider>
         </AuthProvider>
-      </MuiThemeProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   )
 }
