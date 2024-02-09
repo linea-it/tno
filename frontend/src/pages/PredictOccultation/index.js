@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import FormControl from '@mui/material/FormControl'
 import InputLabel from '@mui/material/InputLabel'
@@ -587,7 +588,7 @@ function PredictOccultation() {
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} direction="row"
+                  {/* <Grid container spacing={2} direction="row"
                     justifyContent="center"
                     alignItems="center">
                     <Box>
@@ -595,15 +596,20 @@ function PredictOccultation() {
                         Execute
                       </Button>
                     </Box>
-                  </Grid>
+                  </Grid> */}
                 </CardContent>
+                <CardActions>
+                  <Button variant='contained' disabled={disableSubmit} className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
+                    Execute
+                  </Button>
+                </CardActions>
               </Card>
             </Grid>
           </Grid>
         </Grid>
       </Grid >
 
-      <Grid container spacing={6}>
+      <Grid container spacing={6} sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <Card>
             <CardHeader title='History' />
