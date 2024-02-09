@@ -265,7 +265,7 @@ def get_position_vector(target, observer, et, spice_object):
     return state[:3]
 
     
-def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None):
+def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None, spice_global=False):
     """
     Calculate the visual magnitude of an asteroid at a specific instant.
 
@@ -299,7 +299,8 @@ def asteroid_visual_magnitude(asteroid_bsp, naif_tls, planetary_bsp, instant, h=
     
     try:
         # # Load necessary SPICE kernels
-        # spice.furnsh([asteroid_bsp, naif_tls, planetary_bsp])
+        if not spice_global:
+            spice.furnsh([asteroid_bsp, naif_tls, planetary_bsp])
 
         # Convert instant to ephemeris time
         et = spice.str2et(instant.strftime("%Y-%b-%d %H:%M"))
