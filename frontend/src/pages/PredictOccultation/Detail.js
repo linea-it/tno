@@ -1,37 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useParams, useHistory } from 'react-router-dom';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Icon,
-  Tooltip,
-  Toolbar,
-  Typography,
-  CircularProgress,
-} from '@mui/material';
-import ListIcon from '@mui/icons-material/List';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { useParams, useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Icon from '@mui/material/Icon';
+import Typography from '@mui/material/Typography';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import List from '../../components/List';
 import Table from '../../components/Table';
-import Dialog from '../../components/Dialog';
-import Log from '../../components/Log';
 import ColumnStatus from '../../components/Table/ColumnStatus';
-import Donut from '../../components/Chart/Donut';
+import Alert from '@mui/material/Alert';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {
+
   getPredictionJobById,
   getPredictionJobResultsByJobId,
   cancelPredictionJobById,
   getPredictionJobProgressById
 } from '../../services/api/PredictOccultation';
-import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
-import { Alert } from '@material-ui/lab'
-import useStyles from './styles';
+
 import useInterval from '../../hooks/useInterval'
 import ProgressList from '../../components/ProgressList/index';
 
@@ -46,7 +37,6 @@ function PredictDetail() {
   const [totalErrorCount, setTotalErrorCount] = useState(0);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [progress, setProgress] = useState([])
-  const classes = useStyles()
   const [dialog, setDialog] = useState({
     content: [],
     visible: false,
@@ -290,8 +280,13 @@ function PredictDetail() {
       <Grid item xs={12}>
         <Grid container alignItems='center' spacing={2}>
           <Grid item>
-            <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
-              <Icon className='fas fa-undo' fontSize='inherit' />
+            <Button
+              variant='contained'
+              color='primary'
+              title='Back'
+              onClick={handleBackNavigation}
+              startIcon={<ArrowBackIosIcon />}
+            >
               <Typography variant='button' style={{ margin: '0 5px' }}>
                 Back
               </Typography>
@@ -309,11 +304,13 @@ function PredictDetail() {
           ) : null}
         </Grid>
       </Grid>
-      {'error' in predictionJob && predictionJob.error !== null && (
-        <Grid item xs={12}>
-          <Alert severity='error'>{predictionJob.error}</Alert>
-        </Grid>
-      )}
+      {
+        'error' in predictionJob && predictionJob.error !== null && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{predictionJob.error}</Alert>
+          </Grid>
+        )
+      }
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
@@ -326,12 +323,12 @@ function PredictDetail() {
         <Card>
           <CardHeader title='Progress' />
           <CardContent>
-            <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
+            <Grid container spacing={3} direction='column'>
               <ProgressList
                 lista={progress}
               />
               {predictionJob.status == 1 && progress.length == 0 ? (
-                <CircularProgress className={classes.circularProgress} disableShrink size={50} />
+                <CircularProgress disableShrink size={50} />
               ) : null}
             </Grid>
           </CardContent>
@@ -381,7 +378,7 @@ function PredictDetail() {
           </Grid>
         }
       </>
-    </Grid>
+    </Grid >
   );
 }
 

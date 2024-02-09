@@ -7,13 +7,17 @@ import Link from '@mui/material/Link'
 import Popover from '@mui/material/Popover'
 import { useLocation } from 'react-router-dom'
 import List from '@mui/material/List'
+import Box from '@mui/material/Box'
 import ListItem from '@mui/material/ListItem'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'
 import styles from './styles'
 import { useAuth } from '../../../contexts/AuthContext.js'
+import { useNavigate } from 'react-router-dom'
+
 function Header() {
   const { isAuthenticated, user, signIn, logout } = useAuth()
 
+  const navigate = useNavigate();
   const location = useLocation()
   const trigger = useScrollTrigger({
     threshold: 10,
@@ -26,11 +30,11 @@ function Header() {
 
   const [anchorEl, setAnchorEl] = React.useState(null)
 
-  const handleClick = (event) => {
+  const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget)
   }
 
-  const handleClose = () => {
+  const handleMenuClose = () => {
     setAnchorEl(null)
   }
 
@@ -39,14 +43,14 @@ function Header() {
   function UserLogged() {
     return (
       <>
-        <Button color='inherit' onClick={handleClick}>
+        <Button color='inherit' onClick={handleMenuClick}>
           {user?.username || ''}
         </Button>
         <Popover
           id='simple-popover'
           anchorEl={anchorEl}
           open={open}
-          onClose={handleClose}
+          onClose={handleMenuClose}
           PaperProps={{
             style: {
               transform: 'translateX(calc(100vw - 185px)) translateY(45px)'
@@ -76,44 +80,45 @@ function Header() {
   }
 
   const menus = [
-    {
-      description: 'Home',
-      href: '/',
-      target: '_self'
-    },
-    {
-      description: 'About',
-      href: '/about-us',
-      target: '_self'
-    },
-    {
-      description: 'Documentation',
-      href: '/documentation',
-      target: '_self'
-    },
-    {
-      description: 'Contact',
-      href: '/contact-us',
-      target: '_self'
-    }
+    // TODO: Criar páginas independentes para o Dashboard.
+    // Se usar as mesmas a rota para home fica errada nos outras páginas
+    // {
+    //   description: 'Home',
+    //   href: '/dashboard',
+    //   target: '_self'
+    // },
+    // {
+    //   description: 'About',
+    //   href: '/about-us',
+    //   target: '_self'
+    // },
+    // {
+    //   description: 'Documentation',
+    //   href: '/documentation',
+    //   target: '_self'
+    // },
+    // {
+    //   description: 'Contact',
+    //   href: '/contact-us',
+    //   target: '_self'
+    // }
   ]
-
+  const handleClick = (pathname) => navigate(pathname)
   return (
-    <AppBar position='static' className={classes.appbar}>
-      <Toolbar className={classes.toolbar}>
-        <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' className={classes.logoLIneA} />
-        <List className={classes.menuList}>
+    <AppBar position='static' style={{ backgroundColor: '#24292e' }}>
+      <Toolbar>
+        <Box sx={{ pt: 1 }}>
+          <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />
+        </Box>
+        <Box sx={{ flexGrow: 1 }}>
           {menus.map((menu) => (
-            <ListItem key={menu.href} className={classes.menuListItem}>
-              <Link href={menu.href} className={classes.menuLink}>
-                {menu.description}
-              </Link>
-            </ListItem>
+            <Button key={menu.description} color="inherit" onClick={() => handleClick(menu.href)}>{menu.description}</Button>
           ))}
-        </List>
-        <div className={classes.separator} />
+          <div className={classes.separator} />
+        </Box>
         {isAuthenticated ? <UserLogged /> : <UserUnLogged />}
       </Toolbar>
+
     </AppBar>
   )
 }
