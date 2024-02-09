@@ -507,7 +507,7 @@ class Asteroid:
 
             self.write_asteroid_json()
 
-    def check_observations(self, days_to_expire=None):
+    def check_observations(self, days_to_expire=None, ignore=False):
         log = self.get_log()
 
         tp0 = dt.now(tz=timezone.utc)
@@ -549,14 +549,27 @@ class Asteroid:
                             "Pre-existing Observations is still valid and will be reused."
                         )
 
-            if not observations:
-                # Fazer um novo Download
-                # Tenta primeiro vindo do AstDys
-                observations = aei.download_astdys_observations(force=True)
-
+            if ignore:
+                msg = "The download of observations was skipped."
+                observations = {
+                    "source": "Ignored",
+                    "filename": "",
+                    "size": 0,
+                    "dw_start": dt.now(),
+                    "dw_finish": dt.now(),
+                    "dw_time": 0,
+                    "downloaded_in_this_run": False,
+                }
+                log.warning("%s" % (msg))
+            else:
                 if not observations:
-                    # Tenta no MPC
-                    observations = aei.download_mpc_orbital_elements(force=True)
+                    # Fazer um novo Download
+                    # Tenta primeiro vindo do AstDys
+                    observations = aei.download_astdys_observations(force=True)
+
+                    if not observations:
+                        # Tenta no MPC
+                        observations = aei.download_mpc_orbital_elements(force=True)
 
             if observations:
                 # Atualiza os dados
