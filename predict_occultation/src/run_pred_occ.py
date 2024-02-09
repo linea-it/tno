@@ -809,10 +809,12 @@ def submit_tasks(jobid: int):
                 step1_failures += 1
                 # Ignora as proximas etapas para este asteroid.
                 continue
-
+            
             # Observations --------------------------------------------------
-            have_obs = a.check_observations(days_to_expire=OBSERVATIONS_DAYS_TO_EXPIRE)
-
+            # Use ignore=False ou omita para que as observações AstDys ou MPC sejam baixadas
+            # have_obs = a.check_observations(days_to_expire=OBSERVATIONS_DAYS_TO_EXPIRE)
+            have_obs = a.check_observations(days_to_expire=OBSERVATIONS_DAYS_TO_EXPIRE, ignore=True)
+            
             if have_obs is False:
                 log.warning(
                     "Asteroid [%s] Ignored for not having Observations."
