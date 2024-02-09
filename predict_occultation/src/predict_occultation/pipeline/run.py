@@ -6,14 +6,13 @@ import os
 import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
-
 from dao import GaiaDao
 from library import (
-    ast_visual_mag_from_astdys,
     count_lines,
     create_nima_input,
     read_asteroid_json,
     write_asteroid_json,
+    check_bsp_object,
 )
 from occ_path_coeff import run_occultation_path_coeff
 from run_nima import start_nima
@@ -204,18 +203,17 @@ if __name__ == "__main__":
         obj_data["refine_orbit"] = nima_result
 
         # ============== Executar o PRAIA OCC ==============
+
+        # Checa o arquivo bsp_object
+        if bsp_object_filename is None:
+            bsp_object_filename = "%s.bsp" % name
+        bsp_object = check_bsp_object(bsp_object_filename)
+
         praia_t0 = datetime.now()
 
-        # Calcular a magnitude maxima do objeto apartir do arquivo Observations AstDys
-        MAXIMUM_VMAG_DEFAULT = 17
-
-        in_observations = os.path.join(data_dir, name + ".rwo")
-        ast_vmag = ast_visual_mag_from_astdys(in_observations)
-        print("Asteroid Visual Magnitude: [%s]" % ast_vmag)
-
+        # Define o limite máximo para as magnitudes das estrelas ocultadas
+        MAXIMUM_VMAG_DEFAULT = 18
         maximum_visual_magnitude = MAXIMUM_VMAG_DEFAULT
-        if ast_vmag != None and ast_vmag < MAXIMUM_VMAG_DEFAULT:
-            maximum_visual_magnitude = ast_vmag
         print("Maximum Visual Magnitude: [%s]" % maximum_visual_magnitude)
 
         print("Running PRAIA OCC")
@@ -260,7 +258,6 @@ if __name__ == "__main__":
                     "bsp_planetary": bsp_planetary_filename.split(".")[0],
                     "leap_seconds": leap_sec_filename.split(".")[0],
                     "nima": USED_NIMA_BSP,
-                    "asteroid_visual_magnitude": ast_vmag,
                     "maximum_visual_magnitude": maximum_visual_magnitude,
                     "stars": count_stars,
                 }
@@ -278,6 +275,11 @@ if __name__ == "__main__":
             )
 
         obj_data["predict_occultation"] = praia_result
+
+        # Checa o arquivo bsp_object
+        if bsp_object_filename is None:
+            bsp_object_filename = "%s.bsp" % name
+        # bsp_object = check_bsp_object(bsp_object_filename)
 
         # Executar o calculo Coeff Path
         if os.path.exists(occultation_file):
