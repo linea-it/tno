@@ -134,16 +134,8 @@ class AsteroidDao(DBBase):
     def import_asteroids(self, data, delimiter=","):
 
         # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
-        sql = f"COPY {self.tbl} (name, number, base_dynclass, dynclass, albedo, albedo_err_max, \
-            albedo_err_min, alias, aphelion_dist, arg_perihelion, astorb_dynbaseclass, \
-            astorb_dynsubclass, density, density_err_max, density_err_min, diameter, \
-            diameter_err_max, diameter_err_min, epoch, excentricity, g, h, inclination, \
-            last_obs_included, long_asc_node, mass, mass_err_max, mass_err_min, mean_anomaly, \
-            mean_daily_motion, mpc_critical_list, perihelion_dist, pha_flag, principal_designation, \
-            rms, semimajor_axis) FROM STDIN with (FORMAT CSV, DELIMITER '{delimiter}', HEADER);"
+        sql = f"COPY {self.tbl} (name, number, base_dynclass, dynclass, albedo, albedo_err_max, albedo_err_min, alias, aphelion, arg_perihelion, astorb_dynbaseclass, astorb_dynsubclass, density, density_err_max, density_err_min, diameter, diameter_err_max, diameter_err_min, epoch, g, h, inclination, last_obs_included, long_asc_node, mass, mass_err_max, mass_err_min, mean_anomaly, mean_daily_motion, mpc_critical_list, perihelion, pha_flag, principal_designation, rms, semimajor_axis, eccentricity ) FROM STDIN with (FORMAT CSV, DELIMITER '{delimiter}', HEADER);"
 
         rowcount = self.import_with_copy_expert(sql, data)
 
         return rowcount
-
-    # name, number, base_dynclass, dynclass, albedo, albedo_err_max, albedo_err_min, alias, aphelion_dist, arg_perihelion, astorb_dynbaseclass, astorb_dynsubclass, density, density_err_max, density_err_min, diameter, diameter_err_max, diameter_err_min, epoch, excentricity, g, h, inclination, last_obs_included, long_asc_node, mass, mass_err_max, mass_err_min, mean_anomaly, mean_daily_motion, mpc_critical_list, perihelion_dist, pha_flag, principal_designation, rms, semimajor_axis

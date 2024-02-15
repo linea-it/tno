@@ -286,7 +286,7 @@ def load_mpcorb_extended(local_filename, log):
                 "G": "g",
                 "Epoch": "epoch",
                 "a": "semimajor_axis",
-                "e": "excentricity",
+                "e": "eccentricity",
                 "i": "inclination",
                 "Node": "long_asc_node",
                 "Peri": "arg_perihelion",
@@ -295,8 +295,8 @@ def load_mpcorb_extended(local_filename, log):
                 "Last_obs": "last_obs_included",
                 "PHA_flag": "pha_flag",
                 "Principal_desig": "principal_designation",
-                "Perihelion_dist": "perihelion_dist",
-                "Aphelion_dist": "aphelion_dist",
+                "Perihelion_dist": "perihelion",
+                "Aphelion_dist": "aphelion",
                 "Critical_list_numbered_object_flag": "mpc_critical_list",
             },
             inplace=True,
@@ -767,10 +767,10 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
 
         try:
             a = dataframe.iloc[index]["semimajor_axis"]
-            q = dataframe.iloc[index]["perihelion_dist"]
+            q = dataframe.iloc[index]["perihelion"]
             i = dataframe.iloc[index]["inclination"]
-            e = dataframe.iloc[index]["excentricity"]
-            Q = dataframe.iloc[index]["aphelion_dist"]
+            e = dataframe.iloc[index]["eccentricity"]
+            Q = dataframe.iloc[index]["aphelion"]
 
             pha_str = dataframe.iloc[index]["pha_flag"]
             pha = float(pha_str) if pha_str != "NaN" else np.nan
@@ -999,7 +999,7 @@ def asteroid_table_build(table_path, log):
                 "albedo_err_max",
                 "albedo_err_min",
                 "alias",
-                "aphelion_dist",
+                "aphelion",
                 "arg_perihelion",
                 "astorb_dynbaseclass",
                 "astorb_dynsubclass",
@@ -1010,7 +1010,6 @@ def asteroid_table_build(table_path, log):
                 "diameter_err_max",
                 "diameter_err_min",
                 "epoch",
-                "excentricity",
                 "g",
                 "h",
                 "inclination",
@@ -1022,11 +1021,12 @@ def asteroid_table_build(table_path, log):
                 "mean_anomaly",
                 "mean_daily_motion",
                 "mpc_critical_list",
-                "perihelion_dist",
+                "perihelion",
                 "pha_flag",
                 "principal_designation",
                 "rms",
                 "semimajor_axis",
+                "eccentricity",
             ]
         )
 

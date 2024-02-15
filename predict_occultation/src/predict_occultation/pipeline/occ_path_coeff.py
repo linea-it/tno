@@ -258,7 +258,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             "albedo_err_max",
             "albedo_err_min",
             "alias",
-            "aphelion_dist",
+            "aphelion",
             "arg_perihelion",
             "astorb_dynbaseclass",
             "astorb_dynsubclass",
@@ -269,7 +269,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             "diameter_err_max",
             "diameter_err_min",
             "epoch",
-            "excentricity",
+            "eccentricity",
             "g",
             "h",
             "inclination",
@@ -281,7 +281,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             "mean_anomaly",
             "mean_daily_motion",
             "mpc_critical_list",
-            "perihelion_dist",
+            "perihelion",
             "pha_flag",
             "principal_designation",
             "rms",
@@ -289,21 +289,6 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         ]
         for column in ast_data_columns:
             df[column] = obj_data.get(column)
-
-        # -------------------------------------------------
-        # Realocação de valores em colunas repetidas
-        # -------------------------------------------------
-        df["eccentricity"] = obj_data.get("excentricity")
-        df["perihelion"] = obj_data.get("perihelion_dist")
-        df["aphelion"] = obj_data.get("aphelion_dist")
-
-        # -------------------------------------------------
-        # Colunas duplicadas sendo decomissionadas e que
-        # deverão ser removidas no futuro e as fontes corrigidas
-        # ------------------------------------------------
-        df["excentricity"] = None
-        df["perihelion_dist"] = None
-        df["aphelion_dist"] = None
 
         # -------------------------------------------------
         # Provenance Fields
@@ -389,7 +374,6 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "diameter",
                 "e_dec_target",
                 "e_ra_target",
-                "eccentricity",
                 "ephemeris_version",
                 "g_mag_vel_corrected",
                 "h_mag_vel_corrected",
@@ -424,7 +408,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "albedo_err_max",
                 "albedo_err_min",
                 "alias",
-                "aphelion_dist",
+                "aphelion",
                 "arg_perihelion",
                 "astorb_dynbaseclass",
                 "astorb_dynsubclass",
@@ -434,7 +418,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "diameter_err_max",
                 "diameter_err_min",
                 "epoch",
-                "excentricity",
+                "eccentricity",
                 "last_obs_included",
                 "long_asc_node",
                 "mass",

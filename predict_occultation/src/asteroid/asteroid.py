@@ -18,12 +18,8 @@ import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
 from asteroid.jpl import findSPKID, get_bsp_from_jpl
 from dao import AsteroidDao, ObservationDao, OccultationDao
-from library import (  # ra_hms_to_deg,; dec_hms_to_deg,
-    date_to_jd,
-    dec2DMS,
-    has_expired,
-    ra2HMS,
-)
+from library import dec2DMS  # ra_hms_to_deg,; dec_hms_to_deg,
+from library import date_to_jd, has_expired, ra2HMS
 
 
 def serialize(obj):
@@ -552,7 +548,7 @@ class Asteroid:
             if ignore:
                 msg = "The download of observations was skipped."
                 observations = {
-                    "source": "Ignored",
+                    "source": None,
                     "filename": "",
                     "size": 0,
                     "dw_start": dt.now(),
@@ -822,15 +818,6 @@ class Asteroid:
             # Provenance Fields
             # Adiciona algumas informacoes de Proveniencia a cada evento de predicao
             # -------------------------------------------------
-            # df["catalog"] = self.predict_occultation['catalog']
-            # df["predict_step"] = self.predict_occultation['predict_step']
-            # df["bsp_source"] = self.bsp_jpl['source']
-            # df["obs_source"] = self.observations['source']
-            # df["orb_ele_source"] = self.orbital_elements['source']
-            # df["bsp_planetary"] = self.predict_occultation['bsp_planetary']
-            # df["leap_seconds"] = self.predict_occultation['leap_seconds']
-            # df["nima"] = self.predict_occultation['nima']
-            # df["created_at"] = dt.now(tz=timezone.utc)
             df["job_id"] = jobid
 
             # Altera a ordem das colunas para coincidir com a da tabela
@@ -911,7 +898,6 @@ class Asteroid:
                     "albedo_err_max",
                     "albedo_err_min",
                     "alias",
-                    "aphelion_dist",
                     "arg_perihelion",
                     "astorb_dynbaseclass",
                     "astorb_dynsubclass",
@@ -921,7 +907,6 @@ class Asteroid:
                     "diameter_err_max",
                     "diameter_err_min",
                     "epoch",
-                    "excentricity",
                     "last_obs_included",
                     "long_asc_node",
                     "mass",
@@ -930,7 +915,6 @@ class Asteroid:
                     "mean_anomaly",
                     "mean_daily_motion",
                     "mpc_critical_list",
-                    "perihelion_dist",
                     "pha_flag",
                     "principal_designation",
                     "rms",

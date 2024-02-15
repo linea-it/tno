@@ -107,9 +107,9 @@ class Asteroid(models.Model):
         default=None,
     )
 
-    excentricity = models.FloatField(
-        verbose_name="Excentricity",
-        help_text="Excentricity",
+    eccentricity = models.FloatField(
+        verbose_name="Eccentricity",
+        help_text="Eccentricity",
         null=True,
         blank=True,
         default=None,
@@ -155,7 +155,7 @@ class Asteroid(models.Model):
         default=None,
     )
 
-    perihelion_dist = models.FloatField(
+    perihelion = models.FloatField(
         verbose_name="Perihelion distance",
         help_text="Perihelion distance (AU)",
         null=True,
@@ -163,7 +163,7 @@ class Asteroid(models.Model):
         default=None,
     )
 
-    aphelion_dist = models.FloatField(
+    aphelion = models.FloatField(
         verbose_name="Aphelion distance",
         help_text="Aphelion distance (AU)",
         null=True,
