@@ -96,29 +96,6 @@ services:
       - celery_flower
       - rabbit
 
-  pipelines:
-    build: ./pipelines
-    # Para executar os pipelines
-    # Utilizar daemon.sh Para Executar automaticamente conforme sao criados no portal
-    command: /app/daemon.sh
-    # Utilizar sleep infinite Para Executar manualmente
-    # command: /bin/sh -c "while sleep 1000; do :; done"
-    network_mode: "host"
-    volumes:
-      - ./pipelines/src:/app/src
-      - ./archive:/app/outputs
-    environment:
-      # Acesso ao DB de Catalogo e Administrativo, caso localhost não funcione utilizar o host.docker.internal.
-      # Usando Localhost
-      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
-      - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@localhost:3307/tnodbdev
-      # Usando host.docker.internal
-      # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
-      # - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@host.docker.internal:5432/postgres
-      - USER=apptno
-      - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
-      - PREDICT_OUTPUTS=/app/outputs/predict_occultation
-
   predict_occultation:
     build: ./predict_occultation
     # Para executar os pipelines

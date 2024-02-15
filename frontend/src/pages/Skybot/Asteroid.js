@@ -1,7 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography } from '@mui/material'
-import { Skeleton } from '@material-ui/lab'
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import Icon from '@mui/material/Icon';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Toolbar from '@mui/material/Toolbar';
+import Skeleton from '@mui/material/Skeleton';
 import Table from '../../components/Table'
 import {
   getSkybotJobResultById,
