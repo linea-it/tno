@@ -106,6 +106,19 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         # Para cada Ocultacao e necessario calcular o occultation path.
         for row in df.to_dict(orient="records"):
 
+            new_row = {
+                "apparent_magnitude": None,
+                "magnitude_drop": None,
+                "aparent_diameter": None,
+                "have_path_coeff": False,
+                "occ_path_min_longitude": None,
+                "occ_path_max_longitude": None,
+                "occ_path_min_latitude": None,
+                "occ_path_max_latitude": None,
+                "occ_path_is_nightside": None,
+                "occ_path_coeff": {},
+            }
+
             # ------------------------------------------------------------------------
             # Calcula a magnitude visual do asteroide no instante da ocultação
             # Alerta: os arquivos bsp estão na memoria global por alguma razão,
@@ -123,18 +136,16 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 )
             except:
                 ast_vis_mag = None
-            df["apparent_magnitude"] = ast_vis_mag
 
             # Calcula a queda em magnitude durante a ocultacao
             try:
                 magnitude_drop = compute_magnitude_drop(ast_vis_mag, row["g_star"])
             except:
                 magnitude_drop = None
-            df["magnitude_drop"] = magnitude_drop
 
             # Calcula o diametro apararente do objeto se o diametro em km existe
             if obj_data["diameter"] is not None:
-                df["aparent_diameter"] = (
+                aparent_diameter = (
                     2
                     * np.arctan(
                         0.5 * obj_data["diameter"] / (row["delta"] * 149_597_870.7)
@@ -142,17 +153,19 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                     * 206_264_806
                 )
             else:
-                df["aparent_diameter"] = None
+                aparent_diameter = None
 
-            new_row = {
-                "have_path_coeff": False,
-                "occ_path_min_longitude": None,
-                "occ_path_max_longitude": None,
-                "occ_path_min_latitude": None,
-                "occ_path_max_latitude": None,
-                "occ_path_is_nightside": None,
-                "occ_path_coeff": {},
-            }
+            if any(
+                none_value is not None
+                for none_value in [ast_vis_mag, magnitude_drop, aparent_diameter]
+            ):
+                new_row.update(
+                    {
+                        "apparent_magnitude": ast_vis_mag,
+                        "magnitude_drop": magnitude_drop,
+                        "aparent_diameter": aparent_diameter,
+                    }
+                )
 
             occ_coeff = occultation_path_coeff(
                 date_time=dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S")
@@ -207,6 +220,10 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         if len(coeff_paths) > 0:
             df_coeff = pd.DataFrame.from_dict(coeff_paths)
 
+            df["apparent_magnitude"] = df_coeff["apparent_magnitude"]
+            df["magnitude_drop"] = df_coeff["magnitude_drop"]
+            df["aparent_diameter"] = df_coeff["aparent_diameter"]
+
             df["have_path_coeff"] = df_coeff["have_path_coeff"]
             df["occ_path_max_longitude"] = df_coeff["occ_path_max_longitude"]
             df["occ_path_min_longitude"] = df_coeff["occ_path_min_longitude"]
@@ -217,6 +234,10 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
 
             del df_coeff
         else:
+            df["apparent_magnitude"] = None
+            df["magnitude_drop"] = None
+            df["aparent_diameter"] = None
+
             df["have_path_coeff"] = False
             df["occ_path_max_longitude"] = None
             df["occ_path_min_longitude"] = None
