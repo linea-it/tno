@@ -120,10 +120,10 @@ def start_praia_occ(
     print("BSP Object: [%s]" % bsp_object)
 
     # Gerar arquivo de datas
-    dates_file = os.path.join(os.environ.get("DIR_DATA").rstrip("/"), dates_filename)
-    if not os.path.exists(dates_file):
-        print("Running geradata.")
-        dates_file = generate_dates_file(start_date, final_date, step, dates_filename)
+    # dates_file = os.path.join(os.environ.get("DIR_DATA").rstrip("/"), dates_filename)
+    # if not os.path.exists(dates_file):
+    #     print("Running geradata.")
+    dates_file = generate_dates_file(start_date, final_date, step, dates_filename)
     print("Dates File: [%s]" % dates_file)
 
     # Gerar a ephemeris
