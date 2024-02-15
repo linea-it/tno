@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { useParams } from 'react-router-dom'
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent
-} from '@material-ui/core';
+import Grid from '@mui/material/Grid';
+import Card  from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box';
 import List from '../../components/List';
 
@@ -255,7 +253,7 @@ function PredictionEventDetail() {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardHeader title="Occultation Prediction Circumstances" />
             <CardContent>
               <List data={circumstances} />
@@ -270,7 +268,7 @@ function PredictionEventDetail() {
           </Grid>
         )}
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardHeader title="Occulted Star" />
             <CardContent>
               <List data={star} />
@@ -278,7 +276,7 @@ function PredictionEventDetail() {
           </Card>
         </Grid>
         <Grid item xs={12} md={6}>
-          <Card>
+          <Card sx={{ height: '100%' }}>
             <CardHeader title="Object" />
             <CardContent>
               <List data={object} />
@@ -292,12 +290,12 @@ function PredictionEventDetail() {
               <Box
                 height={800}
               >
-              {occultation?.id !== undefined && (
-                <AladinV3
-                  ra={occultation?.ra_star_deg}
-                  dec={occultation?.dec_star_deg}
+                {occultation?.id !== undefined && (
+                  <AladinV3
+                    ra={occultation?.ra_star_deg}
+                    dec={occultation?.dec_star_deg}
                   />
-              ) }
+                ) }
               </Box>
             </CardContent>
           </Card>
