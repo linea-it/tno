@@ -2,6 +2,7 @@
     Funcoes para converter as estatisticas de um container,
     retiradas deste repositorio: https://github.com/TomasTomecek/sen/blob/master/sen/util.py#L162
 """
+
 import functools
 import logging
 import os

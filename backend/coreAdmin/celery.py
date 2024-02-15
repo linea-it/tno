@@ -18,7 +18,7 @@ app.config_from_object("django.conf:settings", namespace="CELERY")
 app.conf.beat_schedule = {
     "garbage-collector-every-three-hours": {
         "task": "tno.tasks.garbage_collector",
-        "schedule": crontab(minute=0, hour="*/3")
+        "schedule": crontab(minute=0, hour="*/3"),
         # 'schedule': 30.0
     },
     "prediction-map-every-hour": {

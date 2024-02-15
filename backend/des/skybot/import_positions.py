@@ -317,9 +317,11 @@ class DESImportSkybotPositions(ImportSkybotPositions):
                 for ccd in ccds:
 
                     df_positions["ccd_id"] = df_positions.apply(
-                        lambda row: row["ccd_id"]
-                        if row["ccd_id"] != 0
-                        else self.in_ccd(ccd, row["raj2000"], row["decj2000"]),
+                        lambda row: (
+                            row["ccd_id"]
+                            if row["ccd_id"] != 0
+                            else self.in_ccd(ccd, row["raj2000"], row["decj2000"])
+                        ),
                         axis=1,
                     )
 
