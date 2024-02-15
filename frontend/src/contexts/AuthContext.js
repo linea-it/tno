@@ -3,7 +3,6 @@ import { createContext, useEffect, useState, useContext } from 'react'
 import { parseCookies, destroyCookie } from 'nookies'
 import { loggedUser, urlLogin, urlLogout } from '../services/api/Auth.js'
 import PropTypes from 'prop-types'
-import { cs } from 'date-fns/locale'
 
 export const AuthContext = createContext({})
 

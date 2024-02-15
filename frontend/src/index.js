@@ -1,20 +1,5 @@
 // @ts-nocheck
 
-// import { createRoot } from 'react-dom/client'
-// import '@fortawesome/fontawesome-free/css/all.min.css'
-// import './assets/css/index.css'
-
-// import App from './App'
-
-// // 👇️ make sure to use the correct root element ID
-// // from your public/index.html file
-// const rootElement = document.getElementById('root')
-// const root = createRoot(rootElement)
-
-// root.render(
-//     <App />
-// )
-
 import React from "react";
 import { createRoot } from 'react-dom/client'
 
@@ -29,7 +14,7 @@ function importBuildTarget() {
   // ...if we make it easy enough (no maps or switches, etc).
   // https://webpack.js.org/plugins/terser-webpack-plugin/
 
-  if ( process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === 'development') {
     return import("./App.js");
   }
   if (process.env.REACT_APP_BUILD_TARGET === "PublicApp") {
@@ -52,7 +37,7 @@ const root = createRoot(rootElement)
 
 // Import the entry point and render it's default export
 importBuildTarget().then(({ default: Environment }) =>
-    root.render(
-        <Environment />
-    )
+  root.render(
+    <Environment />
+  )
 );
