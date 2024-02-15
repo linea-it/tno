@@ -318,6 +318,31 @@ class Occultation(models.Model):
         blank=True,
     )
 
+    magnitude_drop = models.FloatField(
+        verbose_name="magnitude_drop",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Expected star's magnitude drop",
+    )
+
+    apparent_magnitude = models.CharField(
+        max_length=35,
+        default=None,
+        null=True,
+        blank=True,
+        verbose_name="Apparent magnitude",
+        help_text="Asteroids' apparent magnitude at the date (mag)",
+    )
+
+    aparent_diameter = models.FloatField(
+        verbose_name="aparent_diameter",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Apparent diameter of the Earth as seen from the Asteroid (degrees)",
+    )
+
     # ------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
     # ------------------------------------------------------
@@ -351,14 +376,6 @@ class Occultation(models.Model):
         blank=True,
         default=None,
         help_text="2MASS H magnitude corrected from velocity",
-    )
-
-    magnitude_drop = models.FloatField(
-        verbose_name="magnitude_drop",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Expected star's magnitude drop",
     )
 
     instant_uncertainty = models.FloatField(
@@ -405,14 +422,6 @@ class Occultation(models.Model):
         help_text="Star's declination reduced to date",
     )
 
-    aparent_diameter = models.FloatField(
-        verbose_name="aparent_diameter",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Apparent diameter of the Earth as seen from the Asteroid (degrees)",
-    )
-
     ra_target_apparent = models.CharField(
         max_length=20,
         null=True,
@@ -445,15 +454,6 @@ class Occultation(models.Model):
         help_text="Error in target's declination",
     )
 
-    apparent_magnitude = models.CharField(
-        max_length=35,
-        default=None,
-        null=True,
-        blank=True,
-        verbose_name="Apparent magnitude",
-        help_text="Asteroids' apparent magnitude at the date (mag)",
-    )
-
     ephemeris_version = models.CharField(
         max_length=35,
         default=None,
@@ -463,45 +463,6 @@ class Occultation(models.Model):
         help_text="Ephemeris version",
     )
 
-    # semimajor_axis = models.FloatField(
-    #     verbose_name="Semimajor axis",
-    #     null=True,
-    #     blank=True,
-    #     default=None,
-    #     help_text="Semimajor axis",
-    # )
-
-    eccentricity = models.FloatField(
-        verbose_name="Eccentricity",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Eccentricity",
-    )
-
-    # inclination = models.FloatField(
-    #     verbose_name="Inclination",
-    #     null=True,
-    #     blank=True,
-    #     default=None,
-    #     help_text="Inclination",
-    # )
-
-    perihelion = models.FloatField(
-        verbose_name="Perihelion",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Perihelion (AU)",
-    )
-
-    aphelion = models.FloatField(
-        verbose_name="Aphelion",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Aphelion (AU)",
-    )
     # ------------------------------------------------------
     # FIM Colunas que aparentemente não esto sendo preenchidas
     # ------------------------------------------------------
@@ -600,9 +561,9 @@ class Occultation(models.Model):
         default=None,
     )
 
-    excentricity = models.FloatField(
-        verbose_name="Excentricity",
-        help_text="Excentricity",
+    eccentricity = models.FloatField(
+        verbose_name="Eccentricity",
+        help_text="Eccentricity",
         null=True,
         blank=True,
         default=None,
@@ -648,20 +609,20 @@ class Occultation(models.Model):
         default=None,
     )
 
-    perihelion_dist = models.FloatField(
-        verbose_name="Perihelion distance",
-        help_text="Perihelion distance (AU)",
+    perihelion = models.FloatField(
+        verbose_name="Perihelion",
         null=True,
         blank=True,
         default=None,
+        help_text="Perihelion (AU)",
     )
 
-    aphelion_dist = models.FloatField(
-        verbose_name="Aphelion distance",
-        help_text="Aphelion distance (AU)",
+    aphelion = models.FloatField(
+        verbose_name="Aphelion",
         null=True,
         blank=True,
         default=None,
+        help_text="Aphelion (AU)",
     )
 
     rms = models.FloatField(
