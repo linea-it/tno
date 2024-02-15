@@ -343,6 +343,9 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         for column in columns_for_future:
             df[column] = None
 
+        # Converter as strings date_time do instante da ocultação em objetos datetime utc
+        df["date_time"] = pd.to_datetime(df["date_time"], utc=True)
+
         # Altera a ordem das colunas para coincidir com a da tabela
         df = df.reindex(
             columns=[
