@@ -18,7 +18,6 @@ function PublicApp() {
         <AuthProvider>
           <PredictionEventsProvider>
             <BrowserRouter history={history}>
-              {/* <AppRoutes /> */}
               <PublicRoutes />
             </BrowserRouter>
           </PredictionEventsProvider>
