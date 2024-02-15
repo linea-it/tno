@@ -19,6 +19,7 @@ import Box from '@mui/material/Box'
 import IconButton from '@mui/material/IconButton'
 import OutlinedInput from '@mui/material/OutlinedInput'
 import Tooltip from '@mui/material/Tooltip'
+import Alert from '@mui/material/Alert'
 import Switch from '@mui/material/Switch'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
@@ -41,7 +42,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 import Select from 'react-select'
-import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';

@@ -1,4 +1,3 @@
-import { filter } from 'lodash'
 import { api } from './Api'
 
 export const getOccultations = ({ page, pageSize, ordering, start_date, end_date, filter_type, filter_value, min_mag, max_mag }) => {
@@ -130,9 +129,9 @@ export const listAllPredictionEvents = ({ queryKey }) => {
 
     // GEO Filter
     if (filters.geo === true && geoFilterIsValid(filters)) {
-        newFilters.lat = filters.latitude
-        newFilters.long = filters.longitude
-        newFilters.radius = filters.radius
+      newFilters.lat = filters.latitude
+      newFilters.long = filters.longitude
+      newFilters.radius = filters.radius
     }
 
     // Filtro por Jobid

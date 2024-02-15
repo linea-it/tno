@@ -2,9 +2,9 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react'
-import IconButton from '@material-ui/core/IconButton'
+import IconButton from '@mui/material/IconButton'
 import CloseIcon from '@mui/icons-material/Close'
-import { withStyles } from '@material-ui/core/styles'
+import { withStyles } from '@mui/material/styles'
 
 const styles = {
   btnIco: {

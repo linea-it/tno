@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Grid, Card, CardHeader, CardContent, CardMedia, Icon, Button, Typography, CircularProgress } from '@mui/material'
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Icon from '@mui/material/Icon';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import Table from '../../components/Table'
 import {
   getOrbitTraceJobResultById,
@@ -10,7 +19,7 @@ import {
 import List from '../../components/List'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
-import { Alert } from '@material-ui/lab'
+
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()
