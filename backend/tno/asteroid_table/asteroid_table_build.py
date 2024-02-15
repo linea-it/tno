@@ -758,9 +758,11 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
             log.debug(
                 f"Remaining Time: {remaining_time:.0f} seconds..."
                 if remaining_time <= 60
-                else f"Remaining Time: {remaining_time/60:.0f} minutes..."
-                if remaining_time <= 3600
-                else f"Remaining Time: {remaining_time/3600:.0f} hours..."
+                else (
+                    f"Remaining Time: {remaining_time/60:.0f} minutes..."
+                    if remaining_time <= 3600
+                    else f"Remaining Time: {remaining_time/3600:.0f} hours..."
+                )
             )
 
         try:

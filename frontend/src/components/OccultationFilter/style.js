@@ -1,14 +1,14 @@
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles } from '@mui/styles';
 
 const styles = makeStyles({
   grid: {
     margin: 'auto'
   },
-  btnFilter:{
+  btnFilter: {
     float: 'right',
     paddingLeft: '10px'
   },
-  warningMsg:{
+  warningMsg: {
     color: '#cf391d'
   }
 })

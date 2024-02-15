@@ -666,9 +666,14 @@ def submit_tasks(jobid: int):
         # Arquivo de datas pode ser o mesmo para todos os asteroids.
         # Executa o programa fortran geradata.
         # O arquivo de datas será copiado para cada asteroid.
+        log.info(f"Generating dates file.")
         step_t0 = datetime.now(tz=timezone.utc)
         dates_filepath = generate_dates_file(
-            PREDICT_START, PREDICT_END, PREDICT_STEP, current_path.joinpath("dates.txt")
+            PREDICT_START,
+            PREDICT_END,
+            PREDICT_STEP,
+            current_path.joinpath("dates.txt"),
+            log,
         )
         step_t1 = datetime.now(tz=timezone.utc)
         step_tdelta = step_t1 - step_t0
@@ -753,8 +758,10 @@ def submit_tasks(jobid: int):
             # a.remove_previus_results(remove_inputs=FORCE_REFRESH_INPUTS)
 
             # Dates File ----------------------------------------------------
+            log.info(f"Copying dates.txt file to asteroid directory.")
             ast_dates_file = pathlib.Path(a.get_path()).joinpath("dates.txt")
             shutil.copy(dates_filepath, ast_dates_file)
+            log.debug(f"Asteorid Date file: [{ast_dates_file}].")
 
             # ========================= Download dos Inputs Externos ============================
             # Observações do DES ----------------------------------
@@ -1190,13 +1197,21 @@ def consolidate_job_results(consolidated, job_path, log):
 
 def complete_job(job, log, status):
     consolidated_filepath = pathlib.Path(job.get("path"), "job_consolidated.csv")
-    df = pd.read_csv(consolidated_filepath, delimiter=";")
 
-    l_status = df["status"].to_list()
-    count_success = int(l_status.count(1))
-    count_failures = int(l_status.count(2))
-    occultations = int(df["ing_occ_count"].sum())
-    ast_with_occ = int((df["ing_occ_count"] != 0).sum())
+    if consolidated_filepath.exists():
+
+        df = pd.read_csv(consolidated_filepath, delimiter=";")
+
+        l_status = df["status"].to_list()
+        count_success = int(l_status.count(1))
+        count_failures = int(l_status.count(2))
+        occultations = int(df["ing_occ_count"].sum())
+        ast_with_occ = int((df["ing_occ_count"] != 0).sum())
+    else:
+        count_success = 0
+        count_failures = job["count_asteroids"]
+        occultations = 0
+        ast_with_occ = 0
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)
@@ -1244,7 +1259,7 @@ def complete_job(job, log, status):
 
 
 def generate_dates_file(
-    start_date: str, final_date: str, step: int, filepath: pathlib.Path
+    start_date: str, final_date: str, step: int, filepath: pathlib.Path, log
 ):
 
     original_path = os.getcwd()
@@ -1255,6 +1270,7 @@ def generate_dates_file(
         pipeline_path = os.getenv(
             "PIPELINE_PATH", "/app/src/predict_occultation/pipeline"
         ).rstrip("/")
+        log.debug(f"Changing path to PIPELINE_PATH: [{pipeline_path}]")
         os.chdir(pipeline_path)
 
         with open(filepath, "w") as fp:
@@ -1264,9 +1280,10 @@ def generate_dates_file(
                 "geradata", stdin=subprocess.PIPE, stdout=fp, shell=True
             )
             p.communicate(str.encode(strParameters))
+            log.debug(f"Geradata Command: [geradata {strParameters}]")
 
         if filepath.exists():
-            # filepath.chmod(664)
+            filepath.chmod(0o664)
             return filepath
         else:
             raise Exception(f"Date file not generated.")
@@ -1274,4 +1291,5 @@ def generate_dates_file(
     except Exception as e:
         raise Exception(f"Failed in the geradata step. [{e}]")
     finally:
+        log.debug(f"Changing to Orinal job path: [{original_path}]")
         os.chdir(original_path)

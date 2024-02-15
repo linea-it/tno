@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   wrapPaper: {
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
     // color: '#FFF',
     color: '#D79F15'
   },
-  btnAborting:{
+  btnAborting: {
     color: '#e19f41'
   },
   container: {

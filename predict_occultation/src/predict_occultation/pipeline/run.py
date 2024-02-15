@@ -6,13 +6,14 @@ import os
 import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
+
 from dao import GaiaDao
 from library import (
+    check_bsp_object,
     count_lines,
     create_nima_input,
     read_asteroid_json,
     write_asteroid_json,
-    check_bsp_object,
 )
 from occ_path_coeff import run_occultation_path_coeff
 from run_nima import start_nima

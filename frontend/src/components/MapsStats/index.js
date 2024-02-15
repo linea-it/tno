@@ -7,7 +7,7 @@ import UsagePlot from './UsagePlot'
 import { getOccultationHighlights } from '../../services/api/Occultation'
 import { useQuery } from 'react-query'
 import Skeleton from '@mui/material/Skeleton'
-import moment from '../../../node_modules/moment/moment'
+import moment from 'moment'
 
 export default function Mapsdata() {
 
@@ -31,26 +31,26 @@ export default function Mapsdata() {
           ) : (
             "MAPS OVERVIEW"
           )}
-          titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color:'#4f4e4e'}}
+        titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color: '#4f4e4e' }}
       />
       <CardContent>
         <Typography
           variant="h3"
           sx={{ fontWeight: 700, fontSize: "1.8rem", textAlign: "left", paddingBottom: '20px', color: '#4dabf5' }}>
-          {isLoading ? ( <Skeleton /> ) : (data?.maps_stats.total_count)}
+          {isLoading ? (<Skeleton />) : (data?.maps_stats.total_count)}
         </Typography>
 
         <Typography variant="body2" sx={{ margin: '5px 0', fontSize: '1rem' }}>
-        <strong>Period:</strong> {isLoading ? <Skeleton /> : moment(data?.maps_stats.period[0]).utc().format('YYYY-MM-DD')} to { moment(data?.maps_stats.period[1]).utc().format('YYYY-MM-DD') }
+          <strong>Period:</strong> {isLoading ? <Skeleton /> : moment(data?.maps_stats.period[0]).utc().format('YYYY-MM-DD')} to {moment(data?.maps_stats.period[1]).utc().format('YYYY-MM-DD')}
         </Typography>
 
         {isLoading ? (
           <></>
-          ) : (
-              <UsagePlot
-              maxSize={data?.maps_stats.folder_max_size}
-              used={data?.maps_stats.total_size} />
-          )}
+        ) : (
+          <UsagePlot
+            maxSize={data?.maps_stats.folder_max_size}
+            used={data?.maps_stats.total_size} />
+        )}
       </CardContent>
     </Card>
   )

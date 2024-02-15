@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Grid, Card, CardHeader, CardContent, Icon, Button, ButtonGroup, Chip, Typography, CircularProgress } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Icon, Button, ButtonGroup, Chip, Typography, CircularProgress } from '@mui/material'
 import { useParams, useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -355,14 +355,14 @@ function SkybotDetail() {
   }
 
   useEffect(() => {
-      getNightsSuccessOrFail(id).then((res) => {
-        const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
+    getNightsSuccessOrFail(id).then((res) => {
+      const selectedYears = res.map((year) => moment(year.date).format('YYYY')).filter((year, i, yearArr) => yearArr.indexOf(year) === i)
 
-        setSelectedDateYears(selectedYears)
-        setCurrentSelectedDateYear(selectedYears[0])
+      setSelectedDateYears(selectedYears)
+      setCurrentSelectedDateYear(selectedYears[0])
 
-        setExecutedNightsByPeriod(res)
-      })
+      setExecutedNightsByPeriod(res)
+    })
   }, [id, skybotJob])
 
   useEffect(() => {
@@ -415,7 +415,7 @@ function SkybotDetail() {
                 <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed.
               </Alert>
             ) : null}
-            {(skybotJob?.error !== null && skybotJob?.error !== '')  ? <Alert severity='error'>{skybotJob?.error}</Alert> : null}
+            {(skybotJob?.error !== null && skybotJob?.error !== '') ? <Alert severity='error'>{skybotJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>
@@ -559,18 +559,18 @@ function SkybotDetail() {
               <Card>
                 <CardHeader title='Discovery Results' />
                 <CardContent>
-                    <Table
-                      columns={tableColumns}
-                      data={tableData}
-                      loadData={loadData}
-                      totalCount={totalCount || 0}
-                      hasSearching={false}
-                      // hasSorting={false}
-                      hasColumnVisibility={false}
-                      hasToolbar={false}
-                      hasRowNumberer
-                    />
-                  </CardContent>
+                  <Table
+                    columns={tableColumns}
+                    data={tableData}
+                    loadData={loadData}
+                    totalCount={totalCount || 0}
+                    hasSearching={false}
+                    // hasSorting={false}
+                    hasColumnVisibility={false}
+                    hasToolbar={false}
+                    hasRowNumberer
+                  />
+                </CardContent>
               </Card>
             </Grid>
             {totalErrorCount > 0 ? (

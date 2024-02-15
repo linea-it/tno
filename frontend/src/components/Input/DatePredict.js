@@ -1,6 +1,6 @@
 /* eslint-disable */
 import React, { useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import { LocalizationProvider, DatePicker } from '@material-ui/pickers'
 import DateFnsUtils from '@date-io/date-fns'
 import PropTypes from 'prop-types'

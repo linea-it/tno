@@ -1614,9 +1614,9 @@ class DesSkybotPipeline:
                     # Atualiza os totais do job
                     job["positions"] = self.dsdao.t_positions_des_by_job(job["id"])
                     job["asteroids"] = self.dsdao.t_unique_objects_by_job(job["id"])
-                    job[
-                        "exposures_with_asteroid"
-                    ] = self.dsdao.t_exposures_with_objects_by_job(job["id"])
+                    job["exposures_with_asteroid"] = (
+                        self.dsdao.t_exposures_with_objects_by_job(job["id"])
+                    )
                     job["ccds_with_asteroid"] = self.dsdao.t_ccds_with_objects_by_job(
                         job["id"]
                     )

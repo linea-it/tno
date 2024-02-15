@@ -1,22 +1,58 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
-// import '@fortawesome/fontawesome-free/css/all.min.css';
-// import './assets/css/index.css';
-// import App from './App';
+// @ts-nocheck
 
-// ReactDOM.render(<App />, document.getElementById('root'));
+// import { createRoot } from 'react-dom/client'
+// import '@fortawesome/fontawesome-free/css/all.min.css'
+// import './assets/css/index.css'
 
+// import App from './App'
+
+// // 👇️ make sure to use the correct root element ID
+// // from your public/index.html file
+// const rootElement = document.getElementById('root')
+// const root = createRoot(rootElement)
+
+// root.render(
+//     <App />
+// )
+
+import React from "react";
 import { createRoot } from 'react-dom/client'
-import '@fortawesome/fontawesome-free/css/all.min.css'
-import './assets/css/index.css'
 
-import App from './App'
+function importBuildTarget() {
+  console.log("NODE_ENV: %o", process.env.NODE_ENV)
+  console.log("REACT_APP_BUILD_TARGET: %o", process.env.REACT_APP_BUILD_TARGET)
+  // DefinePlugin in webpack.config.js will substitute
+  // process.env.REACT_APP_BUILD_TARGET with it's value at build time.
+  // https://webpack.js.org/plugins/define-plugin/
 
-// 👇️ make sure to use the correct root element ID
-// from your public/index.html file
+  // TerserPlugin in webpack.config.js will eliminate dead code
+  // ...if we make it easy enough (no maps or switches, etc).
+  // https://webpack.js.org/plugins/terser-webpack-plugin/
+
+  if ( process.env.NODE_ENV === 'development') {
+    return import("./App.js");
+  }
+  if (process.env.REACT_APP_BUILD_TARGET === "PublicApp") {
+    return import("./PublicApp.js");
+  } else if (process.env.REACT_APP_BUILD_TARGET === "DashboardApp") {
+    return import("./DashboardApp.js");
+  } else {
+    return import("./App.js");
+    // return Promise.reject(
+    //   new Error("No such build target: " + process.env.REACT_APP_BUILD_TARGET)
+    // );
+  }
+}
+
+
+
+
 const rootElement = document.getElementById('root')
 const root = createRoot(rootElement)
 
-root.render(
-    <App />
-)
+// Import the entry point and render it's default export
+importBuildTarget().then(({ default: Environment }) =>
+    root.render(
+        <Environment />
+    )
+);

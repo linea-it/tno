@@ -1,5 +1,7 @@
 import React from 'react'
-import { CardMedia, Typography, Grid } from '@material-ui/core'
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography'
+import CardMedia from '@mui/material/CardMedia'
 
 function PublicSupporters() {
 

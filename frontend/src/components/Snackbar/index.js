@@ -1,8 +1,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
-import { amber, green } from '@material-ui/core/colors'
-import { makeStyles } from '@material-ui/core/styles'
+import { amber, green } from '@mui/material/colors'
+import { makeStyles } from '@mui/styles'
 import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon,
@@ -10,7 +10,7 @@ import {
   Close as CloseIcon,
   Warning as WarningIcon
 } from '@material-ui/icons'
-import { Snackbar as MuiSnackbar, SnackbarContent, IconButton } from '@material-ui/core'
+import { Snackbar as MuiSnackbar, SnackbarContent, IconButton } from '@mui/material'
 
 const variantIcon = {
   success: CheckCircleIcon,

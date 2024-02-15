@@ -3,7 +3,7 @@
 /* eslint-disable react/jsx-indent */
 /* eslint-disable max-len */
 import React from 'react'
-import { Grid, Container, Typography, Breadcrumbs, Link } from '@material-ui/core'
+import { Grid, Container, Typography, Breadcrumbs, Link } from '@mui/material'
 import styles from './styles'
 
 function AboutUs() {

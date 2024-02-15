@@ -909,18 +909,26 @@ class Asteroid:
                     new_row.update(
                         {
                             "have_path_coeff": True,
-                            "occ_path_min_longitude": float(occ_coeff["min_longitude"])
-                            if occ_coeff["min_longitude"] != None
-                            else None,
-                            "occ_path_max_longitude": float(occ_coeff["max_longitude"])
-                            if occ_coeff["max_longitude"] != None
-                            else None,
-                            "occ_path_min_latitude": float(occ_coeff["min_latitude"])
-                            if occ_coeff["min_latitude"] != None
-                            else None,
-                            "occ_path_max_latitude": float(occ_coeff["max_latitude"])
-                            if occ_coeff["max_latitude"] != None
-                            else None,
+                            "occ_path_min_longitude": (
+                                float(occ_coeff["min_longitude"])
+                                if occ_coeff["min_longitude"] != None
+                                else None
+                            ),
+                            "occ_path_max_longitude": (
+                                float(occ_coeff["max_longitude"])
+                                if occ_coeff["max_longitude"] != None
+                                else None
+                            ),
+                            "occ_path_min_latitude": (
+                                float(occ_coeff["min_latitude"])
+                                if occ_coeff["min_latitude"] != None
+                                else None
+                            ),
+                            "occ_path_max_latitude": (
+                                float(occ_coeff["max_latitude"])
+                                if occ_coeff["max_latitude"] != None
+                                else None
+                            ),
                             "occ_path_is_nightside": bool(occ_coeff["nightside"]),
                             "occ_path_coeff": json.dumps(occ_coeff),
                         }

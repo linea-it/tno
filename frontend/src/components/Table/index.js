@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes, { object } from 'prop-types'
-import InputLabel from '@material-ui/core/InputLabel'
-import Input from '@material-ui/core/Input'
-import MenuItem from '@material-ui/core/MenuItem'
-import FormControl from '@material-ui/core/FormControl'
-import Select from '@material-ui/core/Select'
+import InputLabel from '@mui/material/InputLabel'
+import Input from '@mui/material/Input'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
 import clsx from 'clsx'
 import {
   PagingState,
@@ -28,9 +28,9 @@ import {
   TableColumnVisibility,
   TableGroupRow
 } from '@devexpress/dx-react-grid-material-ui'
-import CircularProgress from '@material-ui/core/CircularProgress'
-import Button from '@material-ui/core/Button'
-import Dialog from '@material-ui/core/Dialog'
+import CircularProgress from '@mui/material/CircularProgress'
+import Button from '@mui/material/Button'
+import Dialog from '@mui/material/Dialog'
 import ColumnChooser from './ColumnChooser'
 import HeaderRowCell from './HeaderRowCell'
 import RowIndexer from './plugins/RowIndexer'
@@ -303,7 +303,7 @@ function Table({
             {hasPagination ? <PagingPanel pageSizes={pageSizes} /> : null}
             {hasToolbar ? <Toolbar /> : null}
             {hasSearching ? <SearchPanel /> : null}
-            {hasColumnVisibility ? <TableColumnVisibility  defaultHiddenColumnNames={ customDefaultHiddenColumnNames } /> : null}
+            {hasColumnVisibility ? <TableColumnVisibility defaultHiddenColumnNames={customDefaultHiddenColumnNames} /> : null}
             {hasColumnVisibility ? <ColumnChooser /> : null}
             <RowIndexer />
           </Grid>

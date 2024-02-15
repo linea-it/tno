@@ -271,9 +271,9 @@ def download_file(request):
                 response = HttpResponse(
                     fh.read(), content_type="application/octet-stream"
                 )
-                response[
-                    "Content-Disposition"
-                ] = "inline; filename=" + os.path.basename(new_file)
+                response["Content-Disposition"] = (
+                    "inline; filename=" + os.path.basename(new_file)
+                )
                 return response
         else:
 
@@ -281,7 +281,7 @@ def download_file(request):
                 response = HttpResponse(
                     fh.read(), content_type="application/octet-stream"
                 )
-                response[
-                    "Content-Disposition"
-                ] = "inline; filename=" + os.path.basename(filepath)
+                response["Content-Disposition"] = (
+                    "inline; filename=" + os.path.basename(filepath)
+                )
                 return response

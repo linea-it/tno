@@ -1,37 +1,28 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
-import { useParams, useHistory } from 'react-router-dom';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  Icon,
-  Tooltip,
-  Toolbar,
-  Typography,
-  CircularProgress,
-} from '@material-ui/core';
-import ListIcon from '@mui/icons-material/List';
-import BugReportIcon from '@mui/icons-material/BugReport';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { useParams, useNavigate } from 'react-router-dom';
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import Icon from '@mui/material/Icon';
+import Typography from '@mui/material/Typography';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import List from '../../components/List';
 import Table from '../../components/Table';
-import Dialog from '../../components/Dialog';
-import Log from '../../components/Log';
 import ColumnStatus from '../../components/Table/ColumnStatus';
-import Donut from '../../components/Chart/Donut';
+import Alert from '@mui/material/Alert';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {
+
   getPredictionJobById,
   getPredictionJobResultsByJobId,
   cancelPredictionJobById,
   getPredictionJobProgressById
 } from '../../services/api/PredictOccultation';
-import { useNavigate } from '../../../node_modules/react-router-dom/dist/index';
-import { Alert } from '@material-ui/lab'
-import useStyles from './styles';
+
 import useInterval from '../../hooks/useInterval'
 import ProgressList from '../../components/ProgressList/index';
 
@@ -46,7 +37,6 @@ function PredictDetail() {
   const [totalErrorCount, setTotalErrorCount] = useState(0);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [progress, setProgress] = useState([])
-  const classes = useStyles()
   const [dialog, setDialog] = useState({
     content: [],
     visible: false,
@@ -56,7 +46,7 @@ function PredictDetail() {
 
   const handleBackNavigation = () => navigate(-1);
 
-  const loadDataProgress = (id) =>{
+  const loadDataProgress = (id) => {
     getPredictionJobProgressById({ id }).then((res) => {
       setProgress(res)
     })
@@ -202,7 +192,7 @@ function PredictDetail() {
   }, 2000)
 
   useEffect(() => {
-    if(predictionJob.status){
+    if (predictionJob.status) {
       setSummaryExecution([
         {
           title: 'Status',
@@ -217,7 +207,7 @@ function PredictDetail() {
         },
         {
           title: 'Start',
-          value: predictionJob.start?moment(predictionJob.start).format('YYYY-MM-DD HH:mm:ss'):"Not started"
+          value: predictionJob.start ? moment(predictionJob.start).format('YYYY-MM-DD HH:mm:ss') : "Not started"
         },
         {
           title: 'Finish',
@@ -225,11 +215,11 @@ function PredictDetail() {
         },
         {
           title: 'Start Period',
-          value: predictionJob.predict_start_date? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss'):""
+          value: predictionJob.predict_start_date ? moment(predictionJob.predict_start_date).format('YYYY-MM-DD HH:mm:ss') : ""
         },
         {
           title: 'End Period',
-          value: predictionJob.predict_end_date? moment(predictionJob.predict_end_date).format('YYYY-MM-DD 23:59:59'):""
+          value: predictionJob.predict_end_date ? moment(predictionJob.predict_end_date).format('YYYY-MM-DD 23:59:59') : ""
         },
         {
           title: 'Execution Time',
@@ -262,7 +252,7 @@ function PredictDetail() {
 
 
   const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
@@ -273,7 +263,7 @@ function PredictDetail() {
   }
 
   const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
@@ -290,8 +280,13 @@ function PredictDetail() {
       <Grid item xs={12}>
         <Grid container alignItems='center' spacing={2}>
           <Grid item>
-            <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
-              <Icon className='fas fa-undo' fontSize='inherit' />
+            <Button
+              variant='contained'
+              color='primary'
+              title='Back'
+              onClick={handleBackNavigation}
+              startIcon={<ArrowBackIosIcon />}
+            >
               <Typography variant='button' style={{ margin: '0 5px' }}>
                 Back
               </Typography>
@@ -309,11 +304,13 @@ function PredictDetail() {
           ) : null}
         </Grid>
       </Grid>
-      {'error' in predictionJob && predictionJob.error !== null && (
-        <Grid item xs={12}>
-          <Alert severity='error'>{predictionJob.error}</Alert>
-        </Grid>
-      )}
+      {
+        'error' in predictionJob && predictionJob.error !== null && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{predictionJob.error}</Alert>
+          </Grid>
+        )
+      }
       <Grid item xs={12} md={5} xl={3}>
         <Card>
           <CardHeader title='Summary Execution' />
@@ -326,20 +323,20 @@ function PredictDetail() {
         <Card>
           <CardHeader title='Progress' />
           <CardContent>
-            <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
-            <ProgressList
+            <Grid container spacing={3} direction='column'>
+              <ProgressList
                 lista={progress}
               />
               {predictionJob.status == 1 && progress.length == 0 ? (
-                <CircularProgress className={classes.circularProgress} disableShrink size={50} />
+                <CircularProgress disableShrink size={50} />
               ) : null}
             </Grid>
           </CardContent>
         </Card>
       </Grid>
       <>
-      {
-        totalCount > 0 &&
+        {
+          totalCount > 0 &&
           <Grid item xs={12}>
             <Card>
               <CardHeader title='Asteroid Results' />
@@ -358,30 +355,30 @@ function PredictDetail() {
               </CardContent>
             </Card>
           </Grid>
-      }
-      {
-        totalErrorCount > 0 &&
+        }
+        {
+          totalErrorCount > 0 &&
           <Grid item xs={12}>
-              <Card>
-                <CardHeader title='Asteroid Failures' />
-                <CardContent>
-                  <Table
-                    columns={tableErrorColumns}
-                    data={tableErrorData}
-                    loadData={loadDataFailure}
-                    totalCount={totalErrorCount}
-                    hasSearching={false}
-                    hasFiltering={false}
-                    hasColumnVisibility={true}
-                    hasToolbar={true}
-                    defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
-                  />
-                </CardContent>
-              </Card>
+            <Card>
+              <CardHeader title='Asteroid Failures' />
+              <CardContent>
+                <Table
+                  columns={tableErrorColumns}
+                  data={tableErrorData}
+                  loadData={loadDataFailure}
+                  totalCount={totalErrorCount}
+                  hasSearching={false}
+                  hasFiltering={false}
+                  hasColumnVisibility={true}
+                  hasToolbar={true}
+                  defaultSorting={[{ columnName: 'asteroid_name', direction: 'asc' }]}
+                />
+              </CardContent>
+            </Card>
           </Grid>
-      }
+        }
       </>
-    </Grid>
+    </Grid >
   );
 }
 

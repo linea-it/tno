@@ -633,20 +633,20 @@ class RefineOrbit:
             shutil.copy2(original_observation_file, new_file_path)
 
             if os.path.exists(new_file_path):
-                self.results["objects"][obj.get("alias")]["inputs"][
-                    "observations"
-                ] = dict(
-                    {
-                        "filename": os.path.basename(new_file_path),
-                        "file_path": new_file_path,
-                        "file_size": os.path.getsize(new_file_path),
-                        "file_type": os.path.splitext(new_file_path)[1],
-                        "date_time": datetime.strftime(
-                            observation.download_finish_time, "%Y-%m-%d %H:%M:%S"
-                        ),
-                        "source": observation.source,
-                        "observation_file_id": observation.id,
-                    }
+                self.results["objects"][obj.get("alias")]["inputs"]["observations"] = (
+                    dict(
+                        {
+                            "filename": os.path.basename(new_file_path),
+                            "file_path": new_file_path,
+                            "file_size": os.path.getsize(new_file_path),
+                            "file_type": os.path.splitext(new_file_path)[1],
+                            "date_time": datetime.strftime(
+                                observation.download_finish_time, "%Y-%m-%d %H:%M:%S"
+                            ),
+                            "source": observation.source,
+                            "observation_file_id": observation.id,
+                        }
+                    )
                 )
 
                 self.logger.debug(

@@ -1,9 +1,9 @@
 /* eslint-disable */
 import React, { useState } from 'react'
-import InputLabel from '@material-ui/core/InputLabel'
-import MenuItem from '@material-ui/core/MenuItem'
-import FormControl from '@material-ui/core/FormControl'
-import { Select as MuiSelect } from '@material-ui/core'
+import InputLabel from '@mui/material/InputLabel'
+import MenuItem from '@mui/material/MenuItem'
+import FormControl from '@mui/material/FormControl'
+import { Select as MuiSelect } from '@mui/material'
 import PropTypes from 'prop-types'
 
 function SelectAstrometry(props) {

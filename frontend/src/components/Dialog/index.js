@@ -1,6 +1,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dialog as MuiDialog, DialogTitle, DialogContent, IconButton, Typography } from '@material-ui/core'
+import { Dialog as MuiDialog, DialogTitle, DialogContent, IconButton, Typography } from '@mui/material'
 import CloseIcon from '@mui/icons-material/Close';
 import useStyles from './styles'
 
@@ -30,8 +30,8 @@ function Dialog({ visible, setVisible, title, content, maxWidth, headerStyle, bo
         {typeof content === 'function'
           ? content()
           : content || content.props.data || content.props.data.length
-          ? content
-          : 'Unable to generate log due to a lack of data!'}
+            ? content
+            : 'Unable to generate log due to a lack of data!'}
       </DialogContent>
     </MuiDialog>
   )

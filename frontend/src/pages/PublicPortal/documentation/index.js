@@ -6,10 +6,20 @@ import { useEffect, useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
 
-import { Grid, Container, Typography, Breadcrumbs, Link, Card, List, ListItem, ListItemText, Box } from '@material-ui/core'
+import Grid from '@mui/material/Grid'
+import Container from '@mui/material/Container'
+import Typography from '@mui/material/Typography'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Breadcrumbs from '@mui/material/Breadcrumbs'
+import Link from '@mui/material/Link'
+import List from '@mui/material/List'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Box from '@mui/material/Box'
+
 
 import styles from './styles'
-import { CardContent } from '../../../../node_modules/@material-ui/core/index'
 
 import IntroductionContent from '../../../components/Content/Introduction.md'
 import PlanetsContent from '../../../components/Content/Planets.md'

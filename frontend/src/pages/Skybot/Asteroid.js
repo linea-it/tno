@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography } from '@material-ui/core'
+import { Grid, Card, CardHeader, CardContent, Toolbar, Icon, Button, Typography } from '@mui/material'
 import { Skeleton } from '@material-ui/lab'
 import Table from '../../components/Table'
 import {

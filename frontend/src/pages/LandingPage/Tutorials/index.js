@@ -13,7 +13,7 @@ import {
   ListItemText,
   Breadcrumbs,
   Link
-} from '@material-ui/core'
+} from '@mui/material'
 import MovieIcon from '@mui/icons-material/Movie'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown'

@@ -1,23 +1,29 @@
 import React, { useEffect, useState } from 'react'
-import './predict.css'
-import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Button,
-  FormControl,
-  InputLabel,
-  Snackbar,
-  Backdrop,
-  CircularProgress
-} from '@material-ui/core'
+import moment from 'moment'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import CardActions from '@mui/material/CardActions'
+import Button from '@mui/material/Button'
+import FormControl from '@mui/material/FormControl'
+import InputLabel from '@mui/material/InputLabel'
+import Snackbar from '@mui/material/Snackbar'
+import Backdrop from '@mui/material/Backdrop'
+import CircularProgress from '@mui/material/CircularProgress'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import FormGroup from '@mui/material/FormGroup'
+import FormControlLabel from '@mui/material/FormControlLabel'
+import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import Tooltip from '@mui/material/Tooltip'
+import Switch from '@mui/material/Switch'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import useInterval from '../../hooks/useInterval'
+
 import {
   getDynClassList,
   getBaseDynClassList,
@@ -29,15 +35,11 @@ import {
   createPredictionJob,
   getPredictionJobList
 } from '../../services/api/PredictOccultation'
-import useStyles from './styles'
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Switch from '@mui/material/Switch'
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { Box, IconButton, OutlinedInput, Tooltip } from '../../../node_modules/@material-ui/core/index'
+
 import Select from 'react-select'
 import { Alert } from '../../../node_modules/@material-ui/lab/index'
 import dayjs from 'dayjs';
@@ -48,7 +50,6 @@ dayjs.extend(timezone);
 
 function PredictOccultation() {
   const navigate = useNavigate()
-  const classes = useStyles()
   const useMountEffect = (fun) => useEffect(fun, []);
   const [totalCount, setTotalCount] = useState(0)
   const [tableData, setTableData] = useState([])
@@ -438,13 +439,13 @@ function PredictOccultation() {
               <Card>
                 <CardHeader title='Predict Occultation Run' />
                 <CardContent>
-                  <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                  <Grid container spacing={2} alignItems='stretch'>
 
                     <Grid item xs={12} sm={12} md={6}>
-                      <label>Period for prediction<span className={classes.errorText}>*</span></label>
+                      <label>Period for prediction<span>*</span></label>
                       <Box variant="outlined" className="cardBoder">
                         <CardContent>
-                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                          <Grid container spacing={2} alignItems='stretch'>
                             <Grid item xs={12} sm={6} md={6} lg={3}>
                               <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1week')}>
                                 1 Week
@@ -466,27 +467,27 @@ function PredictOccultation() {
                               </Button>
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                          <Grid container spacing={2} alignItems='stretch'>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Initial date <span className={classes.errorText}>*</span></label>
+                                <FormControl fullWidth><label>Initial date <span>*</span></label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
                                   </LocalizationProvider>
                                 </FormControl>
-                                {dateStartError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                                {dateStartError ? (<span>Required field</span>) : ''}
                               </Box>
                             </Grid>
                           </Grid>
-                          <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                          <Grid container spacing={2} alignItems='stretch'>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Final date <span className={classes.errorText}>*</span></label>
+                                <FormControl fullWidth><label>Final date <span>*</span></label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                                     <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
                                   </LocalizationProvider>
                                 </FormControl>
-                                {dateEndError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                                {dateEndError ? (<span>Required field</span>) : ''}
                               </Box>
                             </Grid>
                           </Grid>
@@ -495,10 +496,10 @@ function PredictOccultation() {
                     </Grid>
 
                     <Grid item xs={12} sm={12} md={6}>
-                      <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
+                      <Grid container spacing={2} alignItems='stretch'>
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
+                            <FormControl fullWidth><label>Filter Type <span>*</span></label>
                               <Select
                                 value={filterType}
                                 id="filterType"
@@ -506,14 +507,14 @@ function PredictOccultation() {
                                 options={filterTypeList}
                               />
                             </FormControl>
-                            {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                            {filterTypeError ? (<span>Required field</span>) : ''}
                           </Box>
                         </Grid>
 
-                        {filterType.value != "" &&
+                        {filterType.value !== "" &&
                           <Grid item xs={12} sm={6} md={12} lg={6}>
                             <Box sx={{ minWidth: 120 }}>
-                              {filterType.value == "name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span>*</span></label>
                                 <InputLabel></InputLabel>
                                 <Select
                                   id="filterName"
@@ -524,7 +525,7 @@ function PredictOccultation() {
                                   menuPosition={'fixed'}
                                 />
                               </FormControl>}
-                              {filterType.value == "dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "dynclass" && <FormControl fullWidth><label>Filter Value <span>*</span></label>
                                 <Select
                                   value={filterValue}
                                   id="filterDynClass"
@@ -534,7 +535,7 @@ function PredictOccultation() {
                                   menuPosition={'fixed'}
                                 />
                               </FormControl>}
-                              {filterType.value == "base_dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
+                              {filterType.value == "base_dynclass" && <FormControl fullWidth><label>Filter Value <span>*</span></label>
                                 <Select
                                   value={filterValue}
                                   id="filterBaseDynClass"
@@ -544,13 +545,13 @@ function PredictOccultation() {
                                   menuPosition={'fixed'}
                                 />
                               </FormControl>}
-                              {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                              {filterValueError ? (<span>Required field</span>) : ''}
                             </Box>
                           </Grid>
                         }
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Star Catalog <span className={classes.errorText}>*</span></label>
+                            <FormControl fullWidth><label>Star Catalog <span>*</span></label>
                               <Select
                                 value={catalog}
                                 id="catalog"
@@ -561,33 +562,33 @@ function PredictOccultation() {
                                 menuPosition={'fixed'}
                               />
                             </FormControl>
-                            {catalogError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                            {catalogError ? (<span>Required field</span>) : ''}
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label className='label-tooltip-margin'> Ephemeris Step(s) <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}> Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
+                            <FormControl fullWidth><label className='label-tooltip-margin'> Ephemeris Step(s) <span>*</span><Tooltip title={<label> Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
                             </Tooltip></label>
-                              <OutlinedInput id="my-input" value={predictStep} className={classes.input} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
+                              <OutlinedInput id="my-input" value={predictStep} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
                             </FormControl>
-                            {predictStepError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                            {predictStepError ? (<span>Required field</span>) : ''}
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={6} md={4} lg={4}>
                           <Box sx={{ minWidth: 120 }}>
-                          <FormControl fullWidth>
-                            <FormGroup>
-                              <FormControlLabel
-                                control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
-                                label='Debug mode'
-                              />
-                            </FormGroup> </FormControl>
+                            <FormControl fullWidth>
+                              <FormGroup>
+                                <FormControlLabel
+                                  control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
+                                  label='Debug mode'
+                                />
+                              </FormGroup> </FormControl>
                           </Box>
                         </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} direction="row"
+                  {/* <Grid container spacing={2} direction="row"
                     justifyContent="center"
                     alignItems="center">
                     <Box>
@@ -595,15 +596,20 @@ function PredictOccultation() {
                         Execute
                       </Button>
                     </Box>
-                  </Grid>
+                  </Grid> */}
                 </CardContent>
+                <CardActions>
+                  <Button variant='contained' disabled={disableSubmit} className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
+                    Execute
+                  </Button>
+                </CardActions>
               </Card>
             </Grid>
           </Grid>
         </Grid>
-      </Grid>
+      </Grid >
 
-      <Grid container spacing={6}>
+      <Grid container spacing={6} sx={{ mt: 1 }}>
         <Grid item xs={12}>
           <Card>
             <CardHeader title='History' />
@@ -651,7 +657,7 @@ function PredictOccultation() {
         message="There's already a job running, so your job is currently idle."
         onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
-      <Backdrop className={classes.backdrop} open={backdropOpen}>
+      <Backdrop open={backdropOpen}>
         <CircularProgress color='inherit' />
       </Backdrop>
     </>

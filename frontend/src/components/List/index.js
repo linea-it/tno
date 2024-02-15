@@ -1,5 +1,5 @@
 import React from 'react'
-import { List as MuiList, ListItem, ListItemText, Icon } from '@material-ui/core'
+import { List as MuiList, ListItem, ListItemText, Icon } from '@mui/material'
 import PropTypes from 'prop-types'
 import clsx from 'clsx'
 import useStyles from './styles'

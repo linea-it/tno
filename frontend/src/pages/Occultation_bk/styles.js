@@ -1,4 +1,4 @@
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles } from '@mui/styles'
 import { Height } from '../../../node_modules/@mui/icons-material/index'
 
 const useStyles = makeStyles((theme) => ({
@@ -29,33 +29,33 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.error.light} !important`,
     borderColor: `${theme.palette.error.light} !important`
   },
-  errorText:{
+  errorText: {
     color: '#8B0000'
   },
-  pad:{
-    paddingTop:'10px',
-    paddingBottom:'10px'
+  pad: {
+    paddingTop: '10px',
+    paddingBottom: '10px'
   },
-  padDropBox:{
-    paddingTop:'2px',
-    paddingBottom:'2px'
+  padDropBox: {
+    paddingTop: '2px',
+    paddingBottom: '2px'
   },
-  input:{
+  input: {
     borderRadius: 4,
     position: 'relative',
     border: '1px solid #ced4da',
     width: 'auto',
     height: '43px'
   },
-  divImg:{
+  divImg: {
     display: 'flex !important',
     alignItems: 'center !important',
     justifyContent: 'center !important',
   },
-  mapImg:{
+  mapImg: {
     width: '60%'
   },
-  erroMap:{
+  erroMap: {
     fontSize: '20px',
     color: 'red'
   }

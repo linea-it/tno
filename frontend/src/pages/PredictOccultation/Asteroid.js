@@ -9,11 +9,10 @@ import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
-import { getPredictionJobResultById} from '../../services/api/PredictOccultation'
+import { getPredictionJobResultById } from '../../services/api/PredictOccultation'
 import List from '../../components/List'
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index'
-import dayjs from "dayjs"
 
 function PredictionAsteroid() {
   const { id } = useParams()
@@ -23,7 +22,7 @@ function PredictionAsteroid() {
   const [summary, setSummary] = useState([])
   const [times, setTimes] = useState([])
 
-  const {setQueryOptions} = useContext(PredictionEventsContext)
+  const { setQueryOptions } = useContext(PredictionEventsContext)
 
   useEffect(() => {
     getPredictionJobResultById(id).then((res) => {
@@ -33,12 +32,10 @@ function PredictionAsteroid() {
           ...prev,
           filters: {
             ...prev.filters,
-            // date_time_after: dayjs(`${res.predict_start_date} 00:00:00+00:00`).utc().format(),
-            // date_time_before: dayjs(`${res.predict_end_date} 23:59:59+00:00`).utc().format(),
             date_time_after: undefined,
             date_time_before: undefined,
             filterType: 'name',
-            filterValue: [{name:res.name}],
+            filterValue: [{ name: res.name }],
             maginitudeMax: undefined,
             nightside: false,
             geo: false,
@@ -81,39 +78,39 @@ function PredictionAsteroid() {
       setTimes([
         {
           title: 'Execution time',
-          value: predictionJobResult.exec_time?predictionJobResult.exec_time.split('.')[0]:"-"
+          value: predictionJobResult.exec_time ? predictionJobResult.exec_time.split('.')[0] : "-"
         },
         {
           title: 'Download BSP',
-          value: predictionJobResult.bsp_jpl_dw_time?predictionJobResult.bsp_jpl_dw_time.split('.')[0]:"-"
+          value: predictionJobResult.bsp_jpl_dw_time ? predictionJobResult.bsp_jpl_dw_time.split('.')[0] : "-"
         },
         {
           title: 'Observations Download Time',
-          value: predictionJobResult.obs_dw_time?predictionJobResult.obs_dw_time.split('.')[0]:"-"
+          value: predictionJobResult.obs_dw_time ? predictionJobResult.obs_dw_time.split('.')[0] : "-"
         },
         {
           title: 'Orbital Elements Download Time',
-          value: predictionJobResult.orb_ele_dw_time?predictionJobResult.orb_ele_dw_time.split('.')[0]:"-"
+          value: predictionJobResult.orb_ele_dw_time ? predictionJobResult.orb_ele_dw_time.split('.')[0] : "-"
         },
         {
           title: 'DES Observations Execution Time',
-          value: predictionJobResult.des_obs_exec_time?predictionJobResult.des_obs_exec_time.split('.')[0]:"-"
+          value: predictionJobResult.des_obs_exec_time ? predictionJobResult.des_obs_exec_time.split('.')[0] : "-"
         },
         {
           title: 'Refine Orbit Execution Time',
-          value: predictionJobResult.ref_orb_exec_time?predictionJobResult.ref_orb_exec_time.split('.')[0]:"-"
+          value: predictionJobResult.ref_orb_exec_time ? predictionJobResult.ref_orb_exec_time.split('.')[0] : "-"
         },
         {
           title: 'Predict Occultation Execution Time',
-          value: predictionJobResult.pre_occ_exec_time?predictionJobResult.pre_occ_exec_time.split('.')[0]:"-"
+          value: predictionJobResult.pre_occ_exec_time ? predictionJobResult.pre_occ_exec_time.split('.')[0] : "-"
         },
         {
           title: 'Path Coeff Execution Time',
-          value: predictionJobResult.calc_path_coeff_exec_time?predictionJobResult.calc_path_coeff_exec_time.split('.')[0]:"-"
+          value: predictionJobResult.calc_path_coeff_exec_time ? predictionJobResult.calc_path_coeff_exec_time.split('.')[0] : "-"
         },
         {
           title: 'Result Ingestion Execution Time',
-          value: predictionJobResult.ing_occ_exec_time?predictionJobResult.ing_occ_exec_time.split('.')[0]:"-"
+          value: predictionJobResult.ing_occ_exec_time ? predictionJobResult.ing_occ_exec_time.split('.')[0] : "-"
         },
       ])
     }
@@ -150,28 +147,28 @@ function PredictionAsteroid() {
         </Grid>
       )}
       <Grid item xs={6}>
-      {!predictionJobResult && loadingCard(400)}
-      {predictionJobResult && (
-        <Card>
-          <CardHeader title='Summary' titleTypographyProps={{ variant: 'h6' }}/>
-          <CardContent>
+        {!predictionJobResult && loadingCard(400)}
+        {predictionJobResult && (
+          <Card>
+            <CardHeader title='Summary' titleTypographyProps={{ variant: 'h6' }} />
+            <CardContent>
               <List data={summary} />
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        )}
       </Grid>
       <Grid item xs={6}>
         {!predictionJobResult && loadingCard(400)}
         {predictionJobResult && (
-        <Card>
-          <CardHeader title='Execution Statistics' titleTypographyProps={{ variant: 'h6' }}/>
-          <CardContent>
-            <List data={times} />
-          </CardContent>
-        </Card>
-      )}
+          <Card>
+            <CardHeader title='Execution Statistics' titleTypographyProps={{ variant: 'h6' }} />
+            <CardContent>
+              <List data={times} />
+            </CardContent>
+          </Card>
+        )}
       </Grid>
-      <Grid item xs={12} sx={{mt: 2}}>
+      <Grid item xs={12} sx={{ mt: 2 }}>
         {!predictionJobResult && loadingCard(600)}
         {predictionJobResult && (
           <PredictionEventsDataGrid />

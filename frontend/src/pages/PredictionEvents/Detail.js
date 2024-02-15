@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { useParams } from 'react-router-dom'
 import Grid from '@mui/material/Grid';
-import Card  from '@mui/material/Card';
+import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box';
@@ -295,7 +295,7 @@ function PredictionEventDetail() {
                     ra={occultation?.ra_star_deg}
                     dec={occultation?.dec_star_deg}
                   />
-                ) }
+                )}
               </Box>
             </CardContent>
           </Card>
