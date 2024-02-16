@@ -24,22 +24,33 @@ def get_config(key, jobpath):
 
     if parsl_env == "linea":
         # Check Linea PATH envs
-        slurm_dir = os.getenv("SLURM_REMOTE_DIR", None)
-        if not slurm_dir:
+        pipeline_root = os.getenv("REMOTE_PIPELINE_ROOT", None)
+        if not pipeline_root:
             raise Exception(
-                "It is necessary to configure the SLURM_REMOTE_DIR variable when PARSL_ENV=linea"
+                "It is necessary to configure the REMOTE_PIPELINE_ROOT variable when PARSL_ENV=linea"
             )
 
-        slurm_dir = Path(slurm_dir)
-        condapath = slurm_dir.joinpath("miniconda/bin")
-        pipeline_pred_occ = slurm_dir.joinpath("predict_occultation")
-        pipeline_path = slurm_dir.joinpath("predict_occultation/pipeline")
+        pipeline_root = Path(pipeline_root)
+        condapath = pipeline_root.joinpath("miniconda/bin")
+        pipeline_pred_occ = pipeline_root.joinpath("predict_occultation")
+        pipeline_path = pipeline_root.joinpath("predict_occultation/pipeline")
 
         # Diretório de Outputs
-        predict_outputs = str(slurm_dir.joinpath("outputs/predict_occultation"))
+        predict_outputs = os.getenv("PREDICT_OUTPUTS", None)
+        if not predict_outputs:
+            raise Exception(
+                "It is necessary to configure the PREDICT_OUTPUTS variable when PARSL_ENV=linea"
+            )
+        predict_outputs = Path(predict_outputs)
+        predict_outputs.mkdir(parents=True, exist_ok=True)
 
         #  Linea SSH user keys
-        sshkey = os.getenv("SSHKEY", "~/.ssh/id_rsa")
+        # sshkey = os.getenv("SSHKEY", "~/.ssh/id_rsa")
+        sshkey = os.getenv("SSHKEY", None)
+        if not sshkey:
+            raise Exception(
+                "It is necessary to configure the SSHKEY variable when PARSL_ENV=linea"
+            )
 
         # Linea DB prod_gavo DB uri. Catalog DB.
         db_uri = os.getenv("DB_URI", None)
@@ -52,7 +63,8 @@ def get_config(key, jobpath):
         cluster_env_sh = pipeline_pred_occ.joinpath("cluster.sh")
 
         # Script DIR dentro do diretorio do job
-        script_dir = jobpath.joinpath("script_dir")
+        script_dir = pipeline_root.joinpath("script_dir")
+        script_dir.mkdir(parents=True, exist_ok=True)
 
         executors = {
             "linea": HighThroughputExecutor(
@@ -80,7 +92,11 @@ def get_config(key, jobpath):
                             "PIPELINE_PREDIC_OCC": str(pipeline_pred_occ),
                             "PIPELINE_PATH": str(pipeline_path),
                             "PYTHONPATH": ":".join(
-                                [slurm_dir, pipeline_pred_occ, pipeline_path]
+                                [
+                                    str(pipeline_root),
+                                    str(pipeline_pred_occ),
+                                    str(pipeline_path),
+                                ]
                             ),
                             "PREDICT_OUTPUTS": str(predict_outputs),
                             "DB_URI": db_uri,

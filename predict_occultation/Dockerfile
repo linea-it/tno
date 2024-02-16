@@ -123,8 +123,12 @@ RUN groupadd --gid ${USERGID} ${USERNAME} \
 ENV PIPELINE_ROOT=${APP_HOME}/src
 ENV PIPELINE_PREDIC_OCC=${PIPELINE_ROOT}/predict_occultation
 ENV PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
-# ENV WORKFLOW_PATH=${PIPELINE_ROOT}
-# ENV EXECUTION_PATH=${PIPELINE_ROOT}
+ENV PREDICT_OUTPUTS=${APP_HOME}/outputs/predict_occultation
+
+# quando parsl_env = local o diretório remoto é o mesmo que o local.
+# mas quando parsl_env = linea o diretório remoto é por ex: /lustre/t1/scratch/users/app.tno/tno_testing
+ENV REMOTE_PIPELINE_ROOT=$PIPELINE_ROOT
+
 
 COPY --chown=${USERNAME}:ton --chmod=775 src /app/src
 COPY --chown=${USERNAME}:ton --chmod=775 entrypoint.sh ${APP_HOME}

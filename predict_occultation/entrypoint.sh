@@ -1,7 +1,8 @@
 #!/bin/bash --login
+umask ug=rwx,o=r
 
 echo "Running Rsync: ${PIPELINE_PREDIC_OCC}"
-rsync -r /app/src/predict_occultation/ ${PIPELINE_PREDIC_OCC}/
+rsync -r /app/src/predict_occultation/ ${REMOTE_PIPELINE_ROOT}/predict_occultation
 
 
 # Baixa os arquivos bsp planetary e leap_second caso não existam.

@@ -235,6 +235,10 @@ def get_job_path(jobid):
     if not job_path.exists():
         job_path.mkdir(parents=True, mode=0o775)
 
+        # Parsl Script dir
+        script_dir = job_path.joinpath("script_dir")
+        script_dir.mkdir(parents=True, mode=0o775)
+
     print(f"Job Path: {job_path}")
     return job_path
 
@@ -583,19 +587,6 @@ def submit_tasks(jobid: int):
         log.info("Update Job status to running.")
         update_job(job)
 
-        # =========================== Parsl ===========================
-        log.info("Settings Parsl configurations")
-        envname = os.getenv("PARSL_ENV", "linea")
-        parsl_conf = get_config(envname, current_path)
-        # Altera o diretório runinfo para dentro do diretório do job.
-        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
-        #         current_path, "script_dir"
-        #     )
-
-        parsl.clear()
-        parsl.load(parsl_conf)
-
         # =========================== Parameters ===========================
 
         # ASTEROID_PATH: Diretório onde serão armazenados todos os arquivos referentes
@@ -604,6 +595,7 @@ def submit_tasks(jobid: int):
         # Atenção: Precisar permitir uma quantidade grande de acessos de leitura e escrita simultaneas.
         ASTEROID_PATH = current_path.joinpath("asteroids")
         ASTEROID_PATH.mkdir(parents=True, exist_ok=False)
+
         log.debug(f"Asteroid PATH: [{ASTEROID_PATH}]")
 
         # Parametros usados na Predição de Ocultação
@@ -654,6 +646,19 @@ def submit_tasks(jobid: int):
         OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
         DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
         log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
+
+        # =========================== Parsl ===========================
+        log.info("Settings Parsl configurations")
+        envname = os.getenv("PARSL_ENV", "linea")
+        parsl_conf = get_config(envname, current_path)
+        # Altera o diretório runinfo para dentro do diretório do job.
+        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
+        # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
+        #         current_path, "script_dir"
+        #     )
+
+        parsl.clear()
+        parsl.load(parsl_conf)
 
         # ======================= Generate dates file =======================
         # Arquivo de datas pode ser o mesmo para todos os asteroids.
