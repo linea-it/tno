@@ -11,7 +11,16 @@ _bsp_planetary=$8
 
 umask 0002
 
+echo "Enviroment Vars =========================================="
+
+echo 'PARSL_ENV: ' $PARSL_ENV
+echo 'CONDAPATH: ' $CONDAPATH
+echo 'PIPELINE_PREDIC_OCC: ' $PIPELINE_PREDIC_OCC
 echo 'PIPELINE_PATH: ' $PIPELINE_PATH
+echo 'PYTHONPATH: ' $PYTHONPATH
+echo 'PREDICT_OUTPUTS: ' $PREDICT_OUTPUTS
+
+echo "=========================================================="
 
 TMPDIR=`echo $RANDOM | md5sum | head -c 5; echo;`
 export DIR_DATA=/tmp/$TMPDIR

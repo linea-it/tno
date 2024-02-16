@@ -22,7 +22,6 @@ class DBBase:
         # DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
         # db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
         #     "postgres", "postgres", "172.18.0.2", "5432", "tno_v2")
-
         # DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
         try:
             db_uri = os.environ["DB_URI_ADMIN"]
@@ -34,10 +33,6 @@ class DBBase:
             )
 
     def get_db_engine(self):
-        # Carrega as variaveis de configuração do arquivo config.ini
-        config = configparser.ConfigParser()
-        config.read(os.path.join(os.environ["EXECUTION_PATH"], "config.ini"))
-
         engine = create_engine(self.get_db_uri(), poolclass=NullPool)
 
         return engine

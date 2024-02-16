@@ -6,20 +6,14 @@ import os
 import pathlib
 from datetime import datetime as dt
 from datetime import timezone
-
-# import numpy as np
 from io import StringIO
-
-# from occviz import occultation_path_coeff
 from typing import Optional
 
-# import csv
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
 from asteroid.jpl import findSPKID, get_bsp_from_jpl
 from dao import AsteroidDao, ObservationDao, OccultationDao
-from library import dec2DMS  # ra_hms_to_deg,; dec_hms_to_deg,
-from library import date_to_jd, has_expired, ra2HMS
+from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
 
 def serialize(obj):
@@ -174,20 +168,21 @@ class Asteroid:
 
     def get_base_path(self):
         base_path = self.__BASE_PATH
-        if not base_path:
-            # Carrega as variaveis de configuração do arquivo config.ini
-            config = configparser.ConfigParser()
-            config.read(os.path.join(os.environ["EXECUTION_PATH"], "config.ini"))
-            base_path = config["DEFAULT"].get("AsteroidPath")
-            self.__BASE_PATH = base_path
+        # if not base_path:
+        #     # Carrega as variaveis de configuração do arquivo config.ini
+        #     config = configparser.ConfigParser()
+        #     config.read(os.path.join(os.environ["EXECUTION_PATH"], "config.ini"))
+        #     base_path = config["DEFAULT"].get("AsteroidPath")
+        #     self.__BASE_PATH = base_path
 
         return base_path
 
     def get_jpl_email(self):
         # Carrega as variaveis de configuração do arquivo config.ini
-        config = configparser.ConfigParser()
-        config.read(os.path.join(os.environ["EXECUTION_PATH"], "config.ini"))
-        JPL_EMAIL = config["DEFAULT"].get("JplEmail", "sso-portal@linea.gov.br")
+        # config = configparser.ConfigParser()
+        # config.read(os.path.join(os.environ["EXECUTION_PATH"], "config.ini"))
+        # JPL_EMAIL = config["DEFAULT"].get("JplEmail", "sso-portal@linea.gov.br")
+        JPL_EMAIL = "sso-portal@linea.gov.br"
         return JPL_EMAIL
 
     def get_or_create_dir(self):
