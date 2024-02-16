@@ -316,10 +316,11 @@ class Asteroid:
 
             log.info(f"Asteroid BSP Downloaded in {tdelta}")
 
-            return data
+            return (data, "")
         except Exception as e:
-            log.warning("Failed to Download BSP. Error: [%s]" % e)
-            return None
+            download_exception_warning = "Failed to Download BSP. Error: [%s]" % e
+            log.warning(download_exception_warning)
+            return (None, download_exception_warning)
 
     def check_bsp_jpl(self, end_period, days_to_expire=None, start_period=None):
         log = self.get_log()
@@ -390,6 +391,8 @@ class Asteroid:
                 self.spkid = None
                 self.get_spkid()
 
+            # Separa o dado da mensagem/exception retornada do metodo bsp_jpl
+            bsp_jpl, exp_msg = bsp_jpl
             if bsp_jpl:
                 # Atualiza os dados do bsp
                 self.bsp_jpl = bsp_jpl
@@ -397,9 +400,10 @@ class Asteroid:
                 return True
             else:
                 msg = "BSP JPL file was not created."
-                self.bsp_jpl = dict({"message": msg})
+                self.bsp_jpl = dict({"message": msg + " " + exp_msg})
 
                 log.warning("Asteroid [%s] %s" % (self.name, msg))
+                log.warning("Asteroid [%s] %s" % (self.name, exp_msg))
                 return False
 
         except Exception as e:
@@ -420,7 +424,7 @@ class Asteroid:
 
             self.write_asteroid_json()
 
-    def check_orbital_elements(self, days_to_expire=None):
+    def check_orbital_elements(self, days_to_expire=None, ignore=False):
         log = self.get_log()
 
         tp0 = dt.now(tz=timezone.utc)
@@ -462,14 +466,29 @@ class Asteroid:
                             "Pre-existing Orbital Elements is still valid and will be reused."
                         )
 
-            if not orb_ele:
-                # Fazer um novo Download
-                # Tenta primeiro vindo do AstDys
-                orb_ele = aei.download_astdys_orbital_elements(force=True)
-
+            if ignore:
+                msg = "The download of orbital elements was skipped."
+                orb_ele = {
+                    "source": None,
+                    "filename": "",
+                    "size": 0,
+                    "dw_start": None,
+                    "dw_finish": None,
+                    "dw_time": 0,
+                    "downloaded_in_this_run": False,
+                    "tp_start": None,
+                    "tp_finish": None,
+                }
+                log.warning("%s" % (msg))
+            else:
                 if not orb_ele:
-                    # Tenta no MPC
-                    orb_ele = aei.download_mpc_orbital_elements(force=True)
+                    # Fazer um novo Download
+                    # Tenta primeiro vindo do AstDys
+                    orb_ele = aei.download_astdys_orbital_elements(force=True)
+
+                    if not orb_ele:
+                        # Tenta no MPC
+                        orb_ele = aei.download_mpc_orbital_elements(force=True)
 
             if orb_ele:
                 # Atualiza os dados

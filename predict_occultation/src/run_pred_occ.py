@@ -802,8 +802,10 @@ def submit_tasks(jobid: int):
                 continue
 
             # ORBITAL ELEMENTS ----------------------------------------------
+            # Use ignore=False ou omita para que aos elementos orbitais sejam baixados.
+            # have_orb_ele = a.check_orbital_elements(days_to_expire=ORBITAL_ELEMENTS_DAYS_TO_EXPIRE)
             have_orb_ele = a.check_orbital_elements(
-                days_to_expire=ORBITAL_ELEMENTS_DAYS_TO_EXPIRE
+                days_to_expire=ORBITAL_ELEMENTS_DAYS_TO_EXPIRE, ignore=True
             )
 
             if have_orb_ele is False:
