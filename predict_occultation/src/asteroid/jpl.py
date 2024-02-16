@@ -1,4 +1,5 @@
 import base64
+import http
 import json
 import pathlib
 import shutil
@@ -72,7 +73,13 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         "START_TIME": date1.strftime("%Y-%b-%d"),
         "STOP_TIME": date2.strftime("%Y-%b-%d"),
     }
+
     r = requests.get(urlJPL, params=parameters, stream=True)
+
+    if r.status_code != 200:
+        raise Exception(
+            f"Code {r.status_code} - {http.HTTPStatus(r.status_code).phrase}"
+        )
 
     # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
     if "No matches found." in json.loads(r.text)["result"]:
