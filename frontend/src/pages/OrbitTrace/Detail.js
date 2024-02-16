@@ -316,7 +316,7 @@ function OrbitTraceDetail() {
           <Grid item>
             <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
               <Icon className='fas fa-undo' fontSize='inherit' />
-              <Typography variant='button' style={{ margin: '0 5px' }}>
+              <Typography variant='button' sx={{ margin: '0 5px' }}>
                 Back
               </Typography>
             </Button>
@@ -325,7 +325,7 @@ function OrbitTraceDetail() {
             <Grid item>
               <Button variant='contained' color='secondary' title='Abort' onClick={handleStopRun} disabled={isJobCanceled}>
                 {isJobCanceled ? <CircularProgress size={15} color='secondary' /> : <Icon className='fas fa-stop' fontSize='inherit' />}
-                <Typography variant='button' style={{ margin: '0 5px' }}>
+                <Typography variant='button' sx={{ margin: '0 5px' }}>
                   Abort
                 </Typography>
               </Button>

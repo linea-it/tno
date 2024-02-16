@@ -2,6 +2,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { TableHeaderRow } from '@devexpress/dx-react-grid-material-ui'
 import Tooltip from '@mui/material/Tooltip'
+import Box from '@mui/material/Box'
 import ArrowDownward from '@mui/icons-material/ArrowDownward'
 import ArrowUpward from '@mui/icons-material/ArrowUpward'
 import { makeStyles } from '@mui/styles'
@@ -28,7 +29,7 @@ const useStyles = makeStyles({
 const TableHeaderRowCell = ({ ...restProps }) => (
   <TableHeaderRow.Cell
     {...restProps}
-    style={{
+    sx={{
       color: '#555555',
       fontSize: '1em'
     }}
@@ -36,20 +37,21 @@ const TableHeaderRowCell = ({ ...restProps }) => (
 )
 
 const SortingIcon = ({ direction }) =>
-  direction === 'asc' ? <ArrowUpward style={{ fontSize: '18px' }} /> : <ArrowDownward style={{ fontSize: '18px' }} />
+  direction === 'asc' ? <ArrowUpward sx={{ fontSize: '18px' }} /> : <ArrowDownward sx={{ fontSize: '18px' }} />
 
 const SortLabel = ({ onSort, children, direction, ...restProps }) => {
   const classes = useStyles()
   return (
     <Tooltip title={restProps.column.tooltip ? restProps.column.tooltip : children.props.children}>
-      <span
+      <Box
+        component="span"
         onClick={!restProps.disabled ? onSort : null}
         className={classes.invisibleButton}
-        style={{ cursor: !restProps.disabled ? 'pointer' : 'default' }}
+        sx={{ cursor: !restProps.disabled ? 'pointer' : 'default' }}
       >
         {children}
         {!restProps.disabled ? direction && <SortingIcon direction={direction} /> : null}
-      </span>
+      </Box>
     </Tooltip>
   )
 }

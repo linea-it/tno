@@ -27,7 +27,7 @@ class CustomColumnChooser extends Component {
     let isAllChecked = true
     const { chooserAllChecked } = this.state
     return (
-      <Paper style={styles.chooserPaperWrapper}>
+      <Paper sx={styles.chooserPaperWrapper}>
         {columns.children.map((column, index) => {
           const { key } = column
           const item = column.props.item.column
@@ -42,7 +42,7 @@ class CustomColumnChooser extends Component {
             <React.Fragment key={key}>
               {isFirstIndex ? (
                 <>
-                  <FormGroup row style={styles.chooserFormGroupWrapper}>
+                  <FormGroup row sx={styles.chooserFormGroupWrapper}>
                     <FormControlLabel
                       control={
                         <Checkbox
@@ -57,7 +57,7 @@ class CustomColumnChooser extends Component {
                   <Divider />
                 </>
               ) : null}
-              <FormGroup row style={styles.chooserFormGroupWrapper}>
+              <FormGroup row sx={styles.chooserFormGroupWrapper}>
                 <FormControlLabel
                   control={
                     <Checkbox

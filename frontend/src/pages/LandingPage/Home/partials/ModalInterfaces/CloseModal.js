@@ -16,7 +16,7 @@ class CloseModal extends Component {
   render() {
     return (
       <IconButton
-        style={styles.btnIco}
+        sx={styles.btnIco}
         edge='start'
         color='inherit'
         onClick={() => {

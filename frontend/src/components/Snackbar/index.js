@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
 import { amber, green } from '@mui/material/colors'
 import { makeStyles } from '@mui/styles'
 import {
@@ -54,11 +53,11 @@ function Snackbar(props) {
   return (
     <MuiSnackbar {...other}>
       <SnackbarContent
-        className={clsx(classes[variant], className)}
+        className={`${classes[variant]} ${className}`}
         aria-describedby='client-snackbar'
         message={
           <span id='client-snackbar' className={classes.message}>
-            <Icon className={clsx(classes.icon, classes.iconVariant)} />
+            <Icon className={`${classes.icon} ${classes.iconVariant}`} />
             {message}
           </span>
         }

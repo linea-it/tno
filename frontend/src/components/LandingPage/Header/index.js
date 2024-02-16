@@ -3,7 +3,6 @@ import useScrollTrigger from '@mui/material/useScrollTrigger'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
-import Link from '@mui/material/Link'
 import Popover from '@mui/material/Popover'
 import { useLocation } from 'react-router-dom'
 import List from '@mui/material/List'
@@ -105,7 +104,7 @@ function Header() {
   ]
   const handleClick = (pathname) => navigate(pathname)
   return (
-    <AppBar position='static' style={{ backgroundColor: '#24292e' }}>
+    <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>
       <Toolbar>
         <Box sx={{ pt: 1 }}>
           <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />

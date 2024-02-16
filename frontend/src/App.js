@@ -6,7 +6,8 @@ import history from './services/history'
 import { AuthProvider } from './contexts/AuthContext.js'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { PredictionEventsProvider } from './contexts/PredictionContext'
-import { ThemeProvider } from '@mui/styles';
+import { ThemeProvider } from '@mui/styles'
+import './assets/css/index.css'
 
 const queryClient = new QueryClient()
 function App() {

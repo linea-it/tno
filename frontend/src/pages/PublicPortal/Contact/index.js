@@ -11,11 +11,12 @@ import CardContent from '@mui/material/CardContent'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Link from '@mui/material/Link'
 import styles from './styles'
+import Box from '@mui/material/Box'
 
 function PublicContact() {
   const classes = styles()
   return (
-    <div className={classes.initContainer}>
+    <Box className={classes.initContainer}>
       <Container>
         <Breadcrumbs aria-label="breadcrumb">
           <Link color="inherit" href="/">
@@ -24,7 +25,7 @@ function PublicContact() {
           <Typography color="textPrimary">Contact Us</Typography>
         </Breadcrumbs>
         <Grid item xs={9} className={classes.grid}>
-          <Card style={{ margin: '16px 0' }}>
+          <Card sx={{ margin: '16px 0' }}>
             <CardContent>
               <Typography variant="h4" align="center" color="textPrimary">
                 Contact
@@ -47,7 +48,7 @@ function PublicContact() {
           </Card>
         </Grid>
       </Container>
-    </div>
+    </Box>
   )
 }
 export default PublicContact

@@ -1,6 +1,5 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
 import useStyles from './styles'
 
 function ColumnStatus({ status, title, align }) {
@@ -27,7 +26,7 @@ function ColumnStatus({ status, title, align }) {
   } else if (status === 'warning' || status === 6) {
     statusTitle = 'Warning'
     statusColor = classes.btnWarning
-  }else if (status === 'aborting' || status === 7) {
+  } else if (status === 'aborting' || status === 7) {
     statusTitle = 'Aborting'
     statusColor = classes.btnAborting
   } else {
@@ -36,7 +35,7 @@ function ColumnStatus({ status, title, align }) {
   }
 
   return (
-    <span className={clsx(classes.btn, statusColor)} title={title}>
+    <span className={`${classes.btn} ${statusColor}`} title={title}>
       {statusTitle}
     </span>
   )

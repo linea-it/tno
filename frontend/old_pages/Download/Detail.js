@@ -1,37 +1,35 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import {
-  Grid,
-  Card,
-  CardHeader,
-  CardContent,
-  Icon,
-  Button,
-  Chip,
-  Typography,
-  CircularProgress,
-  TextareaAutosize,
-} from '@material-ui/core';
-import { useParams, useHistory } from 'react-router-dom';
-import moment from 'moment';
-import filesize from 'filesize';
-import List from '../../components/List';
-import ColumnStatus from '../../components/Table/ColumnStatus';
-import Progress from '../../components/Progress';
+import React, { useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
+import CardHeader from '@mui/material/CardHeader'
+import Chip from '@mui/material/Chip'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import TextareaAutosize from '@mui/material/TextareaAutosize'
+import Icon from '@mui/material/Icon'
+import { useParams, useHistory } from 'react-router-dom'
+import moment from 'moment'
+import filesize from 'filesize'
+import List from '../../components/List'
+import ColumnStatus from '../../components/Table/ColumnStatus'
+import Progress from '../../components/Progress'
 import {
   getDownloadProgress,
   getDownloadJobById,
   cancelDownloadJobById,
-} from '../../services/api/Download';
-import useInterval from '../../hooks/useInterval';
-import useStyles from './styles';
+} from '../../services/api/Download'
+import useInterval from '../../hooks/useInterval'
+import useStyles from './styles'
 
 function DownloadDetail({ setTitle }) {
-  const { id } = useParams();
-  const history = useHistory();
-  const classes = useStyles();
-  const [summaryExecution, setSummaryExecution] = useState([]);
-  const [summaryResults, setSummaryResults] = useState([]);
+  const { id } = useParams()
+  const history = useHistory()
+  const classes = useStyles()
+  const [summaryExecution, setSummaryExecution] = useState([])
+  const [summaryResults, setSummaryResults] = useState([])
   const [progress, setProgress] = useState({
     status: 0,
     ccds: 0,
@@ -42,40 +40,40 @@ function DownloadDetail({ setTitle }) {
     average_time: 0,
     estimated_size: 0,
     estimated_time: 0,
-  });
-  const [loadProgress, setLoadProgress] = useState(false);
-  const [isJobCanceled, setIsJobCanceled] = useState(false);
-  const [hasCircularProgress, setHasCircularProgress] = useState(true);
-  const [ccds, setCcds] = useState(0);
-  const [errorMessage, setErrorMessage] = useState(null);
+  })
+  const [loadProgress, setLoadProgress] = useState(false)
+  const [isJobCanceled, setIsJobCanceled] = useState(false)
+  const [hasCircularProgress, setHasCircularProgress] = useState(true)
+  const [ccds, setCcds] = useState(0)
+  const [errorMessage, setErrorMessage] = useState(null)
 
-  const handleBackNavigation = () => history.goBack();
+  const handleBackNavigation = () => history.goBack()
 
   useEffect(() => {
-    setTitle('Download');
-  }, [setTitle]);
+    setTitle('Download')
+  }, [setTitle])
 
   useEffect(() => {
     getDownloadProgress(id)
       .then((data) => {
-        setProgress(data);
+        setProgress(data)
 
         if (![1, 2].includes(data.status)) {
-          setHasCircularProgress(false);
+          setHasCircularProgress(false)
         }
       })
       .catch(() => {
-        setHasCircularProgress(true);
-      });
-  }, [loadProgress]);
+        setHasCircularProgress(true)
+      })
+  }, [loadProgress])
 
   useEffect(() => {
     getDownloadJobById(id).then((res) => {
       if (res.status === 4 && res.error !== null) {
-        setErrorMessage(res.error);
+        setErrorMessage(res.error)
       }
 
-      setCcds(res.ccds);
+      setCcds(res.ccds)
       setSummaryExecution([
         {
           title: 'Status',
@@ -131,7 +129,7 @@ function DownloadDetail({ setTitle }) {
           title: 'Execution Time',
           value: res.execution_time ? res.execution_time.split('.')[0] : 0,
         },
-      ]);
+      ])
 
       setSummaryResults([
         {
@@ -146,25 +144,25 @@ function DownloadDetail({ setTitle }) {
           title: '# CCDs Downloaded',
           value: res.ccds_downloaded,
         },
-      ]);
-    });
-  }, [loadProgress]);
+      ])
+    })
+  }, [loadProgress])
 
   const formatSeconds = (value) =>
-    moment().startOf('day').seconds(value).format('HH:mm:ss');
+    moment().startOf('day').seconds(value).format('HH:mm:ss')
 
   useInterval(() => {
     if ([1, 2].includes(progress.status)) {
-      setLoadProgress((prevState) => !prevState);
+      setLoadProgress((prevState) => !prevState)
     }
-  }, [5000]);
+  }, [5000])
 
   const handleStopRun = () => {
     cancelDownloadJobById(id).then(() => {
-      setIsJobCanceled(true);
-      setLoadProgress((prevState) => !prevState);
-    });
-  };
+      setIsJobCanceled(true)
+      setLoadProgress((prevState) => !prevState)
+    })
+  }
 
   return (
     <Grid container spacing={2}>
@@ -178,7 +176,7 @@ function DownloadDetail({ setTitle }) {
               onClick={handleBackNavigation}
             >
               <Icon className="fas fa-undo" fontSize="inherit" />
-              <Typography variant="button" style={{ margin: '0 5px' }}>
+              <Typography variant="button" sx={{ margin: '0 5px' }}>
                 Back
               </Typography>
             </Button>
@@ -197,7 +195,7 @@ function DownloadDetail({ setTitle }) {
                 ) : (
                   <Icon className="fas fa-stop" fontSize="inherit" />
                 )}
-                <Typography variant="button" style={{ margin: '0 5px' }}>
+                <Typography variant="button" sx={{ margin: '0 5px' }}>
                   Abort
                 </Typography>
               </Button>
@@ -334,11 +332,11 @@ function DownloadDetail({ setTitle }) {
         </>
       )}
     </Grid>
-  );
+  )
 }
 
 DownloadDetail.propTypes = {
   setTitle: PropTypes.func.isRequired,
-};
+}
 
-export default DownloadDetail;
+export default DownloadDetail

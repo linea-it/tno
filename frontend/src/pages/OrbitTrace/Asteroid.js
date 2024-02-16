@@ -198,7 +198,7 @@ function OrbitTraceAsteroid() {
           <Grid item>
             <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
               <Icon className='fas fa-undo' fontSize='inherit' />
-              <Typography variant='button' style={{ margin: '0 5px' }}>
+              <Typography variant='button' sx={{ margin: '0 5px' }}>
                 Back
               </Typography>
             </Button>
@@ -243,7 +243,6 @@ function OrbitTraceAsteroid() {
           {/* <iframe src="/data/tmp/plot_des_observations_Eris-2013-08-30-2018-10-20.html"></iframe> */}
           {/* <CardContent>
 
-            <img src={graphFake} style={{ width:'100%', margin: 'auto' }} />
           </CardContent> */}
         </Card>
       </Grid>

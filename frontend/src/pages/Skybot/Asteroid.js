@@ -261,11 +261,6 @@ function SkybotAsteroid() {
     })
   }, [id])
 
-  // useEffect(() => {
-  //   getCcdsWithAsteroidsById(id).then((res) => {
-  //     setCcdsWithAsteroids(res.ccds_with_asteroid);
-  //   });
-  // }, [id]);
 
   useEffect(() => {
     if (skybotResult.exposure !== 0) {
@@ -336,7 +331,7 @@ function SkybotAsteroid() {
           <Grid item>
             <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation}>
               <Icon className='fas fa-undo' fontSize='inherit' />
-              <Typography variant='button' style={{ margin: '0 5px' }}>
+              <Typography variant='button' sx={{ margin: '0 5px' }}>
                 Back
               </Typography>
             </Button>

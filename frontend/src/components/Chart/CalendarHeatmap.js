@@ -1,5 +1,6 @@
 import * as d3 from 'd3'
 import React, { useEffect, useState } from 'react'
+import Box from '@mui/material/Box'
 import PropTypes from 'prop-types'
 import moment from 'moment'
 import useStyles from './styles'
@@ -123,20 +124,20 @@ function CalendarHeatmap({ data }) {
   }, [rows])
 
   return (
-    <div>
+    <Box>
       <svg id='heatmap-svg' />
-      <div className={classes.legendWrapper} title='A summary of exposures by date.'>
+      <Box className={classes.legendWrapper} title='A summary of exposures by date.'>
         Less
-        <ul className={classes.legend}>
-          <li className={classes.legendItem} style={{ backgroundColor: '#ebedf0' }} />
-          <li className={classes.legendItem} style={{ backgroundColor: '#c6e48b' }} />
-          <li className={classes.legendItem} style={{ backgroundColor: '#7bc96f' }} />
-          <li className={classes.legendItem} style={{ backgroundColor: '#239a3b' }} />
-          <li className={classes.legendItem} style={{ backgroundColor: '#196127' }} />
-        </ul>
+        <Box className={classes.legend}>
+          <Box className={classes.legendItem} style={{ backgroundColor: '#ebedf0' }} />
+          <Box className={classes.legendItem} style={{ backgroundColor: '#c6e48b' }} />
+          <Box className={classes.legendItem} style={{ backgroundColor: '#7bc96f' }} />
+          <Box className={classes.legendItem} style={{ backgroundColor: '#239a3b' }} />
+          <Box className={classes.legendItem} style={{ backgroundColor: '#196127' }} />
+        </Box>
         More
-      </div>
-    </div>
+      </Box>
+    </Box>
   )
 }
 

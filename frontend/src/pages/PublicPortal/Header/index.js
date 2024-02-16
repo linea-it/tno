@@ -8,18 +8,6 @@ import Box from '@mui/material/Box';
 function PublicHeader() {
   const navigate = useNavigate();
 
-  // const location = useLocation()
-  // const trigger = useScrollTrigger({
-  //   threshold: 10,
-  //   disableHysteresis: true
-  // })
-  // const classes = styles({
-  //   scrollActive: trigger,
-  //   pathname: location.pathname
-  // })
-
-
-
   const menus = [
     {
       description: 'Home',
@@ -46,7 +34,7 @@ function PublicHeader() {
   const handleCardClick = (pathname) => navigate(pathname)
 
   return (
-    <AppBar position='static' style={{ backgroundColor: '#24292e' }}>
+    <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>
       <Toolbar>
         <Box sx={{ pt: 1 }}>
           <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />

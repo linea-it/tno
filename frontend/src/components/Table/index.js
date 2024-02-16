@@ -5,7 +5,7 @@ import Input from '@mui/material/Input'
 import MenuItem from '@mui/material/MenuItem'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import clsx from 'clsx'
+import Box from '@mui/material/Box'
 import {
   PagingState,
   SortingState,
@@ -39,10 +39,10 @@ import useStyles from './styles'
 function CustomNoDataCellComponent({ ...noDatProps }, customLoading) {
   const classes = useStyles()
   return (
-    <td className={clsx(classes.noDataCell, 'MuiTableCell-root', 'MuiTableCell-body')} {...noDatProps}>
-      <div className={classes.noDataWrapper}>
+    <td className={`${classes.noDataCell} MuiTableCell-root MuiTableCell-body`} {...noDatProps}>
+      <Box className={classes.noDataWrapper}>
         <big className={classes.noDataText}>{customLoading ? 'Loading...' : 'No Data'}</big>
-      </div>
+      </Box>
     </td>
   )
 }
@@ -231,7 +231,7 @@ function Table({
   const renderLoading = () => (
     <CircularProgress
       size={20}
-      style={{
+      sx={{
         position: 'absolute',
         top: 'calc(50% + 20px)',
         left: 'calc(50%)',
@@ -395,11 +395,11 @@ function Table({
   })
 
   return (
-    <div className={classes.container}>
+    <Box className={classes.container}>
       {hasFiltering ? renderFilter() : null}
       {renderTable(rows)}
       {customLoading && renderLoading()}
-    </div>
+    </Box>
   )
 }
 
