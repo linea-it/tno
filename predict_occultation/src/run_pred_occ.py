@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import configparser
 import json
 import os
 import pathlib
@@ -13,7 +12,6 @@ from io import StringIO
 
 import humanize
 import pandas as pd
-import tqdm
 from asteroid import Asteroid
 from dao import (
     AsteroidDao,
@@ -23,8 +21,8 @@ from dao import (
 )
 
 try:
+    from parsl_config import get_config
     from predict_occultation.app import run_pipeline
-    from predict_occultation.parsl_config import get_config
 except Exception as error:
     print("Error: %s" % str(error))
     raise ("Predict Occultation pipeline not installed!")
@@ -225,8 +223,6 @@ def remove_job_directory(jobid):
 
 def get_job_path(jobid):
     """Retorna o path para o diretorio do job, cria o diretorio caso nao exista."""
-    # config = get_configs()
-    # orbit_trace_root = config["DEFAULT"].get("PredictOccultationJobPath")
     orbit_trace_root = os.getenv("PREDICT_OUTPUTS", "/app/outputs/predict_occultation")
     folder_name = f"{jobid}"
     # folder_name = f"teste_{job['id']}"
@@ -238,6 +234,10 @@ def get_job_path(jobid):
 
     if not job_path.exists():
         job_path.mkdir(parents=True, mode=0o775)
+
+        # Parsl Script dir
+        script_dir = job_path.joinpath("script_dir")
+        script_dir.mkdir(parents=True, mode=0o775)
 
     print(f"Job Path: {job_path}")
     return job_path
@@ -416,13 +416,6 @@ def ingest_job_results(job_path, job_id):
     return rowcount
 
 
-def get_configs():
-    # Carrega as variaveis de configuração do arquivo config.ini
-    config = configparser.ConfigParser()
-    config.read("config.ini")
-    return config
-
-
 def read_job_json_by_id(jobid):
     dao = PredictOccultationJobDao()
     job_db = dao.get_job_by_id(jobid)
@@ -594,15 +587,6 @@ def submit_tasks(jobid: int):
         log.info("Update Job status to running.")
         update_job(job)
 
-        # =========================== Parsl ===========================
-        log.info("Settings Parsl configurations")
-        envname = os.getenv("PARSL_ENV", "linea")
-        parsl_conf = get_config(envname)
-        # Altera o diretório runinfo para dentro do diretório do job.
-        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        parsl.clear()
-        parsl.load(parsl_conf)
-
         # =========================== Parameters ===========================
 
         # ASTEROID_PATH: Diretório onde serão armazenados todos os arquivos referentes
@@ -611,6 +595,7 @@ def submit_tasks(jobid: int):
         # Atenção: Precisar permitir uma quantidade grande de acessos de leitura e escrita simultaneas.
         ASTEROID_PATH = current_path.joinpath("asteroids")
         ASTEROID_PATH.mkdir(parents=True, exist_ok=False)
+
         log.debug(f"Asteroid PATH: [{ASTEROID_PATH}]")
 
         # Parametros usados na Predição de Ocultação
@@ -661,6 +646,19 @@ def submit_tasks(jobid: int):
         OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
         DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
         log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
+
+        # =========================== Parsl ===========================
+        log.info("Settings Parsl configurations")
+        envname = os.getenv("PARSL_ENV", "linea")
+        parsl_conf = get_config(envname, current_path)
+        # Altera o diretório runinfo para dentro do diretório do job.
+        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
+        # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
+        #         current_path, "script_dir"
+        #     )
+
+        parsl.clear()
+        parsl.load(parsl_conf)
 
         # ======================= Generate dates file =======================
         # Arquivo de datas pode ser o mesmo para todos os asteroids.
@@ -1126,7 +1124,6 @@ def consolidate_job_results(consolidated, job_path, log):
     df_result = pd.DataFrame(
         consolidated,
         columns=[
-            "ast_id",
             "name",
             "number",
             "base_dynclass",
@@ -1200,20 +1197,16 @@ def consolidate_job_results(consolidated, job_path, log):
 def complete_job(job, log, status):
     consolidated_filepath = pathlib.Path(job.get("path"), "job_consolidated.csv")
 
-    if consolidated_filepath.exists():
+    if not consolidated_filepath.exists():
+        raise Exception(f"Consolidated file not exists. [{consolidated_filepath}]")
 
-        df = pd.read_csv(consolidated_filepath, delimiter=";")
+    df = pd.read_csv(consolidated_filepath, delimiter=";")
 
-        l_status = df["status"].to_list()
-        count_success = int(l_status.count(1))
-        count_failures = int(l_status.count(2))
-        occultations = int(df["ing_occ_count"].sum())
-        ast_with_occ = int((df["ing_occ_count"] != 0).sum())
-    else:
-        count_success = 0
-        count_failures = job["count_asteroids"]
-        occultations = 0
-        ast_with_occ = 0
+    l_status = df["status"].to_list()
+    count_success = int(l_status.count(1))
+    count_failures = int(l_status.count(2))
+    occultations = int(df["ing_occ_count"].sum())
+    ast_with_occ = int((df["ing_occ_count"] != 0).sum())
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)
@@ -1282,7 +1275,10 @@ def generate_dates_file(
                 "geradata", stdin=subprocess.PIPE, stdout=fp, shell=True
             )
             p.communicate(str.encode(strParameters))
-            log.debug(f"Geradata Command: [geradata {strParameters}]")
+
+            log.debug(
+                "Geradata Command: [geradata %s]" % strParameters.replace("\n", " ")
+            )
 
         if filepath.exists():
             filepath.chmod(0o664)
