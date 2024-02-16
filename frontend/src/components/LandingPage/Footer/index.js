@@ -1,14 +1,13 @@
 import React from 'react'
-import { Typography, Grid } from '@mui/material'
-import clsx from 'clsx'
+import Typography from '@mui/material/Typography'
+import Grid from '@mui/material/Grid'
 import logo from '../../../assets/img/linea-logo-mini.png'
 import useStyles from './styles'
-import Box from '@mui/material/Box'
 function Footer() {
   const classes = useStyles()
 
   return (
-    <footer className={clsx(classes.root, classes.appBarDrawerClose)}>
+    <footer className={`${classes.root} ${classes.appBarDrawerClose}`}>
       <Grid container direction='row' justifyContent='space-between' alignItems='center'>
         <Grid item className={classes.marginItem}>
           <Typography color='primary'>

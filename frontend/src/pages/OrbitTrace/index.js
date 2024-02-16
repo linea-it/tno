@@ -448,7 +448,7 @@ function OrbitTrace() {
                             name="bspPlanetary"
                             onChange={bspPlanetaryhandleChange}
                             options={bspPlanetaryList}
-                            style={{ height: '45px !important' }}
+                            sx={{ height: '45px !important' }}
                             menuPortalTarget={document.body}
                             menuPosition={'fixed'}
                           />
@@ -472,38 +472,6 @@ function OrbitTrace() {
                         {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
                       </Box>
                     </Grid>
-                    {/* <Grid item xs={12} sm={6} md={4} lg={3}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>BSP File Expiration Time <span className={classes.errorText}>*</span></label>
-                          <Select
-                            value={bspValue}
-                            id="bspValue"
-                            label="BSP Value"
-                            onChange={bspValuehandleChange}
-                            options={bspValueList}
-                            menuPortalTarget={document.body}
-                            menuPosition={'fixed'}
-                          />
-                        </FormControl>
-                        {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4} lg={3}>
-                      <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label> Parsl Init Blocks <span className={classes.errorText}>*</span></label>
-                          <Select
-                            value={parslInitBlocks}
-                            id=" parslinitBlocks"
-                            label="Parsl Init Blocks"
-                            onChange={parslInitBlockshandleChange}
-                            options={parslInitBlocksList}
-                            menuPortalTarget={document.body}
-                            menuPosition={'fixed'}
-                          />
-                        </FormControl>
-                        {bspValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
-                      </Box>
-                    </Grid> */}
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
                       <FormControl fullWidth>

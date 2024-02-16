@@ -1,5 +1,6 @@
-import React from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React from 'react'
+import Box from '@mui/material/Box'
+import { v4 as uuidv4 } from 'uuid'
 import PropTypes from 'prop-types'
 import A from 'aladin-lite'
 
@@ -20,7 +21,7 @@ export default class AladinV3 extends React.Component {
 
 
   constructor(props) {
-    super(props);
+    super(props)
 
     // Cria um ID unico para div que vai receber o aladin
     this.id = `aladin-container-${uuidv4()}`
@@ -56,7 +57,7 @@ export default class AladinV3 extends React.Component {
           showCooGrid: false,
           fullScreen: false
         }
-      );
+      )
 
       // Cria um catalogo com um unico source
       this.drawCatalog()
@@ -78,12 +79,12 @@ export default class AladinV3 extends React.Component {
         shape: 'square',
         sourceSize: 20,
         color: 'cyan'
-      });
+      })
       this.aladin.addCatalog(cat)
       // add sources to the new layer
       cat.addSources([
         this.libA.source(this.props.ra, this.props.dec, { name: "Occulted Star" })
-      ]);
+      ])
     }
   }
 
@@ -97,11 +98,11 @@ export default class AladinV3 extends React.Component {
   }
 
   render() {
-    return (<div
+    return (<Box
       id={this.id}
-      style={{
+      sx={{
         width: '100%',
         height: '100%',
-      }}></div>)
+      }}></Box>)
   }
 }

@@ -152,7 +152,7 @@ export default function PersistentDrawerLeft({ children }) {
               primary={
                 <>
                   <ListItemIcon>
-                    <img src={Logo} alt='TNO' style={{ width: 140 }} />
+                    <Box component="img" src={Logo} alt='TNO' sx={{ width: 140 }} />
                   </ListItemIcon>
                 </>
               }
@@ -162,12 +162,12 @@ export default function PersistentDrawerLeft({ children }) {
             {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+        <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
         <List>
           <ListItemButton onClick={() => navigate('/dashboard/stats')}>
             <ListItemText primary='Dashboard' sx={{ fontWeight: 'bold' }} />
           </ListItemButton>
-          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* DES Data Preparation */}
           <ListItemButton onClick={handleClickDes}>
             <ListItemText primary='DES Data Preparation' />
@@ -189,21 +189,21 @@ export default function PersistentDrawerLeft({ children }) {
               </ListItemButton>
             </List>
           </Collapse>
-          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* Predict Occultation */}
           <ListItemButton onClick={() => navigate('/dashboard/prediction-of-occultation')}>
             <ListItemText primary='Predict Occultation' />
           </ListItemButton>
           {/* Occultation */}
-          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           <ListItemButton onClick={() => navigate('/dashboard/occultation')}>
             <ListItemText primary='Occultation' />
           </ListItemButton>
-          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           <ListItemButton onClick={() => navigate('/dashboard/asteroid_job')}>
             <ListItemText primary='Asteroid Jobs' />
           </ListItemButton>
-          <Divider style={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           <ListItemButton onClick={() => navigate('/public_home')}>
             <ListItemText primary='Public Page' />
           </ListItemButton>

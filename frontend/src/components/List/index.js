@@ -1,14 +1,17 @@
 import React from 'react'
-import { List as MuiList, ListItem, ListItemText, Icon } from '@mui/material'
+import ListItem from '@mui/material/ListItem'
+import ListItemText from '@mui/material/ListItemText'
+import Icon from '@mui/material/Icon'
+import { List as MuiList } from '@mui/material'
+
 import PropTypes from 'prop-types'
-import clsx from 'clsx'
 import useStyles from './styles'
 
 function List({ data, height, width, align }) {
   const classes = useStyles({ align });
 
   return (
-    <MuiList className={classes.root} style={{ height, width }}>
+    <MuiList className={classes.root} sx={{ height, width }}>
       {data.map((item, i, arr) => {
         // Verifica se item.value é uma string que contém a palavra "null" ou se o valor é "null"
         if ((typeof item.value === 'string' && item.value.includes('null')) || item.value === 'null') {
@@ -23,7 +26,7 @@ function List({ data, height, width, align }) {
                   {item.title}
                   {item.tooltip ? (
                     <sup>
-                      <Icon className={clsx(classes.tooltipIcon, 'fas', 'fa-info-circle')} />
+                      <Icon className={`${classes.tooltipIcon} fas fa-info-circle`} />
                     </sup>
                   ) : null}
                 </span>
@@ -31,7 +34,7 @@ function List({ data, height, width, align }) {
               className={classes.itemText}
             />
             <ListItemText
-              className={clsx(classes.itemText, classes.itemValueText)}
+              className={`${classes.itemText} ${classes.itemValueText}`}
               secondary={typeof item.value === 'function' ? item.value() : item.value}
             />
           </ListItem>

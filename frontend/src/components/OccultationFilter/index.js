@@ -1,6 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import PropTypes from 'prop-types'
-import { Grid, Box, Card, CardContent, Button, CircularProgress, FormControl, Slider, TextField, Typography, Icon, Tooltip, Checkbox } from '@mui/material'
+import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
+import Card from '@mui/material/Card'
+import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
+import CircularProgress from '@mui/material/CircularProgress'
+import FormControl from '@mui/material/FormControl'
+import Slider from '@mui/material/Slider'
+import TextField from '@mui/material/TextField'
+import Typography from '@mui/material/Typography'
+import Icon from '@mui/material/Icon'
+import Tooltip from '@mui/material/Tooltip'
+import Checkbox from '@mui/material/Checkbox'
 import styles from './style'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -299,7 +311,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                     <Box className={classes.btnFilter}>
                       <Button onClick={clearFilter} variant='contained' className="buttonClear" color='primary'>
                         <Icon className='fas fa-trash' fontSize='inherit' />
-                        <Typography variant='button' style={{ margin: '0 5px' }}>
+                        <Typography variant='button' sx={{ margin: '0 5px' }}>
                           Clean
                         </Typography>
                       </Button>
@@ -311,7 +323,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                           <CircularProgress size={25} color="primary" />
 
                         }{!loadingLocation &&
-                          <Typography variant='button' style={{ margin: '0 5px' }}>
+                          <Typography variant='button' sx={{ margin: '0 5px' }}>
                             Search
                           </Typography>
                         }

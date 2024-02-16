@@ -1,7 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { Dialog as MuiDialog, DialogTitle, DialogContent, IconButton, Typography } from '@mui/material'
-import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography'
+import DialogContent from '@mui/material/DialogContent'
+import DialogTitle from '@mui/material/DialogTitle'
+import IconButton from '@mui/material/IconButton'
+import { Dialog as MuiDialog } from '@mui/material'
+import CloseIcon from '@mui/icons-material/Close'
 import useStyles from './styles'
 
 function Dialog({ visible, setVisible, title, content, maxWidth, headerStyle, bodyStyle, wrapperStyle }) {
@@ -14,7 +18,7 @@ function Dialog({ visible, setVisible, title, content, maxWidth, headerStyle, bo
       fullWidth
       aria-labelledby='customized-dialog-title'
       open={visible}
-      style={wrapperStyle}
+      sx={wrapperStyle}
     >
       <DialogTitle className={headerStyle}>
         <Typography variant='h6' component='span'>

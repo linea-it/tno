@@ -4,6 +4,7 @@
 /* eslint-disable max-len */
 import React from 'react'
 import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
@@ -15,7 +16,7 @@ import styles from './styles'
 function PublicAboutUs() {
   const classes = styles()
   return (
-    <div className={classes.initContainer}>
+    <Box className={classes.initContainer}>
       <Container>
         <Grid item xs={12} className={classes.grid}>
           <Breadcrumbs aria-label='breadcrumb'>
@@ -24,11 +25,11 @@ function PublicAboutUs() {
             </Link>
             <Typography color='textPrimary'>About Us</Typography>
           </Breadcrumbs>
-          <Card style={{ margin: '16px 0' }}>
+          <Card sx={{ margin: '16px 0' }}>
             <CardContent>
               <Grid item md={9} sm={10} className={classes.grid}>
                 <Typography gutterBottom className={classes.textFormat} variant='overline' component='h2'>
-                  <div>
+                  <Box>
                     <p>
                       <strong>
                         <em>About us</em>
@@ -60,14 +61,14 @@ function PublicAboutUs() {
                         </p>
                       </span>
                     </p>
-                  </div>
+                  </Box>
                 </Typography>
               </Grid>
             </CardContent>
           </Card>
         </Grid>
       </Container>
-    </div>
+    </Box>
   )
 }
 

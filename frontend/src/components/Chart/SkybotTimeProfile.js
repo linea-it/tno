@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Box from '@mui/material/Box'
 import PropTypes from 'prop-types'
 import Plot from 'react-plotly.js'
 import moment from 'moment'
@@ -57,32 +58,31 @@ function SkybotTimeProfile({ data }) {
   }, [data, loadRows])
 
   return (
-    <Plot
-      style={{
-        width: '100%'
-      }}
-      data={rows}
-      layout={{
-        // width: 400,
-        height: 400,
-        xaxis: {
-          automargin: true,
-          autorange: true
-        },
-        yaxis: {
-          automargin: true,
-          autorange: true,
-          showticklabels: false
-        },
-        hovermode: 'closest',
-        autosize: true
-      }}
-      config={{
-        scrollZoom: false,
-        displaylogo: false,
-        responsive: true
-      }}
-    />
+    <Box sx={{ width: '100%' }}>
+      <Plot
+        data={rows}
+        layout={{
+          height: 400,
+          xaxis: {
+            automargin: true,
+            autorange: true
+          },
+          yaxis: {
+            automargin: true,
+            autorange: true,
+            showticklabels: false
+          },
+          hovermode: 'closest',
+          autosize: true
+        }}
+        config={{
+          scrollZoom: false,
+          displaylogo: false,
+          responsive: true
+        }}
+      />
+    </Box>
+
   )
 }
 

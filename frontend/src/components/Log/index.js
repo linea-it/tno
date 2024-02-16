@@ -1,17 +1,21 @@
 import React from 'react'
+import Box from '@mui/material/Box'
 import PropTypes from 'prop-types'
 
 function Log({ data }) {
   return (
-    <pre style={{ border: 'none' }}>
-      {data
-        ? data.map((line) => (
-            <div key={line} style={{ whiteSpace: 'normal' }}>
+    <Box sx={{ border: 'none' }}>
+      <pre>
+        {data
+          ? data.map((line, index) => (
+            <Box key={index} sx={{ whiteSpace: 'normal' }}>
               {line}
-            </div>
+            </Box>
           ))
-        : null}
-    </pre>
+          : null}
+      </pre>
+    </Box>
+
   )
 }
 
