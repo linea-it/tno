@@ -27,10 +27,10 @@ import {
 import dayjs from 'dayjs';
 
 
-function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filterType, setFilterType, filterValue, setFilterValue, magnitude, setMagnitude, latitude, setLatitude, longitude, setLongitude, radius, setRadius, geoFilter, setGeoFilter, loadingLocation, setLoadingLocation, erroLocation, setErroLocation, filter }) {
+function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filterType, setFilterType, filterValue, setFilterValue, magnitude, setMagnitude, latitude, setLatitude, longitude, setLongitude, radius, setRadius, geoFilter, setGeoFilter, loadingLocation, erroLocation, filter }) {
 
   const classes = styles();
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
+  const [filterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
   const [asteroidsList, setAsteroidsList] = useState([]);
   const [dynClassList, setDynClassList] = useState([]);
   const [baseDynClassList, setBaseDynClassList] = useState([]);
@@ -97,7 +97,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
 
   function isValidLatitude(latitudeStr) {
     const value = parseFloat(latitudeStr);
-    if (!isNaN(value) && value >= -90 && value <= 90 || !geoFilter) {
+    if ((!isNaN(value) && value >= -90 && value <= 90) || !geoFilter) {
       setErroLatitude(false);
       return true;
     }
@@ -107,7 +107,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
 
   function isValidLongitude(longitudeStr) {
     const value = parseFloat(longitudeStr);
-    if (!isNaN(value) && value >= -180 && value <= 180 || !geoFilter) {
+    if ((!isNaN(value) && value >= -180 && value <= 180) || !geoFilter) {
       setErroLongitude(false);
       return true;
     }
@@ -190,7 +190,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                             menuPosition={'fixed'}
                           />
                         }
-                        {filterType.value == "name" &&
+                        {filterType.value === "name" &&
                           <Select
                             id="filterName"
                             onChange={filterValueNameshandleChange}
@@ -200,7 +200,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                             menuPosition={'fixed'}
                           />
                         }
-                        {filterType.value == "dynclass" &&
+                        {filterType.value === "dynclass" &&
                           <Select
                             value={filterValue}
                             id="filterDynClass"
@@ -210,7 +210,7 @@ function OccultationFilter({ dateStart, setDateStart, dateEnd, setDateEnd, filte
                             menuPosition={'fixed'}
                           />
                         }
-                        {filterType.value == "base_dynclass" &&
+                        {filterType.value === "base_dynclass" &&
                           <Select
                             value={filterValue}
                             id="filterBaseDynClass"

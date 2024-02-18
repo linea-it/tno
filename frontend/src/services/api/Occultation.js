@@ -49,7 +49,7 @@ export const getNextTwenty = ({ page, pageSize, ordering }) => {
 export const getStarByOccultationId = ({ id }) => api.get(`/occultations/${id}/get_star_by_event`).then((res) => res.data)
 
 export const getOrCreatePredictionMap = ({ queryKey }) => {
-  const [_, params] = queryKey
+  const params = queryKey[1]
   const { id, force } = params
   if (!id) { return }
 
@@ -82,7 +82,7 @@ export const geoFilterIsValid = (value) => {
 }
 
 export const listAllPredictionEvents = ({ queryKey }) => {
-  const [_, params] = queryKey
+  const params = queryKey[1]
 
   const { paginationModel, filters, sortModel } = params
   const { pageSize } = paginationModel
@@ -146,7 +146,7 @@ export const listAllPredictionEvents = ({ queryKey }) => {
 };
 
 export const listAllAsteroidsWithEvents = ({ queryKey }) => {
-  const [_, params] = queryKey
+  const params = queryKey[1]
   const { name } = params
 
   return api.get(`/asteroids/with_prediction/`, { params: { name } }).then(res => res.data)

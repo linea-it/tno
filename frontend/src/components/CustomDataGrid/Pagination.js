@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  gridPageCountSelector,
-  useGridApiContext,
-  useGridSelector,
   GridPagination,
 } from '@mui/x-data-grid';
 import MuiPagination from '@mui/material/Pagination';

@@ -80,7 +80,7 @@ function GeoFilter({ value, onChange }) {
     // isValid()
     setError(!geoFilterIsValid(value))
 
-  }, [value.latitude, value.longitude])
+  }, [value.latitude, value.longitude, value])
 
   return (
     <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>

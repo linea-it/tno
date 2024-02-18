@@ -37,12 +37,11 @@ function PredictDetail() {
   const [totalErrorCount, setTotalErrorCount] = useState(0);
   const [isJobCanceled, setIsJobCanceled] = useState(false);
   const [progress, setProgress] = useState([])
-  const [dialog, setDialog] = useState({
-    content: [],
-    visible: false,
-    title: '',
-  });
-  const haveError = totalErrorCount > 0 && 'results' in predictionJob
+  // const [dialog, setDialog] = useState({
+  //   content: [],
+  //   visible: false,
+  //   title: '',
+  // });
 
   const handleBackNavigation = () => navigate(-1);
 
@@ -327,7 +326,7 @@ function PredictDetail() {
               <ProgressList
                 lista={progress}
               />
-              {predictionJob.status == 1 && progress.length == 0 ? (
+              {predictionJob.status === 1 && progress.length === 0 ? (
                 <CircularProgress disableShrink size={50} />
               ) : null}
             </Grid>
