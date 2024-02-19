@@ -108,6 +108,7 @@ services:
       - ./predict_occultation:/app
       - ./archive/predict_occultation:/app/outputs/predict_occultation
     environment:
+      - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
       # Acesso ao DB de Catalogo e Administrativo, caso localhost não funcione utilizar o host.docker.internal.
       # Usando Localhost
       - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@localhost:3307/prod_gavo
@@ -115,7 +116,7 @@ services:
       # # Usando host.docker.internal
       # - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@host.docker.internal:3307/prod_gavo
       # - DB_URI_ADMIN=postgresql+psycopg2://postgres:postgres@host.docker.internal:5432/postgres
-      - PARSL_ENV=local # PARSL_ENV define onde será o processamento: local ou linea (Slurm)
+      - PREDICT_OUTPUTS=/app/outputs/predict_occultation
 
 volumes:
   rabbitmq-data:

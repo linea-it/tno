@@ -22,6 +22,7 @@ from dao import (
 
 try:
     from parsl_config import get_config
+
     from predict_occultation.app import run_pipeline
 except Exception as error:
     print("Error: %s" % str(error))
@@ -174,8 +175,6 @@ def make_job_json_file(job, path):
             "debug": bool(job.get("debug", False)),
             "error": None,
             "traceback": None,
-            # Parsl init block não está sendo utilizado no pipeline
-            # "parsl_init_block": int(job.get('parsl_init_block', 600)),
             # TODO: Adicionar parametro para catalog
             # "catalog_id": job.get('catalog_id')
             # TODO: Estes parametros devem ser gerados pelo pipeline lendo do config.
@@ -183,12 +182,10 @@ def make_job_json_file(job, path):
             "bsp_planetary": {
                 "name": "de440",
                 "filename": "de440.bsp",
-                # "absolute_path": "/lustre/t1/tmp/tno/bsp_planetary/de440.bsp",
             },
             "leap_seconds": {
                 "name": "naif0012",
                 "filename": "naif0012.tls",
-                # "absolute_path": "/lustre/t1/tmp/tno/leap_seconds/naif0012.tls",
             },
             "force_refresh_inputs": True,
             "inputs_days_to_expire": 0,
@@ -223,14 +220,14 @@ def remove_job_directory(jobid):
 
 def get_job_path(jobid):
     """Retorna o path para o diretorio do job, cria o diretorio caso nao exista."""
-    orbit_trace_root = os.getenv("PREDICT_OUTPUTS", "/app/outputs/predict_occultation")
+    predict_outputs = os.getenv("PREDICT_OUTPUTS")
+    print("Predict_outputs: ")
+    print(predict_outputs)
     folder_name = f"{jobid}"
     # folder_name = f"teste_{job['id']}"
     # folder_name = f"{job['id']}-{str(uuid.uuid4())[:8]}"
 
-    # prefix_env = os.getenv('PREFIX_ENV', 'dev')
-    # job_path = pathlib.Path(orbit_trace_root).joinpath(prefix_env, folder_name)
-    job_path = pathlib.Path(orbit_trace_root).joinpath(folder_name)
+    job_path = pathlib.Path(predict_outputs).joinpath(folder_name)
 
     if not job_path.exists():
         job_path.mkdir(parents=True, mode=0o775)
@@ -239,7 +236,6 @@ def get_job_path(jobid):
         script_dir = job_path.joinpath("script_dir")
         script_dir.mkdir(parents=True, mode=0o775)
 
-    print(f"Job Path: {job_path}")
     return job_path
 
 

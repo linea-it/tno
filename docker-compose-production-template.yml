@@ -76,30 +76,23 @@ services:
       - rabbit
       - celery_flower
 
-  pipelines:
+  predict_occultation:
     user: "31670:15010"
     group_add:
-        - "900"
-    image: linea/tno:pipelines_f2c9b54
+      - "900"
+    image: linea/tno:predict_occ_32846a0
     restart: always
-    command: /app/daemon.sh
+    command: /app/src/daemon.sh
     network_mode: "host"
     volumes:
-      - /lustre/t1/scratch/users/app.tno/.ssh/:/home/apptno/.ssh
-      - /lustre/t1/scratch/users/app.tno/tno_testing/outputs/runinfo/:/app/runinfo
+      - /lustre/t1/scratch/users/app.tno/.ssh/id_rsa:/home/apptno/.ssh/id_rsa
       - /lustre/t1/scratch/users/app.tno/tno_testing/:/lustre/t1/scratch/users/app.tno/tno_testing
     environment:
-      - DB_URI=postgresql+psycopg2://untrustedprod:untrusted@desdb4.linea.gov.br:5432/prod_gavo
-      - DB_URI_ADMIN=postgresql+psycopg2://tnouseradmindev:TnoDev405060@desdb4.linea.gov.br:5432/tnodbdev
-      - USER=apptno
       - PARSL_ENV=linea
-      - PREFIX_ENV=testing
-      - PIPELINE_PREDIC_OCC=/lustre/t1/scratch/users/app.tno/tno_testing/predict_occ
-      - PIPELINE_PATH=/lustre/t1/scratch/users/app.tno/tno_testing/predict_occ/pipeline
-      - PREDICT_OUTPUTS=/lustre/t1/scratch/users/app.tno/tno_testing/outputs/predict_occ
-      - SLURM_REMOTE_DIR=/lustre/t1/scratch/users/app.tno/tno_testing/configs
-      - PIPE_BIN=/lustre/t1/scratch/users/app.tno/tno_testing/bin
-      - CONDA_ENVS=/lustre/t1/scratch/users/app.tno/tno_testing/miniconda/envs
+      - REMOTE_PIPELINE_ROOT=/lustre/t1/scratch/users/app.tno/tno_testing
+      - PREDICT_OUTPUTS=/lustre/t1/scratch/users/app.tno/tno_testing/outputs/predict_occultation
+      - DB_URI=postgresql+psycopg2://<USERNAME>:<PASSWORD>@desdb4.linea.gov.br:5432/prod_gavo
+      - DB_URI_ADMIN=postgresql+psycopg2://<USERNAME>:<PASSWORD>@desdb4.linea.gov.br:5432/tnodbdev
       - SSHKEY=/home/apptno/.ssh/id_rsa
 
 volumes:
