@@ -24,4 +24,5 @@ repos:
     hooks:
     -   id: isort
         name: isort (python)
+        args: ["--profile", "black"]
         exclude: ^(migrations/|pipelines/|backend/old_apps/)

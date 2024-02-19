@@ -12,6 +12,9 @@ naif0012.tls
 # Parsl
 /src/runinfo/
 
+# Outputs
+outputs/
+
 # Distribution / packaging
 .Python
 build/

@@ -1,8 +1,12 @@
 #!/bin/bash --login
+set -o errexit
 umask ug=rwx,o=r
 
+# Verifica as variaveis de ambiente
+/opt/conda/bin/python3 /app/check_enviroment.py
+
 echo "Running Rsync: ${PIPELINE_PREDIC_OCC}"
-rsync -r /app/src/predict_occultation/ ${REMOTE_PIPELINE_ROOT}/predict_occultation
+rsync -r /app/src/predict_occultation/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/
 
 
 # Baixa os arquivos bsp planetary e leap_second caso não existam.
