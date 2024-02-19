@@ -30,8 +30,8 @@ RUN chmod -R g+w /var/cache/nginx/
 # Write the PID file to a location where regular users have write access.
 RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var/tmp/nginx.pid;%' /etc/nginx/nginx.conf
 
-COPY --from=builder_public /build/public_page /var/www/public_page
-COPY --from=builder_dashboard /build/dashboard /var/www/dashboard
+COPY --from=builder_public /build/public_page /var/www/html
+COPY --from=builder_dashboard /build/dashboard /var/www/html/dashboard
 # COPY --from=builder_all /app/build /var/www/frontend
 
 RUN chgrp nginx /var/www

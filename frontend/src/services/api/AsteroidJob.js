@@ -1,7 +1,7 @@
 import { api } from './Api'
 
 export const listAllAsteroidJobs = ({ queryKey }) => {
-  const [_, params] = queryKey
+  const [params] = queryKey
 
   const { paginationModel, filters, sortModel } = params
   const { pageSize } = paginationModel
@@ -23,7 +23,7 @@ export const listAllAsteroidJobs = ({ queryKey }) => {
   let ordering = sortFields.length !== 0 ? sortFields.join(',') : null
 
   const newFilters = {}
-  if (filters !== undefined) {}
+  if (filters !== undefined) { }
 
   return api.get(
     `/asteroid_jobs/`, { params: { page, pageSize, ordering, ...newFilters } })
@@ -31,7 +31,7 @@ export const listAllAsteroidJobs = ({ queryKey }) => {
 };
 
 export const getAsteroidJobById = ({ queryKey }) => {
-  const [_, params] = queryKey
-  const {id} = params
+  const [params] = queryKey
+  const { id } = params
   return api.get(`/asteroid_jobs/${id}`).then((res) => res.data)
 }

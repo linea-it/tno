@@ -1,8 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useQuery } from 'react-query';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import { listAllAsteroidsWithEvents } from '../../services/api/Occultation';
@@ -13,8 +11,8 @@ function AsteroidNameSelect({ value, onChange }) {
   const [inputValue, setInputValue] = React.useState('');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['asteroidsWithEvents', {name: inputValue}],
-    queryFn: listAllAsteroidsWithEvents ,
+    queryKey: ['asteroidsWithEvents', { name: inputValue }],
+    queryFn: listAllAsteroidsWithEvents,
     keepPreviousData: true,
     refetchInterval: false,
     refetchOnWindowFocus: false,
@@ -27,11 +25,11 @@ function AsteroidNameSelect({ value, onChange }) {
   return (
     <Autocomplete
       multiple
-      options={ data !== undefined ? data.results : []}
+      options={data !== undefined ? data.results : []}
       getOptionLabel={(option) => option.name}
       loading={isLoading}
       limitTags={1}
-      sx={{minWidth: '50ch'}}
+      sx={{ minWidth: '50ch' }}
       filterSelectedOptions
       onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue);
