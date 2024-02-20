@@ -14,7 +14,7 @@ import AsteroidSelect from '../AsteroidSelect/AsteroidSelect';
 import GeoFilter from '../GeoFilter/index';
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import Button from '@mui/material/Button';
-
+import SolarTimeFilter from '../SolarTimeFilter'
 function PredictionEventsFilter() {
 
   const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
@@ -64,11 +64,11 @@ function PredictionEventsFilter() {
                 })
               }}
             />
+
             <MaginitudeSelect
               value={queryOptions.filters.maginitudeMax}
               onChange={(event) => {
                 setQueryOptions(prev => {
-
                   return {
                     ...prev,
                     filters: {
@@ -78,23 +78,41 @@ function PredictionEventsFilter() {
                   }
                 })
               }} />
-            <FormControlLabel control={
-              <Switch
-                checked={queryOptions.filters.nightside}
-                onChange={(event) => {
-                  setQueryOptions(prev => {
-                    return {
-                      ...prev,
-                      filters: {
-                        ...prev.filters,
-                        nightside: event.target.checked
-                      }
-                    }
-                  })
-                }}
-              />} label="Nighttime Only" />
           </Stack>
         </LocalizationProvider>
+        <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
+          <SolarTimeFilter
+            value={[queryOptions.filters.solar_time_after, queryOptions.filters.solar_time_before,]}
+            onChange={(value) => {
+              setQueryOptions(prev => {
+                return {
+                  ...prev,
+                  filters: {
+                    ...prev.filters,
+                    solar_time_after: value[0],
+                    solar_time_before: value[1],
+                  }
+                }
+              })
+            }} >
+
+          </SolarTimeFilter>
+          <FormControlLabel control={
+            <Switch
+              checked={queryOptions.filters.nightside}
+              onChange={(event) => {
+                setQueryOptions(prev => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      nightside: event.target.checked
+                    }
+                  }
+                })
+              }}
+            />} label="Nighttime Only" />
+        </Stack>
         <AsteroidSelect value={{
           filterType: queryOptions.filters.filterType,
           filterValue: queryOptions.filters.filterValue

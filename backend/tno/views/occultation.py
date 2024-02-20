@@ -1,11 +1,11 @@
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, time, timezone
 
 import django_filters
 import humanize
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.db.models import F, FloatField, Value
+from django.db.models import F, FloatField, Q, Value
 from rest_framework import viewsets
 from rest_framework.authentication import (
     BasicAuthentication,
@@ -94,6 +94,18 @@ class OccultationFilter(django_filters.FilterSet):
 
     jobid = django_filters.NumberFilter(field_name="job_id", label="Jobid")
 
+    local_solar_time = django_filters.TimeRangeFilter(
+        method="solar_time", label="Local Solar Time After"
+    )
+
+    def solar_time(self, queryset, name, value):
+        # Periodo de Meio dia até o meio meia noite e de meia noite até meio dia
+        # Na pratica o start é de meio dia até meio dia do proximo dia.
+        after = Q(loc_t__gte=value.start, loc_t__lte=time(23, 59, 59))
+        before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=value.stop)
+
+        return queryset.filter(Q(after | before))
+
     class Meta:
         model = Occultation
         fields = [
@@ -104,6 +116,7 @@ class OccultationFilter(django_filters.FilterSet):
             "name",
             "number",
             "long",
+            "local_solar_time",
             "nightside",
             "jobid",
         ]

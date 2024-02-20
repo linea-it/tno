@@ -4,16 +4,16 @@ function ImageCell(props) {
   if (props.value == null) {
     return (
       <Box
-      component="a"
-      href={`/prediction-event-detail/${props.row.id}`}
-      target="_blank"
+        component="a"
+        href={`/prediction-event-detail/${props.row.id}`}
+        target="_blank"
       >
-      <Box
-      // width={props.colDef.computedWidth}
-      // height={props.colDef.computedWidth}
-      height={68}
-      >
-        {/* TODO Adicionar uma imagem placeholder */}
+        <Box
+          // width={props.colDef.computedWidth}
+          // height={props.colDef.computedWidth}
+          height={68}
+        >
+          {/* TODO Adicionar uma imagem placeholder */}
         </Box>
       </Box>
     )
@@ -60,10 +60,10 @@ export const NameCol = {
   renderCell: (params) => {
     return (
       <Box
-      component="a"
-      href={`/prediction-event-detail/${params.row.id}`}
-      target="_blank"
-      sx={{textDecoration: 'none'}}
+        component="a"
+        href={`/prediction-event-detail/${params.row.id}`}
+        target="_blank"
+        sx={{ textDecoration: 'none' }}
       >
         {params.value}
       </Box>
@@ -424,7 +424,7 @@ export const predictionEventsColumnVisibilityModel = {
   velocity: true,
   delta: true,
   long: false,
-  loc_t: false,
+  loc_t: true,
   off_ra: false,
   off_dec: false,
   proper_motion: false,
