@@ -35,7 +35,7 @@ class OccultationFilter(django_filters.FilterSet):
 
     number = CharInFilter(field_name="number", lookup_expr="in")
 
-    mag_g = django_filters.RangeFilter(field_name="g")
+    mag_g = django_filters.RangeFilter(field_name="g_star")
 
     dynclass = django_filters.CharFilter(field_name="dynclass", lookup_expr="iexact")
 
@@ -121,12 +121,15 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OccultationSerializer
 
     filterset_class = OccultationFilter
-    search_fields = ("name", "number")
+    search_fields = ("name", "number", "principal_designation")
 
     ordering_fields = (
         "id",
         "name",
         "number",
+        "principal_designation",
+        "base_dynclass",
+        "dynclass",
         "date_time",
         "ra_star_candidate",
         "dec_star_candidate",
@@ -136,10 +139,10 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         "position_angle",
         "velocity",
         "delta",
-        "g",
-        "j",
-        "h",
-        "k",
+        "g_star",
+        "j_star",
+        "h_star",
+        "k_star",
         "long",
         "loc_t",
         "off_ra",

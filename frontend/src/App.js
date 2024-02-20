@@ -9,7 +9,9 @@ import { PredictionEventsProvider } from './contexts/PredictionContext'
 import { ThemeProvider } from '@mui/styles'
 import './assets/css/index.css'
 
+
 const queryClient = new QueryClient()
+
 function App() {
 
   return (

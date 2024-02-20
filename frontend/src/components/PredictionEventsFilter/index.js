@@ -13,10 +13,11 @@ import MaginitudeSelect from '../MaginitudeSelect/index';
 import AsteroidSelect from '../AsteroidSelect/AsteroidSelect';
 import GeoFilter from '../GeoFilter/index';
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
+import Button from '@mui/material/Button';
 
 function PredictionEventsFilter() {
 
-  const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
+  const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
 
   return (
     <Box>
@@ -129,7 +130,15 @@ function PredictionEventsFilter() {
             }}
           /></Box>
       </Box>
-      <Typography m={1} variant="body2" fontSize='1.0rem' color="#1565c0">The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and magnitude constraints to restrict the supplied list to be filtered to a maximum of 2000 records. You can find this information below as 'Retrieved Predictions' after applying a filter.</Typography>
+      <Typography m={1} variant="body2" color="#1565c0">The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and magnitude constraints to restrict the supplied list to be filtered to a maximum of 2000 records. You can find this information below as 'Retrieved Predictions' after applying a filter.</Typography>
+      <Stack
+        direction="row"
+        justifyContent="flex-end"
+        alignItems="center"
+        spacing={2}
+      >
+        <Button variant="outlined" onClick={clearFilter}>Clear</Button>
+      </Stack>
     </Box >
   )
 }
