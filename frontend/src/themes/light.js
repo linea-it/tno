@@ -1,8 +1,16 @@
-import { createTheme, responsiveFontSizes } from "@mui/material/styles";
-const light = createTheme({
+import { createTheme } from '@mui/material/styles'
 
+const lightTheme = createTheme({
+    palette: {
+        mode: 'light',
+        background: {
+            default: '#f1f1f1',
+        },
+    },
 })
-export default responsiveFontSizes(light);
+
+export default lightTheme
+
 
 
 // import { pink } from '@mui/material/colors'

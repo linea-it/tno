@@ -1,35 +1,21 @@
 import React from 'react'
-// import useScrollTrigger from '@mui/material/useScrollTrigger'
-import AppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
+import { AppBar, Toolbar, IconButton, Button, Box } from '@mui/material'
+import { Brightness4, Brightness7 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
-import Button from '@mui/material/Button';
-import Box from '@mui/material/Box';
-function PublicHeader() {
-  const navigate = useNavigate();
+
+const PublicHeader = ({ darkMode, toggleTheme }) => {
+  const navigate = useNavigate()
 
   const menus = [
-    {
-      description: 'Home',
-      href: '/',
-      target: '_self'
-    },
-    {
-      description: 'About',
-      href: '/about-us',
-      target: '_self'
-    },
-    {
-      description: 'Documentation',
-      href: '/documentation',
-      target: '_self'
-    },
-    {
-      description: 'Contact',
-      href: '/contact-us',
-      target: '_self',
-    }
+    { description: 'Home', href: '/', target: '_self' },
+    { description: 'About', href: '/about-us', target: '_self' },
+    { description: 'Documentation', href: '/documentation', target: '_self' },
+    { description: 'Contact', href: '/contact-us', target: '_self' },
   ]
+
+  const handleToggleDarkMode = () => {
+    toggleTheme()
+  }
 
   const handleCardClick = (pathname) => navigate(pathname)
 
@@ -42,6 +28,14 @@ function PublicHeader() {
         {menus.map((menu) => (
           <Button key={menu.description} color="inherit" onClick={() => handleCardClick(menu.href)}>{menu.description}</Button>
         ))}
+        <IconButton
+          size="large"
+          edge="end"
+          color="inherit"
+          onClick={handleToggleDarkMode}
+        >
+          {darkMode ? <Brightness7 /> : <Brightness4 />}
+        </IconButton>
       </Toolbar>
     </AppBar>
   )
