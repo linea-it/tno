@@ -14,7 +14,7 @@ function Main() {
     <>
       <PublicBanner />
       <PredictionHighlights />
-      <Box mt={3} ml={8} mr={8}>
+      <Box mt={3}>
         <Grid>
           <Grid container spacing={2}>
             <Grid item xs={12}>
