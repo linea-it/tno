@@ -28,7 +28,7 @@ function PublicAboutUs() {
           <Card sx={{ margin: '16px 0' }}>
             <CardContent>
               <Grid item md={9} sm={10} className={classes.grid}>
-                <Typography gutterBottom className={classes.textFormat} variant='overline' component='h2'>
+                <Typography gutterBottom className={classes.textFormat} component='h2'>
                   <Box>
                     <p>
                       <strong>

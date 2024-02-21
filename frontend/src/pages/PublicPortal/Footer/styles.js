@@ -19,12 +19,6 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'space-between'
   },
-  versionLink: {
-    color: '#d2cf00',
-    textDecoration: 'none',
-    fontSize: '0.9rem',
-    cursor: 'pointer'
-  },
   logoLink: {
     lineHeight: 0,
     display: 'inline-block',
