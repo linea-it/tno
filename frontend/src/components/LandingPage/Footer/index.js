@@ -10,9 +10,6 @@ function Footer() {
     <footer className={`${classes.root} ${classes.appBarDrawerClose}`}>
       <Grid container direction='row' justifyContent='space-between' alignItems='center'>
         <Grid item className={classes.marginItem}>
-          <Typography color='primary'>
-            <span className={classes.poweredBy}>Testing</span> <span className={classes.versionLink}>1.0.0</span>
-          </Typography>
         </Grid>
         <Grid item className={classes.marginItem}>
           <Typography color='primary'>
