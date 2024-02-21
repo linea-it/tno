@@ -28,14 +28,14 @@ const PublicHeader = ({ darkMode, toggleTheme }) => {
         {menus.map((menu) => (
           <Button key={menu.description} color="inherit" onClick={() => handleCardClick(menu.href)}>{menu.description}</Button>
         ))}
-        <IconButton
+        {/* <IconButton
           size="large"
           edge="end"
           color="inherit"
           onClick={handleToggleDarkMode}
         >
           {darkMode ? <Brightness7 /> : <Brightness4 />}
-        </IconButton>
+        </IconButton> */}
       </Toolbar>
     </AppBar>
   )

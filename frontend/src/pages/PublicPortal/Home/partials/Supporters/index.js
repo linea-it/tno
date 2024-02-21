@@ -1,7 +1,9 @@
 import React from 'react'
 import Grid from '@mui/material/Grid'
+import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import CardMedia from '@mui/material/CardMedia'
+
 
 function PublicSupporters() {
 
@@ -33,7 +35,7 @@ function PublicSupporters() {
     }
   ]
   return (
-    <div m={4}>
+    <Box m={4}>
       <Typography variant='h6' align='center' gutterBottom>
         LIneA is supported by
       </Typography>
@@ -45,12 +47,12 @@ function PublicSupporters() {
               alt={item.title}
               image={`${process.env.PUBLIC_URL}/img/supporters/${item.image}`}
               title={item.title}
-              style={{ maxWidth: '150px', width: 'auto', height: 'auto', margin: 'auto' }}
+              sx={{ maxWidth: '150px', width: 'auto', height: 'auto', margin: 'auto' }}
             />
           </Grid>
         ))}
       </Grid>
-    </div>
+    </Box>
   )
 }
 

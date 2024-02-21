@@ -7,12 +7,15 @@ import PublicDocumentation from '../pages/PublicPortal/documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
+import Box from '@mui/material/Box'
 
 const PublicPortalPage = ({ children, toggleTheme, darkMode }) => {
   return (
     <>
       <PublicHeader toggleTheme={toggleTheme} darkMode={darkMode} />
-      {children}
+      <Box sx={{ maxWidth: 1200, margin: '0 auto' }}>
+        {children}
+      </Box>
       <FooterSupporters />
     </>
   )

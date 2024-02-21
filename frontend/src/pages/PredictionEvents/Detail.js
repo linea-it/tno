@@ -251,7 +251,7 @@ function PredictionEventDetail() {
 
   return (
     <>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ marginTop: '10px'}}>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title="Occultation Prediction Circumstances" />
