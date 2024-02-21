@@ -12,7 +12,6 @@ const lightTheme = createTheme({
 export default lightTheme
 
 
-
 // import { pink } from '@mui/material/colors'
 // const light = createTheme({
 

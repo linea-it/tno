@@ -9,7 +9,9 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { PredictionEventsProvider } from './contexts/PredictionContext'
 import './assets/css/index.css'
 
+
 const queryClient = new QueryClient()
+
 function App() {
   const [darkMode, setDarkMode] = useState(false);
 
