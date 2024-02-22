@@ -10,14 +10,11 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { geoFilterIsValid } from '../../services/api/Occultation';
-// import geoFilterIsValid from '../../services/Occultation'
-
+import Grid from '@mui/material/Grid'
+import Typography from '@mui/material/Typography';
+import Alert from '@mui/material/Alert';
 function GeoFilter({ value, onChange }) {
 
-  // const [isOn, setIsOn] = useState(false);
-  // const [lat, setLat] = useState(undefined);
-  // const [long, setLong] = useState(undefined);
-  // const [radius, setRadius] = useState(500);
   const [error, setError] = useState(false);
 
   const options1 = Array.from({ length: 10 }, (_, i) => i * 10 + 10); // 10-100
@@ -49,114 +46,104 @@ function GeoFilter({ value, onChange }) {
     }
   }
 
-  // const isValid = () => {
-  //   console.log("isValid")
-  //   if (value.geo) {
-  //     if ((value.latitude === undefined) || (value.latitude === '')) {
-  //       setError(true)
-  //       return
-  //     }
-  //     if ((value.latitude < -90 || value.latitude > 90)) {
-  //       setError(true)
-  //       return
-  //     }
-
-  //     if ((value.longitude === undefined) || (value.longitude === '')) {
-  //       setError(true)
-  //       return
-  //     }
-
-  //     if ((value.longitude < -180 || value.longitude > 180)) {
-  //       setError(true)
-  //       return
-  //     }
-  //     setError(false)
-  //   } else {
-  //     setError(false)
-  //   }
-  // }
-
   useEffect(() => {
-    // isValid()
     setError(!geoFilterIsValid(value))
-
   }, [value.latitude, value.longitude, value])
 
   return (
-    <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
-      <FormControlLabel control={
-        <Switch
-          checked={value.geo}
+    <Grid container spacing={2}>
+      <Grid item xs={12}>
+        <FormControlLabel control={
+          <Switch
+            checked={value.geo}
+            onChange={(event) => {
+              handleChange({
+                ...value,
+                geo: event.target.checked
+              })
+            }}
+          />} label="Geo Filter" />
+      </Grid>
+      <Grid
+        item xs={12} sm={4}
+      >
+        <TextField
+          type="number"
+          label="Latitude (deg)"
+          variant="outlined"
+          required
+          disabled={!value.geo}
+          value={value.latitude === undefined ? '' : value.latitude}
+          min={-90}
+          max={90}
           onChange={(event) => {
             handleChange({
               ...value,
-              geo: event.target.checked
+              latitude: event.target.value
             })
           }}
-        />} label="Geo Filter" />
-      <TextField
-        type="number"
-        label="Latitude (deg)"
-        variant="outlined"
-        required
-        disabled={!value.geo}
-        value={value.latitude === undefined ? '' : value.latitude}
-        min={-90}
-        max={90}
-        onChange={(event) => {
-          handleChange({
-            ...value,
-            latitude: event.target.value
-          })
-        }}
-        error={error}
-        helperText={error ? 'must be a value between -90 and 90' : ''}
-        sx={{ minWidth: '25ch' }}
-      />
-      <TextField
-        type="number"
-        label="Longitude (deg)"
-        variant="outlined"
-        required
-        disabled={!value.geo}
-        value={value.longitude === undefined ? '' : value.longitude}
-        min={0}
-        max={360}
-        onChange={(event) => {
-          handleChange({
-            ...value,
-            longitude: event.target.value
-          })
-        }}
-        error={error}
-        helperText={error ? 'must be a value between -180 and 180' : ''}
-        sx={{ minWidth: '25ch' }}
-      />
-      <FormControl sx={{ minWidth: '18ch' }}>
-        <InputLabel id="radius-select-label">Radius (Km)</InputLabel>
-        <Select
-          labelId="radius-select--label"
+          error={error}
+          helperText={error ? 'must be a value between -90 and 90' : ''}
+          fullWidth
+        />
+      </Grid>
+      <Grid
+        item xs={12} sm={4}
+      >
+        <TextField
+          type="number"
+          label="Longitude (deg)"
           variant="outlined"
-          id="radius-select-"
-          value={value.radius === undefined ? '' : value.radius}
-          label="Radius (Km)"
+          required
           disabled={!value.geo}
+          value={value.longitude === undefined ? '' : value.longitude}
+          min={0}
+          max={360}
           onChange={(event) => {
             handleChange({
               ...value,
-              radius: event.target.value
+              longitude: event.target.value
             })
-          }
-          }
-        >
-          {(
-            options.map(row => {
-              return (<MenuItem key={row} value={row}>{row}</MenuItem>)
-            })
-          )}
-        </Select>
-      </FormControl>
-    </Stack>
+          }}
+          error={error}
+          helperText={error ? 'must be a value between -180 and 180' : ''}
+          fullWidth
+        />
+      </Grid>
+      <Grid
+        item xs={12} sm={4}
+      >
+        <FormControl fullWidth>
+          <InputLabel id="radius-select-label">Radius (Km)</InputLabel>
+          <Select
+            labelId="radius-select--label"
+            variant="outlined"
+            id="radius-select-"
+            value={value.radius === undefined ? '' : value.radius}
+            label="Radius (Km)"
+            disabled={!value.geo}
+            onChange={(event) => {
+              handleChange({
+                ...value,
+                radius: event.target.value
+              })
+            }
+            }
+          >
+            {(
+              options.map(row => {
+                return (<MenuItem key={row} value={row}>{row}</MenuItem>)
+              })
+            )}
+          </Select>
+        </FormControl>
+      </Grid>
+      {value.geo === true && (
+        <Grid item xs={12}>
+          <Alert severity="info">The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and magnitude constraints to restrict the supplied list to be filtered to a maximum of 2000 records. You can find this information below as 'Retrieved Predictions' after applying a filter.</Alert>
+        </Grid>
+      )}
+    </Grid>
   )
 }
 

@@ -8,7 +8,12 @@ function MaginitudeSelect({ value, onChange, min, max }) {
 
   const options = Array.from({ length: max - min + 1 }, (_, i) => i + min);
   return (
-    <FormControl size="normal" sx={{ minWidth: '12ch' }}>
+    <FormControl
+      size="normal"
+      fullWidth
+    // sx={{ minWidth: '12ch' }}
+    >
+
       <InputLabel id="magnitude-max-select-label">Mag Limit</InputLabel>
       <Select
         labelId="magnitude-max-select-label"
@@ -16,6 +21,7 @@ function MaginitudeSelect({ value, onChange, min, max }) {
         value={value !== undefined ? value : ''}
         label="Mag Limit"
         onChange={onChange}
+
       >
         {(
           options.map(row => {
