@@ -9,14 +9,24 @@ import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import CustomPagination from '../CustomDataGrid/Pagination';
 import { PredictionEventsColumns, predictionEventsColumnVisibilityModel } from './Columns';
 import { listAllPredictionEvents } from '../../services/api/Occultation';
-import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import CustomToolbar from '../CustomDataGrid/Toolbar';
-import ComputerIcon from '@mui/icons-material/Computer';
+import CircularProgress from '@mui/material/CircularProgress';
 import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
 import PredictEventList from './EventsList'
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import Toolbar from '@mui/material/Toolbar';
+import PredictEventToolbar from './Toolbar';
+
+
 export function PredictionEventsDataGrid() {
 
   const columns = PredictionEventsColumns
@@ -24,18 +34,10 @@ export function PredictionEventsDataGrid() {
 
   const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
 
-  const { paginationModel, sortModel, filters } = queryOptions
-
-  const [device, setDevice] = React.useState('computer');
-
-  const handleDevices = (event, newDevice) => {
-    if (newDevice !== null) {
-      setDevice(newDevice);
-    }
-  };
+  const { paginationModel, sortModel, filters, search } = queryOptions
 
   const { data, isLoading } = useQuery({
-    queryKey: ['predictionEvents', { paginationModel, sortModel, filters }],
+    queryKey: ['predictionEvents', { paginationModel, sortModel, filters, search }],
     queryFn: listAllPredictionEvents,
     keepPreviousData: false,
     refetchInterval: false,
@@ -75,30 +77,34 @@ export function PredictionEventsDataGrid() {
     // })
     // }
   }
-
+  const device = "computer"
   return (
     <Card>
-      <CardHeader
-        // title={`Total Occultation Predictions: {isLoading ? <CircularProgress color="inherit" size={20} /> : null}`}
-        title={isLoading ? (<><span>Retrieved Predictions:</span> <CircularProgress size='1rem' /> </>) : `Retrieved Predictions: ${rowCountState}`}
-        titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}
-        action={
-          <ToggleButtonGroup
-            value={device}
-            onChange={handleDevices}
-            exclusive
-            aria-label="device"
-          >
-            <ToggleButton value="computer" aria-label="computer">
-              <ComputerIcon />
-            </ToggleButton>
-            <ToggleButton value="phone" aria-label="phone">
-              <PhoneAndroidIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
-        }
-      />
       <CardContent sx={{ minHeight: 500 }}>
+        <PredictEventToolbar />
+
+        <Stack
+          direction="row"
+          spacing={1}
+        >
+          {isLoading ? (
+            <CircularProgress size='1rem' />
+          ) : (
+            <Typography
+              variant="body2"
+              sx={{ mb: 2 }}
+              color="text.secondary">
+              {rowCountState}
+            </Typography>
+          )}
+          <Typography
+            variant="body2"
+            sx={{ mb: 2 }}
+            color="text.secondary">
+            Occultation predictions found.
+          </Typography>
+
+        </Stack>
         {device === "computer" && (
           <DataGrid
             sx={{ minHeight: '500px' }}
