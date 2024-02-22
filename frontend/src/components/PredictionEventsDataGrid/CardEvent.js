@@ -93,7 +93,11 @@ function PredictEventCard({ data }) {
       // alt="Paella dish"
       />
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <CardHeader sx={{ width: '100%', pb: 0 }}
+        <CardHeader
+          sx={{
+            width: '100%',
+            pb: 0
+          }}
           title={getDisplayName(data.name, data.number)}
           titleTypographyProps={{ variant: "body1" }}
           subheader={formatDateTime(data.date_time)}
@@ -110,7 +114,7 @@ function PredictEventCard({ data }) {
           </Typography>
           <Stack spacing={1}>
             {/* <Chip label={data.dynclass} color="info" size="small"></Chip> */}
-            <Stack direction="row" spacing={1} useFlexGap>
+            <Stack direction="row" spacing={1}>
               {starMag(data.g_star)}
               {nighttime(data.occ_path_coeff.nightside)}
             </Stack>
