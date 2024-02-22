@@ -1,58 +1,59 @@
 
 import PropTypes from 'prop-types';
-import Stack from '@mui/material/Stack';
 import FilterTypeSelect from './FilterTypeSelect';
 import AsteroidNameSelect from './AsteroidNameSelect';
 import BaseDynclassSelect from './BaseDynclassSelect';
 import DynclassSelect from './DynclassSelect';
-
+import Grid from '@mui/material/Grid'
 function AsteroidSelect({ value, onChange }) {
 
   return (
-    <Stack direction="row" spacing={1} alignItems="stretch">
-      <FilterTypeSelect
-        value={value.filterType}
-        onChange={(event) => {
-          console.log("Change Filter Type: ", event.target.value)
-          // setFilterType(event.target.value)
-          onChange({
-            filterType: event.target.value,
-            filterValue: undefined
-          })
-        }}
-      />
-      {value.filterType === 'name' && (
-        <AsteroidNameSelect
-          onChange={(value) => {
-            console.log("Change Filter Name: ", value)
-            onChange({
-              ...value,
-              filterValue: value
-            })
-          }} />)}
-      {value.filterType === 'base_dynclass' && (
-        <BaseDynclassSelect
-          value={value.filterValue}
+    <Grid container spacing={2}>
+      <Grid item xs={12} sm={5} md={4}>
+        <FilterTypeSelect
+          value={value.filterType}
           onChange={(event) => {
             onChange({
-              ...value,
-              filterValue: event.target.value
+              filterType: event.target.value,
+              filterValue: undefined
             })
           }}
         />
-      )}
-      {value.filterType === 'dynclass' && (
-        <DynclassSelect
-          value={value.filterValue}
-          onChange={(event) => {
-            onChange({
-              ...value,
-              filterValue: event.target.value
-            })
-          }}
-        />
-      )}
-    </Stack>
+      </Grid>
+      <Grid item xs={12} sm={7} md={8}>
+        {value.filterType === 'name' && (
+          <AsteroidNameSelect
+            onChange={(value) => {
+              console.log("Change Filter Name: ", value)
+              onChange({
+                ...value,
+                filterValue: value
+              })
+            }} />)}
+        {value.filterType === 'base_dynclass' && (
+          <BaseDynclassSelect
+            value={value.filterValue}
+            onChange={(event) => {
+              onChange({
+                ...value,
+                filterValue: event.target.value
+              })
+            }}
+          />
+        )}
+        {value.filterType === 'dynclass' && (
+          <DynclassSelect
+            value={value.filterValue}
+            onChange={(event) => {
+              onChange({
+                ...value,
+                filterValue: event.target.value
+              })
+            }}
+          />
+        )}
+      </Grid>
+    </Grid>
   )
 }
 

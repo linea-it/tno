@@ -22,7 +22,10 @@ function DynclassSelect({ value, onChange }) {
 
 
   return (
-    <FormControl size="normal" sx={{ minWidth: '50ch' }}>
+    <FormControl
+      size="normal"
+      fullWidth
+    >
       <InputLabel id="filter-dynclass-select-label">Dynamic class (With Subclasses)</InputLabel>
       <Select
         labelId="filter-dynclass-select-label"
