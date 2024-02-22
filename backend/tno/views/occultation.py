@@ -134,7 +134,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OccultationSerializer
 
     filterset_class = OccultationFilter
-    search_fields = ("name", "number", "principal_designation")
+    search_fields = ("name", "principal_designation", "number")
 
     ordering_fields = (
         "id",

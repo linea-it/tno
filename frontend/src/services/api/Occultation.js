@@ -84,7 +84,7 @@ export const geoFilterIsValid = (value) => {
 export const listAllPredictionEvents = ({ queryKey }) => {
   const params = queryKey[1]
 
-  const { paginationModel, filters, sortModel } = params
+  const { paginationModel, filters, sortModel, search } = params
   const { pageSize } = paginationModel
 
   // Fix Current page
@@ -144,10 +144,11 @@ export const listAllPredictionEvents = ({ queryKey }) => {
     if (filters.jobid) {
       newFilters.jobid = filters.jobid
     }
+
   }
 
   return api.get(
-    `/occultations/`, { params: { page, pageSize, ordering, ...newFilters } })
+    `/occultations/`, { params: { page, pageSize, ordering, ...newFilters, search } })
     .then((res) => res.data);
 };
 

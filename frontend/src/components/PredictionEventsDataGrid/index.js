@@ -9,8 +9,24 @@ import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import CustomPagination from '../CustomDataGrid/Pagination';
 import { PredictionEventsColumns, predictionEventsColumnVisibilityModel } from './Columns';
 import { listAllPredictionEvents } from '../../services/api/Occultation';
-import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import CustomToolbar from '../CustomDataGrid/Toolbar';
+import CircularProgress from '@mui/material/CircularProgress';
+import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Stack from '@mui/material/Stack'
+import PredictEventList from './EventsList'
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import Toolbar from '@mui/material/Toolbar';
+import PredictEventToolbar from './Toolbar';
+
+
 export function PredictionEventsDataGrid() {
 
   const columns = PredictionEventsColumns
@@ -18,12 +34,10 @@ export function PredictionEventsDataGrid() {
 
   const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
 
-  const { paginationModel, sortModel, filters } = queryOptions
-
-  // console.log("QueryOptions: ", queryOptions)
+  const { paginationModel, sortModel, filters, search } = queryOptions
 
   const { data, isLoading } = useQuery({
-    queryKey: ['predictionEvents', { paginationModel, sortModel, filters }],
+    queryKey: ['predictionEvents', { paginationModel, sortModel, filters, search }],
     queryFn: listAllPredictionEvents,
     keepPreviousData: false,
     refetchInterval: false,
@@ -47,65 +61,105 @@ export function PredictionEventsDataGrid() {
     );
   }, [data?.count, setRowCountState]);
 
+
+  function onChangePage(page) {
+    console.log("onChangePage: %o", page)
+    console.log("isLoading: %o", isLoading)
+    // if (!this.state.isLoading) {
+    // setQueryOptions(prev => {
+    //   return {
+    //     ...prev,
+    //     paginationModel: {
+    //       ...paginationModel,
+    //       page: page
+    //     }
+    //   }
+    // })
+    // }
+  }
+  const device = "computer"
   return (
     <Card>
-    <CardHeader
-      // title={`Total Occultation Predictions: {isLoading ? <CircularProgress color="inherit" size={20} /> : null}`}
-      title={isLoading ? (<><span>Retrieved Predictions:</span> <CircularProgress size='1rem' /> </>): `Retrieved Predictions: ${rowCountState}`}
-      titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}/>
-    <CardContent sx={{minHeight: 500}}>
-    <DataGrid
-      sx={{minHeight: '500px'}}
-      disableColumnFilter
-      disableRowSelectionOnClick
-      getRowHeight={() => 75}
-      // getRowHeight={() => 'auto'}
-      // getEstimatedRowHeight={() => 48}
-      pagination
-      rows={data?.results !== undefined ? data.results : []}
-      columns={columns}
-      rowCount={rowCountState}
-      loading={isLoading}
-      pageSizeOptions={[25,50,100]}
-      paginationModel={queryOptions.paginationModel}
-      paginationMode="server"
-      onPaginationModelChange={(paginationModel) => {
-        setQueryOptions(prev => {
-          return {
-            ...prev,
-            paginationModel: { ...paginationModel }
-          }
-        })
-      }}
-      sortingMode="server"
-      onSortModelChange={(sortModel) => {
-        setQueryOptions(prev => {
-          return {
-            ...prev,
-            sortModel: [...sortModel]
-          }
-        })
-      }}
-      initialState={{
-        pagination: {
-          paginationModel: {
-            pageSize: 25,
-          },
-        },
-        sorting: {
-          sortModel: queryOptions.sortModel,
-        },
-        columns: {
-          columnVisibilityModel: { ...columnVisibilityModel }
-        }
-      }}
-      slots={{
-        pagination: CustomPagination,
-        toolbar: CustomToolbar
-      }}
-    />
-    </CardContent>
-  </Card>
+      <CardContent sx={{ minHeight: 500 }}>
+        <PredictEventToolbar />
+
+        <Stack
+          direction="row"
+          spacing={1}
+        >
+          {isLoading ? (
+            <CircularProgress size='1rem' />
+          ) : (
+            <Typography
+              variant="body2"
+              sx={{ mb: 2 }}
+              color="text.secondary">
+              {rowCountState}
+            </Typography>
+          )}
+          <Typography
+            variant="body2"
+            sx={{ mb: 2 }}
+            color="text.secondary">
+            Occultation predictions found.
+          </Typography>
+
+        </Stack>
+        {device === "computer" && (
+          <DataGrid
+            sx={{ minHeight: '500px' }}
+            disableColumnFilter
+            disableRowSelectionOnClick
+            getRowHeight={() => 75}
+            pagination
+            rows={data?.results !== undefined ? data.results : []}
+            columns={columns}
+            rowCount={rowCountState}
+            loading={isLoading}
+            pageSizeOptions={[25, 50, 100]}
+            paginationModel={queryOptions.paginationModel}
+            paginationMode="server"
+            onPaginationModelChange={(paginationModel) => {
+              setQueryOptions(prev => {
+                return {
+                  ...prev,
+                  paginationModel: { ...paginationModel }
+                }
+              })
+            }}
+            sortingMode="server"
+            onSortModelChange={(sortModel) => {
+              setQueryOptions(prev => {
+                return {
+                  ...prev,
+                  sortModel: [...sortModel]
+                }
+              })
+            }}
+            initialState={{
+              pagination: {
+                paginationModel: {
+                  pageSize: 25,
+                },
+              },
+              sorting: {
+                sortModel: queryOptions.sortModel,
+              },
+              columns: {
+                columnVisibilityModel: { ...columnVisibilityModel }
+              }
+            }}
+            slots={{
+              pagination: CustomPagination,
+              toolbar: CustomToolbar
+            }}
+          />
+        )}
+        {device === "phone" && (
+          <PredictEventList rows={data?.results !== undefined ? data.results : []} count={rowCountState} loadMore={onChangePage} />
+        )}
+      </CardContent>
+    </Card>
   );
 
 }
