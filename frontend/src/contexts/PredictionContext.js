@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import dayjs from "dayjs"
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import useBreakpoint from '../hooks/useBreakpoint';
 dayjs.extend(utc);
 dayjs.extend(timezone);
 export const PredictionEventsContext = createContext({})
@@ -36,15 +37,19 @@ export function PredictionEventsProvider({ children }) {
 
     const [queryOptions, setQueryOptions] = useState(setInitialFilter())
 
+    const currentBreakpoint = useBreakpoint()
+    const isMobile = ['xs', 'sm', 'md'].indexOf(currentBreakpoint.getBreakPointName()) !== -1 ? true : false
+    // console.log("isMobile: %o", isMobile)
+
     // list ou grid
-    const [viewLayoyt, setViewLayoyt] = useState("list")
+    const [viewLayoyt, setViewLayoyt] = useState(isMobile ? "grid" : "list")
 
     function clearFilter() {
         setQueryOptions(setInitialFilter())
     }
 
     return <PredictionEventsContext.Provider value={{
-        queryOptions, setQueryOptions, clearFilter, viewLayoyt, setViewLayoyt
+        queryOptions, setQueryOptions, clearFilter, viewLayoyt, setViewLayoyt, isMobile
     }}>{children}</PredictionEventsContext.Provider>
 }
 
