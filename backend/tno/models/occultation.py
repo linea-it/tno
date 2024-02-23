@@ -326,13 +326,12 @@ class Occultation(models.Model):
         help_text="Expected star's magnitude drop",
     )
 
-    apparent_magnitude = models.CharField(
-        max_length=35,
-        default=None,
-        null=True,
-        blank=True,
+    apparent_magnitude = models.FloatField(
         verbose_name="Apparent magnitude",
         help_text="Asteroids' apparent magnitude at the date (mag)",
+        null=True,
+        blank=True,
+        default=None,
     )
 
     aparent_diameter = models.FloatField(
