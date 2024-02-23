@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime as dt
 from datetime import timezone
 from pathlib import Path
@@ -98,6 +99,13 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         df.loc[df["h_star"] == 50, "h_star"] = None
         df.loc[df["k_star"] == 50, "k_star"] = None
 
+        # Le o source_id, ra, dec e g magnitude do catalogo gaia csv
+        df_gaia_csv = pd.read_csv(
+            os.path.join(obj_data["path"], "gaia_catalog.csv"),
+            usecols=(0, 1, 3, 13),
+            delimiter=";",
+        )
+
         # -------------------------------------------------
         # Coeff paths e calculo de outros grandezas
         # -------------------------------------------------
@@ -107,6 +115,8 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         for row in df.to_dict(orient="records"):
 
             new_row = {
+                "gaia_source_id": None,
+                "gaia_g_mag": None,
                 "apparent_magnitude": None,
                 "magnitude_drop": None,
                 "aparent_diameter": None,
@@ -118,6 +128,19 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "occ_path_is_nightside": None,
                 "occ_path_coeff": {},
             }
+
+            # Obtem a magnitude da estrela do catalogo gaia (a magnitude retornada
+            # pelo praia esta corrigida por padrão por velocidade da sombra, por isso é substituída)
+            minimum_distance = np.sqrt(
+                (df_gaia_csv["ra"] - row["ra_star_deg"]) ** 2
+                + (df_gaia_csv["dec"] - row["dec_star_deg"]) ** 2
+            )
+            star_index = np.argmin(minimum_distance)
+            source_id, gaia_g_mag = (
+                df_gaia_csv["source_id"][star_index],
+                df_gaia_csv["phot_g_mean_mag"][star_index],
+            )
+            new_row.update({"gaia_source_id": source_id, "gaia_g_mag": gaia_g_mag})
 
             # ------------------------------------------------------------------------
             # Calcula a magnitude visual do asteroide no instante da ocultação
@@ -220,6 +243,8 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         if len(coeff_paths) > 0:
             df_coeff = pd.DataFrame.from_dict(coeff_paths)
 
+            df["gaia_source_id"] = df_coeff["gaia_source_id"]
+            df["g_star"] = df_coeff["gaia_g_mag"]
             df["apparent_magnitude"] = df_coeff["apparent_magnitude"]
             df["magnitude_drop"] = df_coeff["magnitude_drop"]
             df["aparent_diameter"] = df_coeff["aparent_diameter"]
@@ -234,6 +259,8 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
 
             del df_coeff
         else:
+            df["gaia_source_id"] = None
+            df["g_star"] = None
             df["apparent_magnitude"] = None
             df["magnitude_drop"] = None
             df["aparent_diameter"] = None
