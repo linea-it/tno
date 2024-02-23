@@ -1,50 +1,26 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, { useContext } from 'react';
 import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
-import Input from '@mui/material/Input';
-import FilledInput from '@mui/material/FilledInput';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormHelperText from '@mui/material/FormHelperText';
-import FormControl from '@mui/material/FormControl';
-import TextField from '@mui/material/TextField';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import Toolbar from '@mui/material/Toolbar';
-import ComputerIcon from '@mui/icons-material/Computer';
-import PhoneAndroidIcon from '@mui/icons-material/PhoneAndroid';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import SearchIcon from '@mui/icons-material/Search';
-import { styled } from '@mui/material/styles';
 import SearchAsteroid from '../SearchAsteroid'
-// import { purple } from '@mui/material/colors';
-
-const ColorButton = styled(Button)(({ theme }) => ({
-  // color: theme.palette.getContrastText(purple[500]),
-  // backgroundColor: purple[500],
-  // '&:hover': {
-  //   backgroundColor: purple[700],
-  // },
-}));
-
+import ViewListIcon from '@mui/icons-material/ViewList';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import { PredictionEventsContext } from '../../contexts/PredictionContext';
+import useBreakpoint from '../../hooks/useBreakpoint';
 
 
 function PredictEventToolbar({ }) {
 
-  // const handleDevices = (event, newDevice) => {
-  //   if (newDevice !== null) {
-  //     setDevice(newDevice);
-  //   }
-  // };
+  const { viewLayoyt, setViewLayoyt } = useContext(PredictionEventsContext)
+  const currentBreakpoint = useBreakpoint()
+  const isMobile = ['xs', 'sm'].indexOf(currentBreakpoint.getBreakPointName()) !== -1 ? true : false
 
-  // const [device, setDevice] = React.useState('computer');
+  const handleChangeLayout = (e, value) => {
+    if (value !== null) {
+      setViewLayoyt(value)
+    }
+  }
 
   return (
     <Box sx={{ mb: 2 }}>
@@ -55,27 +31,28 @@ function PredictEventToolbar({ }) {
         spacing={2}
       >
         <SearchAsteroid />
-        {/* <Box sx={{ flex: 1 }} />
-        <ColorButton endIcon={<FilterListIcon />}>
+        <Box sx={{ flex: 1 }} />
+        {/* <ColorButton endIcon={<FilterListIcon />}>
           Filter
         </ColorButton>
         <ColorButton endIcon={<ExpandMoreIcon />}>
           Sort By: C/A Instant
-        </ColorButton>
-        <ToggleButtonGroup
-          // value={device}
-          value={"computer"}
-          // onChange={handleDevices}
-          exclusive
-          aria-label="device"
-        >
-          <ToggleButton value="computer" aria-label="computer">
-            <ComputerIcon />
-          </ToggleButton>
-          <ToggleButton value="phone" aria-label="phone">
-            <PhoneAndroidIcon />
-          </ToggleButton>
-        </ToggleButtonGroup> */}
+        </ColorButton> */}
+        {!isMobile && (
+          <ToggleButtonGroup
+            value={viewLayoyt}
+            onChange={handleChangeLayout}
+            exclusive
+            aria-label="view-layout"
+          >
+            <ToggleButton value="list" aria-label="list-layout">
+              <ViewListIcon />
+            </ToggleButton>
+            <ToggleButton value="grid" aria-label="grid-layout">
+              <ViewModuleIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+        )}
       </Stack>
     </Box >
   );

@@ -13,7 +13,11 @@ const PublicPortalPage = ({ children, toggleTheme, darkMode }) => {
   return (
     <>
       <PublicHeader toggleTheme={toggleTheme} darkMode={darkMode} />
-      <Box sx={{ maxWidth: 1200, margin: '0 auto' }}>
+      <Box sx={{
+        maxWidth: 1200,
+        margin: '0 auto',
+        overflow: 'auto'
+      }}>
         {children}
       </Box>
       <FooterSupporters />
