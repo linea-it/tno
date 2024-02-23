@@ -151,7 +151,7 @@ def upcoming_events_to_create_maps(
                 "position_angle": obj.position_angle,
                 "velocity": obj.velocity,
                 "delta": obj.delta,
-                "g": obj.g,
+                "g": obj.g_star,
                 "long": obj.long,
                 "filepath": str(obj.get_map_filepath()),
             }

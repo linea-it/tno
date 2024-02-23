@@ -13,6 +13,7 @@ from rest_framework.authentication import (
     TokenAuthentication,
 )
 from rest_framework.decorators import action
+from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from tno.db import CatalogDB
@@ -134,7 +135,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = OccultationSerializer
 
     filterset_class = OccultationFilter
-    search_fields = ("name", "number", "principal_designation")
+    search_fields = ("name", "principal_designation", "number")
 
     ordering_fields = (
         "id",

@@ -7,7 +7,10 @@ import MenuItem from '@mui/material/MenuItem';
 function FilterTypeSelect({ value, onChange }) {
 
   return (
-    <FormControl size="normal" sx={{ width: '30ch' }}>
+    <FormControl
+      size="normal"
+      fullWidth
+    >
       <InputLabel id="fiter-type-select-label">Filter Type</InputLabel>
       <Select
         labelId="fiter-type-select-label"

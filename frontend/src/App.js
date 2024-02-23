@@ -38,7 +38,7 @@ function App() {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
-  );  
+  );
 }
 
 export default App

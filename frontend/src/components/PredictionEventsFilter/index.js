@@ -1,141 +1,96 @@
 import { useContext } from 'react';
 
 import Box from '@mui/material/Box';
-// import { PredictionEventsContext } from '../../../contexts/PredictionContext';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import Grid from '@mui/material/Grid';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import MaginitudeSelect from '../MaginitudeSelect/index';
 import AsteroidSelect from '../AsteroidSelect/AsteroidSelect';
 import GeoFilter from '../GeoFilter/index';
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
+import SolarTimeFilter from '../SolarTimeFilter';
+import Divider from '@mui/material/Divider';
 import Button from '@mui/material/Button';
-import SolarTimeFilter from '../SolarTimeFilter'
+
 function PredictionEventsFilter() {
 
   const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
 
   return (
-    <Box>
-      <Box
-        component="form"
-        noValidate
-        autoComplete="off"
-      >
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
-            <DateTimePicker
-              sx={{ minWidth: '25ch' }}
-              label="Date Start"
-              name="date_time_after"
-              value={queryOptions.filters.dt_after_local}
-              onChange={(value) => {
-                setQueryOptions(prev => {
-                  return {
-                    ...prev,
-                    filters: {
-                      ...prev.filters,
-                      dt_after_local: value,
-                      date_time_after: value.utc().format()
-                    }
-                  }
-                })
-              }}
-            />
-            <DateTimePicker
-              sx={{ minWidth: '25ch' }}
-              label="Date End"
-              name="date_time_before"
-              value={queryOptions.filters.dt_before_local}
-              onChange={(value) => {
-                setQueryOptions(prev => {
-                  return {
-                    ...prev,
-                    filters: {
-                      ...prev.filters,
-                      dt_before_local: value,
-                      date_time_before: value !== null ? value.utc().format() : value
-                    }
-                  }
-                })
-              }}
-            />
-
-            <MaginitudeSelect
-              value={queryOptions.filters.maginitudeMax}
-              onChange={(event) => {
-                setQueryOptions(prev => {
-                  return {
-                    ...prev,
-                    filters: {
-                      ...prev.filters,
-                      maginitudeMax: event.target.value
-                    }
-                  }
-                })
-              }} />
-          </Stack>
-        </LocalizationProvider>
-        <Stack direction="row" spacing={1} alignItems="stretch" mb={2}>
-          <SolarTimeFilter
-            value={[queryOptions.filters.solar_time_after, queryOptions.filters.solar_time_before,]}
-            onChange={(value) => {
-              setQueryOptions(prev => {
-                return {
-                  ...prev,
-                  filters: {
-                    ...prev.filters,
-                    solar_time_after: value[0],
-                    solar_time_before: value[1],
-                  }
-                }
-              })
-            }} >
-
-          </SolarTimeFilter>
-          <FormControlLabel control={
-            <Switch
-              checked={queryOptions.filters.nightside}
-              onChange={(event) => {
-                setQueryOptions(prev => {
-                  return {
-                    ...prev,
-                    filters: {
-                      ...prev.filters,
-                      nightside: event.target.checked
-                    }
-                  }
-                })
-              }}
-            />} label="Nighttime Only" />
-        </Stack>
-        <AsteroidSelect value={{
-          filterType: queryOptions.filters.filterType,
-          filterValue: queryOptions.filters.filterValue
-        }} onChange={(value) => {
-          setQueryOptions(prev => {
-            return {
-              ...prev,
-              filters: {
-                ...prev.filters,
-                ...value
-              }
-            }
-          })
-        }} />
-        <Box mt={2}>
-          <GeoFilter
-            value={{
-              geo: queryOptions.filters.geo,
-              latitude: queryOptions.filters.latitude,
-              longitude: queryOptions.filters.longitude,
-              radius: queryOptions.filters.radius,
-            }}
-            onChange={(value) => {
+    <Box
+      component="form"
+      noValidate
+      autoComplete="off"
+    >
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={5} md={4}>
+                <DateTimePicker
+                  slotProps={{ textField: { fullWidth: true } }}
+                  label="Date Start"
+                  name="date_time_after"
+                  value={queryOptions.filters.dt_after_local}
+                  onChange={(value) => {
+                    setQueryOptions(prev => {
+                      return {
+                        ...prev,
+                        filters: {
+                          ...prev.filters,
+                          dt_after_local: value,
+                          date_time_after: value.utc().format()
+                        }
+                      }
+                    })
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={5} md={4}>
+                <DateTimePicker
+                  slotProps={{ textField: { fullWidth: true } }}
+                  label="Date End"
+                  name="date_time_before"
+                  value={queryOptions.filters.dt_before_local}
+                  onChange={(value) => {
+                    setQueryOptions(prev => {
+                      return {
+                        ...prev,
+                        filters: {
+                          ...prev.filters,
+                          dt_before_local: value,
+                          date_time_before: value !== null ? value.utc().format() : value
+                        }
+                      }
+                    })
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12} sm={2} md={4}>
+                <MaginitudeSelect
+                  value={queryOptions.filters.maginitudeMax}
+                  onChange={(event) => {
+                    setQueryOptions(prev => {
+                      return {
+                        ...prev,
+                        filters: {
+                          ...prev.filters,
+                          maginitudeMax: event.target.value
+                        }
+                      }
+                    })
+                  }} />
+              </Grid>
+            </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <AsteroidSelect value={{
+              filterType: queryOptions.filters.filterType,
+              filterValue: queryOptions.filters.filterValue
+            }} onChange={(value) => {
               setQueryOptions(prev => {
                 return {
                   ...prev,
@@ -145,18 +100,72 @@ function PredictionEventsFilter() {
                   }
                 }
               })
-            }}
-          /></Box>
-      </Box>
-      <Typography m={1} variant="body2" color="#1565c0">The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and magnitude constraints to restrict the supplied list to be filtered to a maximum of 2000 records. You can find this information below as 'Retrieved Predictions' after applying a filter.</Typography>
-      <Stack
-        direction="row"
-        justifyContent="flex-end"
-        alignItems="center"
-        spacing={2}
-      >
-        <Button variant="outlined" onClick={clearFilter}>Clear</Button>
-      </Stack>
+            }} />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <SolarTimeFilter
+              value={[queryOptions.filters.solar_time_after, queryOptions.filters.solar_time_before,]}
+              onChange={(value) => {
+                setQueryOptions(prev => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      solar_time_after: value[0],
+                      solar_time_before: value[1],
+                    }
+                  }
+                })
+              }} >
+
+            </SolarTimeFilter>
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <FormControlLabel
+              label="Nighttime Only"
+              control={
+                <Switch
+                  checked={queryOptions.filters.nightside}
+                  onChange={(event) => {
+                    setQueryOptions(prev => {
+                      return {
+                        ...prev,
+                        filters: {
+                          ...prev.filters,
+                          nightside: event.target.checked
+                        }
+                      }
+                    })
+                  }}
+                />} />
+          </Grid>
+          <Grid item xs={12}><Divider /></Grid>
+          <Grid item xs={12}>
+            <GeoFilter
+              value={{
+                geo: queryOptions.filters.geo,
+                latitude: queryOptions.filters.latitude,
+                longitude: queryOptions.filters.longitude,
+                radius: queryOptions.filters.radius,
+              }}
+              onChange={(value) => {
+                setQueryOptions(prev => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      ...value
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Button variant="outlined" onClick={clearFilter}>Clear</Button>
+          </Grid>
+        </Grid>
+      </LocalizationProvider>
     </Box >
   )
 }

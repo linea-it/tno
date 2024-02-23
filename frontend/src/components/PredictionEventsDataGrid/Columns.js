@@ -413,7 +413,7 @@ export const PredictionEventsColumns = [
 ];
 
 export const predictionEventsColumnVisibilityModel = {
-  id: true,
+  id: false,
   map_url: true,
   name: true,
   number: false,

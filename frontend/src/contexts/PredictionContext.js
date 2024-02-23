@@ -18,7 +18,7 @@ export function PredictionEventsProvider({ children }) {
                 date_time_after: dayjs().utc().format(),
                 dt_before_local: null,
                 date_time_before: null,
-                filterType: 'base_dynclass',
+                filterType: 'name',
                 filterValue: undefined,
                 maginitudeMax: 16,
                 solar_time_after: dayjs().set('hour', 18).startOf('hour'),
@@ -29,18 +29,22 @@ export function PredictionEventsProvider({ children }) {
                 longitude: undefined,
                 radius: 100,
                 jobid: undefined
-            }
+            },
+            search: undefined
         }
     };
 
     const [queryOptions, setQueryOptions] = useState(setInitialFilter())
+
+    // list ou grid
+    const [viewLayoyt, setViewLayoyt] = useState("list")
 
     function clearFilter() {
         setQueryOptions(setInitialFilter())
     }
 
     return <PredictionEventsContext.Provider value={{
-        queryOptions, setQueryOptions, clearFilter
+        queryOptions, setQueryOptions, clearFilter, viewLayoyt, setViewLayoyt
     }}>{children}</PredictionEventsContext.Provider>
 }
 
