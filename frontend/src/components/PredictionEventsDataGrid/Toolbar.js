@@ -12,10 +12,10 @@ import useBreakpoint from '../../hooks/useBreakpoint';
 
 function PredictEventToolbar({ }) {
 
-  const { viewLayoyt, setViewLayoyt } = useContext(PredictionEventsContext)
-  const currentBreakpoint = useBreakpoint()
-  const isMobile = ['xs', 'sm'].indexOf(currentBreakpoint.getBreakPointName()) !== -1 ? true : false
-
+  const { viewLayoyt, setViewLayoyt, isMobile } = useContext(PredictionEventsContext)
+  // const currentBreakpoint = useBreakpoint()
+  // const isMobile = ['xs', 'sm', 'md', 'lg'].indexOf(currentBreakpoint.getBreakPointName()) !== -1 ? true : false
+  // console.log("isMobile: %o", isMobile)
   const handleChangeLayout = (e, value) => {
     if (value !== null) {
       setViewLayoyt(value)
