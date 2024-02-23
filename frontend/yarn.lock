@@ -2263,6 +2263,11 @@
   resolved "https://registry.npmjs.org/@remix-run/router/-/router-1.0.3.tgz"
   integrity sha512-ceuyTSs7PZ/tQqi19YZNBc5X7kj1f8p+4DIyrcIYFY9h+hd1OKm4RqtiWldR9eGEvIiJfsqwM4BsuCtRIuEw6Q==
 
+"@researchgate/react-intersection-observer@^1.3.5":
+  version "1.3.5"
+  resolved "https://registry.yarnpkg.com/@researchgate/react-intersection-observer/-/react-intersection-observer-1.3.5.tgz#0321d2dd609aaacdb9bace8004d99c72824fb142"
+  integrity sha512-aYlsex5Dd6BAHMJvJrUoFp8gzgMSL27xFvrxkVYW0bV1RMAapVsO+QeYLtTaSF/QCflktODodvv+wJm49oMnnQ==
+
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
   resolved "https://registry.npmjs.org/@rollup/plugin-babel/-/plugin-babel-5.3.1.tgz"
@@ -11566,13 +11571,6 @@ react-images@1.2.0-beta.7:
     react-full-screen "^1.0.1"
     react-transition-group "^4.4.1"
     react-view-pager "^0.6.0"
-
-react-infinite-scroller@^1.2.6:
-  version "1.2.6"
-  resolved "https://registry.yarnpkg.com/react-infinite-scroller/-/react-infinite-scroller-1.2.6.tgz#8b80233226dc753a597a0eb52621247f49b15f18"
-  integrity sha512-mGdMyOD00YArJ1S1F3TVU9y4fGSfVVl6p5gh/Vt4u99CJOptfVu/q5V/Wlle72TMgYlBwIhbxK5wF0C/R33PXQ==
-  dependencies:
-    prop-types "^15.5.8"
 
 react-is@^16.13.1, react-is@^16.7.0:
   version "16.13.1"

@@ -36,12 +36,15 @@ export function PredictionEventsProvider({ children }) {
 
     const [queryOptions, setQueryOptions] = useState(setInitialFilter())
 
+    // list ou grid
+    const [viewLayoyt, setViewLayoyt] = useState("list")
+
     function clearFilter() {
         setQueryOptions(setInitialFilter())
     }
 
     return <PredictionEventsContext.Provider value={{
-        queryOptions, setQueryOptions, clearFilter
+        queryOptions, setQueryOptions, clearFilter, viewLayoyt, setViewLayoyt
     }}>{children}</PredictionEventsContext.Provider>
 }
 

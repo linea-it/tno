@@ -81,9 +81,7 @@ export const geoFilterIsValid = (value) => {
   return true
 }
 
-export const listAllPredictionEvents = ({ queryKey }) => {
-  const params = queryKey[1]
-
+const parsePredictEventsFilters = (params) => {
   const { paginationModel, filters, sortModel, search } = params
   const { pageSize } = paginationModel
 
@@ -146,10 +144,23 @@ export const listAllPredictionEvents = ({ queryKey }) => {
     }
 
   }
+  return { params: { page, pageSize, ordering, ...newFilters, search } }
+}
 
-  return api.get(
-    `/occultations/`, { params: { page, pageSize, ordering, ...newFilters, search } })
-    .then((res) => res.data);
+export const allPredictionEventsByCursor = (queryOptions, pageParam) => {
+  let pageSize = 30
+  let params = parsePredictEventsFilters(queryOptions)
+  if (pageParam === 0) {
+    pageParam = 1;
+  }
+  params.params.page = pageParam
+  params.params.pageSize = pageSize
+  return api.get(`/occultations/`, params).then((res) => res.data);
+}
+
+export const listAllPredictionEvents = ({ queryKey }) => {
+  const params = parsePredictEventsFilters(queryKey[1])
+  return api.get(`/occultations/`, params).then((res) => res.data);
 };
 
 export const listAllAsteroidsWithEvents = ({ queryKey }) => {

@@ -14,8 +14,8 @@ function SolarTimeFilter({ value, onChange }) {
           <TimeField
             label="Local Solar Time After"
             slotProps={{ textField: { fullWidth: true } }}
-            shouldDisableTime={(value, view) =>
-              view === 'hours' && value.hour() > 0 && value.hour() < 12}
+            // shouldDisableTime={(value, view) =>
+            //   view === 'hours' && value.hour() > 0 && value.hour() < 12}
             value={value[0]}
             onChange={(newValue) => onChange([newValue, value[1]])}
           />
@@ -24,8 +24,8 @@ function SolarTimeFilter({ value, onChange }) {
           <TimeField
             label="Local Solar Time Before"
             slotProps={{ textField: { fullWidth: true } }}
-            shouldDisableTime={(value, view) =>
-              view === 'hours' && value.hour() > 12 && value.hour() < 24}
+            // shouldDisableTime={(value, view) =>
+            //   view === 'hours' && value.hour() > 12 && value.hour() < 24}
             value={value[1]}
             onChange={(newValue) => onChange([value[0], newValue])}
           />
