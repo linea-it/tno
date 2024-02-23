@@ -215,8 +215,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Apparent Magnitude',
-        // value: `${occultation.apparent_magnitude ? occultation.apparent_magnitude.toFixed(3) : null}`,
-        value: `${parseFloat(occultation.apparent_magnitude) ? parseFloat(occultation.apparent_magnitude).toFixed(3) : null}`,
+        value: `${occultation.apparent_magnitude ? occultation.apparent_magnitude.toFixed(3) : null}`,      
       },
       {
         title: 'Diameter',
