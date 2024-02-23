@@ -243,49 +243,49 @@ export const PredictionEventsColumns = [
     align: 'center',
     ...floatFixedPrecision2
   },
-  {
-    field: 'proper_motion',
-    headerName: 'Proper Motion Status',
-    description: 'Status of proper motion correction (Ok/No)',
-    headerAlign: 'center',
-    align: 'center',
-  },
+  // {
+  //   field: 'proper_motion',
+  //   headerName: 'Proper Motion Status',
+  //   description: 'Status of proper motion correction (Ok/No)',
+  //   headerAlign: 'center',
+  //   align: 'center',
+  // },
   {
     field: 'g_star',
-    headerName: 'G*',
+    headerName: 'G Gaia',
     description: "Star's G magnitude (mag)",
     type: 'number',
     headerAlign: 'center',
     align: 'center',
     ...floatFixedPrecision2
   },
-  {
-    field: 'j_star',
-    headerName: 'J*',
-    description: "Star's J magnitude (mag)",
-    type: 'number',
-    headerAlign: 'center',
-    align: 'center',
-    ...floatFixedPrecision2
-  },
-  {
-    field: 'h_star',
-    headerName: 'H*',
-    description: "Star's H magnitude (mag)",
-    type: 'number',
-    headerAlign: 'center',
-    align: 'center',
-    ...floatFixedPrecision2
-  },
-  {
-    field: 'k_star',
-    headerName: 'K*',
-    description: "Star's K magnitude (mag)",
-    type: 'number',
-    headerAlign: 'center',
-    align: 'center',
-    ...floatFixedPrecision2
-  },
+  // {
+  //   field: 'j_star',
+  //   headerName: 'J 2MASS',
+  //   description: "Star's J magnitude (mag)",
+  //   type: 'number',
+  //   headerAlign: 'center',
+  //   align: 'center',
+  //   ...floatFixedPrecision2
+  // },
+  // {
+  //   field: 'h_star',
+  //   headerName: 'H 2MASS',
+  //   description: "Star's H magnitude (mag)",
+  //   type: 'number',
+  //   headerAlign: 'center',
+  //   align: 'center',
+  //   ...floatFixedPrecision2
+  // },
+  // {
+  //   field: 'k_star',
+  //   headerName: 'K 2MASS',
+  //   description: "Star's K magnitude (mag)",
+  //   type: 'number',
+  //   headerAlign: 'center',
+  //   align: 'center',
+  //   ...floatFixedPrecision2
+  // },
   {
     field: 'ra_target',
     headerName: 'Object RA',
@@ -420,9 +420,9 @@ export const predictionEventsColumnVisibilityModel = {
   dynclass: true,
   date_time: true,
   closest_approach: true,
-  position_angle: true,
+  position_angle: false,
   velocity: true,
-  delta: true,
+  delta: false,
   long: false,
   loc_t: true,
   off_ra: false,
@@ -436,8 +436,8 @@ export const predictionEventsColumnVisibilityModel = {
   dec_target: false,
   ra_target_deg: false,
   dec_target_deg: false,
-  ra_star_candidate: true,
-  dec_star_candidate: true,
+  ra_star_candidate: false,
+  dec_star_candidate: false,
   ra_star_deg: false,
   dec_star_deg: false,
   e_ra: false,

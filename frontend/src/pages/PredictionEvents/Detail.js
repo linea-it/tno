@@ -7,6 +7,8 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box';
 import List from '../../components/List';
+import Typography from '@mui/material/Typography'
+import Link from '@mui/material/Link'
 
 import {
   getOccultationById,
@@ -37,6 +39,11 @@ function PredictionEventDetail() {
       });
     });
   }, [id]);
+
+  useEffect(() => {
+    const titleText = `Occultation by ${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
+    document.title = titleText;
+  }, [occultation])
 
   // const createJsonOcc = (occ) =>{
   //   return {'name': occ.name,
@@ -99,19 +106,19 @@ function PredictionEventDetail() {
         value: `${occultation.delta} (AU)`,
       },
       {
-        title: 'G* mag*',
-        tooltip: 'Gaia magnitude corrected from velocity',
+        title: 'G mag',
+        tooltip: 'Gaia magnitude',
+        value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`,
+      },
+      {
+        title: 'RP mag',
+        tooltip: 'Gaia RP magnitude',
         value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`,
       },
       {
-        title: 'RP* mag*',
-        tooltip: 'Gaia RP magnitude corrected from velocity',
-        value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`,
-      },
-      {
-        title: 'H* mag*',
-        tooltip: '2MASS H magnitude corrected from velocity',
-        value: `${occultation.h_mag_vel_corrected ? occultation.h_mag_vel_corrected.toFixed(3) : null}`,
+        title: 'H mag',
+        tooltip: '2MASS H magnitude',
+        value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`,
       },
       {
         title: 'Magnitude Drop',
@@ -129,11 +136,11 @@ function PredictionEventDetail() {
     ]);
 
     setStar([
-      {
-        title: 'Star source ID',
-        tooltip: 'Unique source identifier',
-        value: `${starObj.source_id}`
-      },
+      // {
+      //   title: 'Star source ID',
+      //   tooltip: 'Unique source identifier',
+      //   value: `${starObj.source_id}`
+      // },
       {
         title: 'Stellar catalogue',
         value: 'Gaia DR2',
@@ -176,15 +183,15 @@ function PredictionEventDetail() {
       },
       {
         title: 'J magnitude (source: 2MASS)',
-        value: `${occultation.j ? occultation.j.toFixed(3) : null}`,
+        value: `${occultation.j_star ? occultation.j_star.toFixed(3) : null}`,
       },
       {
         title: 'H magnitude (source: 2MASS)',
-        value: `${occultation.h ? occultation.h.toFixed(3) : null}`,
+        value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`,
       },
       {
         title: 'K magnitude (source: 2MASS)',
-        value: `${occultation.k ? occultation.k.toFixed(3) : null}`,
+        value: `${occultation.k_star ? occultation.k_star.toFixed(3) : null}`,
       },
     ]);
 
@@ -216,7 +223,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Apparent Magnitude',
-        value: `${occultation.apparent_magnitude}`,
+        value: `${occultation.h ? occultation.h.toFixed(3) : null}`,
       },
       {
         title: 'Ephemeris',
@@ -224,34 +231,40 @@ function PredictionEventDetail() {
       },
       {
         title: 'Dynamic class',
-        value: `${occultation.dynamic_class}`,
+        value: `${occultation.dynclass}`,
       },
       {
         title: 'Semimajor Axis',
-        value: `${occultation.semimajor_axis} (AU)`,
+        value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`,
       },
       {
         title: 'Eccentricity',
-        value: `${occultation.eccentricity}`,
+        value: `${occultation.eccentricity ? occultation.eccentricity.toFixed(4) : null} (AU)`,
       },
       {
         title: 'Inclination',
-        value: `${occultation.inclination} (deg)`,
+        value: `${occultation.inclination ? occultation.inclination.toFixed(4) : null} (deg)`,
       },
       {
         title: 'Perihelion',
-        value: `${occultation.perihelion} (AU)`,
+        value: `${occultation.perihelion ? occultation.perihelion.toFixed(4) : null} (AU)`,
       },
       {
         title: 'Aphelion',
-        value: `${occultation.aphelion} (AU)`,
+        value: `${occultation.aphelion ? occultation.aphelion.toFixed(4) : null} (AU)`,
       },
     ]);
   }, [occultation, starObj]);
 
   return (
     <>
-      <Grid container spacing={2} sx={{ marginTop: '10px'}}>
+      <Typography variant="h4" align="center" sx={{ marginTop: 3 }}>
+        Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
+      </Typography>
+      <Typography variant="h5" align="center" color="text.secondary">
+        {moment(occultation.date_time).format('ll')}
+      </Typography>
+      <Grid container spacing={2} sx={{ marginTop: '10px' }}>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title="Occultation Prediction Circumstances" />
@@ -280,6 +293,15 @@ function PredictionEventDetail() {
             <CardHeader title="Object" />
             <CardContent>
               <List data={object} />
+              <Box sx={{ marginLeft: 2 }}>
+                {occultation.name &&
+                  <>
+                  <Typography sx={{ marginBottom: '5px' }}>More information:</Typography>
+                  <Link href={`https://ssp.imcce.fr/forms/ssocard/${encodeURI(occultation.name.replace(/\s/g, '_'))}`} target="_blank" rel="noopener noreferrer" sx={{ textDecoration: 'none'}}>SsODNet service at IMCCE</Link><br />
+                  <Link href={`https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=${encodeURI(occultation.name)}`} target="_blank" rel="noopener noreferrer" sx={{ textDecoration: 'none' }}>Small-Body Database Lookup NASA/JPL</Link>
+                  </>
+                }
+              </Box>
             </CardContent>
           </Card>
         </Grid>
