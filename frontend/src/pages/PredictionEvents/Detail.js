@@ -201,14 +201,6 @@ function PredictionEventDetail() {
         value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`,
       },
       {
-        title: 'Diameter',
-        value: `${occultation.diameter} (Km)`
-      },
-      {
-        title: 'Aparent Diameter',
-        value: `${occultation.aparent_diameter} (mas)`,
-      },
-      {
         title: "Object's Astrometric Position (ICRF)",
         value: `${occultation.ra_target} ${occultation.dec_target}`,
       },
@@ -218,12 +210,25 @@ function PredictionEventDetail() {
         value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`,
       },
       {
-        title: 'Uncertainty in position',
-        value: `RA: ${occultation.e_ra_target}, Dec: ${occultation.e_dec_target} (mas)`,
+        title: 'Absolute Magnitude',
+        value: `${occultation.h ? occultation.h.toFixed(3) : null}`,
       },
       {
         title: 'Apparent Magnitude',
-        value: `${occultation.h ? occultation.h.toFixed(3) : null}`,
+        // value: `${occultation.apparent_magnitude ? occultation.apparent_magnitude.toFixed(3) : null}`,
+        value: `${parseFloat(occultation.apparent_magnitude) ? parseFloat(occultation.apparent_magnitude).toFixed(3) : null}`,
+      },
+      {
+        title: 'Diameter',
+        value: `${occultation.diameter} (Km)`
+      },
+      {
+        title: 'Aparent Diameter',
+        value: `${occultation.aparent_diameter} (mas)`,
+      },
+      {
+        title: 'Uncertainty in position',
+        value: `RA: ${occultation.e_ra_target}, Dec: ${occultation.e_dec_target} (mas)`,
       },
       {
         title: 'Ephemeris',
