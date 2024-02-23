@@ -13,7 +13,6 @@ from rest_framework.authentication import (
     TokenAuthentication,
 )
 from rest_framework.decorators import action
-from rest_framework.pagination import CursorPagination
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from tno.db import CatalogDB
@@ -100,12 +99,16 @@ class OccultationFilter(django_filters.FilterSet):
     )
 
     def solar_time(self, queryset, name, value):
-        # Periodo de Meio dia até o meio meia noite e de meia noite até meio dia
-        # Na pratica o start é de meio dia até meio dia do proximo dia.
-        after = Q(loc_t__gte=value.start, loc_t__lte=time(23, 59, 59))
-        before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=value.stop)
-
-        return queryset.filter(Q(after | before))
+        # Se value.start for maior que value.stop
+        if value.start > value.stop:
+            # Periodo de Meio dia até o meio meia noite e de meia noite até meio dia
+            # Na pratica o start é de meio dia até meio dia do proximo dia.
+            after = Q(loc_t__gte=value.start, loc_t__lte=time(23, 59, 59))
+            before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=value.stop)
+            return queryset.filter(Q(after | before))
+        else:
+            # Se value.start for menor ou igual a value.stop
+            return queryset.filter(Q(loc_t__gte=value.start, loc_t__lte=value.stop))
 
     class Meta:
         model = Occultation
