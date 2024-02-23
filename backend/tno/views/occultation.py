@@ -395,7 +395,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 position_angle=obj.position_angle,
                 velocity=obj.velocity,
                 delta=obj.delta,
-                g=obj.g,
+                g=obj.g_star,
                 long=obj.long,
                 filepath=str(filepath),
                 dpi=50,
