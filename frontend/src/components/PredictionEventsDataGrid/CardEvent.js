@@ -44,7 +44,7 @@ function PredictEventCard({ data }) {
   }
 
   const handleShare = () => {
-    const url = getDetailUrl();
+    // const url = getDetailUrl();
     // TODO: Copiar a url para area de transferencia e avisar.
   }
   const getDetailUrl = () => {
