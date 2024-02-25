@@ -5,7 +5,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Checkbox from '@mui/material/Checkbox'
 import { ColumnChooser } from '@devexpress/dx-react-grid-material-ui'
 import Divider from '@mui/material/Divider'
-import { withStyles } from '@mui/styles';
+import { withStyles } from '@mui/styles'
 
 const styles = {
   chooserPaperWrapper: {

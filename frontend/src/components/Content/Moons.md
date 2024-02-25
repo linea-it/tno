@@ -3,6 +3,7 @@
 Many planets in the solar system have moons, each with distinct features.
 
 ## Notable Moons
+
 - **Earth's Moon**: The only natural satellite of Earth.
 - **Io, Europa, Ganymede, and Callisto**: Jupiter's largest moons.
 - **Titan and Enceladus**: Saturn's moons with interesting geologic activity.

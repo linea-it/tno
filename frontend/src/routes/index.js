@@ -10,5 +10,5 @@ export default function AppRoutes() {
       {DashboardPageRoutes()}
       <Route path='*' element={<Navigate to='/' />} />
     </Routes>
-  );
+  )
 }

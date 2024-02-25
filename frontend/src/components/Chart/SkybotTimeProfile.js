@@ -82,7 +82,6 @@ function SkybotTimeProfile({ data }) {
         }}
       />
     </Box>
-
   )
 }
 

@@ -1,13 +1,12 @@
-import React from 'react';
+import React from 'react'
 import {
   GridToolbarContainer,
-  GridToolbarColumnsButton,
+  GridToolbarColumnsButton
   //   GridToolbarFilterButton,
-} from '@mui/x-data-grid';
+} from '@mui/x-data-grid'
 // import { Button } from '@mui/material';
 // import DownloadIcon from '@mui/icons-material/Download';
 // import MeanTableDownload from '../MeanTableDownload';
-
 
 // const handleDownload = () => {
 //   const link = document.createElement("a");
@@ -17,7 +16,6 @@ import {
 // };
 
 function CustomToolbar() {
-
   //   const [downloadIsOpen, setDownloadIsOpen] = React.useState(false)
 
   //   const handleDownload = () => setDownloadIsOpen(!downloadIsOpen);
@@ -28,6 +26,6 @@ function CustomToolbar() {
       <GridToolbarColumnsButton />
       {/* <GridToolbarFilterButton /> */}
     </GridToolbarContainer>
-  );
+  )
 }
-export default CustomToolbar;
+export default CustomToolbar

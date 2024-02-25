@@ -8,14 +8,14 @@ import PropTypes from 'prop-types'
 import useStyles from './styles'
 
 function List({ data, height, width, align }) {
-  const classes = useStyles({ align });
+  const classes = useStyles({ align })
 
   return (
     <MuiList className={classes.root} sx={{ height, width }}>
       {data.map((item, i, arr) => {
         // Verifica se item.value é uma string que contém a palavra "null" ou se o valor é "null"
         if ((typeof item.value === 'string' && item.value.includes('null')) || item.value === 'null') {
-          return null; // Pula a renderização se "null" for encontrado na string ou se o item for "null"
+          return null // Pula a renderização se "null" for encontrado na string ou se o item for "null"
         }
 
         return (
@@ -38,13 +38,11 @@ function List({ data, height, width, align }) {
               secondary={typeof item.value === 'function' ? item.value() : item.value}
             />
           </ListItem>
-        );
+        )
       })}
     </MuiList>
-  );
+  )
 }
-
-
 
 List.defaultProps = {
   height: 'auto',

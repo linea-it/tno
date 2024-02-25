@@ -78,7 +78,6 @@ function Table({
     title: column.title,
     hasLineBreak: column.hasLineBreak ? column.hasLineBreak : false,
     tooltip: column.headerTooltip ? column.headerTooltip : ''
-
   }))
 
   const customColumnExtensions = columns.map((column) => ({

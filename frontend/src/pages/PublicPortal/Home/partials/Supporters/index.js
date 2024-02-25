@@ -4,9 +4,7 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import CardMedia from '@mui/material/CardMedia'
 
-
 function PublicSupporters() {
-
   const interfaces = [
     {
       id: 0,

@@ -3,10 +3,7 @@ import PropTypes from 'prop-types'
 import { Box } from '@mui/material'
 
 function Footer({ drawerOpen }) {
-
-  return (
-    <Box></Box>
-  )
+  return <Box></Box>
 }
 
 Footer.defaultProps = {

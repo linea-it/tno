@@ -1,13 +1,12 @@
-import { useQuery } from 'react-query';
-import PropTypes from 'prop-types';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
-import { allBaseDynclassWithEvents } from '../../services/api/Occultation';
+import { useQuery } from 'react-query'
+import PropTypes from 'prop-types'
+import InputLabel from '@mui/material/InputLabel'
+import FormControl from '@mui/material/FormControl'
+import Select from '@mui/material/Select'
+import MenuItem from '@mui/material/MenuItem'
+import { allBaseDynclassWithEvents } from '../../services/api/Occultation'
 
 function BaseDynclassSelect({ value, onChange }) {
-
   const { data } = useQuery({
     queryKey: ['baseDynclassWithEvents'],
     queryFn: allBaseDynclassWithEvents,
@@ -17,28 +16,27 @@ function BaseDynclassSelect({ value, onChange }) {
     refetchOnmount: false,
     refetchOnReconnect: false,
     retry: 1,
-    staleTime: 1 * 60 * 60 * 1000,
+    staleTime: 1 * 60 * 60 * 1000
   })
 
-
   return (
-    <FormControl
-      size="normal"
-      fullWidth
-    >
-      <InputLabel id="filter-base-dynclass-select-label">Dynamic class</InputLabel>
+    <FormControl size='normal' fullWidth>
+      <InputLabel id='filter-base-dynclass-select-label'>Dynamic class</InputLabel>
       <Select
-        labelId="filter-base-dynclass-select-label"
-        id="filter-base-dynclass-select"
+        labelId='filter-base-dynclass-select-label'
+        id='filter-base-dynclass-select'
         value={value !== undefined ? value : ''}
-        label="Dynamic class"
+        label='Dynamic class'
         onChange={onChange}
       >
-        {data !== undefined && (
-          data.results.map(row => {
-            return (<MenuItem key={row} value={row}>{row}</MenuItem>)
-          })
-        )}
+        {data !== undefined &&
+          data.results.map((row) => {
+            return (
+              <MenuItem key={row} value={row}>
+                {row}
+              </MenuItem>
+            )
+          })}
       </Select>
     </FormControl>
   )
@@ -50,6 +48,6 @@ BaseDynclassSelect.defaultProps = {
 BaseDynclassSelect.propTypes = {
   value: PropTypes.string,
   onChange: PropTypes.func.isRequired
-};
+}
 
 export default BaseDynclassSelect

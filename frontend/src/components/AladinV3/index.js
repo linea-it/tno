@@ -19,7 +19,6 @@ export default class AladinV3 extends React.Component {
   // Lista de Exemplos:
   // https://aladin.cds.unistra.fr/AladinLite/doc/API/examples/
 
-
   constructor(props) {
     super(props)
 
@@ -39,25 +38,22 @@ export default class AladinV3 extends React.Component {
 
   static propTypes = {
     ra: PropTypes.number,
-    dec: PropTypes.number,
+    dec: PropTypes.number
   }
 
   componentDidMount() {
     this.libA.init.then(() => {
-      this.aladin = this.libA.aladin(
-        `#${this.id}`,
-        {
-          survey: 'P/allWISE/color', // set initial image survey
-          // survey: 'P/DSS2/color', // set initial image survey
-          projection: 'SIN', // set a projection
-          fov: 0.5, // initial field of view in degrees
-          // target: 'NGC 2175', // initial target
-          cooFrame: 'ICRS', // set galactic frame reticleColor: '#ff89ff', // change reticle color
-          showReticle: false,
-          showCooGrid: false,
-          fullScreen: false
-        }
-      )
+      this.aladin = this.libA.aladin(`#${this.id}`, {
+        survey: 'P/allWISE/color', // set initial image survey
+        // survey: 'P/DSS2/color', // set initial image survey
+        projection: 'SIN', // set a projection
+        fov: 0.5, // initial field of view in degrees
+        // target: 'NGC 2175', // initial target
+        cooFrame: 'ICRS', // set galactic frame reticleColor: '#ff89ff', // change reticle color
+        showReticle: false,
+        showCooGrid: false,
+        fullScreen: false
+      })
 
       // Cria um catalogo com um unico source
       this.drawCatalog()
@@ -66,7 +62,7 @@ export default class AladinV3 extends React.Component {
     })
   }
 
-  componentWillUnmount() { }
+  componentWillUnmount() {}
 
   drawCatalog() {
     // Cria um Catalogo contendo a coordenada ra e dec como source.
@@ -82,9 +78,7 @@ export default class AladinV3 extends React.Component {
       })
       this.aladin.addCatalog(cat)
       // add sources to the new layer
-      cat.addSources([
-        this.libA.source(this.props.ra, this.props.dec, { name: "Occulted Star" })
-      ])
+      cat.addSources([this.libA.source(this.props.ra, this.props.dec, { name: 'Occulted Star' })])
     }
   }
 
@@ -98,11 +92,14 @@ export default class AladinV3 extends React.Component {
   }
 
   render() {
-    return (<Box
-      id={this.id}
-      sx={{
-        width: '100%',
-        height: '100%',
-      }}></Box>)
+    return (
+      <Box
+        id={this.id}
+        sx={{
+          width: '100%',
+          height: '100%'
+        }}
+      ></Box>
+    )
   }
 }

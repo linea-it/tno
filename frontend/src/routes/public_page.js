@@ -9,19 +9,15 @@ import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 import Container from '@mui/material/Container'
 
-
-const PublicPortalPage = ({ children}) => {
+const PublicPortalPage = ({ children }) => {
   return (
     <>
       <PublicHeader />
-      <Container maxWidth="lg">
-        {children}
-      </Container>
+      <Container maxWidth='lg'>{children}</Container>
       <FooterSupporters />
     </>
   )
 }
-
 
 export function PublicPageRoutes() {
   return (

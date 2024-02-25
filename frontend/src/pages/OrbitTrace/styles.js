@@ -40,13 +40,13 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: '2px'
   },
   loadingPlot: {
-    margin: '150px auto',
+    margin: '150px auto'
   },
   tooltip: {
-    fontSize: "1.4em",
+    fontSize: '1.4em'
   },
   MuiIconButtonRoot: {
-    padding: '0px !Important',
+    padding: '0px !Important'
   }
 }))
 

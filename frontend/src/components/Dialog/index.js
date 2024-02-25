@@ -34,8 +34,8 @@ function Dialog({ visible, setVisible, title, content, maxWidth, headerStyle, bo
         {typeof content === 'function'
           ? content()
           : content || content.props.data || content.props.data.length
-            ? content
-            : 'Unable to generate log due to a lack of data!'}
+          ? content
+          : 'Unable to generate log due to a lack of data!'}
       </DialogContent>
     </MuiDialog>
   )

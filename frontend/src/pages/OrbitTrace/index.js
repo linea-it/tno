@@ -1,197 +1,237 @@
 import React, { useEffect, useState } from 'react'
 // import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, FormGroup, FormControlLabel, Switch, IconButton, Tooltip } from '../../../node_modules/@mui/material/index'
-import { Backdrop, Box, Snackbar, Button, Card, CardContent, CardHeader, CircularProgress, FormControl, Grid, FormGroup, FormControlLabel, Switch, IconButton, Tooltip } from '@mui/material'
+import {
+  Backdrop,
+  Box,
+  Snackbar,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CircularProgress,
+  FormControl,
+  Grid,
+  FormGroup,
+  FormControlLabel,
+  Switch,
+  IconButton,
+  Tooltip
+} from '@mui/material'
 import Table from '../../components/Table/index'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
 import { useNavigate } from 'react-router-dom'
-import {
-  getLeapSecondList,
-  getBspPlanetaryList,
-  createOrbitTraceJob,
-  getOrbitTraceJobList,
-} from '../../services/api/OrbitTrace'
-import {
-  getDynClassList,
-  getBaseDynClassList,
-  getAsteroidsList,
-  getFilteredAsteroidsList,
-} from '../../services/api/Asteroid'
-import Alert from '@mui/material/Alert';
+import { getLeapSecondList, getBspPlanetaryList, createOrbitTraceJob, getOrbitTraceJobList } from '../../services/api/OrbitTrace'
+import { getDynClassList, getBaseDynClassList, getAsteroidsList, getFilteredAsteroidsList } from '../../services/api/Asteroid'
+import Alert from '@mui/material/Alert'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Select from 'react-select'
 import useInterval from '../../hooks/useInterval'
 
 function OrbitTrace() {
-  const navigate = useNavigate();
-  const classes = useStyles();
+  const navigate = useNavigate()
+  const classes = useStyles()
 
-  const [backdropOpen, setBackdropOpen] = useState(false);
-  const [reload, setReload] = useState(true);
-  const [bspPlanetaryList, setBspPlanetaryList] = useState([]);
-  const [leapSecondList, setLeapSecondList] = useState([]);
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic class' }]);
-  const [dynClassList, setDynClassList] = useState([]);
-  const [baseDynClassList, setBaseDynClassList] = useState([]);
-  const [asteroidsList, setAsteroidsList] = useState([]);
-  const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
-  const [parslInitBlocksList, setParslInitBlocksList] = useState([{ value: 1, label: '1' }, { value: 50, label: '50' }, { value: 100, label: '100' }, { value: 300, label: '300' }, { value: 600, label: '600' }]);
+  const [backdropOpen, setBackdropOpen] = useState(false)
+  const [reload, setReload] = useState(true)
+  const [bspPlanetaryList, setBspPlanetaryList] = useState([])
+  const [leapSecondList, setLeapSecondList] = useState([])
+  const [filterTypeList, setFilterTypeList] = useState([
+    { value: 'name', label: 'Object name' },
+    { value: 'dynclass', label: 'Dynamic class (with subclasses)' },
+    { value: 'base_dynclass', label: 'Dynamic class' }
+  ])
+  const [dynClassList, setDynClassList] = useState([])
+  const [baseDynClassList, setBaseDynClassList] = useState([])
+  const [asteroidsList, setAsteroidsList] = useState([])
+  const [bspValueList, setbspValueList] = useState([
+    { value: 0, label: 'None' },
+    { value: 10, label: '10 days' },
+    { value: 20, label: '20 days' },
+    { value: 30, label: '30 days' }
+  ])
+  const [parslInitBlocksList, setParslInitBlocksList] = useState([
+    { value: 1, label: '1' },
+    { value: 50, label: '50' },
+    { value: 100, label: '100' },
+    { value: 300, label: '300' },
+    { value: 600, label: '600' }
+  ])
 
-  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
-  const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
+  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false)
+  const [messageTextSuccess, setMessageTextSuccess] = React.useState('')
 
-  const [messageOpenError, setMessageOpenError] = useState(false);
-  const [messageTextError, setMessageTextError] = React.useState('');
+  const [messageOpenError, setMessageOpenError] = useState(false)
+  const [messageTextError, setMessageTextError] = React.useState('')
 
-  const [bspPlanetaryError, setBspPlanetaryError] = React.useState(false);
-  const [leapSecondError, setLeapSecondError] = React.useState(false);
-  const [filterTypeError, setFilterTypeError] = React.useState(false);
-  const [filterValueError, setFilteValueError] = React.useState(false);
-  const [bspValueError, setBspValueError] = React.useState(false);
+  const [bspPlanetaryError, setBspPlanetaryError] = React.useState(false)
+  const [leapSecondError, setLeapSecondError] = React.useState(false)
+  const [filterTypeError, setFilterTypeError] = React.useState(false)
+  const [filterValueError, setFilteValueError] = React.useState(false)
+  const [bspValueError, setBspValueError] = React.useState(false)
 
-  const [bspPlanetary, setBspPlanetary] = React.useState({ value: "", label: "Select..." });
-  const [leapSecond, setLeapSecond] = React.useState({ value: "", label: "Select..." });
-  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' });
-  const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
-  const [bspValue, setBspValue] = React.useState({ value: 10, label: "10 days" });
-  const [parslInitBlocks, setParslInitBlocks] = React.useState({ value: 600, label: "600" });
-  const [filterValueNames, setFilterValueNames] = React.useState([]);
+  const [bspPlanetary, setBspPlanetary] = React.useState({ value: '', label: 'Select...' })
+  const [leapSecond, setLeapSecond] = React.useState({ value: '', label: 'Select...' })
+  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' })
+  const [filterValue, setFilterValue] = React.useState({ value: '', label: 'Select...' })
+  const [bspValue, setBspValue] = React.useState({ value: 10, label: '10 days' })
+  const [parslInitBlocks, setParslInitBlocks] = React.useState({ value: 600, label: '600' })
+  const [filterValueNames, setFilterValueNames] = React.useState([])
 
-  const [tableData, setTableData] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const useMountEffect = (fun) => useEffect(fun, []);
-  const [debug, setDebug] = React.useState(false);
-  const [disableSubmit, setDisableSubmit] = useState(true);
+  const [tableData, setTableData] = useState([])
+  const [totalCount, setTotalCount] = useState(0)
+  const useMountEffect = (fun) => useEffect(fun, [])
+  const [debug, setDebug] = React.useState(false)
+  const [disableSubmit, setDisableSubmit] = useState(true)
 
-  const [selectedSorting, setSelectedSorting] = useState();
-  const [selectedPage, setSelectedPage] = useState(0);
-  const [selectedPageSize, setSelectedPageSize] = useState(0);
-
+  const [selectedSorting, setSelectedSorting] = useState()
+  const [selectedPage, setSelectedPage] = useState(0)
+  const [selectedPageSize, setSelectedPageSize] = useState(0)
 
   useEffect(() => {
-    setDisableSubmit(!bspPlanetary.value || !leapSecond.value || !filterValue.value || !filterType.value);
-  }, [bspPlanetary, leapSecond, filterValue, filterType]);
+    setDisableSubmit(!bspPlanetary.value || !leapSecond.value || !filterValue.value || !filterType.value)
+  }, [bspPlanetary, leapSecond, filterValue, filterType])
 
   const handleChangeDebug = (event) => {
     setDebug(event.target.checked)
   }
 
   const bspPlanetaryhandleChange = (event) => {
-    if (event)
-      setBspPlanetary(event);
-
-  };
+    if (event) setBspPlanetary(event)
+  }
 
   const leapSecondhandleChange = (event) => {
-    if (event)
-      setLeapSecond(event);
-  };
+    if (event) setLeapSecond(event)
+  }
 
   const filterTypehandleChange = (event) => {
     if (event) {
-      setFilterValue({ value: "", label: "Select..." });
-      setFilterValueNames([]);
-      setFilterType(event);
+      setFilterValue({ value: '', label: 'Select...' })
+      setFilterValueNames([])
+      setFilterType(event)
     }
-  };
+  }
 
   const bspValuehandleChange = (event) => {
-    if (event)
-      setBspValue(event);
-  };
+    if (event) setBspValue(event)
+  }
 
-  const  parslInitBlockshandleChange = (event) => {
-    if (event)
-      setParslInitBlocks(event);
-  };
+  const parslInitBlockshandleChange = (event) => {
+    if (event) setParslInitBlocks(event)
+  }
 
   const filterValuehandleChange = (event) => {
     if (event) {
-      setFilterValueNames([]);
-      setFilterValue(event);
+      setFilterValueNames([])
+      setFilterValue(event)
     }
-  };
+  }
 
   const filterValueNameshandleChange = (event) => {
     if (event) {
-      let stringArray = event.map(x => { return x.value }).toString().replaceAll(',', ';');
-      setFilterValue({ value: stringArray, label: stringArray });
-      setFilterValueNames(event.map(x => { return x.value }));
+      let stringArray = event
+        .map((x) => {
+          return x.value
+        })
+        .toString()
+        .replaceAll(',', ';')
+      setFilterValue({ value: stringArray, label: stringArray })
+      setFilterValueNames(
+        event.map((x) => {
+          return x.value
+        })
+      )
     }
-  };
+  }
 
   useMountEffect(() => {
     getBspPlanetaryList().then((list) => {
-      setBspPlanetaryList(list.map(x => { return { value: x.name, label: x.display_name } }));
+      setBspPlanetaryList(
+        list.map((x) => {
+          return { value: x.name, label: x.display_name }
+        })
+      )
       //set default value
-      if (list.length > 0)
-        setBspPlanetary({ value: list[0].name, label: list[0].display_name })
+      if (list.length > 0) setBspPlanetary({ value: list[0].name, label: list[0].display_name })
     })
 
     getLeapSecondList().then((list) => {
-      setLeapSecondList(list.map(x => { return { value: x.name, label: x.display_name } }));
+      setLeapSecondList(
+        list.map((x) => {
+          return { value: x.name, label: x.display_name }
+        })
+      )
       //set default value
-      if (list.length > 0)
-        setLeapSecond({ value: list[0].name, label: list[0].display_name })
+      if (list.length > 0) setLeapSecond({ value: list[0].name, label: list[0].display_name })
     })
 
     getDynClassList().then((list) => {
-      setDynClassList(list.map(x => { return { value: x, label: x } }));
+      setDynClassList(
+        list.map((x) => {
+          return { value: x, label: x }
+        })
+      )
     })
 
     getBaseDynClassList().then((list) => {
-      setBaseDynClassList(list.map(x => { return { value: x, label: x } }));
+      setBaseDynClassList(
+        list.map((x) => {
+          return { value: x, label: x }
+        })
+      )
     })
 
     getAsteroidsList().then((list) => {
-      setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
+      setAsteroidsList(
+        list.map((x) => {
+          return { value: x.name, label: x.name }
+        })
+      )
     })
-  });
+  })
 
   function validadeInformation() {
-    var verify = true;
-    setMessageTextError('');
-    setMessageOpenError(false);
-    setBspPlanetaryError(false);
-    setLeapSecondError(false);
-    setFilterTypeError(false);
-    setFilteValueError(false);
-    setBspValueError(false);
+    var verify = true
+    setMessageTextError('')
+    setMessageOpenError(false)
+    setBspPlanetaryError(false)
+    setLeapSecondError(false)
+    setFilterTypeError(false)
+    setFilteValueError(false)
+    setBspValueError(false)
 
     if (bspPlanetary.value == '') {
-      verify = false;
-      setBspPlanetaryError(true);
+      verify = false
+      setBspPlanetaryError(true)
     }
 
     if (leapSecond.value == '') {
-      verify = false;
-      setLeapSecondError(true);
+      verify = false
+      setLeapSecondError(true)
     }
 
     if (filterType.value == '') {
-      verify = false;
-      setFilterTypeError(true);
+      verify = false
+      setFilterTypeError(true)
     }
 
     if (filterValue.value == '') {
-      verify = false;
-      setFilteValueError(true);
+      verify = false
+      setFilteValueError(true)
     }
 
     if (!verify) {
-      setMessageTextError('All information must be completed.');
-      setMessageOpenError(true);
+      setMessageTextError('All information must be completed.')
+      setMessageOpenError(true)
     }
 
-    return verify;
+    return verify
   }
 
-
   const handleSubmitJobClick = async () => {
-
     if (await validadeInformation()) {
-      setDisableSubmit(true);
+      setDisableSubmit(true)
       const data = {
         bsp_planetary: bspPlanetary.value,
         leap_second: leapSecond.value,
@@ -204,39 +244,37 @@ function OrbitTrace() {
       createOrbitTraceJob(data)
         .then((response) => {
           // navigate(`/dashboard/data-preparation/des/orbittrace-detail/${response.data.id}`)
-          cleanFields();
-          setMessageTextSuccess('Information registered successfully');
-          setMessageOpenSuccess(true);
+          cleanFields()
+          setMessageTextSuccess('Information registered successfully')
+          setMessageOpenSuccess(true)
         })
         .catch((err) => {
           console.log(err)
-          setMessageTextError(err);
-          setMessageOpenError(true);
+          setMessageTextError(err)
+          setMessageOpenError(true)
         })
     }
   }
 
   function cleanFields() {
     setBspPlanetary({ value: bspPlanetaryList[0].value, label: bspPlanetaryList[0].label })
-    setLeapSecond({ value: leapSecondList[0].value, label: leapSecondList[0].label });
-    setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
-    setFilterValue({ value: "", label: "Select..." });
-    setBspValue({ value: 0, label: "None" });
-    setDebug(false);
-    setParslInitBlocks({ value: 600, label: "600" });
-    setMessageTextSuccess('Information registered successfully');
-    setMessageOpenSuccess(true);
-    setReload((prevState) => !prevState);
-    setDisableSubmit(false);
+    setLeapSecond({ value: leapSecondList[0].value, label: leapSecondList[0].label })
+    setFilterType({ value: 'base_dynclass', label: 'Dynamic class' })
+    setFilterValue({ value: '', label: 'Select...' })
+    setBspValue({ value: 0, label: 'None' })
+    setDebug(false)
+    setParslInitBlocks({ value: 600, label: '600' })
+    setMessageTextSuccess('Information registered successfully')
+    setMessageOpenSuccess(true)
+    setReload((prevState) => !prevState)
+    setDisableSubmit(false)
   }
-
-
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     setSelectedSorting(sorting)
     setSelectedPageSize(pageSize)
     setSelectedPage(currentPage)
-    const ordering = sorting[0].direction === 'desc'? `-${sorting[0].columnName}`: sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
 
     getOrbitTraceJobList({
       page: currentPage + 1,
@@ -297,14 +335,19 @@ function OrbitTrace() {
       name: 'owner',
       title: 'Owner',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'start',
       title: 'Execution Date',
       width: 150,
       align: 'center',
-      customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>
+      customElement: (row) =>
+        row.start ? (
+          <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span>
+        ) : (
+          <span>Not started</span>
+        )
     },
     {
       name: 'exec_time',
@@ -312,7 +355,7 @@ function OrbitTrace() {
       width: 150,
       headerTooltip: 'Execution time',
       align: 'center',
-      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : '-')
     },
     {
       name: 'avg_exec_time_asteroid',
@@ -320,7 +363,7 @@ function OrbitTrace() {
       width: 150,
       headerTooltip: 'Asteroid Average Execution Time',
       align: 'center',
-      customElement: (row) => (moment.utc(row.avg_exec_time_asteroid * 1000).format("HH:mm:ss")),
+      customElement: (row) => moment.utc(row.avg_exec_time_asteroid * 1000).format('HH:mm:ss')
     },
     {
       name: 'avg_exec_time_ccd',
@@ -328,31 +371,31 @@ function OrbitTrace() {
       width: 150,
       headerTooltip: 'CCD Average Execution Time',
       align: 'center',
-      customElement: (row) => (moment.utc(row.avg_exec_time_ccd * 1000).format("HH:mm:ss"))
+      customElement: (row) => moment.utc(row.avg_exec_time_ccd * 1000).format('HH:mm:ss')
     },
     {
       name: 'count_asteroids',
       title: 'Asteroids',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_ccds',
       title: 'CCDs',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_observations',
       title: 'Observations',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_success',
       title: 'Success',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_failures',
@@ -364,18 +407,22 @@ function OrbitTrace() {
   ]
 
   const onKeyUp = async (event) => {
-    if(event.target.value.length > 1){
-        getFilteredAsteroidsList(event.target.value).then((list) => {
-          setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
-        })
+    if (event.target.value.length > 1) {
+      getFilteredAsteroidsList(event.target.value).then((list) => {
+        setAsteroidsList(
+          list.map((x) => {
+            return { value: x.name, label: x.name }
+          })
+        )
+      })
     }
   }
 
   useInterval(() => {
-    if(selectedSorting){
-      loadData(({sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage}));
+    if (selectedSorting) {
+      loadData({ sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage })
     }
-  }, [5000]);
+  }, [5000])
 
   return (
     <>
@@ -389,63 +436,94 @@ function OrbitTrace() {
                   <Grid container spacing={2} alignItems='stretch' className={classes.padDropBox}>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label>Filter Type <span className={classes.errorText}>*</span></label>
+                        <FormControl fullWidth>
+                          <label>
+                            Filter Type <span className={classes.errorText}>*</span>
+                          </label>
                           <Select
                             value={filterType}
-                            id="filterType"
+                            id='filterType'
                             onChange={filterTypehandleChange}
                             options={filterTypeList}
                             menuPortalTarget={document.body}
                             menuPosition={'fixed'}
                           />
                         </FormControl>
-                        {filterTypeError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                        {filterTypeError ? <span className={classes.errorText}>Required field</span> : ''}
                       </Box>
                     </Grid>
-                    {filterType.value != "" &&
+                    {filterType.value != '' && (
                       <Grid item xs={12} sm={6} md={4} lg={3}>
                         <Box sx={{ minWidth: 120 }}>
-                          {filterType.value == "name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <Select
-                              id="filterName"
-                              onChange={filterValueNameshandleChange}
-                              isMulti
-                              options={asteroidsList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterType.value == "dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <Select
-                              value={filterValue}
-                              id="filterDynClass"
-                              onChange={filterValuehandleChange}
-                              options={dynClassList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterType.value == "base_dynclass" && <FormControl fullWidth><label>Filter Value <span className={classes.errorText}>*</span></label>
-                            <Select
-                              value={filterValue}
-                              id="filterBaseDynClass"
-                              onChange={filterValuehandleChange}
-                              options={baseDynClassList}
-                              menuPortalTarget={document.body}
-                              menuPosition={'fixed'}
-                            />
-                          </FormControl>}
-                          {filterValueError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                          {filterType.value == 'name' && (
+                            <FormControl onKeyUp={onKeyUp} fullWidth>
+                              <label>
+                                Filter Value <span className={classes.errorText}>*</span>
+                              </label>
+                              <Select
+                                id='filterName'
+                                onChange={filterValueNameshandleChange}
+                                isMulti
+                                options={asteroidsList}
+                                menuPortalTarget={document.body}
+                                menuPosition={'fixed'}
+                              />
+                            </FormControl>
+                          )}
+                          {filterType.value == 'dynclass' && (
+                            <FormControl fullWidth>
+                              <label>
+                                Filter Value <span className={classes.errorText}>*</span>
+                              </label>
+                              <Select
+                                value={filterValue}
+                                id='filterDynClass'
+                                onChange={filterValuehandleChange}
+                                options={dynClassList}
+                                menuPortalTarget={document.body}
+                                menuPosition={'fixed'}
+                              />
+                            </FormControl>
+                          )}
+                          {filterType.value == 'base_dynclass' && (
+                            <FormControl fullWidth>
+                              <label>
+                                Filter Value <span className={classes.errorText}>*</span>
+                              </label>
+                              <Select
+                                value={filterValue}
+                                id='filterBaseDynClass'
+                                onChange={filterValuehandleChange}
+                                options={baseDynClassList}
+                                menuPortalTarget={document.body}
+                                menuPosition={'fixed'}
+                              />
+                            </FormControl>
+                          )}
+                          {filterValueError ? <span className={classes.errorText}>Required field</span> : ''}
                         </Box>
                       </Grid>
-                    }
+                    )}
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label className="label-tooltip-margin">Planetary ephemerides <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of binary file that contains information to compute the ephemeris of the planets.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
-                            </Tooltip></label>
+                        <FormControl fullWidth>
+                          <label className='label-tooltip-margin'>
+                            Planetary ephemerides <span className={classes.errorText}>*</span>
+                            <Tooltip
+                              title={
+                                <label className={classes.tooltip}>
+                                  Version of binary file that contains information to compute the ephemeris of the planets.
+                                </label>
+                              }
+                            >
+                              <IconButton>
+                                <InfoOutlinedIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </label>
                           <Select
                             value={bspPlanetary}
-                            name="bspPlanetary"
+                            name='bspPlanetary'
                             onChange={bspPlanetaryhandleChange}
                             options={bspPlanetaryList}
                             sx={{ height: '45px !important' }}
@@ -453,43 +531,60 @@ function OrbitTrace() {
                             menuPosition={'fixed'}
                           />
                         </FormControl>
-                        {bspPlanetaryError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                        {bspPlanetaryError ? <span className={classes.errorText}>Required field</span> : ''}
                       </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                        <FormControl fullWidth><label className="label-tooltip-margin">Leap Second <span className={classes.errorText}>*</span><Tooltip title={<label className={classes.tooltip}>Version of ascii file that contains dates of one-second adjustment that is occasionally applied to UTC.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
-                            </Tooltip></label>
+                        <FormControl fullWidth>
+                          <label className='label-tooltip-margin'>
+                            Leap Second <span className={classes.errorText}>*</span>
+                            <Tooltip
+                              title={
+                                <label className={classes.tooltip}>
+                                  Version of ascii file that contains dates of one-second adjustment that is occasionally applied to UTC.
+                                </label>
+                              }
+                            >
+                              <IconButton>
+                                <InfoOutlinedIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </label>
                           <Select
                             value={leapSecond}
-                            id="leapSecond"
+                            id='leapSecond'
                             onChange={leapSecondhandleChange}
                             options={leapSecondList}
                             menuPortalTarget={document.body}
                             menuPosition={'fixed'}
                           />
                         </FormControl>
-                        {leapSecondError ? (<span className={classes.errorText}>Required field</span>) : ''}
+                        {leapSecondError ? <span className={classes.errorText}>Required field</span> : ''}
                       </Box>
                     </Grid>
                     <Grid item xs={12} sm={6} md={4} lg={3}>
                       <Box sx={{ minWidth: 120 }}>
-                      <FormControl fullWidth>
-
-                        <FormGroup>
-                          <FormControlLabel
-                            control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
-                            label='Debug mode'
-                          />
-                        </FormGroup> </FormControl>
+                        <FormControl fullWidth>
+                          <FormGroup>
+                            <FormControlLabel
+                              control={<Switch checked={debug} onChange={handleChangeDebug} color='primary' />}
+                              label='Debug mode'
+                            />
+                          </FormGroup>{' '}
+                        </FormControl>
                       </Box>
                     </Grid>
                   </Grid>
-                  <Grid container spacing={2} direction="row"
-                    justifyContent="center"
-                    alignItems="center">
+                  <Grid container spacing={2} direction='row' justifyContent='center' alignItems='center'>
                     <Box>
-                      <Button disabled={disableSubmit} variant='contained' className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
+                      <Button
+                        disabled={disableSubmit}
+                        variant='contained'
+                        className='buttonFilter'
+                        color='primary'
+                        onClick={handleSubmitJobClick}
+                      >
                         Execute
                       </Button>
                     </Box>
@@ -527,7 +622,7 @@ function OrbitTrace() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         onClose={() => setMessageOpenSuccess(false)}
       >
-        <Alert severity="success" sx={{ width: '100%' }}>
+        <Alert severity='success' sx={{ width: '100%' }}>
           {messageTextSuccess}
         </Alert>
       </Snackbar>
@@ -537,7 +632,7 @@ function OrbitTrace() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         onClose={() => setMessageOpenError(false)}
       >
-        <Alert severity="error" sx={{ width: '100%' }}>
+        <Alert severity='error' sx={{ width: '100%' }}>
           {messageTextError}
         </Alert>
       </Snackbar>

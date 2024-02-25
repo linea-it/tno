@@ -44,7 +44,7 @@ const SortLabel = ({ onSort, children, direction, ...restProps }) => {
   return (
     <Tooltip title={restProps.column.tooltip ? restProps.column.tooltip : children.props.children}>
       <Box
-        component="span"
+        component='span'
         onClick={!restProps.disabled ? onSort : null}
         className={classes.invisibleButton}
         sx={{ cursor: !restProps.disabled ? 'pointer' : 'default' }}

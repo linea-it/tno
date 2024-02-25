@@ -12,7 +12,7 @@ const PublicHeader = () => {
     { description: 'Home', href: '/', target: '_self' },
     { description: 'About', href: '/about-us', target: '_self' },
     { description: 'Documentation', href: '/documentation', target: '_self' },
-    { description: 'Contact', href: '/contact-us', target: '_self' },
+    { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
   const handleCardClick = (pathname) => navigate(pathname)
@@ -24,7 +24,9 @@ const PublicHeader = () => {
           <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />
         </Box>
         {menus.map((menu) => (
-          <Button key={menu.description} color="inherit" onClick={() => handleCardClick(menu.href)}>{menu.description}</Button>
+          <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+            {menu.description}
+          </Button>
         ))}
         {/* <IconButton
           size="large"
