@@ -1,9 +1,11 @@
 import React from 'react'
-import { AppBar, Toolbar, IconButton, Button, Box } from '@mui/material'
-import { Brightness4, Brightness7 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 
-const PublicHeader = ({ darkMode, toggleTheme }) => {
+const PublicHeader = () => {
   const navigate = useNavigate()
 
   const menus = [
@@ -12,10 +14,6 @@ const PublicHeader = ({ darkMode, toggleTheme }) => {
     { description: 'Documentation', href: '/documentation', target: '_self' },
     { description: 'Contact', href: '/contact-us', target: '_self' },
   ]
-
-  const handleToggleDarkMode = () => {
-    toggleTheme()
-  }
 
   const handleCardClick = (pathname) => navigate(pathname)
 
