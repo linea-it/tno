@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import moment from 'moment'
 import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
@@ -157,6 +157,34 @@ function PredictDetail() {
     }
   ]
 
+  const loadDataSuccess = useCallback(
+    ({ currentPage, pageSize, sorting }) => {
+      const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
+      // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+      const page = currentPage + 1
+
+      getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, true).then((res) => {
+        setTableData(res.results)
+        setTotalCount(res.count)
+      })
+    },
+    [id]
+  )
+
+  const loadDataFailure = useCallback(
+    ({ currentPage, pageSize, sorting }) => {
+      const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
+      // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
+      const page = currentPage + 1
+
+      getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, false).then((res) => {
+        setTableErrorData(res.results)
+        setTotalErrorCount(res.count)
+      })
+    },
+    [id]
+  )
+
   useEffect(() => {
     loadDataSuccess({
       currentPage: 0,
@@ -174,7 +202,7 @@ function PredictDetail() {
       setPredictionJob(job)
       loadDataProgress(id)
     })
-  }, [id])
+  }, [id, loadDataFailure, loadDataSuccess])
 
   useInterval(() => {
     const hasStatusRunning = [1, 2].includes(predictionJob.status)
@@ -240,28 +268,6 @@ function PredictDetail() {
       ])
     }
   }, [predictionJob])
-
-  const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
-    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-    const page = currentPage + 1
-
-    getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, true).then((res) => {
-      setTableData(res.results)
-      setTotalCount(res.count)
-    })
-  }
-
-  const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
-    // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
-    const page = currentPage + 1
-
-    getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, false).then((res) => {
-      setTableErrorData(res.results)
-      setTotalErrorCount(res.count)
-    })
-  }
 
   return (
     <Grid container spacing={2}>

@@ -26,3 +26,27 @@ repos:
         name: isort (python)
         args: ["--profile", "black", "--skip", "migrations"]
         exclude: ^(migrations/|pipelines/|backend/old_apps/)
+-   repo: local
+    hooks:
+    -   id: eslint
+        name: eslint (Javascript)
+        language: system
+        files: 'frontend/.*\.(js|jsx|ts|tsx)$'
+        pass_filenames: false
+        entry: bash -c 'cd frontend && yarn lint'
+        always_run: true
+-   repo: local
+    hooks:
+    -   id: prettier
+        name: prettier (Javascript)
+        language: system
+        files: 'frontend/.*\.(js|jsx|ts|tsx)$'
+        pass_filenames: false
+        entry: bash -c 'cd frontend && yarn format'
+        always_run: true
+# - id: eslint
+#             name: eslint
+#             types: [file]
+#             files: 'frontend/.*\.(js|jsx|ts|tsx)$'
+#             entry: bash -c 'cd frontend && yarn precommit-lint "$@"'
+#             language: system

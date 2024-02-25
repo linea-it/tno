@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import PropTypes, { object } from 'prop-types'
+import PropTypes from 'prop-types'
 import InputLabel from '@mui/material/InputLabel'
 import Input from '@mui/material/Input'
 import MenuItem from '@mui/material/MenuItem'
@@ -121,7 +121,7 @@ function Table({
   const [searchValue, setSearchValue] = useState('')
   const [selection, setSelection] = useState([])
   const [customModalContent, setCustomModalContent] = useState('')
-  const [customDefaultHiddenColumnNames, setCustomDefaultHiddenColumnNames] = useState(defaultHiddenColumnNames)
+  const [customDefaultHiddenColumnNames] = useState(defaultHiddenColumnNames)
 
   const classes = useStyles()
 

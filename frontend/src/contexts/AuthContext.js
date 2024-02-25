@@ -26,7 +26,7 @@ export function AuthProvider({ children }) {
           logout()
         })
     }
-  }, [])
+  }, [csrftoken])
 
   async function signIn() {
     window.location.replace(urlLogin)

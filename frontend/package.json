@@ -58,8 +58,9 @@
     "build_public": "REACT_APP_BUILD_TARGET=PublicApp BUILD_PATH=/build/public_page react-scripts --max_old_space_size=8192 --optimize-for-size build --verbose",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint --fix .",
-    "format": "prettier . --write"
+    "lint": "eslint . --fix --max-warnings=0",
+    "format": "prettier . --write",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -87,7 +88,7 @@
     "eslint-plugin-prettier": "4.2.1",
     "eslint-plugin-react": "^7.14.3",
     "eslint-plugin-react-hooks": "4.6.0",
-    "husky": "^8.0.2",
+    "husky": "^9.0.11",
     "lint-staged": "^13.1.0",
     "prettier": "^2.8.0"
   },
@@ -95,7 +96,7 @@
   "license": "ISC",
   "husky": {
     "hooks": {
-      "pre-commit": "npm run lint && npm run format"
+      "pre-commit": "yarn run lint && yarn run format"
     }
   },
   "lint-staged": {
