@@ -1,7 +1,6 @@
 
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { useEffect, useState } from 'react';
@@ -11,7 +10,6 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { geoFilterIsValid } from '../../services/api/Occultation';
 import Grid from '@mui/material/Grid'
-import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 function GeoFilter({ value, onChange }) {
 

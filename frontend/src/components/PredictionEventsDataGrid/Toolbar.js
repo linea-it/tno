@@ -7,15 +7,12 @@ import SearchAsteroid from '../SearchAsteroid'
 import ViewListIcon from '@mui/icons-material/ViewList';
 import ViewModuleIcon from '@mui/icons-material/ViewModule';
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
-import useBreakpoint from '../../hooks/useBreakpoint';
 
 
-function PredictEventToolbar({ }) {
+function PredictEventToolbar() {
 
   const { viewLayoyt, setViewLayoyt, isMobile } = useContext(PredictionEventsContext)
-  // const currentBreakpoint = useBreakpoint()
-  // const isMobile = ['xs', 'sm', 'md', 'lg'].indexOf(currentBreakpoint.getBreakPointName()) !== -1 ? true : false
-  // console.log("isMobile: %o", isMobile)
+
   const handleChangeLayout = (e, value) => {
     if (value !== null) {
       setViewLayoyt(value)
