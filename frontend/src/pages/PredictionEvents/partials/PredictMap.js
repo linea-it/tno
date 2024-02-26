@@ -41,7 +41,7 @@ function PredictOccultationMap({ occultationId }) {
   }
 
   return (
-    <Card>
+    <Card sx={{ height: '100%'}}>
       <CardHeader
         title="Occultation Prediction Map"
         titleTypographyProps={{ variant: 'h6', fontSize: '1rem', }}

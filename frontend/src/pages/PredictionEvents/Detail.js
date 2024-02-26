@@ -12,7 +12,6 @@ import Link from '@mui/material/Link'
 
 import {
   getOccultationById,
-  // getOccultationMap,
   getStarByOccultationId
 } from '../../services/api/Occultation';
 import PredictOccultationMap from './partials/PredictMap';
@@ -44,33 +43,6 @@ function PredictionEventDetail() {
     const titleText = `Occultation by ${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
     document.title = titleText;
   }, [occultation])
-
-  // const createJsonOcc = (occ) =>{
-  //   return {'name': occ.name,
-  //   'radius': occ.diameter?occ.diameter:0,
-  //   'coord': occ.ra_star_candidate + " " + occ.dec_star_candidate,
-  //   'time': new Date(occ.date_time).toISOString(),
-  //   'ca': occ.closest_approach,
-  //   'pa': occ.position_angle,
-  //   'vel': occ.velocity,
-  //   'dist': occ.delta,
-  //   'mag': occ.g,
-  //   'longi': occ.long
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (occultation.date_time) {
-  //     const conteudo = createJsonOcc(occultation)
-  //     getOccultationMap(conteudo)
-  //       .then((res) => {
-  //       setMap(res.config.baseURL + res.config.url + '?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString()));
-  //     },
-  //     ).catch((err) =>{
-  //       setErroMap(true);
-  //     });
-  //   }
-  // }, [occultation])
 
   useEffect(() => {
     setCircumstances([
@@ -323,21 +295,6 @@ function PredictionEventDetail() {
           </Card>
         </Grid>
       </Grid>
-
-      {/* {occultation.ra_star_candidate && occultation.dec_star_candidate ? ( */}
-      {/* // <Grid item xs={12} md={6}> */}
-      {/* <Card>
-              <CardHeader title="Sky map (Aladin)" />
-              <CardContent>
-                <Aladin
-                  ra={occultation.ra_star_candidate}
-                  dec={occultation.dec_star_candidate}
-                />
-              </CardContent>
-            </Card> */}
-      {/* </Grid> */}
-      {/* ) : null} */}
-      {/* </Grid> */}
     </>
   );
 }
