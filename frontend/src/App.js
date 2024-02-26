@@ -9,21 +9,20 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import { PredictionEventsProvider } from './contexts/PredictionContext'
 import './assets/css/index.css'
 
-
 const queryClient = new QueryClient()
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
-    const darkModePreference = localStorage.getItem('darkMode');
-    setDarkMode(darkModePreference === '1');
-  }, []);
+    const darkModePreference = localStorage.getItem('darkMode')
+    setDarkMode(darkModePreference === '1')
+  }, [])
 
   const toggleTheme = () => {
-    const newDarkMode = !darkMode;
-    setDarkMode(newDarkMode);
-    localStorage.setItem('darkMode', newDarkMode ? '1' : '0');
+    const newDarkMode = !darkMode
+    setDarkMode(newDarkMode)
+    localStorage.setItem('darkMode', newDarkMode ? '1' : '0')
   }
 
   return (
@@ -38,7 +37,7 @@ function App() {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
-  );
+  )
 }
 
 export default App

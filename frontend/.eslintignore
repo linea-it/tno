@@ -7,3 +7,8 @@ build/*
 
 public/lib/*
 old_pages/*
+
+# TODO: Páginas que precisam de refactoring
+src/pages/Skybot/*
+src/pages/OrbitTrace/*
+src/components/Chart/*

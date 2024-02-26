@@ -1,38 +1,38 @@
-import React, { useContext, useRef } from 'react';
-import PropTypes from 'prop-types';
-import SearchIcon from '@mui/icons-material/Search';
-import IconButton from '@mui/material/IconButton';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import FormControl from '@mui/material/FormControl';
-import ClearIcon from '@mui/icons-material/Clear';
-import { PredictionEventsContext } from '../../contexts/PredictionContext';
+import React, { useContext, useRef } from 'react'
+import PropTypes from 'prop-types'
+import SearchIcon from '@mui/icons-material/Search'
+import IconButton from '@mui/material/IconButton'
+import OutlinedInput from '@mui/material/OutlinedInput'
+import InputLabel from '@mui/material/InputLabel'
+import InputAdornment from '@mui/material/InputAdornment'
+import FormControl from '@mui/material/FormControl'
+import ClearIcon from '@mui/icons-material/Clear'
+import { PredictionEventsContext } from '../../contexts/PredictionContext'
 
 function SearchInput(props) {
-  const { debounceTimeout, ...rest } = props;
+  const { debounceTimeout, ...rest } = props
 
   const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
 
-  const timerRef = useRef();
-  const fieldRef = useRef();
+  const timerRef = useRef()
+  const fieldRef = useRef()
 
   const handleChange = (event) => {
     if (timerRef.current) {
-      clearTimeout(timerRef.current);
+      clearTimeout(timerRef.current)
     }
 
     timerRef.current = window.setTimeout(() => {
-      handleDebounce(event.target.value);
-    }, debounceTimeout);
-  };
+      handleDebounce(event.target.value)
+    }, debounceTimeout)
+  }
 
   const handleDebounce = (value) => {
-    console.log("TESTE: %o", value)
+    console.log('TESTE: %o', value)
     if (value === '') {
       value = undefined
     }
-    setQueryOptions(prev => {
+    setQueryOptions((prev) => {
       return {
         ...prev,
         search: value
@@ -42,37 +42,39 @@ function SearchInput(props) {
 
   const handleClearSearch = () => {
     fieldRef.current.value = ''
-    setQueryOptions(prev => {
+    setQueryOptions((prev) => {
       return {
         ...prev,
         search: undefined
       }
     })
-
   }
   const handleMouseDownPassword = (event) => {
-    event.preventDefault();
-  };
-
+    event.preventDefault()
+  }
 
   return (
     <FormControl fullWidth>
-      <InputLabel htmlFor="search-asteroid-input">Search</InputLabel>
+      <InputLabel htmlFor='search-asteroid-input'>Search</InputLabel>
       <OutlinedInput
-        id="search-asteroid-input"
+        id='search-asteroid-input'
         inputRef={fieldRef}
         {...rest}
-        startAdornment={<InputAdornment position="start"><SearchIcon /></InputAdornment>}
-        label="Search"
+        startAdornment={
+          <InputAdornment position='start'>
+            <SearchIcon />
+          </InputAdornment>
+        }
+        label='Search'
         onChange={handleChange}
         endAdornment={
           queryOptions.search && (
-            <InputAdornment position="end">
+            <InputAdornment position='end'>
               <IconButton
-                aria-label="toggle password visibility"
+                aria-label='toggle password visibility'
                 onClick={handleClearSearch}
                 onMouseDown={handleMouseDownPassword}
-                edge="end"
+                edge='end'
               >
                 <ClearIcon />
               </IconButton>
@@ -81,7 +83,7 @@ function SearchInput(props) {
         }
       />
     </FormControl>
-  );
+  )
 }
 
 SearchInput.defaultProps = {
@@ -89,7 +91,7 @@ SearchInput.defaultProps = {
 }
 
 SearchInput.propTypes = {
-  debounceTimeout: PropTypes.number,
-};
+  debounceTimeout: PropTypes.number
+}
 
 export default SearchInput

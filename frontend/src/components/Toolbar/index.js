@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 import styles from './styles'
 import Button from '@mui/material/Button'
-import Popover from '@mui/material/Popover';
+import Popover from '@mui/material/Popover'
 import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ExitToAppIcon from '@mui/icons-material/ExitToApp'

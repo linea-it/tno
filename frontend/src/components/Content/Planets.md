@@ -3,6 +3,7 @@
 Each planet in our solar system has unique characteristics and atmospheres.
 
 ## The Planets
+
 1. **Mercury**: The smallest and closest to the Sun.
 2. **Venus**: Known for its thick atmosphere and surface temperatures.
 3. **Earth**: Our home planet, rich in life.

@@ -1,25 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Icon from '@mui/material/Icon';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import CardMedia from '@mui/material/CardMedia'
+import Icon from '@mui/material/Icon'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
 import Table from '../../components/Table'
-import {
-  getOrbitTraceJobResultById,
-  getObservationByAsteroid,
-  getPlotObservationByAsteroid
-} from '../../services/api/OrbitTrace'
+import { getOrbitTraceJobResultById, getObservationByAsteroid, getPlotObservationByAsteroid } from '../../services/api/OrbitTrace'
 import List from '../../components/List'
 import moment from '../../../node_modules/moment/moment'
 import useStyles from './styles'
-
 
 function OrbitTraceAsteroid() {
   const { id } = useParams()
@@ -29,14 +24,14 @@ function OrbitTraceAsteroid() {
   const [orbitTraceResult, setOrbitTraceResult] = useState({
     asteroid: 0,
     status: 0,
-    name: "",
-    number: "",
-    base_dynclass: "",
-    dynclass: "",
+    name: '',
+    number: '',
+    base_dynclass: '',
+    dynclass: '',
     observations: 0,
     ccds: 0,
-    error: "",
-    exec_time: "",
+    error: '',
+    exec_time: ''
   })
 
   const [summary, setSummary] = useState([])
@@ -44,9 +39,8 @@ function OrbitTraceAsteroid() {
   const [observationsCount, setObservationsCount] = useState(0)
   const [asteroidId, setAsteroidId] = useState(0)
 
-  const [observationPlot, setObservationPlot] = useState("")
+  const [observationPlot, setObservationPlot] = useState('')
   const [observationPlotError, setObservationPlotError] = useState(false)
-
 
   useEffect(() => {
     getOrbitTraceJobResultById(id).then((res) => {
@@ -59,15 +53,16 @@ function OrbitTraceAsteroid() {
         sorting: [{ columnName: 'id', direction: 'asc' }]
       })
       if (res.status != 2) {
-        getPlotObservationByAsteroid(res.name).then((res) => {
-          setObservationPlot(res.plot_url)
-        }).catch(function (error) {
-          setObservationPlotError(true);
-          setObservationPlot("")
-        })
+        getPlotObservationByAsteroid(res.name)
+          .then((res) => {
+            setObservationPlot(res.plot_url)
+          })
+          .catch(function (error) {
+            setObservationPlotError(true)
+            setObservationPlot('')
+          })
       }
     })
-
   }, [id])
 
   const observationsTableColumns = [
@@ -88,7 +83,12 @@ function OrbitTraceAsteroid() {
       title: 'Date',
       width: 150,
       align: 'center',
-      customElement: (row) => row.date_obs ? <span title={moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')}</span> : <span>Invalid Date</span>
+      customElement: (row) =>
+        row.date_obs ? (
+          <span title={moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')}>{moment(row.date_obs).format('YYYY-MM-DD HH:mm:ss')}</span>
+        ) : (
+          <span>Invalid Date</span>
+        )
     },
     {
       name: 'ra',
@@ -131,13 +131,8 @@ function OrbitTraceAsteroid() {
       width: 150,
       align: 'center',
       customElement: (row) => <span>{row.mag_psf_err.toFixed(3)}</span>
-    },
-
-
-
+    }
   ]
-
-
 
   useEffect(() => {
     let defaultSummary = [
@@ -171,7 +166,7 @@ function OrbitTraceAsteroid() {
       },
       {
         title: 'Execution Time',
-        value: orbitTraceResult.exec_time ? orbitTraceResult.exec_time.split('.')[0] : "-"
+        value: orbitTraceResult.exec_time ? orbitTraceResult.exec_time.split('.')[0] : '-'
       }
     ]
     setSummary(defaultSummary)
@@ -180,13 +175,12 @@ function OrbitTraceAsteroid() {
   const loadObservationsData = ({ asteroid_id, currentPage, pageSize, sorting }) => {
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
 
     getObservationByAsteroid({ asteroid_id: asteroid_id ? asteroid_id : asteroidId, page, pageSize, ordering: ordering }).then((res) => {
-      setObservationsTable(res.results);
-      setObservationsCount(res.count);
+      setObservationsTable(res.results)
+      setObservationsCount(res.count)
     })
-
   }
 
   const handleBackNavigation = () => navigate(-1)
@@ -225,20 +219,21 @@ function OrbitTraceAsteroid() {
       <Grid item xs={12} md={8}>
         <Card>
           <CardHeader title='Asteroid Graphic' />
-          {orbitTraceResult.status != 2 && <>
-            {observationPlotError && <CardContent>
-              <label className={classes.errorText}>An error occurred while the plot was generated</label>
-            </CardContent>}
-            {!observationPlotError && observationPlot === '' && <CircularProgress className={classes.loadingPlot} disableShrink size={100} />}
-            {!observationPlotError && observationPlot !== "" && (
-              <CardMedia
-                component="iframe"
-                height="100%"
-                frameBorder="0"
-                src={observationPlot}
-              />
-            )}
-          </>}
+          {orbitTraceResult.status != 2 && (
+            <>
+              {observationPlotError && (
+                <CardContent>
+                  <label className={classes.errorText}>An error occurred while the plot was generated</label>
+                </CardContent>
+              )}
+              {!observationPlotError && observationPlot === '' && (
+                <CircularProgress className={classes.loadingPlot} disableShrink size={100} />
+              )}
+              {!observationPlotError && observationPlot !== '' && (
+                <CardMedia component='iframe' height='100%' frameBorder='0' src={observationPlot} />
+              )}
+            </>
+          )}
 
           {/* <iframe src="/data/tmp/plot_des_observations_Eris-2013-08-30-2018-10-20.html"></iframe> */}
           {/* <CardContent>

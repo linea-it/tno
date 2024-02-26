@@ -1,6 +1,6 @@
 import { api } from './Api'
 
-export const createPredictionJob = ({ date_initial, date_final, filter_type, filter_value, predict_step, catalog, debug}) => {
+export const createPredictionJob = ({ date_initial, date_final, filter_type, filter_value, predict_step, catalog, debug }) => {
   const params = {
     date_initial: date_initial,
     date_final: date_final,
@@ -26,11 +26,10 @@ export const getPredictionJobList = ({ page, pageSize, ordering }) => {
 
 export const getPredictionJobById = ({ id }) => api.get(`/prediction_job/${id}`).then((res) => res.data)
 
-
 export const getPredictionJobResultsByJobId = ({ id, pageSize, page, ordering }, successed) => {
   const params = {
     job: id,
-    status: successed?1:2,
+    status: successed ? 1 : 2,
     page,
     pageSize,
     ordering
@@ -41,14 +40,14 @@ export const getPredictionJobResultsByJobId = ({ id, pageSize, page, ordering },
 
 export const getPredictionJobResultById = (id) => api.get(`/prediction_job_result/${id}/`).then((res) => res.data)
 
-export const getOccultationsByAsteroid = ({ asteroid_id, pageSize, page, ordering }) =>{
+export const getOccultationsByAsteroid = ({ asteroid_id, pageSize, page, ordering }) => {
   const params = {
     asteroid_id: asteroid_id,
     page,
     pageSize,
     ordering
   }
- return api.get(`/occultations/?format=json`, {params}).then((res) => res.data)
+  return api.get(`/occultations/?format=json`, { params }).then((res) => res.data)
 }
 
 export const cancelPredictionJobById = (id) => api.post(`/prediction_job/${id}/cancel_job/`).then((res) => res.data)

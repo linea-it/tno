@@ -11,7 +11,7 @@ const styles = makeStyles((theme) => ({
     [theme.breakpoints.down('sm')]: {
       minHeight: 330
     },
-    borderBottom: '5px solid #ffffff',
+    borderBottom: '5px solid #ffffff'
   },
   container: {
     background: 'transparent',
@@ -35,7 +35,7 @@ const styles = makeStyles((theme) => ({
     position: 'relative',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 150,
-      margin: '0 auto',
+      margin: '0 auto'
     },
     maxWidth: 120
   },
@@ -67,14 +67,14 @@ const styles = makeStyles((theme) => ({
   textTitleOcultatiom: {
     fontFamily: 'Oxanium',
     fontWeight: 100,
-    fontSize: 20,
+    fontSize: 20
   },
   menuLink: {
     textDecoration: 'none',
     fontWeight: 500,
     whiteSpace: 'nowrap',
     cursor: 'pointer'
-  },
+  }
 }))
 
 export default styles

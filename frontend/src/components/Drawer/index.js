@@ -37,7 +37,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(({
       duration: theme.transitions.duration.enteringScreen
     }),
     marginLeft: 0
-  }),
+  })
 }))
 
 const AppBar = styled(MuiAppBar, {
@@ -63,7 +63,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+  justifyContent: 'flex-end'
 }))
 
 const routes = [
@@ -82,7 +82,7 @@ const routes = [
   { path: '/dashboard/data-preparation/des/orbittrace-detail/:id', title: 'Orbit Trace Details' },
   { path: '/dashboard/data-preparation/des/orbittrace/asteroid/:id', title: 'Orbit Trace Asteroid' },
   { path: '/dashboard/asteroid_job', title: 'Asteroid Job' },
-  { path: '/dashboard/asteroid_job/:id', title: 'Asteroid Job Detail' },
+  { path: '/dashboard/asteroid_job/:id', title: 'Asteroid Job Detail' }
 ]
 
 const useCurrentPath = () => {
@@ -121,7 +121,7 @@ export default function PersistentDrawerLeft({ children }) {
         open={open}
         sx={{
           color: '#34465d',
-          background: theme.palette.common.white,
+          background: theme.palette.common.white
         }}
       >
         <DashToolbar open={open} handleDrawerOpen={handleDrawerOpen} title={location.title}></DashToolbar>
@@ -152,7 +152,7 @@ export default function PersistentDrawerLeft({ children }) {
               primary={
                 <>
                   <ListItemIcon>
-                    <Box component="img" src={Logo} alt='TNO' sx={{ width: 140 }} />
+                    <Box component='img' src={Logo} alt='TNO' sx={{ width: 140 }} />
                   </ListItemIcon>
                 </>
               }

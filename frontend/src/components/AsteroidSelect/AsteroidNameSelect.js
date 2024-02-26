@@ -1,13 +1,12 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import { useQuery } from 'react-query';
-import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import { listAllAsteroidsWithEvents } from '../../services/api/Occultation';
-import CircularProgress from '@mui/material/CircularProgress';
+import * as React from 'react'
+import PropTypes from 'prop-types'
+import { useQuery } from 'react-query'
+import Autocomplete from '@mui/material/Autocomplete'
+import TextField from '@mui/material/TextField'
+import { listAllAsteroidsWithEvents } from '../../services/api/Occultation'
+import CircularProgress from '@mui/material/CircularProgress'
 function AsteroidNameSelect({ value, onChange }) {
-
-  const [inputValue, setInputValue] = React.useState('');
+  const [inputValue, setInputValue] = React.useState('')
 
   const { data, isLoading } = useQuery({
     queryKey: ['asteroidsWithEvents', { name: inputValue }],
@@ -18,7 +17,7 @@ function AsteroidNameSelect({ value, onChange }) {
     refetchOnmount: false,
     refetchOnReconnect: false,
     // retry: 1,
-    staleTime: 1 * 60 * 60 * 1000,
+    staleTime: 1 * 60 * 60 * 1000
   })
 
   return (
@@ -31,26 +30,25 @@ function AsteroidNameSelect({ value, onChange }) {
       sx={{ minWidth: '50ch' }}
       filterSelectedOptions
       onInputChange={(event, newInputValue) => {
-        setInputValue(newInputValue);
+        setInputValue(newInputValue)
       }}
       onChange={(event, newValue) => {
         onChange(newValue)
       }}
-
       renderInput={(params) => (
         <TextField
           {...params}
-          label="Asteroid Name"
-          variant="outlined"
+          label='Asteroid Name'
+          variant='outlined'
           fullWidth
           InputProps={{
             ...params.InputProps,
             endAdornment: (
               <React.Fragment>
-                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {isLoading ? <CircularProgress color='inherit' size={20} /> : null}
                 {params.InputProps.endAdornment}
               </React.Fragment>
-            ),
+            )
           }}
         />
       )}
@@ -65,6 +63,6 @@ AsteroidNameSelect.defaultProps = {
 AsteroidNameSelect.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired
-};
+}
 
 export default AsteroidNameSelect

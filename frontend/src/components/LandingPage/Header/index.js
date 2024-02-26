@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router-dom'
 function Header() {
   const { isAuthenticated, user, signIn, logout } = useAuth()
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const location = useLocation()
   const trigger = useScrollTrigger({
     threshold: 10,
@@ -111,13 +111,14 @@ function Header() {
         </Box>
         <Box sx={{ flexGrow: 1 }}>
           {menus.map((menu) => (
-            <Button key={menu.description} color="inherit" onClick={() => handleClick(menu.href)}>{menu.description}</Button>
+            <Button key={menu.description} color='inherit' onClick={() => handleClick(menu.href)}>
+              {menu.description}
+            </Button>
           ))}
           <div className={classes.separator} />
         </Box>
         {isAuthenticated ? <UserLogged /> : <UserUnLogged />}
       </Toolbar>
-
     </AppBar>
   )
 }

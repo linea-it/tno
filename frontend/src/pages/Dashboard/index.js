@@ -5,7 +5,6 @@ import UniqueAsteroids from '../../components/UniqueAsteroids/index'
 import WeeklyForecast from '../../components/WeeklyForecast/index'
 import MonthlyForecast from '../../components/MonthlyForecast/index'
 function Dashboard() {
-
   return (
     <Grid container spacing={2} alignItems='stretch'>
       <Grid item xs={12} md={3}>

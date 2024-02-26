@@ -1,5 +1,5 @@
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
     hooks:
       - id: trailing-whitespace
@@ -8,21 +8,55 @@ repos:
       - id: check-xml
       - id: check-yaml
       - id: debug-statements
-        exclude: ^pipelines/
       - id: check-builtin-literals
-        exclude: ^(pipelines/|backend/old_apps/|orbit_trace/)
+        exclude: ^(backend/old_apps/|orbit_trace/)
       - id: check-case-conflict
       - id: check-docstring-first
       - id: detect-private-key
--   repo: https://github.com/psf/black
+  - repo: https://github.com/psf/black
     rev: 24.1.1
     hooks:
-    -   id: black
-        exclude: ^(migrations/|pipelines/)
--   repo: https://github.com/pycqa/isort
+      - id: black
+        exclude: ^(migrations/)
+  - repo: https://github.com/pycqa/isort
     rev: 5.12.0
     hooks:
-    -   id: isort
+      - id: isort
         name: isort (python)
-        args: ["--profile", "black", "--skip", "migrations"]
-        exclude: ^(migrations/|pipelines/|backend/old_apps/)
+        args: ['--profile', 'black', '--skip', 'migrations']
+        exclude: ^(migrations/|backend/old_apps/)
+  - repo: https://github.com/pre-commit/mirrors-eslint
+    rev: v8.56.0
+    hooks:
+      - id: eslint
+        name: Eslint
+        # entry: bash -c 'cd frontend && eslint . --fix --max-warnings=0'
+        entry: bash -c 'cd frontend && npm run lint && npm run format'
+        additional_dependencies:
+          - eslint@8.28.0
+          - eslint-config-airbnb@19.0.4
+          - eslint-config-prettier@8.5.0
+          - eslint-plugin-react@7.14.3
+          - eslint-plugin-import@2.18.2
+          - eslint-plugin-react-hooks@4.6.0
+          - eslint-config-react-app@7.0.1
+          - babel-eslint@6.1.2
+          - prettier@2.8.0
+  # - repo: local
+  #   hooks:
+  #     - id: frontend_lint
+  #       name: eslint and prettier (Javascript)
+  #       language: system
+  #       files: 'frontend/.*\.(js|jsx|ts|tsx)$'
+  #       pass_filenames: false
+  #       entry: bash -c 'cd frontend && yarn lint && yarn format'
+  #       always_run: true
+# -   repo: local
+#     hooks:
+#     -   id: prettier
+#         name: prettier (Javascript)
+#         language: system
+#         files: 'frontend/.*\.(js|jsx|ts|tsx)$'
+#         pass_filenames: false
+#         entry: bash -c 'cd frontend && yarn format'
+#         always_run: true

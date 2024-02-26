@@ -15,7 +15,6 @@ export function AuthProvider({ children }) {
   const isAuthenticated = !!csrftoken
 
   useEffect(() => {
-
     if (csrftoken) {
       // Carrega os dados do usuario logo apos o login
       loggedUser()
@@ -27,8 +26,7 @@ export function AuthProvider({ children }) {
           logout()
         })
     }
-  }, [])
-
+  }, [csrftoken])
 
   async function signIn() {
     window.location.replace(urlLogin)

@@ -18,7 +18,6 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Box from '@mui/material/Box'
 
-
 import styles from './styles'
 
 import IntroductionContent from '../../../components/Content/Introduction.md'
@@ -32,7 +31,7 @@ const menuItems = [
   { label: 'Planets of the Solar System', id: 'planets' },
   { label: 'Moons of the Solar System', id: 'moons' },
   { label: 'Asteroids and Comets', id: 'asteroids-comets' },
-  { label: 'Interactive Tools in the Solar System Portal', id: 'interactive-tools' },
+  { label: 'Interactive Tools in the Solar System Portal', id: 'interactive-tools' }
 ]
 
 function PublicDocumentation() {
@@ -42,7 +41,7 @@ function PublicDocumentation() {
     planets: null,
     moons: null,
     asteroidsComets: null,
-    interactiveTools: null,
+    interactiveTools: null
   })
 
   useEffect(() => {
@@ -65,7 +64,7 @@ function PublicDocumentation() {
           planets: planetsText,
           moons: moonsText,
           asteroidsComets: asteroidsCometsText,
-          interactiveTools: interactiveToolsText,
+          interactiveTools: interactiveToolsText
         })
       } catch (error) {
         console.error('Error fetching content:', error)
@@ -81,10 +80,10 @@ function PublicDocumentation() {
         <Grid item xs={12} md={3} className={classes.menuContainer}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Menu</Typography>
+              <Typography variant='h6'>Menu</Typography>
               <List>
-                {menuItems.map(item => (
-                  <ListItem key={item.id} button component="a" href={`#${item.id}`}>
+                {menuItems.map((item) => (
+                  <ListItem key={item.id} button component='a' href={`#${item.id}`}>
                     <ListItemText primary={item.label} />
                   </ListItem>
                 ))}
@@ -100,19 +99,19 @@ function PublicDocumentation() {
               </Link>
               <Typography color='textPrimary'>Documentation</Typography>
             </Breadcrumbs>
-            <Box id="introduction">
+            <Box id='introduction'>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.introduction || ''}</ReactMarkdown>
             </Box>
-            <Box id="planets">
+            <Box id='planets'>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.planets || ''}</ReactMarkdown>
             </Box>
-            <Box id="moons">
+            <Box id='moons'>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.moons || ''}</ReactMarkdown>
             </Box>
-            <Box id="asteroids-comets">
+            <Box id='asteroids-comets'>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.asteroidsComets || ''}</ReactMarkdown>
             </Box>
-            <Box id="interactive-tools">
+            <Box id='interactive-tools'>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.interactiveTools || ''}</ReactMarkdown>
             </Box>
           </Box>

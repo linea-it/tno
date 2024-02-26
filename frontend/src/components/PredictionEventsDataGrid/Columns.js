@@ -1,13 +1,9 @@
-import Box from '@mui/material/Box';
-import moment from 'moment';
+import Box from '@mui/material/Box'
+import moment from 'moment'
 function ImageCell(props) {
   if (props.value == null) {
     return (
-      <Box
-        component="a"
-        href={`/prediction-event-detail/${props.row.id}`}
-        target="_blank"
-      >
+      <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank'>
         <Box
           // width={props.colDef.computedWidth}
           // height={props.colDef.computedWidth}
@@ -19,21 +15,17 @@ function ImageCell(props) {
     )
   }
   return (
-    <Box
-      component="a"
-      href={`/prediction-event-detail/${props.row.id}`}
-      target="_blank"
-    >
+    <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank'>
       <Box
-        component="img"
+        component='img'
         // width={props.colDef.computedWidth}
         width='auto'
         height={68}
-        alt=""
+        alt=''
         src={props.value}
       />
     </Box>
-  );
+  )
 }
 
 export const ImageCol = {
@@ -43,8 +35,8 @@ export const ImageCol = {
   editable: false,
   groupable: false,
   align: 'center',
-  renderCell: (params) => <ImageCell {...params} />,
-};
+  renderCell: (params) => <ImageCell {...params} />
+}
 
 export const NameCol = {
   resizable: false,
@@ -59,50 +51,45 @@ export const NameCol = {
   },
   renderCell: (params) => {
     return (
-      <Box
-        component="a"
-        href={`/prediction-event-detail/${params.row.id}`}
-        target="_blank"
-        sx={{ textDecoration: 'none' }}
-      >
+      <Box component='a' href={`/prediction-event-detail/${params.row.id}`} target='_blank' sx={{ textDecoration: 'none' }}>
         {params.value}
       </Box>
     )
-  },
-};
+  }
+}
 
 export const floatFixedPrecision2 = {
   type: 'number',
   width: 100,
   valueFormatter: (params) => {
     if (params.value !== undefined && params.value !== null) {
-      return `${params.value.toFixed(2)}`;
+      return `${params.value.toFixed(2)}`
     }
     return ''
-  },
-};
+  }
+}
 
 export const floatFixedPrecision3 = {
   type: 'number',
   width: 100,
   valueFormatter: (params) => {
     if (params.value !== undefined && params.value !== null) {
-      return `${params.value.toFixed(3)}`;
+      return `${params.value.toFixed(3)}`
     }
     return ''
-  },
-};
+  }
+}
 
 export const floatFixedPrecision8 = {
   type: 'number',
   width: 150,
   valueFormatter: (params) => {
     if (params.value !== undefined && params.value !== null) {
-      return `${params.value.toFixed(8)}`;
+      return `${params.value.toFixed(8)}`
     }
     return ''
-  },
-};
+  }
+}
 export const PredictionEventsColumns = [
   // {
   //   field: 'index',
@@ -147,7 +134,7 @@ export const PredictionEventsColumns = [
     headerName: 'Ast Number',
     description: 'Asteroid Number',
     headerAlign: 'center',
-    align: 'center',
+    align: 'center'
   },
   {
     field: 'dynclass',
@@ -155,7 +142,7 @@ export const PredictionEventsColumns = [
     description: 'Dynamic class',
     width: 180,
     headerAlign: 'center',
-    align: 'center',
+    align: 'center'
   },
   {
     field: 'date_time',
@@ -168,10 +155,10 @@ export const PredictionEventsColumns = [
     valueGetter: ({ value }) => value && new Date(value),
     valueFormatter: (params) => {
       if (params.value == null) {
-        return '';
+        return ''
       }
-      return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`;
-    },
+      return `${moment(params.value).utc().format('YYYY-MM-DD HH:mm:ss')}`
+    }
   },
   {
     field: 'closest_approach',
@@ -223,7 +210,7 @@ export const PredictionEventsColumns = [
     headerName: 'Local Solar Time',
     description: 'Local solar time at sub-planet point (hh:mm)',
     headerAlign: 'center',
-    align: 'center',
+    align: 'center'
   },
   {
     field: 'off_ra',
@@ -393,7 +380,7 @@ export const PredictionEventsColumns = [
     headerAlign: 'center',
     align: 'center',
     ...floatFixedPrecision2
-  },
+  }
   // {
   //   field: 'multiplicity_flag',
   //   headerName: 'Multiplicity Flag ',
@@ -410,7 +397,7 @@ export const PredictionEventsColumns = [
   //   align: 'center',
   //   sortable: false
   // },
-];
+]
 
 export const predictionEventsColumnVisibilityModel = {
   id: false,
@@ -443,7 +430,7 @@ export const predictionEventsColumnVisibilityModel = {
   e_ra: false,
   e_dec: false,
   pmra: false,
-  pmdec: false,
+  pmdec: false
   // multiplicity_flag: false,
   // ct: false,
 }

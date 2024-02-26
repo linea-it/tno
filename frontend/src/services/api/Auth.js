@@ -1,12 +1,10 @@
 import { api, url } from './Api'
 
 export function loggedUser() {
-  return api
-    .get('/users/i')
-    .then((res) => {
-      const result = res.data
-      return result
-    })
+  return api.get('/users/i').then((res) => {
+    const result = res.data
+    return result
+  })
 }
 
 export const urlLogin = `${url}/auth/login/?next=/dashboard`

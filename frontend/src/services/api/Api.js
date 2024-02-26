@@ -55,7 +55,6 @@ export function getAPIClient(ctx) {
 export const api = getAPIClient()
 
 export const parseFilters = (filterModel) => {
-
   const params = {}
 
   if (filterModel === undefined) {
@@ -63,13 +62,13 @@ export const parseFilters = (filterModel) => {
   }
   // Handle Search
   if (filterModel.quickFilterValues !== undefined && filterModel.quickFilterValues?.length > 0) {
-    params["search"] = filterModel.quickFilterValues.join(" ")
+    params['search'] = filterModel.quickFilterValues.join(' ')
   }
   if (filterModel.items !== undefined && filterModel.items.length > 0) {
     filterModel.items.forEach((filter) => {
       const { field, operator, value } = filter
       if (value !== undefined) {
-        if (["=", "equals"].indexOf(operator) > -1) {
+        if (['=', 'equals'].indexOf(operator) > -1) {
           params[field] = value
         }
         if (operator === '!=') {
@@ -100,10 +99,9 @@ export const parseFilters = (filterModel) => {
           params[`${field}__in`] = value.join(',')
         }
         if (operator === 'is') {
-          if (value.toLowerCase() === "true") {
+          if (value.toLowerCase() === 'true') {
             params[`${field}`] = true
-          }
-          else if (value.toLowerCase() === "false") {
+          } else if (value.toLowerCase() === 'false') {
             params[`${field}`] = false
           }
         }
