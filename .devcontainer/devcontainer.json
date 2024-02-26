@@ -65,6 +65,7 @@
         "typescript.format.insertSpaceBeforeFunctionParenthesis": false, // align with ESLint Standard
         "typescript.updateImportsOnFileMove.enabled": "always",
         "[python]": {
+          "editor.tabSize": 4,
           "analysis.autoImportCompletions": true,
           "analysis.typeCheckingMode": "basic",
           "defaultInterpreterPath": "/usr/local/bin/python",
@@ -89,7 +90,8 @@
           // "linting.pylintPath": "/usr/local/bin/pylint"
         },
         "[javascript]": {
-          "editor.defaultFormatter": "dbaeumer.vscode-eslint" // preconfig ESLint
+          "editor.defaultFormatter": "dbaeumer.vscode-eslint", // preconfig ESLint
+          "editor.tabSize": 2
         },
         "[json]": {
           "editor.defaultFormatter": "esbenp.prettier-vscode"
