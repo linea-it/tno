@@ -21,13 +21,7 @@ function App() {
 
   const toggleTheme = () => {
     const newDarkMode = !darkMode
-
-
-
     setDarkMode(newDarkMode)
-
-
-
     localStorage.setItem('darkMode', newDarkMode ? '1' : '0')
   }
 
@@ -37,10 +31,6 @@ function App() {
         <AuthProvider>
           <PredictionEventsProvider>
             <BrowserRouter>
-
-
-
-
               <AppRoutes toggleTheme={toggleTheme} darkMode={darkMode} />
             </BrowserRouter>
           </PredictionEventsProvider>
