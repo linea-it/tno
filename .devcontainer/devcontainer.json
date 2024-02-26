@@ -1,89 +1,134 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/docker-existing-docker-compose
 {
-    "name": "TNO Devcontainer",
-    // Update the 'dockerComposeFile' list if you have more compose files or use different names.
-    // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
-    "dockerComposeFile": [
-        "../docker-compose-development-template.yml",
-        "../docker-compose.yml",
-        "docker-compose.yml"
-    ],
-    // The 'service' property is the name of the service for the container that VS Code should
-    // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
-    "service": "vscode",
-    // The optional 'workspaceFolder' property is the path VS Code should open by default when
-    // connected. This is typically a file mount in .devcontainer/docker-compose.yml
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-    // Features to add to the dev container. More info: https://containers.dev/features.
-    "features": {
-        "ghcr.io/devcontainers/features/common-utils:2": {},
-        // "ghcr.io/devcontainers-contrib/features/black:2": {},
-        // "ghcr.io/devcontainers-contrib/features/coverage-py:2": {},
-        // "ghcr.io/devcontainers-contrib/features/isort:2": {},
-        "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
-        "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {},
-        "ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
-        "ghcr.io/guiyomh/features/vim:0": {},
-        "ghcr.io/devcontainers/features/node:1": {},
-        "ghcr.io/devcontainers-contrib/features/act:1": {},
-        "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
-        "ghcr.io/devcontainers/features/github-cli:1": {}
-    },
-    // Use 'forwardPorts' to make a list of ports inside the container available locally.
-    // "forwardPorts": [],
-    // Uncomment the next line if you want start specific services in your Docker Compose config.
-    // "runServices": [],
-    // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
-    // "shutdownAction": "none",
-    // Uncomment the next line to run commands after the container is created.
-    // "postCreateCommand": "cat /etc/os-release",
-    // Configure tool-specific properties.
-    "customizations": {
-        "vscode": {
-            "settings": {
-                "editor.formatOnSave": true,
-                "[python]": {
-                    "analysis.autoImportCompletions": true,
-                    "analysis.typeCheckingMode": "basic",
-                    "defaultInterpreterPath": "/usr/local/bin/python",
-                    "editor.codeActionsOnSave": {
-                        "source.organizeImports": true
-                    },
-                    // Uncomment when fixed
-                    // https://github.com/microsoft/vscode-remote-release/issues/8474
-                    // "editor.defaultFormatter": "ms-python.black-formatter",
-                    "formatting.blackPath": "/usr/local/bin/black",
-                    "formatting.provider": "black",
-                    "languageServer": "Pylance",
-                    // "linting.banditPath": "/usr/local/py-utils/bin/bandit",
-                    "linting.enabled": true
-                    // "linting.flake8Enabled": true,
-                    // "linting.flake8Path": "/usr/local/bin/flake8",
-                    // "linting.mypyEnabled": true,
-                    // "linting.mypyPath": "/usr/local/bin/mypy",
-                    // "linting.pycodestylePath": "/usr/local/bin/pycodestyle",
-                    // "linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-                    // "linting.pylintEnabled": true,
-                    // "linting.pylintPath": "/usr/local/bin/pylint"
-                }
-            },
-            // https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_vs-code-specific-properties
-            // Add the IDs of extensions you want installed when the container is created.
-            "extensions": [
-                "davidanson.vscode-markdownlint",
-                "mrmlnc.vscode-duplicate",
-                "visualstudioexptteam.vscodeintellicode",
-                "visualstudioexptteam.intellicode-api-usage-examples",
-                "eamodio.gitlens",
-                // python
-                "ms-python.python",
-                "ms-python.vscode-pylance",
-                "ms-python.isort",
-                "ms-python.black-formatter"
-            ]
+  "name": "TNO Devcontainer",
+  // Update the 'dockerComposeFile' list if you have more compose files or use different names.
+  // The .devcontainer/docker-compose.yml file contains any overrides you need/want to make.
+  "dockerComposeFile": [
+    "../docker-compose-development-template.yml",
+    "../docker-compose.yml",
+    "docker-compose.yml"
+  ],
+  // The 'service' property is the name of the service for the container that VS Code should
+  // use. Update this value and .devcontainer/docker-compose.yml to the real service name.
+  "service": "vscode",
+  // The optional 'workspaceFolder' property is the path VS Code should open by default when
+  // connected. This is typically a file mount in .devcontainer/docker-compose.yml
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  // Features to add to the dev container. More info: https://containers.dev/features.
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    // "ghcr.io/devcontainers-contrib/features/black:2": {},
+    // "ghcr.io/devcontainers-contrib/features/coverage-py:2": {},
+    // "ghcr.io/devcontainers-contrib/features/isort:2": {},
+    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
+    "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {},
+    "ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
+    "ghcr.io/guiyomh/features/vim:0": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/devcontainers-contrib/features/act:1": {},
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  // "forwardPorts": [],
+  // Uncomment the next line if you want start specific services in your Docker Compose config.
+  // "runServices": [],
+  // Uncomment the next line if you want to keep your containers running after VS Code shuts down.
+  // "shutdownAction": "none",
+  // Uncomment the next line to run commands after the container is created.
+  // "postCreateCommand": "cat /etc/os-release",
+  // Configure tool-specific properties.
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "editor.tabSize": 2,
+        "editor.formatOnPaste": true,
+        "editor.formatOnSave": true, // hero!
+        "editor.tabCompletion": "on",
+        "eslint.format.enable": true,
+        "eslint.workingDirectories": ["/frontend"],
+        // "eslint.workingDirectories": [
+        //     {
+        //         "mode": "auto"
+        //     }
+        // ], // important for mono-repo projects
+        "prettier.endOfLine": "auto", // cross-platform
+        "prettier.semi": false, // align with ESLint Standard
+        "prettier.singleQuote": true, // align with ESLint Standard
+        "prettier.trailingComma": "none", // align with ESLint Standard
+        "tabnine.experimentalAutoImports": true,
+        // Language-Specific
+        "javascript.format.insertSpaceBeforeFunctionParenthesis": false, // align with ESLint Standard
+        "javascript.updateImportsOnFileMove.enabled": "always",
+        "typescript.validate.enable": false,
+        "typescript.format.insertSpaceBeforeFunctionParenthesis": false, // align with ESLint Standard
+        "typescript.updateImportsOnFileMove.enabled": "always",
+        "[python]": {
+          "analysis.autoImportCompletions": true,
+          "analysis.typeCheckingMode": "basic",
+          "defaultInterpreterPath": "/usr/local/bin/python",
+          "editor.codeActionsOnSave": {
+            "source.organizeImports": "explicit"
+          },
+          // Uncomment when fixed
+          // https://github.com/microsoft/vscode-remote-release/issues/8474
+          // "editor.defaultFormatter": "ms-python.black-formatter",
+          "formatting.blackPath": "/usr/local/bin/black",
+          "formatting.provider": "black",
+          "languageServer": "Pylance",
+          // "linting.banditPath": "/usr/local/py-utils/bin/bandit",
+          "linting.enabled": true
+          // "linting.flake8Enabled": true,
+          // "linting.flake8Path": "/usr/local/bin/flake8",
+          // "linting.mypyEnabled": true,
+          // "linting.mypyPath": "/usr/local/bin/mypy",
+          // "linting.pycodestylePath": "/usr/local/bin/pycodestyle",
+          // "linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+          // "linting.pylintEnabled": true,
+          // "linting.pylintPath": "/usr/local/bin/pylint"
+        },
+        "[javascript]": {
+          "editor.defaultFormatter": "dbaeumer.vscode-eslint" // preconfig ESLint
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[jsonc]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[html]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[css]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[scss]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[markdown]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
         }
+      },
+      // https://code.visualstudio.com/docs/remote/devcontainerjson-reference#_vs-code-specific-properties
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "davidanson.vscode-markdownlint",
+        "mrmlnc.vscode-duplicate",
+        "visualstudioexptteam.vscodeintellicode",
+        "visualstudioexptteam.intellicode-api-usage-examples",
+        "eamodio.gitlens",
+        // python
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.isort",
+        "ms-python.black-formatter",
+        // Javascript
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
     }
-    // Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
-    // "remoteUser": "devcontainer"
+  }
+  // Uncomment to connect as an existing user other than the container default. More info: https://aka.ms/dev-containers-non-root.
+  // "remoteUser": "devcontainer"
 }
