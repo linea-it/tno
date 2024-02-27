@@ -18,6 +18,7 @@ const PublicPortalPage = ({ children }) => {
   )
 }
 
+
 export function PublicPageRoutes() {
   return (
     <>
