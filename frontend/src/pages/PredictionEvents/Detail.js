@@ -9,6 +9,7 @@ import Box from '@mui/material/Box';
 import List from '../../components/List';
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
+import Container from '@mui/material/Container'
 
 import {
   getOccultationById,
@@ -178,7 +179,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Aparent Diameter',
-        value: `${occultation.aparent_diameter} (mas)`,
+        value: `${occultation.aparent_diameter ? occultation.aparent_diameter.toFixed(4) : null} (mas)`,
       },
       {
         title: "Object's Astrometric Position (ICRF)",
@@ -229,7 +230,8 @@ function PredictionEventDetail() {
   }, [occultation, starObj]);
 
   return (
-    <>
+    
+      <Container maxWidth="lg">
       <Typography variant="h4" align="center" sx={{ marginTop: 3 }}>
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
@@ -295,7 +297,7 @@ function PredictionEventDetail() {
           </Card>
         </Grid>
       </Grid>
-    </>
+      </Container>
   );
 }
 

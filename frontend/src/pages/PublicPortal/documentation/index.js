@@ -76,7 +76,7 @@ function PublicDocumentation() {
   }, [])
 
   return (
-    <Container>
+    <Container maxWidth="lg">
       <Grid container spacing={3}>
         <Grid item xs={12} md={3} className={classes.menuContainer}>
           <Card>

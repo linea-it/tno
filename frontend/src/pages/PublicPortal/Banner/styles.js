@@ -9,7 +9,10 @@ const styles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     minHeight: 320,
     [theme.breakpoints.down('sm')]: {
-      minHeight: 330
+      minHeight: 200,
+    },
+    [theme.breakpoints.down('md')]: {
+      minHeight: 250,
     },
     borderBottom: '5px solid #ffffff',
   },
@@ -18,7 +21,14 @@ const styles = makeStyles((theme) => ({
     position: 'relative',
     color: '#FFF',
     zIndex: 2,
-    marginTop: '0'
+    marginTop: '0',
+    padding: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(1),
+    },
+    [theme.breakpoints.down('md')]: {
+      padding: theme.spacing(1.5),
+    },
   },
   title: {
     fontFamily: 'Oxanium',
@@ -26,54 +36,54 @@ const styles = makeStyles((theme) => ({
     fontSize: 50,
     margin: 0,
     [theme.breakpoints.down('sm')]: {
-      fontSize: 48,
-      margin: `0 ${theme.spacing(2)}px`
+      fontSize: 28,
+      textAlign: 'center',
     },
-    textShadow: 'black 0.1em 0.1em 0.2em'
+    [theme.breakpoints.down('md')]: {
+      fontSize: 28,
+    },
+    textShadow: 'black 0.1em 0.1em 0.2em',
   },
   logo: {
     position: 'relative',
+    maxWidth: 120,
+    margin: '0 auto',
     [theme.breakpoints.up('sm')]: {
       maxWidth: 150,
-      margin: '0 auto',
     },
-    maxWidth: 120
+    [theme.breakpoints.up('md')]: {
+      maxWidth: 180,
+    },
   },
   titleWrapper: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }
-  },
-  socialWrapper: {
-    color: '#fff',
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    zIndex: 2
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   bannerWrapper: {
-    [theme.breakpoints.up('sm')]: {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    [theme.breakpoints.down('sm')]: {
+      flexDirection: 'column',
+      textAlign: 'center',
+    },
   },
   textOcultatiom: {
     paddingTop: '10px',
-    paddingBottom: '10px'
+    paddingBottom: '10px',
+    fontSize: 18,
+    [theme.breakpoints.down('sm')]: {
+      display: 'none'
+    },
+    [theme.breakpoints.down('md')]: {
+      fontSize: 16,
+    },
   },
   textTitleOcultatiom: {
     fontFamily: 'Oxanium',
     fontWeight: 100,
     fontSize: 20,
-  },
-  menuLink: {
-    textDecoration: 'none',
-    fontWeight: 500,
-    whiteSpace: 'nowrap',
-    cursor: 'pointer'
   },
 }))
 
