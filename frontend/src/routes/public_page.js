@@ -11,7 +11,7 @@ import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 const PublicPortalPage = ({ children }) => {
   return (
     <>
-      <PublicHeader toggleTheme={toggleTheme} darkMode={darkMode} />
+      <PublicHeader />
         {children}
       <FooterSupporters />
     </>
