@@ -3,7 +3,7 @@ import { makeStyles } from '@mui/styles'
 const styles = makeStyles(() => ({
   initContainer: {
     paddingTop: 20,
-    paddingBottom: '60vh',
+    paddingBottom: '40vh',
   },
   grid: {
     margin: 'auto',
