@@ -23,8 +23,8 @@ const styles = makeStyles(() => ({
     position: 'sticky',
     top: -10,
     height: '75vh',
-    overflowY: 'auto',
-  },
+    overflowY: 'auto'
+  }
 }))
 
 export default styles

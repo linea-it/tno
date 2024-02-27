@@ -12,12 +12,11 @@ const PublicPortalPage = ({ children }) => {
   return (
     <>
       <PublicHeader />
-        {children}
+      {children}
       <FooterSupporters />
     </>
   )
 }
-
 
 export function PublicPageRoutes() {
   return (

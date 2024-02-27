@@ -11,10 +11,7 @@ import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
 
-import {
-  getOccultationById,
-  getStarByOccultationId
-} from '../../services/api/Occultation'
+import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
 
@@ -194,16 +191,16 @@ function PredictionEventDetail() {
       },
       {
         title: 'Aparent Diameter',
-        value: `${occultation.aparent_diameter ? occultation.aparent_diameter.toFixed(4) : null} (mas)`,
+        value: `${occultation.aparent_diameter ? occultation.aparent_diameter.toFixed(4) : null} (mas)`
       },
       {
         title: "Object's Astrometric Position (ICRF)",
-        value: `${occultation.ra_target} ${occultation.dec_target}`,
+        value: `${occultation.ra_target} ${occultation.dec_target}`
       },
       {
         title: "Object's Apparent Position (date)",
         tooltip: "Relative to the Earth's center",
-        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`,
+        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`
       },
       {
         title: 'Uncertainty in position',
@@ -241,9 +238,8 @@ function PredictionEventDetail() {
   }, [occultation, starObj])
 
   return (
-    
-      <Container maxWidth="lg">
-      <Typography variant="h4" align="center" sx={{ marginTop: 3 }}>
+    <Container maxWidth='lg'>
+      <Typography variant='h4' align='center' sx={{ marginTop: 3 }}>
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
       <Typography variant='h5' align='center' color='text.secondary'>
@@ -314,8 +310,8 @@ function PredictionEventDetail() {
           </Card>
         </Grid>
       </Grid>
-      </Container>
-  );
+    </Container>
+  )
 }
 
 export default PredictionEventDetail

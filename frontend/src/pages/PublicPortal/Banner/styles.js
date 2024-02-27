@@ -9,10 +9,10 @@ const styles = makeStyles((theme) => ({
     backgroundSize: 'cover',
     minHeight: 320,
     [theme.breakpoints.down('sm')]: {
-      minHeight: 200,
+      minHeight: 200
     },
     [theme.breakpoints.down('md')]: {
-      minHeight: 250,
+      minHeight: 250
     },
     borderBottom: '5px solid #ffffff'
   },
@@ -24,11 +24,11 @@ const styles = makeStyles((theme) => ({
     marginTop: '0',
     padding: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
-      padding: theme.spacing(1),
+      padding: theme.spacing(1)
     },
     [theme.breakpoints.down('md')]: {
-      padding: theme.spacing(1.5),
-    },
+      padding: theme.spacing(1.5)
+    }
   },
   title: {
     fontFamily: 'Oxanium',
@@ -37,28 +37,28 @@ const styles = makeStyles((theme) => ({
     margin: 0,
     [theme.breakpoints.down('sm')]: {
       fontSize: 28,
-      textAlign: 'center',
+      textAlign: 'center'
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: 28,
+      fontSize: 28
     },
-    textShadow: 'black 0.1em 0.1em 0.2em',
+    textShadow: 'black 0.1em 0.1em 0.2em'
   },
   logo: {
     position: 'relative',
     maxWidth: 120,
     margin: '0 auto',
     [theme.breakpoints.up('sm')]: {
-      maxWidth: 150,
+      maxWidth: 150
     },
     [theme.breakpoints.up('md')]: {
-      maxWidth: 180,
-    },
+      maxWidth: 180
+    }
   },
   titleWrapper: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   bannerWrapper: {
     display: 'flex',
@@ -66,8 +66,8 @@ const styles = makeStyles((theme) => ({
     alignItems: 'center',
     [theme.breakpoints.down('sm')]: {
       flexDirection: 'column',
-      textAlign: 'center',
-    },
+      textAlign: 'center'
+    }
   },
   textOcultatiom: {
     paddingTop: '10px',
@@ -77,14 +77,14 @@ const styles = makeStyles((theme) => ({
       display: 'none'
     },
     [theme.breakpoints.down('md')]: {
-      fontSize: 16,
-    },
+      fontSize: 16
+    }
   },
   textTitleOcultatiom: {
     fontFamily: 'Oxanium',
     fontWeight: 100,
     fontSize: 20
-  },
+  }
 }))
 
 export default styles

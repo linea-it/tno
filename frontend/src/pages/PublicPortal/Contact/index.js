@@ -17,9 +17,9 @@ function PublicContact() {
   const classes = styles()
   return (
     <Box className={classes.initContainer}>
-      <Container maxWidth="lg">
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="/">
+      <Container maxWidth='lg'>
+        <Breadcrumbs aria-label='breadcrumb'>
+          <Link color='inherit' href='/'>
             Home
           </Link>
           <Typography color='textPrimary'>Contact Us</Typography>

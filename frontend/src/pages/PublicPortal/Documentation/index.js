@@ -72,18 +72,18 @@ function PublicDocumentation() {
   }, [])
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth='lg'>
       <Grid container spacing={3}>
         <Grid item xs={12} md={3} className={classes.menuContainer}>
           <Card>
             <CardContent>
               <Typography variant='h6'>Menu</Typography>
               <List>
-                {menuItems.map(item => (
+                {menuItems.map((item) => (
                   <ListItem
                     key={item.id}
                     button
-                    component="a"
+                    component='a'
                     href={`#${item.id}`}
                     onClick={() => setSelectedMenuItem(item.id)}
                     selected={selectedMenuItem === item.id}
@@ -103,19 +103,19 @@ function PublicDocumentation() {
               </Link>
               <Typography color='textPrimary'>Documentation</Typography>
             </Breadcrumbs>
-            <Box id="introduction" sx={{ display: selectedMenuItem === 'introduction' ? 'block' : 'none' }}>
+            <Box id='introduction' sx={{ display: selectedMenuItem === 'introduction' ? 'block' : 'none' }}>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.introduction || ''}</ReactMarkdown>
             </Box>
-            <Box id="planets" sx={{ display: selectedMenuItem === 'planets' ? 'block' : 'none' }}>
+            <Box id='planets' sx={{ display: selectedMenuItem === 'planets' ? 'block' : 'none' }}>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.planets || ''}</ReactMarkdown>
             </Box>
-            <Box id="moons" sx={{ display: selectedMenuItem === 'moons' ? 'block' : 'none' }}>
+            <Box id='moons' sx={{ display: selectedMenuItem === 'moons' ? 'block' : 'none' }}>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.moons || ''}</ReactMarkdown>
             </Box>
-            <Box id="asteroids-comets" sx={{ display: selectedMenuItem === 'asteroids-comets' ? 'block' : 'none' }}>
+            <Box id='asteroids-comets' sx={{ display: selectedMenuItem === 'asteroids-comets' ? 'block' : 'none' }}>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.asteroidsComets || ''}</ReactMarkdown>
             </Box>
-            <Box id="interactive-tools" sx={{ display: selectedMenuItem === 'interactive-tools' ? 'block' : 'none' }}>
+            <Box id='interactive-tools' sx={{ display: selectedMenuItem === 'interactive-tools' ? 'block' : 'none' }}>
               <ReactMarkdown remarkPlugins={[gfm]}>{content.interactiveTools || ''}</ReactMarkdown>
             </Box>
           </Box>
