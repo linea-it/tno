@@ -8,14 +8,13 @@ function Log({ data }) {
       <pre>
         {data
           ? data.map((line, index) => (
-            <Box key={index} sx={{ whiteSpace: 'normal' }}>
-              {line}
-            </Box>
-          ))
+              <Box key={index} sx={{ whiteSpace: 'normal' }}>
+                {line}
+              </Box>
+            ))
           : null}
       </pre>
     </Box>
-
   )
 }
 

@@ -1,5 +1,5 @@
 import React from 'react'
-import { ThemeProvider } from '@mui/styles';
+import { ThemeProvider } from '@mui/styles'
 import { BrowserRouter } from 'react-router-dom'
 import light from './themes/light'
 import history from './services/history'
@@ -11,7 +11,6 @@ import './assets/css/index.css'
 
 const queryClient = new QueryClient()
 function DashboardApp() {
-
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider theme={light}>

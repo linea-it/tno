@@ -8,7 +8,7 @@ import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 
-const PublicPortalPage = ({ children, toggleTheme, darkMode }) => {
+const PublicPortalPage = ({ children }) => {
   return (
     <>
       <PublicHeader toggleTheme={toggleTheme} darkMode={darkMode} />
@@ -18,7 +18,7 @@ const PublicPortalPage = ({ children, toggleTheme, darkMode }) => {
   )
 }
 
-export function PublicPageRoutes({ toggleTheme, darkMode }) {
+export function PublicPageRoutes() {
   return (
     <>
       {/* Public Portal Layout*/}
@@ -27,7 +27,7 @@ export function PublicPageRoutes({ toggleTheme, darkMode }) {
         exact
         path='/'
         element={
-          <PublicPortalPage toggleTheme={toggleTheme} darkMode={darkMode}>
+          <PublicPortalPage>
             <PublicHome />
           </PublicPortalPage>
         }
@@ -36,7 +36,7 @@ export function PublicPageRoutes({ toggleTheme, darkMode }) {
         exact
         path='/prediction-event-detail/:id'
         element={
-          <PublicPortalPage toggleTheme={toggleTheme} darkMode={darkMode}>
+          <PublicPortalPage>
             <PredictionEventDetail />
           </PublicPortalPage>
         }
@@ -47,7 +47,7 @@ export function PublicPageRoutes({ toggleTheme, darkMode }) {
         exact
         path='/about-us'
         element={
-          <PublicPortalPage toggleTheme={toggleTheme} darkMode={darkMode}>
+          <PublicPortalPage>
             <PublicAboutUs />
           </PublicPortalPage>
         }
@@ -57,7 +57,7 @@ export function PublicPageRoutes({ toggleTheme, darkMode }) {
         exact
         path='/contact-us'
         element={
-          <PublicPortalPage toggleTheme={toggleTheme} darkMode={darkMode}>
+          <PublicPortalPage>
             <PublicContact />
           </PublicPortalPage>
         }
@@ -67,19 +67,8 @@ export function PublicPageRoutes({ toggleTheme, darkMode }) {
         exact
         path='/documentation'
         element={
-          <PublicPortalPage toggleTheme={toggleTheme} darkMode={darkMode}>
+          <PublicPortalPage>
             <PublicDocumentation />
-          </PublicPortalPage>
-        }
-      />
-      {/* Landing Page Layout*/}
-      <Route
-        isHomePage
-        exact
-        path='/'
-        element={
-          <PublicPortalPage toggleTheme={toggleTheme} darkMode={darkMode}>
-            <PublicHome />
           </PublicPortalPage>
         }
       />
@@ -87,10 +76,10 @@ export function PublicPageRoutes({ toggleTheme, darkMode }) {
   )
 }
 
-export default function PublicRoutes({ toggleTheme, darkMode }) {
+export default function PublicRoutes() {
   return (
     <Routes>
-      <PublicPageRoutes toggleTheme={toggleTheme} darkMode={darkMode} />
+      <PublicPageRoutes />
       <Route path='*' element={<Navigate to='/' />} />
     </Routes>
   )

@@ -18,10 +18,10 @@ export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).
 
 export const getAsteroidsList = () => api.get(`/asteroids/`).then((res) => res.data.results)
 
-export const getFilteredAsteroidsList = (name) => api.get(`/asteroids/?search=` +name).then((res) => res.data.results)
+export const getFilteredAsteroidsList = (name) => api.get(`/asteroids/?search=` + name).then((res) => res.data.results)
 
 export const getAsteroidsWithPredictionList = () => api.get(`/asteroids/with_prediction/`).then((res) => res.data.results)
 
-export const getFilteredWithPredictionList = (name) => api.get(`/asteroids/with_prediction/?name=` +name).then((res) => res.data.results)
+export const getFilteredWithPredictionList = (name) => api.get(`/asteroids/with_prediction/?name=` + name).then((res) => res.data.results)
 
 export const getCatalogList = () => api.get(`/catalog/`).then((res) => res.data.results)

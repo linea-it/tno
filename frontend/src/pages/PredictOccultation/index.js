@@ -1,302 +1,296 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+// import {useEffect} from 'react'
+
 import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import CardActions from '@mui/material/CardActions'
+// import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
+// import FormControl from '@mui/material/FormControl'
+// import InputLabel from '@mui/material/InputLabel'
 import Snackbar from '@mui/material/Snackbar'
-import Backdrop from '@mui/material/Backdrop'
-import CircularProgress from '@mui/material/CircularProgress'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import FormGroup from '@mui/material/FormGroup'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Box from '@mui/material/Box'
-import IconButton from '@mui/material/IconButton'
-import OutlinedInput from '@mui/material/OutlinedInput'
-import Tooltip from '@mui/material/Tooltip'
-import Alert from '@mui/material/Alert'
-import Switch from '@mui/material/Switch'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+// import FormGroup from '@mui/material/FormGroup'
+// import FormControlLabel from '@mui/material/FormControlLabel'
+// import Box from '@mui/material/Box'
+// import IconButton from '@mui/material/IconButton'
+// import OutlinedInput from '@mui/material/OutlinedInput'
+// import Tooltip from '@mui/material/Tooltip'
+// import Alert from '@mui/material/Alert'
+// import Switch from '@mui/material/Switch'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import useInterval from '../../hooks/useInterval'
 
-import {
-  getDynClassList,
-  getBaseDynClassList,
-  getAsteroidsList,
-  getCatalogList,
-  getFilteredAsteroidsList
-} from '../../services/api/Asteroid'
-import {
-  createPredictionJob,
-  getPredictionJobList
-} from '../../services/api/PredictOccultation'
+// import {
+//   getDynClassList,
+//   getBaseDynClassList,
+//   getAsteroidsList,
+//   getCatalogList,
+//   getFilteredAsteroidsList
+// } from '../../services/api/Asteroid'
+import { getPredictionJobList } from '../../services/api/PredictOccultation'
+// import { createPredictionJob } from '../../services/api/PredictOccultation'
 
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
+// import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
+// import { DatePicker } from '@mui/x-date-pickers/DatePicker'
 
-import Select from 'react-select'
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-dayjs.extend(utc);
-dayjs.extend(timezone);
+// import Select from 'react-select'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 function PredictOccultation() {
   const navigate = useNavigate()
-  const useMountEffect = (fun) => useEffect(fun, []);
+  // const useMountEffect = (fun) => useEffect(fun, [fun])
   const [totalCount, setTotalCount] = useState(0)
   const [tableData, setTableData] = useState([])
-  const [disableSubmit, setDisableSubmit] = useState(true)
-  const [backdropOpen, setBackdropOpen] = useState(false)
+  // const [disableSubmit, setDisableSubmit] = useState(true)
   const [reload, setReload] = useState(true)
 
   const [hasJobRunningOrIdleFeedback, setHasJobRunningOrIdleFeedback] = useState(false)
-  const [forceRefreshInputs, setForceRefreshInputs] = useState(false)
 
-  const [filterTypeList, setFilterTypeList] = useState([{ value: 'name', label: 'Object name' }, { value: 'dynclass', label: 'Dynamic Class (with subclasses)' }, { value: 'base_dynclass', label: 'Dynamic Class' }]);
-  const [dynClassList, setDynClassList] = useState([]);
-  const [baseDynClassList, setBaseDynClassList] = useState([]);
-  const [asteroidsList, setAsteroidsList] = useState([]);
-  const [bspValueList, setbspValueList] = useState([{ value: 0, label: 'None' }, { value: 10, label: '10 days' }, { value: 20, label: '20 days' }, { value: 30, label: '30 days' }]);
-  const [bspValue, setBspValue] = useState({ value: 0, label: "None" });
-  const [catalogList, setCatalogList] = useState([{ value: 0, label: 'None' }]);
-  const [catalog, setCatalog] = useState({ value: '', label: "None" });
-  const [dateStart, setDateStart] = useState(dayjs.utc());
-  const [dateEnd, setDateEnd] = useState(null);
+  // const filterTypeList = [
+  //   { value: 'name', label: 'Object name' },
+  //   { value: 'dynclass', label: 'Dynamic Class (with subclasses)' },
+  //   { value: 'base_dynclass', label: 'Dynamic Class' }
+  // ]
+  // const [dynClassList, setDynClassList] = useState([])
+  // const [baseDynClassList, setBaseDynClassList] = useState([])
+  // const [asteroidsList, setAsteroidsList] = useState([])
 
-  const [dateStartError, setDateStartError] = React.useState(false);
-  const [dateEndError, setDateEndError] = React.useState(false);
-  const [filterTypeError, setFilterTypeError] = React.useState(false);
-  const [filterValueError, setFilteValueError] = React.useState(false);
-  const [bspValueError, setBspValueError] = React.useState(false);
-  const [catalogError, setCatalogError] = React.useState(false);
-  const [predictStepError, setPredictStepError] = React.useState(false);
+  // const [catalogList, setCatalogList] = useState([{ value: 0, label: 'None' }])
+  // const [catalog, setCatalog] = useState({ value: '', label: 'None' })
+  // const [dateStart, setDateStart] = useState(dayjs.utc())
+  // const [dateEnd, setDateEnd] = useState(null)
 
-  const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' });
-  const [filterValue, setFilterValue] = React.useState({ value: "", label: "Select..." });
-  const [filterValueNames, setFilterValueNames] = React.useState([]);
-  const [predictStep, setpredictStep] = React.useState('60');
+  // const [dateStartError, setDateStartError] = React.useState(false)
+  // const [dateEndError, setDateEndError] = React.useState(false)
+  // const [filterTypeError, setFilterTypeError] = React.useState(false)
+  // const [filterValueError, setFilteValueError] = React.useState(false)
+  // // const [catalogError, setCatalogError] = React.useState(false)
+  // const [predictStepError, setPredictStepError] = React.useState(false)
 
-  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false);
-  const [messageTextSuccess, setMessageTextSuccess] = React.useState('');
+  // const [filterType, setFilterType] = React.useState({ value: 'base_dynclass', label: 'Dynamic class' })
+  // const [filterValue, setFilterValue] = React.useState({ value: '', label: 'Select...' })
+  // // const [filterValueNames, setFilterValueNames] = React.useState([])
+  // const [predictStep, setpredictStep] = React.useState('60')
 
-  const [messageOpenError, setMessageOpenError] = useState(false);
-  const [messageTextError, setMessageTextError] = React.useState('');
+  const [messageOpenSuccess, setMessageOpenSuccess] = useState(false)
+  // const [messageTextSuccess, setMessageTextSuccess] = React.useState('')
 
-  const [selectedSorting, setSelectedSorting] = useState();
-  const [selectedPage, setSelectedPage] = useState(0);
-  const [selectedPageSize, setSelectedPageSize] = useState(0);
-  const [debug, setDebug] = React.useState(false);
+  const [messageOpenError, setMessageOpenError] = useState(false)
+  // const [messageTextError, setMessageTextError] = React.useState('')
 
-  useEffect(() => {
-    setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value || !catalog.value);
-  }, [dateStart, dateEnd, filterValue, filterType, catalog]);
+  const [selectedSorting, setSelectedSorting] = useState()
+  const [selectedPage, setSelectedPage] = useState(0)
+  const [selectedPageSize, setSelectedPageSize] = useState(0)
+  // const [debug, setDebug] = React.useState(false)
 
-  useMountEffect(() => {
-    getDynClassList().then((list) => {
-      setDynClassList(list.map(x => { return { value: x, label: x } }));
-    })
+  // useEffect(() => {
+  //   setDisableSubmit(!dateStart || !dateEnd || !filterValue.value || !filterType.value || !catalog.value)
+  // }, [dateStart, dateEnd, filterValue, filterType, catalog])
 
-    getBaseDynClassList().then((list) => {
-      setBaseDynClassList(list.map(x => { return { value: x, label: x } }));
-    })
+  // useMountEffect(() => {
+  //   getDynClassList().then((list) => {
+  //     setDynClassList(
+  //       list.map((x) => {
+  //         return { value: x, label: x }
+  //       })
+  //     )
+  //   })
 
-    getAsteroidsList().then((list) => {
-      setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
-    })
+  //   getBaseDynClassList().then((list) => {
+  //     setBaseDynClassList(
+  //       list.map((x) => {
+  //         return { value: x, label: x }
+  //       })
+  //     )
+  //   })
 
-    getCatalogList().then((list) => {
-      setCatalogList(list.map(x => { return { value: x.name, label: x.display_name } }));
-      if (list.length > 0)
-        setCatalog({ value: list[0].name, label: list[0].display_name })
-    })
-  });
+  //   getAsteroidsList().then((list) => {
+  //     setAsteroidsList(
+  //       list.map((x) => {
+  //         return { value: x.name, label: x.name }
+  //       })
+  //     )
+  //   })
 
+  //   getCatalogList().then((list) => {
+  //     setCatalogList(
+  //       list.map((x) => {
+  //         return { value: x.name, label: x.display_name }
+  //       })
+  //     )
+  //     if (list.length > 0) setCatalog({ value: list[0].name, label: list[0].display_name })
+  //   })
+  // })
 
-  const handleChangeDebug = (event) => {
-    setDebug(event.target.checked)
-  }
+  // const handleChangeDebug = (event) => {
+  //   setDebug(event.target.checked)
+  // }
 
-  const filterTypehandleChange = (event) => {
-    if (event) {
-      setFilterValue({ value: "", label: "Select..." });
-      setFilterValueNames([]);
-      setFilterType(event);
-    }
-  };
+  // const filterTypehandleChange = (event) => {
+  //   if (event) {
+  //     setFilterValue({ value: '', label: 'Select...' })
+  //     // setFilterValueNames([])
+  //     setFilterType(event)
+  //   }
+  // }
 
-  const filterValueNameshandleChange = (event) => {
-    if (event) {
-      let stringArray = event.map(x => { return x.value }).toString().replaceAll(',', ';');
-      setFilterValue({ value: stringArray, label: stringArray });
-      setFilterValueNames(event.map(x => { return x.value }));
-    }
-  };
+  // const filterValueNameshandleChange = (event) => {
+  //   if (event) {
+  //     let stringArray = event
+  //       .map((x) => {
+  //         return x.value
+  //       })
+  //       .toString()
+  //       .replaceAll(',', ';')
+  //     setFilterValue({ value: stringArray, label: stringArray })
+  //     // setFilterValueNames(
+  //     //   event.map((x) => {
+  //     //     return x.value
+  //     //   })
+  //     // )
+  //   }
+  // }
 
-  const filterValuehandleChange = (event) => {
-    if (event) {
-      setFilterValueNames([]);
-      setFilterValue(event);
-    }
-  };
+  // const filterValuehandleChange = (event) => {
+  //   if (event) {
+  //     // setFilterValueNames([])
+  //     setFilterValue(event)
+  //   }
+  // }
 
-  const handleChangeForceRefreshInputs = (event) => {
-    setForceRefreshInputs(event.target.checked)
-  }
+  // const CataloghandleChange = (event) => {
+  //   if (event) setCatalog(event)
+  // }
 
-  const bspValuehandleChange = (event) => {
-    if (event)
-      setBspValue(event);
-  };
+  // function formatDate(date) {
+  //   var d = new Date(date),
+  //     month = '' + (d.getMonth() + 1),
+  //     day = '' + d.getDate(),
+  //     year = d.getFullYear()
 
-  const CataloghandleChange = (event) => {
-    if (event)
-      setCatalog(event);
-  };
+  //   if (month.length < 2) month = '0' + month
+  //   if (day.length < 2) day = '0' + day
 
-  function formatDate(date) {
-    var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
+  //   return [year, month, day].join('-')
+  // }
 
-    if (month.length < 2)
-      month = '0' + month;
-    if (day.length < 2)
-      day = '0' + day;
+  // const calculateDate = (filter) => {
+  //   const currentDate = dateStart
+  //   var dateEnd = dayjs(new Date())
 
-    return [year, month, day].join('-');
-  }
+  //   switch (filter) {
+  //     case '1week':
+  //       dateEnd = dayjs(currentDate).add(7, 'day')
+  //       break
+  //     case '1mounth':
+  //       dateEnd = dayjs(currentDate).add(1, 'month')
+  //       dateEnd = dayjs(dateEnd.add(-1, 'day'))
+  //       break
+  //     case '6mounths':
+  //       dateEnd = dayjs(currentDate).add(6, 'month')
+  //       dateEnd = dayjs(dateEnd.add(-1, 'day'))
+  //       break
+  //     case '1year':
+  //       dateEnd = dayjs(currentDate).add(1, 'year')
+  //       dateEnd = dayjs(dateEnd.add(-1, 'day'))
+  //       break
+  //     default:
+  //       break
+  //   }
 
-  const calculateDate = (filter) => {
-    const currentDate = dateStart;
-    var dateEnd = dayjs(new Date());
+  //   setDateEnd(dateEnd)
+  // }
 
-    switch (filter) {
-      case '1week':
-        dateEnd = dayjs(currentDate).add(7, 'day');
-        break;
-      case '1mounth':
-        dateEnd = dayjs(currentDate).add(1, 'month');
-        dateEnd = dayjs(dateEnd.add(-1, 'day'));
-        break;
-      case '6mounths':
-        dateEnd = dayjs(currentDate).add(6, 'month');
-        dateEnd = dayjs(dateEnd.add(-1, 'day'));
-        break;
-      case '1year':
-        dateEnd = dayjs(currentDate).add(1, 'year');
-        dateEnd = dayjs(dateEnd.add(-1, 'day'));
-        break;
-    }
+  // const handleSubmitJobClick = async () => {
+  //   if (await validadeInformation()) {
+  //     setDisableSubmit(true)
+  //     const data = {
+  //       date_initial: formatDate(dateStart),
+  //       date_final: formatDate(dateEnd),
+  //       filter_type: filterType.value,
+  //       filter_value: filterValue.value,
+  //       predict_step: predictStep,
+  //       catalog: catalog.value,
+  //       debug: debug
+  //     }
+  //     createPredictionJob(data)
+  //       .then((response) => {
+  //         setDateStart(dayjs.utc())
+  //         setDateEnd(null)
+  //         setFilterType({ value: 'base_dynclass', label: 'Dynamic class' })
+  //         setFilterValue({ value: '', label: 'Select...' })
+  //         setCatalog({ value: '', label: 'Select...' })
+  //         setMessageTextSuccess('Information registered successfully')
+  //         setMessageOpenSuccess(true)
+  //         setReload((prevState) => !prevState)
+  //         setDisableSubmit(false)
+  //       })
+  //       .catch((err) => {
+  //         console.log(err)
+  //         setMessageTextError(err)
+  //         setMessageOpenError(true)
+  //       })
+  //   }
+  // }
 
-    setDateEnd(dateEnd);
-  }
+  // function validadeInformation() {
+  //   var verify = true
+  //   setMessageTextError('')
+  //   setMessageOpenError(false)
+  //   setDateStartError(false)
+  //   setDateEndError(false)
+  //   setFilterTypeError(false)
+  //   setFilteValueError(false)
+  //   setPredictStepError(false)
 
-  function currentDate() {
-    var d = new Date(),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
+  //   if (dateStart === '') {
+  //     verify = false
+  //     setDateStartError(true)
+  //   }
 
-    if (month.length < 2)
-      month = '0' + month;
-    if (day.length < 2)
-      day = '0' + day;
+  //   if (dateEnd === '') {
+  //     verify = false
+  //     setDateEndError(true)
+  //   }
 
-    return [year, month, day].join('-');
-  }
+  //   if (predictStep === '') {
+  //     verify = false
+  //     setPredictStepError(true)
+  //   }
 
-  const handleSubmitJobClick = async () => {
+  //   if (filterType.value === '') {
+  //     verify = false
+  //     setFilterTypeError(true)
+  //   }
 
-    if (await validadeInformation()) {
-      setDisableSubmit(true);
-      const data = {
-        date_initial: formatDate(dateStart),
-        date_final: formatDate(dateEnd),
-        filter_type: filterType.value,
-        filter_value: filterValue.value,
-        predict_step: predictStep,
-        catalog: catalog.value,
-        debug: debug
-      }
-      createPredictionJob(data)
-        .then((response) => {
-          setDateStart(dayjs.utc());
-          setDateEnd(null);
-          setFilterType({ value: 'base_dynclass', label: 'Dynamic class' });
-          setFilterValue({ value: "", label: "Select..." });
-          setCatalog({ value: "", label: "Select..." });
-          setBspValue({ value: 0, label: "None" });
-          setMessageTextSuccess('Information registered successfully');
-          setMessageOpenSuccess(true);
-          setReload((prevState) => !prevState);
-          setDisableSubmit(false);
-        })
-        .catch((err) => {
-          console.log(err)
-          setMessageTextError(err);
-          setMessageOpenError(true);
-        })
-    }
-  }
+  //   if (filterValue.value === '') {
+  //     verify = false
+  //     setFilteValueError(true)
+  //   }
 
-  function validadeInformation() {
-    var verify = true;
-    setMessageTextError('');
-    setMessageOpenError(false);
-    setDateStartError(false);
-    setDateEndError(false);
-    setFilterTypeError(false);
-    setFilteValueError(false);
-    setBspValueError(false);
-    setPredictStepError(false);
+  //   if (!verify) {
+  //     setMessageTextError('All information must be completed.')
+  //     setMessageOpenError(true)
+  //   }
 
-    if (dateStart == '') {
-      verify = false;
-      setDateStartError(true);
-    }
-
-    if (dateEnd == '') {
-      verify = false;
-      setDateEndError(true);
-    }
-
-    if (predictStep == '') {
-      verify = false;
-      setPredictStepError(true);
-    }
-
-    if (filterType.value == '') {
-      verify = false;
-      setFilterTypeError(true);
-    }
-
-    if (filterValue.value == '') {
-      verify = false;
-      setFilteValueError(true);
-    }
-
-    if (!verify) {
-      setMessageTextError('All information must be completed.');
-      setMessageOpenError(true);
-    }
-
-    return verify;
-  }
+  //   return verify
+  // }
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
     setSelectedSorting(sorting)
     setSelectedPageSize(pageSize)
     setSelectedPage(currentPage)
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
     getPredictionJobList({
       page: currentPage + 1,
       pageSize,
@@ -313,7 +307,6 @@ function PredictOccultation() {
       setTotalCount(data.count)
     })
   }
-
 
   const tableColumns = [
     {
@@ -349,14 +342,19 @@ function PredictOccultation() {
       name: 'owner',
       title: 'Owner',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'start',
       title: 'Execution Date',
       width: 150,
       align: 'center',
-      customElement: (row) => row.start ? <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span> : <span>Not started</span>
+      customElement: (row) =>
+        row.start ? (
+          <span title={moment(row.start).format('HH:mm:ss')}>{moment(row.start).format('YYYY-MM-DD')}</span>
+        ) : (
+          <span>Not started</span>
+        )
     },
     {
       name: 'exec_time',
@@ -370,7 +368,7 @@ function PredictOccultation() {
       name: 'count_asteroids',
       title: 'Asteroids',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_asteroids_with_occ',
@@ -383,27 +381,27 @@ function PredictOccultation() {
       name: 'count_occ',
       title: 'Occultations',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_success',
       title: 'Success',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'count_failures',
       title: 'Failures',
       width: 130,
-      align: 'center',
+      align: 'center'
     },
     {
       name: 'avg_exec_time',
       title: 'Average Execution Time',
       width: 130,
       align: 'center',
-      customElement: (row) => (moment.utc(row.avg_exec_time * 1000).format("HH:mm:ss"))
-    },
+      customElement: (row) => moment.utc(row.avg_exec_time * 1000).format('HH:mm:ss')
+    }
   ]
 
   // Reload data if we have any Skybot job running,
@@ -416,53 +414,58 @@ function PredictOccultation() {
     }
   }, 10000)
 
-  const onKeyUp = async (event) => {
-    if (event.target.value.length > 1) {
-      getFilteredAsteroidsList(event.target.value).then((list) => {
-        setAsteroidsList(list.map(x => { return { value: x.name, label: x.name } }));
-      })
-    }
-  }
+  // const onKeyUp = async (event) => {
+  //   if (event.target.value.length > 1) {
+  //     getFilteredAsteroidsList(event.target.value).then((list) => {
+  //       setAsteroidsList(
+  //         list.map((x) => {
+  //           return { value: x.name, label: x.name }
+  //         })
+  //       )
+  //     })
+  //   }
+  // }
 
   useInterval(() => {
     if (selectedSorting) {
-      loadData(({ sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage }));
+      loadData({ sorting: selectedSorting, pageSize: selectedPageSize, currentPage: selectedPage })
     }
-  }, [5000]);
+  }, [5000])
 
   return (
     <>
-      <Grid container spacing={2} alignItems='stretch'>
+      {/* <Grid container spacing={2} alignItems='stretch'>
         <Grid item xs={12}>
           <Grid container spacing={2}>
-            <Grid item xs={12}>
+             <Grid item xs={12}>
               <Card>
                 <CardHeader title='Predict Occultation Run' />
                 <CardContent>
                   <Grid container spacing={2} alignItems='stretch'>
-
                     <Grid item xs={12} sm={12} md={6}>
-                      <label>Period for prediction<span>*</span></label>
-                      <Box variant="outlined" className="cardBoder">
+                      <label>
+                        Period for prediction<span>*</span>
+                      </label>
+                      <Box variant='outlined' className='cardBoder'>
                         <CardContent>
                           <Grid container spacing={2} alignItems='stretch'>
                             <Grid item xs={12} sm={6} md={6} lg={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1week')}>
+                              <Button color='primary' size='small' variant='contained' fullWidth onClick={() => calculateDate('1week')}>
                                 1 Week
                               </Button>
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} lg={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1mounth')}>
+                              <Button color='primary' size='small' variant='contained' fullWidth onClick={() => calculateDate('1mounth')}>
                                 1 Month
                               </Button>
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} lg={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('6mounths')}>
+                              <Button color='primary' size='small' variant='contained' fullWidth onClick={() => calculateDate('6mounths')}>
                                 6 Months
                               </Button>
                             </Grid>
                             <Grid item xs={12} sm={6} md={6} lg={3}>
-                              <Button color='primary' size="small" variant='contained' fullWidth onClick={() => calculateDate('1year')}>
+                              <Button color='primary' size='small' variant='contained' fullWidth onClick={() => calculateDate('1year')}>
                                 1 Year
                               </Button>
                             </Grid>
@@ -470,24 +473,42 @@ function PredictOccultation() {
                           <Grid container spacing={2} alignItems='stretch'>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Initial date <span>*</span></label>
+                                <FormControl fullWidth>
+                                  <label>
+                                    Initial date <span>*</span>
+                                  </label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker format="YYYY-MM-DD" value={dateStart} onChange={date => { setDateStart(date) }} />
+                                    <DatePicker
+                                      format='YYYY-MM-DD'
+                                      value={dateStart}
+                                      onChange={(date) => {
+                                        setDateStart(date)
+                                      }}
+                                    />
                                   </LocalizationProvider>
                                 </FormControl>
-                                {dateStartError ? (<span>Required field</span>) : ''}
+                                {dateStartError ? <span>Required field</span> : ''}
                               </Box>
                             </Grid>
                           </Grid>
                           <Grid container spacing={2} alignItems='stretch'>
                             <Grid item xs={12}>
                               <Box sx={{ minWidth: 120 }}>
-                                <FormControl fullWidth><label>Final date <span>*</span></label>
+                                <FormControl fullWidth>
+                                  <label>
+                                    Final date <span>*</span>
+                                  </label>
                                   <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                    <DatePicker format="YYYY-MM-DD" value={dateEnd} onChange={date => { setDateEnd(date) }} />
+                                    <DatePicker
+                                      format='YYYY-MM-DD'
+                                      value={dateEnd}
+                                      onChange={(date) => {
+                                        setDateEnd(date)
+                                      }}
+                                    />
                                   </LocalizationProvider>
                                 </FormControl>
-                                {dateEndError ? (<span>Required field</span>) : ''}
+                                {dateEndError ? <span>Required field</span> : ''}
                               </Box>
                             </Grid>
                           </Grid>
@@ -499,79 +520,115 @@ function PredictOccultation() {
                       <Grid container spacing={2} alignItems='stretch'>
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Filter Type <span>*</span></label>
-                              <Select
-                                value={filterType}
-                                id="filterType"
-                                onChange={filterTypehandleChange}
-                                options={filterTypeList}
-                              />
+                            <FormControl fullWidth>
+                              <label>
+                                Filter Type <span>*</span>
+                              </label>
+                              <Select value={filterType} id='filterType' onChange={filterTypehandleChange} options={filterTypeList} />
                             </FormControl>
-                            {filterTypeError ? (<span>Required field</span>) : ''}
+                            {filterTypeError ? <span>Required field</span> : ''}
                           </Box>
                         </Grid>
 
-                        {filterType.value !== "" &&
+                        {filterType.value !== '' && (
                           <Grid item xs={12} sm={6} md={12} lg={6}>
                             <Box sx={{ minWidth: 120 }}>
-                              {filterType.value == "name" && <FormControl onKeyUp={onKeyUp} fullWidth><label>Filter Value <span>*</span></label>
-                                <InputLabel></InputLabel>
-                                <Select
-                                  id="filterName"
-                                  onChange={filterValueNameshandleChange}
-                                  isMulti
-                                  options={asteroidsList}
-                                  menuPortalTarget={document.body}
-                                  menuPosition={'fixed'}
-                                />
-                              </FormControl>}
-                              {filterType.value == "dynclass" && <FormControl fullWidth><label>Filter Value <span>*</span></label>
-                                <Select
-                                  value={filterValue}
-                                  id="filterDynClass"
-                                  onChange={filterValuehandleChange}
-                                  options={dynClassList}
-                                  menuPortalTarget={document.body}
-                                  menuPosition={'fixed'}
-                                />
-                              </FormControl>}
-                              {filterType.value == "base_dynclass" && <FormControl fullWidth><label>Filter Value <span>*</span></label>
-                                <Select
-                                  value={filterValue}
-                                  id="filterBaseDynClass"
-                                  onChange={filterValuehandleChange}
-                                  options={baseDynClassList}
-                                  menuPortalTarget={document.body}
-                                  menuPosition={'fixed'}
-                                />
-                              </FormControl>}
-                              {filterValueError ? (<span>Required field</span>) : ''}
+                              {filterType.value === 'name' && (
+                                <FormControl onKeyUp={onKeyUp} fullWidth>
+                                  <label>
+                                    Filter Value <span>*</span>
+                                  </label>
+                                  <InputLabel></InputLabel>
+                                  <Select
+                                    id='filterName'
+                                    onChange={filterValueNameshandleChange}
+                                    isMulti
+                                    options={asteroidsList}
+                                    menuPortalTarget={document.body}
+                                    menuPosition={'fixed'}
+                                  />
+                                </FormControl>
+                              )}
+                              {filterType.value === 'dynclass' && (
+                                <FormControl fullWidth>
+                                  <label>
+                                    Filter Value <span>*</span>
+                                  </label>
+                                  <Select
+                                    value={filterValue}
+                                    id='filterDynClass'
+                                    onChange={filterValuehandleChange}
+                                    options={dynClassList}
+                                    menuPortalTarget={document.body}
+                                    menuPosition={'fixed'}
+                                  />
+                                </FormControl>
+                              )}
+                              {filterType.value === 'base_dynclass' && (
+                                <FormControl fullWidth>
+                                  <label>
+                                    Filter Value <span>*</span>
+                                  </label>
+                                  <Select
+                                    value={filterValue}
+                                    id='filterBaseDynClass'
+                                    onChange={filterValuehandleChange}
+                                    options={baseDynClassList}
+                                    menuPortalTarget={document.body}
+                                    menuPosition={'fixed'}
+                                  />
+                                </FormControl>
+                              )}
+                              {filterValueError ? <span>Required field</span> : ''}
                             </Box>
                           </Grid>
-                        }
+                        )}
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label>Star Catalog <span>*</span></label>
+                            <FormControl fullWidth>
+                              <label>
+                                Star Catalog <span>*</span>
+                              </label>
                               <Select
                                 value={catalog}
-                                id="catalog"
-                                label="Catalog"
+                                id='catalog'
+                                label='Catalog'
                                 onChange={CataloghandleChange}
                                 options={catalogList}
                                 menuPortalTarget={document.body}
                                 menuPosition={'fixed'}
                               />
                             </FormControl>
-                            {catalogError ? (<span>Required field</span>) : ''}
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={6} md={12} lg={6}>
                           <Box sx={{ minWidth: 120 }}>
-                            <FormControl fullWidth><label className='label-tooltip-margin'> Ephemeris Step(s) <span>*</span><Tooltip title={<label> Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for nearby objects.</label>}><IconButton><InfoOutlinedIcon /></IconButton>
-                            </Tooltip></label>
-                              <OutlinedInput id="my-input" value={predictStep} variant="outlined" onChange={(e) => setpredictStep(e.target.value)} />
+                            <FormControl fullWidth>
+                              <label className='label-tooltip-margin'>
+                                {' '}
+                                Ephemeris Step(s) <span>*</span>
+                                <Tooltip
+                                  title={
+                                    <label>
+                                      {' '}
+                                      Step in time, in seconds, to determine the positions of objects. 600 for distant objects and 60 for
+                                      nearby objects.
+                                    </label>
+                                  }
+                                >
+                                  <IconButton>
+                                    <InfoOutlinedIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </label>
+                              <OutlinedInput
+                                id='my-input'
+                                value={predictStep}
+                                variant='outlined'
+                                onChange={(e) => setpredictStep(e.target.value)}
+                              />
                             </FormControl>
-                            {predictStepError ? (<span>Required field</span>) : ''}
+                            {predictStepError ? <span>Required field</span> : ''}
                           </Box>
                         </Grid>
                         <Grid item xs={12} sm={6} md={4} lg={4}>
@@ -579,27 +636,25 @@ function PredictOccultation() {
                             <FormControl fullWidth>
                               <FormGroup>
                                 <FormControlLabel
-                                  control={<Switch checked={debug} onChange={handleChangeDebug} color="primary" />}
+                                  control={<Switch checked={debug} onChange={handleChangeDebug} color='primary' />}
                                   label='Debug mode'
                                 />
-                              </FormGroup> </FormControl>
+                              </FormGroup>{' '}
+                            </FormControl>
                           </Box>
                         </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
-                  {/* <Grid container spacing={2} direction="row"
-                    justifyContent="center"
-                    alignItems="center">
-                    <Box>
-                      <Button variant='contained' disabled={disableSubmit} className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
-                        Execute
-                      </Button>
-                    </Box>
-                  </Grid> */}
                 </CardContent>
                 <CardActions>
-                  <Button variant='contained' disabled={disableSubmit} className="buttonFilter" color='primary' onClick={handleSubmitJobClick}>
+                  <Button
+                    variant='contained'
+                    disabled={disableSubmit}
+                    className='buttonFilter'
+                    color='primary'
+                    onClick={handleSubmitJobClick}
+                  >
                     Execute
                   </Button>
                 </CardActions>
@@ -607,7 +662,7 @@ function PredictOccultation() {
             </Grid>
           </Grid>
         </Grid>
-      </Grid >
+      </Grid> */}
 
       <Grid container spacing={6} sx={{ mt: 1 }}>
         <Grid item xs={12}>
@@ -636,9 +691,9 @@ function PredictOccultation() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         onClose={() => setMessageOpenSuccess(false)}
       >
-        <Alert severity="success" sx={{ width: '100%' }}>
+        {/* <Alert severity='success' sx={{ width: '100%' }}>
           {messageTextSuccess}
-        </Alert>
+        </Alert> */}
       </Snackbar>
       <Snackbar
         open={messageOpenError}
@@ -646,9 +701,9 @@ function PredictOccultation() {
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         onClose={() => setMessageOpenError(false)}
       >
-        <Alert severity="error" sx={{ width: '100%' }}>
+        {/* <Alert severity='error' sx={{ width: '100%' }}>
           {messageTextError}
-        </Alert>
+        </Alert> */}
       </Snackbar>
       <Snackbar
         open={hasJobRunningOrIdleFeedback}
@@ -657,9 +712,6 @@ function PredictOccultation() {
         message="There's already a job running, so your job is currently idle."
         onClose={() => setHasJobRunningOrIdleFeedback(false)}
       />
-      <Backdrop open={backdropOpen}>
-        <CircularProgress color='inherit' />
-      </Backdrop>
     </>
   )
 }

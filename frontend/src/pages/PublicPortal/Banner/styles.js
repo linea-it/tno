@@ -14,7 +14,7 @@ const styles = makeStyles((theme) => ({
     [theme.breakpoints.down('md')]: {
       minHeight: 250,
     },
-    borderBottom: '5px solid #ffffff',
+    borderBottom: '5px solid #ffffff'
   },
   container: {
     background: 'transparent',
@@ -83,7 +83,7 @@ const styles = makeStyles((theme) => ({
   textTitleOcultatiom: {
     fontFamily: 'Oxanium',
     fontWeight: 100,
-    fontSize: 20,
+    fontSize: 20
   },
 }))
 

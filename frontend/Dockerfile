@@ -11,14 +11,14 @@ RUN yarn -v
 RUN yarn --non-interactive --ignore-optional --network-timeout 500000
 # RUN yarn run build
 
-FROM builder as builder_public
-RUN yarn run build_public
+# FROM builder as builder_public
+# RUN yarn run build_public
 
-FROM builder as builder_dashboard
-RUN yarn run build_dashboard
+# FROM builder as builder_dashboard
+# RUN yarn run build_dashboard
 
-# FROM builder as builder_all
-# RUN yarn run build
+FROM builder as builder_all
+RUN yarn run build
 
 # Ngnix
 FROM nginx:latest
@@ -30,11 +30,11 @@ RUN chmod -R g+w /var/cache/nginx/
 # Write the PID file to a location where regular users have write access.
 RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var/tmp/nginx.pid;%' /etc/nginx/nginx.conf
 
-COPY --from=builder_public /build/public_page /var/www/html
-COPY --from=builder_dashboard /build/dashboard /var/www/html/dashboard
-# COPY --from=builder_all /app/build /var/www/frontend
+# COPY --from=builder_public  --chmod=775 /build/public_page /var/www/html/home
+# COPY --from=builder_dashboard  --chmod=775 /build/dashboard /var/www/html/dashboard
+COPY --from=builder_all /app/build /var/www/frontend
 
-RUN chgrp nginx /var/www
-RUN chmod -R g+w /var/www
+RUN chgrp nginx /var/www/frontend
+RUN chmod -R g+w /var/www/frontend
 # ADD ./nginx/production.conf /etc/nginx/conf.d/default.conf
 USER nginx

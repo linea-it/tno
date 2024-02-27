@@ -7,7 +7,7 @@ const styles = makeStyles(() => ({
   },
   grid: {
     margin: 'auto',
-    marginTop: 20,
+    marginTop: 20
   }
 }))
 

@@ -1,31 +1,31 @@
 import React from 'react'
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box'
+import Typography from '@mui/material/Typography'
 // import Plot from 'react-plotly.js'
-import { filesize } from 'filesize';
-import LinearProgress from '@mui/material/LinearProgress';
-import Stack from '@mui/material/Stack';
+import { filesize } from 'filesize'
+import LinearProgress from '@mui/material/LinearProgress'
+import Stack from '@mui/material/Stack'
 import PropTypes from 'prop-types'
 
 // MIN = Minimum expected value
 // MAX = Maximum expected value
 // Function to normalise the values (MIN / MAX could be integrated)
-const normalise = (value, max) => (value * 100) / (max);
+const normalise = (value, max) => (value * 100) / max
 
 export default function UsagePlot({ maxSize, used }) {
-
-  const o_size = filesize(maxSize, { output: "object" })
-  const o_used = filesize(used, { output: "object" })
+  const o_size = filesize(maxSize, { output: 'object' })
+  const o_used = filesize(used, { output: 'object' })
 
   return (
     <Box sx={{ width: '100%' }}>
       <Stack spacing={1}>
         <Box sx={{ width: '100%', mr: 1 }}>
-          <LinearProgress variant="determinate" value={normalise(o_used.value, o_size.value)} />
+          <LinearProgress variant='determinate' value={normalise(o_used.value, o_size.value)} />
         </Box>
         <Box>
-          <Typography variant="body2" color="text.secondary" sx={{ textAlign: "right" }}>
-            {`${o_used.value}${o_used.unit}`} / {`${o_size.value}${o_size.unit}`}</Typography>
+          <Typography variant='body2' color='text.secondary' sx={{ textAlign: 'right' }}>
+            {`${o_used.value}${o_used.unit}`} / {`${o_size.value}${o_size.unit}`}
+          </Typography>
         </Box>
       </Stack>
     </Box>

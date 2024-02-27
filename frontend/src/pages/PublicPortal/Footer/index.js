@@ -10,8 +10,7 @@ function PublicFooter() {
   return (
     <footer className={`${classes.root} ${classes.appBarDrawerClose}`}>
       <Grid container direction='row' justifyContent='space-between' alignItems='center'>
-        <Grid item className={classes.marginItem}>
-        </Grid>
+        <Grid item className={classes.marginItem}></Grid>
         <Grid item className={classes.marginItem}>
           <Typography color='primary'>
             <span className={classes.poweredBy}>Powered by</span>

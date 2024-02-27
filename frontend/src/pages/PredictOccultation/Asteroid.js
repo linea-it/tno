@@ -1,17 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Button from '@mui/material/Button';
-import Icon from '@mui/material/Icon';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
-import Alert from '@mui/material/Alert';
-import Skeleton from '@mui/material/Skeleton';
+import Button from '@mui/material/Button'
+import Icon from '@mui/material/Icon'
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Typography from '@mui/material/Typography'
+import Alert from '@mui/material/Alert'
+import Skeleton from '@mui/material/Skeleton'
 import { getPredictionJobResultById } from '../../services/api/PredictOccultation'
 import List from '../../components/List'
-import { PredictionEventsContext } from '../../contexts/PredictionContext';
+import { PredictionEventsContext } from '../../contexts/PredictionContext'
 import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index'
 
 function PredictionAsteroid() {
@@ -27,7 +27,7 @@ function PredictionAsteroid() {
   useEffect(() => {
     getPredictionJobResultById(id).then((res) => {
       setPredictionJobResult(res)
-      setQueryOptions(prev => {
+      setQueryOptions((prev) => {
         return {
           ...prev,
           filters: {
@@ -45,7 +45,6 @@ function PredictionAsteroid() {
       })
     })
   }, [id, setQueryOptions])
-
 
   useEffect(() => {
     if (predictionJobResult) {
@@ -78,40 +77,40 @@ function PredictionAsteroid() {
       setTimes([
         {
           title: 'Execution time',
-          value: predictionJobResult.exec_time ? predictionJobResult.exec_time.split('.')[0] : "-"
+          value: predictionJobResult.exec_time ? predictionJobResult.exec_time.split('.')[0] : '-'
         },
         {
           title: 'Download BSP',
-          value: predictionJobResult.bsp_jpl_dw_time ? predictionJobResult.bsp_jpl_dw_time.split('.')[0] : "-"
+          value: predictionJobResult.bsp_jpl_dw_time ? predictionJobResult.bsp_jpl_dw_time.split('.')[0] : '-'
         },
         {
           title: 'Observations Download Time',
-          value: predictionJobResult.obs_dw_time ? predictionJobResult.obs_dw_time.split('.')[0] : "-"
+          value: predictionJobResult.obs_dw_time ? predictionJobResult.obs_dw_time.split('.')[0] : '-'
         },
         {
           title: 'Orbital Elements Download Time',
-          value: predictionJobResult.orb_ele_dw_time ? predictionJobResult.orb_ele_dw_time.split('.')[0] : "-"
+          value: predictionJobResult.orb_ele_dw_time ? predictionJobResult.orb_ele_dw_time.split('.')[0] : '-'
         },
         {
           title: 'DES Observations Execution Time',
-          value: predictionJobResult.des_obs_exec_time ? predictionJobResult.des_obs_exec_time.split('.')[0] : "-"
+          value: predictionJobResult.des_obs_exec_time ? predictionJobResult.des_obs_exec_time.split('.')[0] : '-'
         },
         {
           title: 'Refine Orbit Execution Time',
-          value: predictionJobResult.ref_orb_exec_time ? predictionJobResult.ref_orb_exec_time.split('.')[0] : "-"
+          value: predictionJobResult.ref_orb_exec_time ? predictionJobResult.ref_orb_exec_time.split('.')[0] : '-'
         },
         {
           title: 'Predict Occultation Execution Time',
-          value: predictionJobResult.pre_occ_exec_time ? predictionJobResult.pre_occ_exec_time.split('.')[0] : "-"
+          value: predictionJobResult.pre_occ_exec_time ? predictionJobResult.pre_occ_exec_time.split('.')[0] : '-'
         },
         {
           title: 'Path Coeff Execution Time',
-          value: predictionJobResult.calc_path_coeff_exec_time ? predictionJobResult.calc_path_coeff_exec_time.split('.')[0] : "-"
+          value: predictionJobResult.calc_path_coeff_exec_time ? predictionJobResult.calc_path_coeff_exec_time.split('.')[0] : '-'
         },
         {
           title: 'Result Ingestion Execution Time',
-          value: predictionJobResult.ing_occ_exec_time ? predictionJobResult.ing_occ_exec_time.split('.')[0] : "-"
-        },
+          value: predictionJobResult.ing_occ_exec_time ? predictionJobResult.ing_occ_exec_time.split('.')[0] : '-'
+        }
       ])
     }
   }, [predictionJobResult])
@@ -120,10 +119,14 @@ function PredictionAsteroid() {
 
   const loadingCard = (height) => {
     return (
-      <Skeleton height={height} animation="wave" sx={{
-        paddingTop: 0,
-        paddingBotton: 0,
-      }} />
+      <Skeleton
+        height={height}
+        animation='wave'
+        sx={{
+          paddingTop: 0,
+          paddingBotton: 0
+        }}
+      />
     )
   }
 
@@ -141,11 +144,14 @@ function PredictionAsteroid() {
           </Grid>
         </Grid>
       </Grid>
-      {predictionJobResult !== undefined && 'messages' in predictionJobResult && predictionJobResult.status === 2 && predictionJobResult.messages !== null && (
-        <Grid item xs={12}>
-          <Alert severity='error'>{predictionJobResult?.messages}</Alert>
-        </Grid>
-      )}
+      {predictionJobResult !== undefined &&
+        'messages' in predictionJobResult &&
+        predictionJobResult.status === 2 &&
+        predictionJobResult.messages !== null && (
+          <Grid item xs={12}>
+            <Alert severity='error'>{predictionJobResult?.messages}</Alert>
+          </Grid>
+        )}
       <Grid item xs={6}>
         {!predictionJobResult && loadingCard(400)}
         {predictionJobResult && (
@@ -170,9 +176,7 @@ function PredictionAsteroid() {
       </Grid>
       <Grid item xs={12} sx={{ mt: 2 }}>
         {!predictionJobResult && loadingCard(600)}
-        {predictionJobResult && (
-          <PredictionEventsDataGrid />
-        )}
+        {predictionJobResult && <PredictionEventsDataGrid />}
       </Grid>
     </Grid>
   )

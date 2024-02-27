@@ -22,26 +22,23 @@ function PublicContact() {
           <Link color="inherit" href="/">
             Home
           </Link>
-          <Typography color="textPrimary">Contact Us</Typography>
+          <Typography color='textPrimary'>Contact Us</Typography>
         </Breadcrumbs>
         <Grid item xs={9} className={classes.grid}>
           <Card sx={{ margin: '16px 0' }}>
             <CardContent>
-              <Typography variant="h4" align="center" color="textPrimary">
+              <Typography variant='h4' align='center' color='textPrimary'>
                 Contact
               </Typography>
               <p>
                 <span>
-                  If you have any problems related to the usage of the
-                  applications,
-                  <Link href="/documentation" variant="body2">
+                  If you have any problems related to the usage of the applications,
+                  <Link href='/documentation' variant='body2'>
                     &nbsp;click here&nbsp;
                   </Link>
                   <br />
-                  <p>To get in touch with technical support
-                    you can send an email to: helpdesk at linea dot org dot br</p>
-                  We stand ready to assist you with any inquiries,
-                  ideas, or remarks you may have.
+                  <p>To get in touch with technical support you can send an email to: helpdesk at linea dot org dot br</p>
+                  We stand ready to assist you with any inquiries, ideas, or remarks you may have.
                 </span>
               </p>
             </CardContent>

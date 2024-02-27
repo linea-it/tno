@@ -1,21 +1,19 @@
 import React from 'react'
-import { AppBar, Toolbar, IconButton, Button, Box } from '@mui/material'
-import { Brightness4, Brightness7 } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
+import AppBar from '@mui/material/AppBar'
+import Toolbar from '@mui/material/Toolbar'
+import Button from '@mui/material/Button'
+import Box from '@mui/material/Box'
 
-const PublicHeader = ({ darkMode, toggleTheme }) => {
+const PublicHeader = () => {
   const navigate = useNavigate()
 
   const menus = [
     { description: 'Home', href: '/', target: '_self' },
     { description: 'About', href: '/about-us', target: '_self' },
     { description: 'Documentation', href: '/documentation', target: '_self' },
-    { description: 'Contact', href: '/contact-us', target: '_self' },
+    { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
-
-  const handleToggleDarkMode = () => {
-    toggleTheme()
-  }
 
   const handleCardClick = (pathname) => navigate(pathname)
 
@@ -26,7 +24,9 @@ const PublicHeader = ({ darkMode, toggleTheme }) => {
           <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />
         </Box>
         {menus.map((menu) => (
-          <Button key={menu.description} color="inherit" onClick={() => handleCardClick(menu.href)}>{menu.description}</Button>
+          <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+            {menu.description}
+          </Button>
         ))}
         {/* <IconButton
           size="large"

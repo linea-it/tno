@@ -37,8 +37,8 @@ function ClearDesDataPreparation() {
       <CardContent>
         <br />
         <Typography variant='body1' component='span'>
-          Apaga todos os registros das tabelas envolvidas nas etapas de Data Preparation do DES (Skybot e Orbit Trace). Utilizada principalmente duranto o desenvolvimento dos pipelines ou
-          quando se deseja gerar novos resultados.
+          Apaga todos os registros das tabelas envolvidas nas etapas de Data Preparation do DES (Skybot e Orbit Trace). Utilizada
+          principalmente duranto o desenvolvimento dos pipelines ou quando se deseja gerar novos resultados.
           <br />
           Isso implica em perder todos os resultados gerados pelas etapas Skybot Discovery e Orbit Trace.
           <br />
@@ -96,7 +96,9 @@ function ClearDesDataPreparation() {
           DELETE ALL DES DATA PREPARATION
         </LoadingButton>
         {status === 'success' && <Alert severity='success'>Todos os registros foram apagados com sucesso.</Alert>}
-        {status === 'error' && <Alert severity='error'>Não foi possivel executar a função "/api/des/clear_des_data_preparation_tables/".</Alert>}
+        {status === 'error' && (
+          <Alert severity='error'>Não foi possivel executar a função "/api/des/clear_des_data_preparation_tables/".</Alert>
+        )}
       </CardContent>
     </Card>
   )

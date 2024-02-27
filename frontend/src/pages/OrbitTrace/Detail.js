@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import Icon from '@mui/material/Icon';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Icon from '@mui/material/Icon'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
 import moment from 'moment'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import List from '../../components/List'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
@@ -19,7 +19,6 @@ import {
   getOrbitTraceResultByJobId,
   cancelOrbitTraceJobById,
   getOrbitTraceProgressById
-
 } from '../../services/api/OrbitTrace'
 
 import useInterval from '../../hooks/useInterval'
@@ -51,7 +50,6 @@ function OrbitTraceDetail() {
 
   const [tableErrorData, setTableErrorData] = useState([])
   const [totalErrorCount, setTotalErrorCount] = useState(0)
-
 
   const handleBackNavigation = () => navigate(-1)
 
@@ -91,13 +89,13 @@ function OrbitTraceDetail() {
       title: 'Execution Time',
       width: 150,
       align: 'center',
-      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : '-')
     },
     {
       name: 'error',
       title: 'Messages',
       width: 720
-    },
+    }
   ]
 
   const tableColumns = [
@@ -105,7 +103,7 @@ function OrbitTraceDetail() {
       name: 'index',
       title: ' ',
       width: 70,
-      sortingEnabled: false,
+      sortingEnabled: false
     },
     {
       name: 'id',
@@ -165,30 +163,29 @@ function OrbitTraceDetail() {
       title: 'Execution Time',
       width: 150,
       align: 'center',
-      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : "-")
-    },
-
+      customElement: (row) => (row.exec_time ? row.exec_time.split('.')[0] : '-')
+    }
   ]
 
   const loadDataSuccess = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
     getOrbitTraceResultByJobId({ id, page, pageSize, ordering }, true).then((res) => {
       setTableData(res.results)
-      setTotalCount(res.count);
+      setTotalCount(res.count)
     })
   }
 
   const loadDataFailure = ({ currentPage, pageSize, sorting }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
     // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
     const page = currentPage + 1
 
     getOrbitTraceResultByJobId({ id, page, pageSize, ordering }, false).then((res) => {
       setTableErrorData(res.results)
-      setTotalErrorCount(res.count);
+      setTotalErrorCount(res.count)
     })
   }
 
@@ -216,8 +213,8 @@ function OrbitTraceDetail() {
 
     if (hasStatusRunning) {
       getOrbitTraceJobById({ id }).then((job) => {
-        setOrbitTraceJob(job);
-      });
+        setOrbitTraceJob(job)
+      })
     }
   }, 2000)
 
@@ -238,7 +235,7 @@ function OrbitTraceDetail() {
         },
         {
           title: 'Start',
-          value: orbitTraceJob.start ? moment(orbitTraceJob.start).format('YYYY-MM-DD HH:mm:ss') : "Not started"
+          value: orbitTraceJob.start ? moment(orbitTraceJob.start).format('YYYY-MM-DD HH:mm:ss') : 'Not started'
         },
         {
           title: 'Finish',
@@ -254,13 +251,12 @@ function OrbitTraceDetail() {
         },
         {
           title: 'Asteroid Average Execution Time',
-          value: moment.utc(orbitTraceJob.avg_exec_time_asteroid * 1000).format("HH:mm:ss")
+          value: moment.utc(orbitTraceJob.avg_exec_time_asteroid * 1000).format('HH:mm:ss')
         },
         {
           title: 'CCD Average Execution Time',
-          value: moment.utc(orbitTraceJob.avg_exec_time_ccd * 1000).format("HH:mm:ss")
-        },
-
+          value: moment.utc(orbitTraceJob.avg_exec_time_ccd * 1000).format('HH:mm:ss')
+        }
       ])
 
       setSummaryResults([
@@ -346,11 +342,11 @@ function OrbitTraceDetail() {
             {haveError === true ? (
               <Alert
                 severity='warning'
-              // action={
-              //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
-              //     CHECK IT OUT
-              //   </Button>
-              // }
+                // action={
+                //   <Button color='inherit' size='small' href={orbitTraceJob.results.replace('/archive', '/data')}>
+                //     CHECK IT OUT
+                //   </Button>
+                // }
               >
                 {/* <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed. */}
               </Alert>
@@ -364,9 +360,7 @@ function OrbitTraceDetail() {
           <CardHeader title='Progress' />
           <CardContent>
             <Grid container spacing={3} direction='column' className={classes.progressWrapper}>
-              <ProgressList
-                lista={progress}
-              />
+              <ProgressList lista={progress} />
               {orbitTraceJob.status == 1 && progress.length == 0 ? (
                 <CircularProgress className={classes.circularProgress} disableShrink size={50} />
               ) : null}
@@ -410,14 +404,12 @@ function OrbitTraceDetail() {
         </Grid>
       </Grid>
       <>
-        {
-          totalCount > 0 &&
+        {totalCount > 0 && (
           <Grid item xs={12}>
             <Card>
               <CardHeader title='Asteroid Results' />
               <CardContent>
                 <Table
-
                   columns={tableColumns}
                   data={tableData}
                   loadData={loadDataSuccess}
@@ -430,16 +422,14 @@ function OrbitTraceDetail() {
               </CardContent>
             </Card>
           </Grid>
-        }
-        {
-          totalErrorCount > 0 &&
+        )}
+        {totalErrorCount > 0 && (
           <Grid item xs={12}>
             <Card>
               <CardHeader title='Asteroid Failures' />
               <CardContent>
                 <Table
                   columns={tableErrorColumns}
-
                   data={tableErrorData}
                   loadData={loadDataFailure}
                   totalCount={totalErrorCount}
@@ -452,7 +442,7 @@ function OrbitTraceDetail() {
               </CardContent>
             </Card>
           </Grid>
-        }
+        )}
       </>
     </Grid>
   )

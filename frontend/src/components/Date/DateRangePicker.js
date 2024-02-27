@@ -5,7 +5,6 @@ import { DateRange } from 'react-date-range'
 // import 'react-date-range/dist/styles.css' // main css file
 // import 'react-date-range/dist/theme/default.css' // theme css file
 
-
 function DateRangePicker({ selectedDate, setSelectedDate, minDate, maxDate }) {
   const handleChange = ({ selection }) => {
     const startDate = moment(selection.startDate).format('YYYY-MM-DD')

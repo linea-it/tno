@@ -14,7 +14,6 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Box from '@mui/material/Box'
 
-
 import styles from './styles'
 
 import IntroductionContent from '../../../components/Content/Introduction.md'
@@ -28,7 +27,7 @@ const menuItems = [
   { label: 'Planets of the Solar System', id: 'planets' },
   { label: 'Moons of the Solar System', id: 'moons' },
   { label: 'Asteroids and Comets', id: 'asteroids-comets' },
-  { label: 'Interactive Tools in the Solar System Portal', id: 'interactive-tools' },
+  { label: 'Interactive Tools in the Solar System Portal', id: 'interactive-tools' }
 ]
 
 function PublicDocumentation() {
@@ -39,7 +38,7 @@ function PublicDocumentation() {
     planets: null,
     moons: null,
     asteroidsComets: null,
-    interactiveTools: null,
+    interactiveTools: null
   })
 
   useEffect(() => {
@@ -62,7 +61,7 @@ function PublicDocumentation() {
           planets: planetsText,
           moons: moonsText,
           asteroidsComets: asteroidsCometsText,
-          interactiveTools: interactiveToolsText,
+          interactiveTools: interactiveToolsText
         })
       } catch (error) {
         console.error('Error fetching content:', error)
@@ -78,7 +77,7 @@ function PublicDocumentation() {
         <Grid item xs={12} md={3} className={classes.menuContainer}>
           <Card>
             <CardContent>
-              <Typography variant="h6">Menu</Typography>
+              <Typography variant='h6'>Menu</Typography>
               <List>
                 {menuItems.map(item => (
                   <ListItem

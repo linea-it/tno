@@ -21,7 +21,7 @@ import {
   CircularProgress
 } from '@mui/material'
 import Plot from 'react-plotly.js'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import DateRangePicker from '../../components/Date/DateRangePicker'
@@ -139,7 +139,7 @@ function Skybot() {
   }, [executedNightsByPeriod, currentSelectedDateYear, chartType, exposuresByPeriod])
 
   const loadData = ({ sorting, pageSize, currentPage }) => {
-    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName;
+    const ordering = sorting[0].direction === 'desc' ? `-${sorting[0].columnName}` : sorting[0].columnName
     getSkybotRunList({
       page: currentPage + 1,
       pageSize,
@@ -435,10 +435,7 @@ function Skybot() {
               <Card>
                 <CardContent>
                   <FormGroup>
-                    <FormControlLabel
-                      control={<Switch checked={debug} onChange={handleChangeDebug} />}
-                      label='Debug mode'
-                    />
+                    <FormControlLabel control={<Switch checked={debug} onChange={handleChangeDebug} />} label='Debug mode' />
                   </FormGroup>
                   <Typography color='textSecondary' gutterBottom>
                     Click here to submit a job on the selected period

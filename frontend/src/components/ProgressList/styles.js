@@ -2,7 +2,7 @@ import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   labelInfo: {
-    fontSize: 12,
+    fontSize: 12
   },
   labelTimes: {
     fontSize: 12,

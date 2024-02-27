@@ -8,14 +8,14 @@ import { useQuery } from 'react-query'
 import { getOccultationHighlights } from '../../services/api/Occultation'
 
 function MonthlyForecast() {
-    const { data, isLoading } = useQuery({
-        queryKey: ['occultationHighlights'],
-        queryFn: getOccultationHighlights,
-        keepPreviousData: true,
-        refetchInterval: false,
-        refetchOnWindowFocus: false,
-        staleTime: 1 * 60 * 60 * 1000,
-    })
+  const { data, isLoading } = useQuery({
+    queryKey: ['occultationHighlights'],
+    queryFn: getOccultationHighlights,
+    keepPreviousData: true,
+    refetchInterval: false,
+    refetchOnWindowFocus: false,
+    staleTime: 1 * 60 * 60 * 1000
+  })
 
     return (
         <Card sx={{ height: '100%', borderRadius: '10px' }}>

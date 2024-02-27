@@ -3,12 +3,12 @@ import PublicSupporters from '../../../pages/PublicPortal/Home/partials/Supporte
 import PublicFooter from './index'
 
 function FooterSupporters() {
-    return (
-        <div>
-            <PublicSupporters />
-            <PublicFooter />
-        </div>
-    )
+  return (
+    <div>
+      <PublicSupporters />
+      <PublicFooter />
+    </div>
+  )
 }
 
 export default FooterSupporters

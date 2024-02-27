@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardContent from '@mui/material/CardContent';
-import Icon from '@mui/material/Icon';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
-import CircularProgress from '@mui/material/CircularProgress';
-import Alert from '@mui/material/Alert';
-import ButtonGroup from '@mui/material/ButtonGroup';
-import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
+import CardContent from '@mui/material/CardContent'
+import Icon from '@mui/material/Icon'
+import Button from '@mui/material/Button'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Alert from '@mui/material/Alert'
+import ButtonGroup from '@mui/material/ButtonGroup'
+import Chip from '@mui/material/Chip'
 
 import moment from 'moment'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import List from '../../components/List'
 import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
@@ -33,7 +33,6 @@ import {
 import useInterval from '../../hooks/useInterval'
 import useStyles from './styles'
 
-
 function SkybotDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -48,7 +47,7 @@ function SkybotDetail() {
       current: 0,
       average_time: 0,
       time_estimate: 0,
-      exposures_failed: 0,
+      exposures_failed: 0
     },
     loaddata: {
       status: 'completed',
@@ -56,7 +55,7 @@ function SkybotDetail() {
       current: 0,
       average_time: 0,
       time_estimate: 0,
-      exposures_failed: 0,
+      exposures_failed: 0
     }
   })
   const [loadProgress, setLoadProgress] = useState(false)
@@ -427,7 +426,7 @@ function SkybotDetail() {
                 <strong>{totalErrorCount}</strong> exposures out of {skybotJob.exposures} failed.
               </Alert>
             ) : null}
-            {(skybotJob?.error !== null && skybotJob?.error !== '') ? <Alert severity='error'>{skybotJob?.error}</Alert> : null}
+            {skybotJob?.error !== null && skybotJob?.error !== '' ? <Alert severity='error'>{skybotJob?.error}</Alert> : null}
           </CardContent>
         </Card>
       </Grid>
@@ -460,7 +459,11 @@ function SkybotDetail() {
                   </Grid>
                   {progress.request.exposures_failed > 0 ? (
                     <Grid item>
-                      <Chip label={`Exposures Failed: ${progress.request.exposures_failed}`} className={classes.chipError} variant='outlined' />
+                      <Chip
+                        label={`Exposures Failed: ${progress.request.exposures_failed}`}
+                        className={classes.chipError}
+                        variant='outlined'
+                      />
                     </Grid>
                   ) : null}
                 </Grid>
@@ -496,7 +499,11 @@ function SkybotDetail() {
                   </Grid>
                   {progress.loaddata.exposures_failed > 0 ? (
                     <Grid item>
-                      <Chip label={`Exposures Failed: ${progress.loaddata.exposures_failed}`} className={classes.chipError} variant='outlined' />
+                      <Chip
+                        label={`Exposures Failed: ${progress.loaddata.exposures_failed}`}
+                        className={classes.chipError}
+                        variant='outlined'
+                      />
                     </Grid>
                   ) : null}
                 </Grid>

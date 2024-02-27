@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
-import moment from 'moment';
+import React, { useEffect, useState } from 'react'
+import moment from 'moment'
 import { useParams } from 'react-router-dom'
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
+import Grid from '@mui/material/Grid'
+import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import Box from '@mui/material/Box';
-import List from '../../components/List';
+import Box from '@mui/material/Box'
+import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
@@ -14,54 +14,51 @@ import Container from '@mui/material/Container'
 import {
   getOccultationById,
   getStarByOccultationId
-} from '../../services/api/Occultation';
-import PredictOccultationMap from './partials/PredictMap';
-import AladinV3 from '../../components/AladinV3/index';
+} from '../../services/api/Occultation'
+import PredictOccultationMap from './partials/PredictMap'
+import AladinV3 from '../../components/AladinV3/index'
 
 function PredictionEventDetail() {
-  const { id } = useParams();
-  const [occultation, setOccultation] = useState({});
-  const [starObj, setStarObj] = useState({});
-  const [circumstances, setCircumstances] = useState([]);
-  const [star, setStar] = useState([]);
-  const [object, setObject] = useState([]);
-
+  const { id } = useParams()
+  const [occultation, setOccultation] = useState({})
+  const [starObj, setStarObj] = useState({})
+  const [circumstances, setCircumstances] = useState([])
+  const [star, setStar] = useState([])
+  const [object, setObject] = useState([])
 
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
       setOccultation({
-        ...res,
-      });
-    });
+        ...res
+      })
+    })
     getStarByOccultationId({ id }).then((res) => {
       setStarObj({
-        ...res,
-      });
-    });
-  }, [id]);
+        ...res
+      })
+    })
+  }, [id])
 
   useEffect(() => {
     const titleText = `Occultation by ${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
-    document.title = titleText;
+    document.title = titleText
   }, [occultation])
 
   useEffect(() => {
     setCircumstances([
       {
         title: 'Instant of the Closest Approach',
-        value: moment(occultation.date_time).utc().format(
-          'ddd. DD MMMM YYYY HH:mm:ss'),
+        value: moment(occultation.date_time).utc().format('ddd. DD MMMM YYYY HH:mm:ss')
       },
       {
         title: 'Star position (ICRF)',
-        tooltip:
-          'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `${occultation.ra_star_candidate}, ${occultation.dec_star_candidate}`,
+        tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
+        value: `${occultation.ra_star_candidate}, ${occultation.dec_star_candidate}`
       },
       {
         title: 'Closest Approach',
         tooltip: 'Geocentric closest approach',
-        value: `${occultation.closest_approach} (arcsec)`,
+        value: `${occultation.closest_approach} (arcsec)`
       },
       {
         title: 'Position Angle',
@@ -70,43 +67,42 @@ function PredictionEventDetail() {
       },
       {
         title: 'Velocity',
-        tooltip:
-          'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
-        value: `${occultation.velocity} (km/s)`,
+        tooltip: 'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
+        value: `${occultation.velocity} (km/s)`
       },
       {
         title: 'Geocentric distance Δ',
-        value: `${occultation.delta} (AU)`,
+        value: `${occultation.delta} (AU)`
       },
       {
         title: 'G mag',
         tooltip: 'Gaia magnitude',
-        value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`,
+        value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`
       },
       {
         title: 'RP mag',
         tooltip: 'Gaia RP magnitude',
-        value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`,
+        value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`
       },
       {
         title: 'H mag',
         tooltip: '2MASS H magnitude',
-        value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`,
+        value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
         title: 'Magnitude Drop',
-        value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(3) : null}`,
+        value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(3) : null}`
       },
       {
         title: 'Uncertainty in Time',
-        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null}`,
+        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null}`
       },
       {
         title: 'Creation Date',
-        tooltip: 'Date of the prediction\'s computation',
+        tooltip: "Date of the prediction's computation",
         value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
-      },
-    ]);
+      }
+    ])
 
     setStar([
       // {
@@ -116,15 +112,15 @@ function PredictionEventDetail() {
       // },
       {
         title: 'Stellar catalogue',
-        value: 'Gaia DR2',
+        value: 'Gaia DR2'
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: `${starObj.ra ? starObj.ra.toFixed(8) : null} ${starObj.dec ? starObj.dec.toFixed(7) : null}`,
+        value: `${starObj.ra ? starObj.ra.toFixed(8) : null} ${starObj.dec ? starObj.dec.toFixed(7) : null}`
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
-        value: `${occultation.ra_star_with_pm} ${occultation.dec_star_with_pm}`,
+        value: `${occultation.ra_star_with_pm} ${occultation.dec_star_with_pm}`
       },
       {
         title: 'Star apparent position (date)',
@@ -132,46 +128,65 @@ function PredictionEventDetail() {
       },
       {
         title: 'Proper motion',
-        value: `RA: ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec: ${starObj.pmdec ? starObj.pmdec.toFixed(1) : null} ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`,
+        value: `RA: ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec: ${
+          starObj.pmdec ? starObj.pmdec.toFixed(1) : null
+        } ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`
       },
       {
         title: 'Source of proper motion',
-        value: 'Gaia DR2',
+        value: 'Gaia DR2'
       },
       {
         title: 'Uncertainty in the star position',
-        value: `${starObj.ra_error ? starObj.ra_error.toFixed(1) : null} ${starObj.dec_error ? starObj.dec_error.toFixed(1) : null} (mas)`,
+        value: `${starObj.ra_error ? starObj.ra_error.toFixed(1) : null} ${starObj.dec_error ? starObj.dec_error.toFixed(1) : null} (mas)`
       },
       {
         title: 'G magnitude',
-        value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`,
+        value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
       },
       {
         title: 'RP magnitude (source: GaiaDR2)',
-        value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`,
+        value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
       },
       {
         title: 'BP magnitude (source: GaiaDR2)',
-        value: `${starObj.phot_bp_mean_mag ? starObj.phot_bp_mean_mag.toFixed(3) : null}`,
+        value: `${starObj.phot_bp_mean_mag ? starObj.phot_bp_mean_mag.toFixed(3) : null}`
       },
       {
         title: 'J magnitude (source: 2MASS)',
-        value: `${occultation.j_star ? occultation.j_star.toFixed(3) : null}`,
+        value: `${occultation.j_star ? occultation.j_star.toFixed(3) : null}`
       },
       {
         title: 'H magnitude (source: 2MASS)',
-        value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`,
+        value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
         title: 'K magnitude (source: 2MASS)',
-        value: `${occultation.k_star ? occultation.k_star.toFixed(3) : null}`,
-      },
-    ]);
+        value: `${occultation.k_star ? occultation.k_star.toFixed(3) : null}`
+      }
+    ])
 
     setObject([
       {
         title: 'Object',
-        value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`,
+        value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
+      },
+      {
+        title: "Object's Astrometric Position (ICRF)",
+        value: `${occultation.ra_target} ${occultation.dec_target}`
+      },
+      {
+        title: "Object's Apparent Position (date)",
+        tooltip: "Relative to the Earth's center",
+        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`
+      },
+      {
+        title: 'Absolute Magnitude',
+        value: `${occultation.h ? occultation.h.toFixed(3) : null}`
+      },
+      {
+        title: 'Apparent Magnitude',
+        value: `${occultation.apparent_magnitude ? occultation.apparent_magnitude.toFixed(3) : null}`
       },
       {
         title: 'Diameter',
@@ -192,42 +207,38 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in position',
-        value: `RA: ${occultation.e_ra_target}, Dec: ${occultation.e_dec_target} (mas)`,
-      },
-      {
-        title: 'Apparent Magnitude',
-        value: `${occultation.h ? occultation.h.toFixed(3) : null}`,
+        value: `RA: ${occultation.e_ra_target}, Dec: ${occultation.e_dec_target} (mas)`
       },
       {
         title: 'Ephemeris',
-        value: `${occultation.ephemeris_version}`,
+        value: `${occultation.ephemeris_version}`
       },
       {
         title: 'Dynamic class',
-        value: `${occultation.dynclass}`,
+        value: `${occultation.dynclass}`
       },
       {
         title: 'Semimajor Axis',
-        value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`,
+        value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`
       },
       {
         title: 'Eccentricity',
-        value: `${occultation.eccentricity ? occultation.eccentricity.toFixed(4) : null} (AU)`,
+        value: `${occultation.eccentricity ? occultation.eccentricity.toFixed(4) : null} (AU)`
       },
       {
         title: 'Inclination',
-        value: `${occultation.inclination ? occultation.inclination.toFixed(4) : null} (deg)`,
+        value: `${occultation.inclination ? occultation.inclination.toFixed(4) : null} (deg)`
       },
       {
         title: 'Perihelion',
-        value: `${occultation.perihelion ? occultation.perihelion.toFixed(4) : null} (AU)`,
+        value: `${occultation.perihelion ? occultation.perihelion.toFixed(4) : null} (AU)`
       },
       {
         title: 'Aphelion',
-        value: `${occultation.aphelion ? occultation.aphelion.toFixed(4) : null} (AU)`,
-      },
-    ]);
-  }, [occultation, starObj]);
+        value: `${occultation.aphelion ? occultation.aphelion.toFixed(4) : null} (AU)`
+      }
+    ])
+  }, [occultation, starObj])
 
   return (
     
@@ -235,13 +246,13 @@ function PredictionEventDetail() {
       <Typography variant="h4" align="center" sx={{ marginTop: 3 }}>
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
-      <Typography variant="h5" align="center" color="text.secondary">
+      <Typography variant='h5' align='center' color='text.secondary'>
         {moment(occultation.date_time).format('ll')}
       </Typography>
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Occultation Prediction Circumstances" />
+            <CardHeader title='Occultation Prediction Circumstances' />
             <CardContent>
               <List data={circumstances} />
             </CardContent>
@@ -249,14 +260,12 @@ function PredictionEventDetail() {
         </Grid>
         {occultation.id !== undefined && (
           <Grid item xs={12} md={6}>
-            <PredictOccultationMap
-              occultationId={occultation.id}
-            />
+            <PredictOccultationMap occultationId={occultation.id} />
           </Grid>
         )}
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Occulted Star" />
+            <CardHeader title='Occulted Star' />
             <CardContent>
               <List data={star} />
             </CardContent>
@@ -264,34 +273,42 @@ function PredictionEventDetail() {
         </Grid>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title="Object" />
+            <CardHeader title='Object' />
             <CardContent>
               <List data={object} />
               <Box sx={{ marginLeft: 2 }}>
-                {occultation.name &&
+                {occultation.name && (
                   <>
-                  <Typography sx={{ marginBottom: '5px' }}>More information:</Typography>
-                  <Link href={`https://ssp.imcce.fr/forms/ssocard/${encodeURI(occultation.name.replace(/\s/g, '_'))}`} target="_blank" rel="noopener noreferrer" sx={{ textDecoration: 'none'}}>SsODNet service at IMCCE</Link><br />
-                  <Link href={`https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=${encodeURI(occultation.name)}`} target="_blank" rel="noopener noreferrer" sx={{ textDecoration: 'none' }}>Small-Body Database Lookup NASA/JPL</Link>
+                    <Typography sx={{ marginBottom: '5px' }}>More information:</Typography>
+                    <Link
+                      href={`https://ssp.imcce.fr/forms/ssocard/${encodeURI(occultation.name.replace(/\s/g, '_'))}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      sx={{ textDecoration: 'none' }}
+                    >
+                      SsODNet service at IMCCE
+                    </Link>
+                    <br />
+                    <Link
+                      href={`https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=${encodeURI(occultation.name)}`}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      sx={{ textDecoration: 'none' }}
+                    >
+                      Small-Body Database Lookup NASA/JPL
+                    </Link>
                   </>
-                }
+                )}
               </Box>
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12}>
-          <Card >
-            <CardHeader title="Aladin Sky Atlas" />
-            <CardContent >
-              <Box
-                height={800}
-              >
-                {occultation?.id !== undefined && (
-                  <AladinV3
-                    ra={occultation?.ra_star_deg}
-                    dec={occultation?.dec_star_deg}
-                  />
-                )}
+          <Card>
+            <CardHeader title='Aladin Sky Atlas' />
+            <CardContent>
+              <Box height={800}>
+                {occultation?.id !== undefined && <AladinV3 ra={occultation?.ra_star_deg} dec={occultation?.dec_star_deg} />}
               </Box>
             </CardContent>
           </Card>
@@ -301,4 +318,4 @@ function PredictionEventDetail() {
   );
 }
 
-export default PredictionEventDetail;
+export default PredictionEventDetail

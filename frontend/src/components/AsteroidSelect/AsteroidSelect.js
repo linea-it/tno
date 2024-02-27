@@ -1,12 +1,10 @@
-
-import PropTypes from 'prop-types';
-import FilterTypeSelect from './FilterTypeSelect';
-import AsteroidNameSelect from './AsteroidNameSelect';
-import BaseDynclassSelect from './BaseDynclassSelect';
-import DynclassSelect from './DynclassSelect';
+import PropTypes from 'prop-types'
+import FilterTypeSelect from './FilterTypeSelect'
+import AsteroidNameSelect from './AsteroidNameSelect'
+import BaseDynclassSelect from './BaseDynclassSelect'
+import DynclassSelect from './DynclassSelect'
 import Grid from '@mui/material/Grid'
 function AsteroidSelect({ value, onChange }) {
-
   return (
     <Grid container spacing={2}>
       <Grid item xs={12} sm={5} md={4}>
@@ -24,12 +22,14 @@ function AsteroidSelect({ value, onChange }) {
         {value.filterType === 'name' && (
           <AsteroidNameSelect
             onChange={(value) => {
-              console.log("Change Filter Name: ", value)
+              console.log('Change Filter Name: ', value)
               onChange({
                 ...value,
                 filterValue: value
               })
-            }} />)}
+            }}
+          />
+        )}
         {value.filterType === 'base_dynclass' && (
           <BaseDynclassSelect
             value={value.filterValue}
@@ -67,6 +67,6 @@ AsteroidSelect.defaultProps = {
 AsteroidSelect.propTypes = {
   value: PropTypes.object.isRequired,
   onChange: PropTypes.func.isRequired
-};
+}
 
 export default AsteroidSelect
