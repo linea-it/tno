@@ -1,12 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
+import Drawer from '@mui/material/Drawer'
+import IconButton from '@mui/material/IconButton'
+import MenuIcon from '@mui/icons-material/Menu'
 
 const PublicHeader = () => {
   const navigate = useNavigate()
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   const menus = [
     { description: 'Home', href: '/', target: '_self' },
@@ -15,28 +19,53 @@ const PublicHeader = () => {
     { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
-  const handleCardClick = (pathname) => navigate(pathname)
+  const handleCardClick = (pathname) => {
+    navigate(pathname)
+    setDrawerOpen(false)
+  }
 
   return (
     <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>
-      <Toolbar>
-        <Box sx={{ pt: 1 }}>
-          <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ pt: 1 }}>
+            <img src={`${process.env.PUBLIC_URL}/img/linea-dark-invert.png`} alt='LIneA' width={75} />
+          </Box>
+          <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+            {menus.map((menu) => (
+              <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+                {menu.description}
+              </Button>
+            ))}
+          </Box>
         </Box>
-        {menus.map((menu) => (
-          <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
-            {menu.description}
-          </Button>
-        ))}
-        {/* <IconButton
-          size="large"
-          edge="end"
-          color="inherit"
-          onClick={handleToggleDarkMode}
-        >
-          {darkMode ? <Brightness7 /> : <Brightness4 />}
-        </IconButton> */}
+        <Box sx={{ display: { xs: 'block', sm: 'none' }, pr: 1 }}>
+          <IconButton size='large' edge='end' color='inherit' aria-label='menu' onClick={() => setDrawerOpen(true)}>
+            <MenuIcon />
+          </IconButton>
+        </Box>
       </Toolbar>
+      <Drawer anchor='' open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+        <Box
+          sx={{
+            width: 250,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            padding: 2
+          }}
+          role='presentation'
+          onClick={() => setDrawerOpen(false)}
+          onKeyDown={() => setDrawerOpen(false)}
+        >
+          {menus.map((menu) => (
+            <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+              {menu.description}
+            </Button>
+          ))}
+        </Box>
+      </Drawer>
     </AppBar>
   )
 }
