@@ -24,4 +24,16 @@ export const getAsteroidsWithPredictionList = () => api.get(`/asteroids/with_pre
 
 export const getFilteredWithPredictionList = (name) => api.get(`/asteroids/with_prediction/?name=` + name).then((res) => res.data.results)
 
-export const getCatalogList = () => api.get(`/catalog/`).then((res) => res.data.results)
+export const listAllAsteroids = ({ queryKey }) => {
+  const params = queryKey[1]
+  const { name } = params
+  return api.get(`/asteroids`, { params: { search: name } }).then((res) => res.data)
+}
+
+export const listAllBaseDynClass = () => {
+  return api.get(`/asteroids/base_dynclasses/`).then((res) => res.data)
+}
+
+export const listAllDynClass = () => {
+  return api.get(`/asteroids/dynclasses/`).then((res) => res.data)
+}

@@ -9,7 +9,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Alert from '@mui/material/Alert'
 import Skeleton from '@mui/material/Skeleton'
-import { getPredictionJobResultById } from '../../services/api/PredictOccultation'
+import { getPredictionJobResultById } from '../../services/api/PredictJobs'
 import List from '../../components/List'
 import { PredictionEventsContext } from '../../contexts/PredictionContext'
 import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index'
@@ -176,7 +176,7 @@ function PredictionAsteroid() {
       </Grid>
       <Grid item xs={12} sx={{ mt: 2 }}>
         {!predictionJobResult && loadingCard(600)}
-        {predictionJobResult && <PredictionEventsDataGrid />}
+        {predictionJobResult && <PredictionEventsDataGrid disabledSearch />}
       </Grid>
     </Grid>
   )

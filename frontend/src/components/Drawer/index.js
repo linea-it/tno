@@ -97,7 +97,7 @@ export default function PersistentDrawerLeft({ children }) {
 
   const navigate = useNavigate()
   let location = useCurrentPath()
-  const [open, setOpen] = React.useState(true)
+  const [open, setOpen] = React.useState(false)
 
   const handleDrawerOpen = () => {
     setOpen(true)

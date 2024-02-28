@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-from tno.models import Catalog
+from tno.models import BspPlanetary, Catalog, LeapSecond
 
 
 class PredictionJob(models.Model):
@@ -17,6 +17,24 @@ class PredictionJob(models.Model):
         Catalog,
         on_delete=models.CASCADE,
         verbose_name="Catalog",
+    )
+
+    planetary_ephemeris = models.ForeignKey(
+        BspPlanetary,
+        on_delete=models.CASCADE,
+        verbose_name="Planetary Ephemeris",
+        null=True,
+        blank=True,
+        default=None,
+    )
+
+    leap_second = models.ForeignKey(
+        LeapSecond,
+        on_delete=models.CASCADE,
+        verbose_name="Leap Second",
+        null=True,
+        blank=True,
+        default=None,
     )
 
     # Status da execução.

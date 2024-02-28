@@ -20,7 +20,7 @@ import {
   getPredictionJobResultsByJobId,
   cancelPredictionJobById,
   getPredictionJobProgressById
-} from '../../services/api/PredictOccultation'
+} from '../../services/api/PredictJobs'
 
 import useInterval from '../../hooks/useInterval'
 import ProgressList from '../../components/ProgressList/index'
