@@ -10,10 +10,8 @@ function PredictionHighlights() {
       container
       spacing={2}
       sx={{
-        paddingLeft: '65px',
-        paddingRight: '69px',
         borderRadius: 8,
-        marginTop: '20px'
+        marginTop: 1
       }}
     >
       <Grid item xs={12} sm={4}>

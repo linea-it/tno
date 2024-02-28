@@ -17,7 +17,7 @@ function PublicAboutUs() {
   const classes = styles()
   return (
     <Box className={classes.initContainer}>
-      <Container>
+      <Container maxWidth='lg'>
         <Grid item xs={12} className={classes.grid}>
           <Breadcrumbs aria-label='breadcrumb'>
             <Link color='inherit' to='/'>

@@ -22,7 +22,7 @@ const styles = makeStyles(() => ({
   menuContainer: {
     position: 'sticky',
     top: -10,
-    height: '50vh',
+    height: '75vh',
     overflowY: 'auto'
   }
 }))

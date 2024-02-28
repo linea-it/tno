@@ -17,7 +17,7 @@ function PublicContact() {
   const classes = styles()
   return (
     <Box className={classes.initContainer}>
-      <Container>
+      <Container maxWidth='lg'>
         <Breadcrumbs aria-label='breadcrumb'>
           <Link color='inherit' href='/'>
             Home

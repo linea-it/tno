@@ -9,12 +9,9 @@ import Box from '@mui/material/Box'
 import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
+import Container from '@mui/material/Container'
 
-import {
-  getOccultationById,
-  // getOccultationMap,
-  getStarByOccultationId
-} from '../../services/api/Occultation'
+import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
 
@@ -43,33 +40,6 @@ function PredictionEventDetail() {
     const titleText = `Occultation by ${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
     document.title = titleText
   }, [occultation])
-
-  // const createJsonOcc = (occ) =>{
-  //   return {'name': occ.name,
-  //   'radius': occ.diameter?occ.diameter:0,
-  //   'coord': occ.ra_star_candidate + " " + occ.dec_star_candidate,
-  //   'time': new Date(occ.date_time).toISOString(),
-  //   'ca': occ.closest_approach,
-  //   'pa': occ.position_angle,
-  //   'vel': occ.velocity,
-  //   'dist': occ.delta,
-  //   'mag': occ.g,
-  //   'longi': occ.long
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   if (occultation.date_time) {
-  //     const conteudo = createJsonOcc(occultation)
-  //     getOccultationMap(conteudo)
-  //       .then((res) => {
-  //       setMap(res.config.baseURL + res.config.url + '?name=' + encodeURI(occultation.name) + '&time=' + encodeURI(new Date(occultation.date_time).toISOString()));
-  //     },
-  //     ).catch((err) =>{
-  //       setErroMap(true);
-  //     });
-  //   }
-  // }, [occultation])
 
   useEffect(() => {
     setCircumstances([
@@ -221,7 +191,16 @@ function PredictionEventDetail() {
       },
       {
         title: 'Aparent Diameter',
-        value: `${occultation.aparent_diameter} (mas)`
+        value: `${occultation.aparent_diameter ? occultation.aparent_diameter.toFixed(4) : null} (mas)`
+      },
+      {
+        title: "Object's Astrometric Position (ICRF)",
+        value: `${occultation.ra_target} ${occultation.dec_target}`
+      },
+      {
+        title: "Object's Apparent Position (date)",
+        tooltip: "Relative to the Earth's center",
+        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`
       },
       {
         title: 'Uncertainty in position',
@@ -259,7 +238,7 @@ function PredictionEventDetail() {
   }, [occultation, starObj])
 
   return (
-    <>
+    <Container maxWidth='lg'>
       <Typography variant='h4' align='center' sx={{ marginTop: 3 }}>
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
@@ -331,22 +310,7 @@ function PredictionEventDetail() {
           </Card>
         </Grid>
       </Grid>
-
-      {/* {occultation.ra_star_candidate && occultation.dec_star_candidate ? ( */}
-      {/* // <Grid item xs={12} md={6}> */}
-      {/* <Card>
-              <CardHeader title="Sky map (Aladin)" />
-              <CardContent>
-                <Aladin
-                  ra={occultation.ra_star_candidate}
-                  dec={occultation.dec_star_candidate}
-                />
-              </CardContent>
-            </Card> */}
-      {/* </Grid> */}
-      {/* ) : null} */}
-      {/* </Grid> */}
-    </>
+    </Container>
   )
 }
 
