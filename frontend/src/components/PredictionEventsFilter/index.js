@@ -84,6 +84,7 @@ function PredictionEventsFilter() {
           </Grid>
           <Grid item xs={12}>
             <AsteroidSelect
+              source={'prediction'}
               value={{
                 filterType: queryOptions.filters.filterType,
                 filterValue: queryOptions.filters.filterValue

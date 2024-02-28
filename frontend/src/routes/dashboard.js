@@ -9,7 +9,8 @@ import SkybotStatistics from '../pages/Skybot/Statistics'
 import OrbitTrace from '../pages/OrbitTrace/'
 import DesManagement from '../pages/DesManagement'
 
-import PredictOccultation from '../pages/PredictOccultation'
+import PredictionJobs from '../pages/PredictionJobs'
+// import PredictOccultation from '../pages/PredictOccultation'
 import PredictDetail from '../pages/PredictOccultation/Detail'
 import PredictionAsteroid from '../pages/PredictOccultation/Asteroid'
 
@@ -162,7 +163,7 @@ export function DashboardPageRoutes() {
         path='/dashboard/prediction-of-occultation'
         element={
           <DashboardPage>
-            <PredictOccultation />
+            <PredictionJobs />
           </DashboardPage>
         }
       />

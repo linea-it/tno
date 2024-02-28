@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import PropTypes from 'prop-types'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import { PredictionEventsContext } from '../../contexts/PredictionContext'
@@ -6,7 +7,7 @@ import PredictEventGrid from './EventsGrid'
 import PredictEventToolbar from './Toolbar'
 import PredictEventList from './EventsList'
 
-export function PredictionEventsDataGrid() {
+export function PredictionEventsDataGrid({ disabledSearch }) {
   const { viewLayoyt } = useContext(PredictionEventsContext)
 
   return (
@@ -18,7 +19,7 @@ export function PredictionEventsDataGrid() {
           pr: { xs: 1, sm: 2 }
         }}
       >
-        <PredictEventToolbar />
+        {!disabledSearch && <PredictEventToolbar />}
         {viewLayoyt === 'list' && <PredictEventList />}
         {viewLayoyt === 'grid' && <PredictEventGrid />}
       </CardContent>
@@ -26,4 +27,11 @@ export function PredictionEventsDataGrid() {
   )
 }
 
+PredictionEventsDataGrid.defaultProps = {
+  disabledSearch: false
+}
+
+PredictionEventsDataGrid.propTypes = {
+  disabledSearch: PropTypes.bool
+}
 export default PredictionEventsDataGrid

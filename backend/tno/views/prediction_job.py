@@ -10,7 +10,13 @@ from django.core.paginator import Paginator
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from tno.models import Catalog, PredictionJob, PredictionJobStatus
+from tno.models import (
+    BspPlanetary,
+    Catalog,
+    LeapSecond,
+    PredictionJob,
+    PredictionJobStatus,
+)
 from tno.serializers import PredictionJobSerializer, PredictionJobStatusSerializer
 
 
@@ -71,21 +77,25 @@ class PredictionJobViewSet(
         predictons_interval = predictions_start - predictions_end
         h_predict_interval = humanize.naturaldelta(predictons_interval)
 
-        # TODO: Investigar por que recebeu os parametros como string ao inves de json.
-        # Não seria necessário remover as aspas.
-        catalog = Catalog.objects.get(name=params["catalog"].replace("'", '"'))
+        catalog = Catalog.objects.get(id=int(params["catalog"]))
+        planetary_ephemeris = BspPlanetary.objects.get(
+            id=int(params["planetary_ephemeris"])
+        )
+        leap_second = LeapSecond.objects.get(id=int(params["leap_second"]))
         # Criar um model Prediction Job
         job = PredictionJob(
             owner=owner,
             # Job começa com Status Idle.
             status=1,
             submit_time=datetime.now(),
-            filter_type=params["filter_type"].replace("'", '"'),
-            filter_value=params["filter_value"].replace("'", '"'),
+            filter_type=params["filter_type"],
+            filter_value=params["filter_value"],
             predict_start_date=date_initial,
             predict_end_date=date_final,
-            predict_step=params["predict_step"].replace("'", '"'),
+            predict_step=params["predict_step"],
             catalog=catalog,
+            planetary_ephemeris=planetary_ephemeris,
+            leap_second=leap_second,
             predict_interval=h_predict_interval,
             debug=debug,
         )

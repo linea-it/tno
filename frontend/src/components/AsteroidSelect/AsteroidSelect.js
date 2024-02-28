@@ -4,10 +4,10 @@ import AsteroidNameSelect from './AsteroidNameSelect'
 import BaseDynclassSelect from './BaseDynclassSelect'
 import DynclassSelect from './DynclassSelect'
 import Grid from '@mui/material/Grid'
-function AsteroidSelect({ value, onChange }) {
+function AsteroidSelect({ value, onChange, source, error, required }) {
   return (
     <Grid container spacing={2}>
-      <Grid item xs={12} sm={5} md={4}>
+      <Grid item xs={12} sm={6} md={6}>
         <FilterTypeSelect
           value={value.filterType}
           onChange={(event) => {
@@ -18,9 +18,10 @@ function AsteroidSelect({ value, onChange }) {
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={7} md={8}>
+      <Grid item xs={12} sm={6} md={6}>
         {value.filterType === 'name' && (
           <AsteroidNameSelect
+            source={source}
             onChange={(value) => {
               console.log('Change Filter Name: ', value)
               onChange({
@@ -28,10 +29,13 @@ function AsteroidSelect({ value, onChange }) {
                 filterValue: value
               })
             }}
+            error={error}
+            required={required}
           />
         )}
         {value.filterType === 'base_dynclass' && (
           <BaseDynclassSelect
+            source={source}
             value={value.filterValue}
             onChange={(event) => {
               onChange({
@@ -39,10 +43,13 @@ function AsteroidSelect({ value, onChange }) {
                 filterValue: event.target.value
               })
             }}
+            error={error}
+            required={required}
           />
         )}
         {value.filterType === 'dynclass' && (
           <DynclassSelect
+            source={source}
             value={value.filterValue}
             onChange={(event) => {
               onChange({
@@ -50,6 +57,8 @@ function AsteroidSelect({ value, onChange }) {
                 filterValue: event.target.value
               })
             }}
+            error={error}
+            required={required}
           />
         )}
       </Grid>
@@ -61,12 +70,18 @@ AsteroidSelect.defaultProps = {
   value: {
     filterType: 'name',
     filterValue: undefined
-  }
+  },
+  source: 'prediction',
+  error: false,
+  required: false
 }
 
 AsteroidSelect.propTypes = {
   value: PropTypes.object.isRequired,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  source: PropTypes.oneOf(['asteroid', 'prediction']),
+  error: PropTypes.bool,
+  required: PropTypes.bool
 }
 
 export default AsteroidSelect

@@ -5,11 +5,15 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 import { allBaseDynclassWithEvents } from '../../services/api/Occultation'
+import { listAllBaseDynClass } from '../../services/api/Asteroid'
 
-function BaseDynclassSelect({ value, onChange }) {
+function BaseDynclassSelect({ value, onChange, source, error, required }) {
+  const qKey = source === 'prediction' ? 'baseDynclassWithEvents' : 'baseDynclass'
+  const qFn = source === 'prediction' ? allBaseDynclassWithEvents : listAllBaseDynClass
+
   const { data } = useQuery({
-    queryKey: ['baseDynclassWithEvents'],
-    queryFn: allBaseDynclassWithEvents,
+    queryKey: [qKey],
+    queryFn: qFn,
     keepPreviousData: true,
     refetchInterval: false,
     refetchOnWindowFocus: false,
@@ -20,7 +24,7 @@ function BaseDynclassSelect({ value, onChange }) {
   })
 
   return (
-    <FormControl size='normal' fullWidth>
+    <FormControl size='normal' fullWidth required={required}>
       <InputLabel id='filter-base-dynclass-select-label'>Dynamic class</InputLabel>
       <Select
         labelId='filter-base-dynclass-select-label'
@@ -28,6 +32,7 @@ function BaseDynclassSelect({ value, onChange }) {
         value={value !== undefined ? value : ''}
         label='Dynamic class'
         onChange={onChange}
+        error={error}
       >
         {data !== undefined &&
           data.results.map((row) => {
@@ -43,11 +48,17 @@ function BaseDynclassSelect({ value, onChange }) {
 }
 
 BaseDynclassSelect.defaultProps = {
-  value: undefined
+  value: undefined,
+  source: 'prediction',
+  error: false,
+  required: false
 }
 BaseDynclassSelect.propTypes = {
   value: PropTypes.string,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  source: PropTypes.oneOf(['asteroid', 'prediction']),
+  error: PropTypes.bool,
+  required: PropTypes.bool
 }
 
 export default BaseDynclassSelect
