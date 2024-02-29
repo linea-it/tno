@@ -98,6 +98,11 @@ services:
 
   predict_occultation:
     build: ./predict_occultation
+    user: "1000:1000"
+    group_add:
+      - "15007"
+      - "15010"
+      - "900"
     # Para executar os pipelines
     # Utilizar daemon.sh Para Executar automaticamente conforme sao criados no portal
     command: /app/src/daemon.sh

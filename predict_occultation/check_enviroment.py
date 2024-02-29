@@ -24,7 +24,6 @@ if "PREDICT_OUTPUTS" not in os.environ:
     sys.exit("It is necessary to configure the PREDICT_OUTPUTS in docker-compose.yml")
 
 parsl_env = os.getenv("PARSL_ENV")
-print(f"PARSL_ENV: {parsl_env}")
 
 if parsl_env == "linea":
     # Variaveis obrigatórias para uso no Ambiente Linea.
