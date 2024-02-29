@@ -50,12 +50,13 @@ function PredictEventCard({ data }) {
     const url = `${protocol}//${hostname}${getDetailUrl()}`
     navigator.clipboard
       .writeText(url)
-      .then(() => setAlertOpen(true))
+      .then(() => {
+        setAlertOpen(true)
+        setTimeout(() => {
+          setAlertOpen(false)
+        }, 2500)
+      })
       .catch((error) => console.error('Failed to copy URL: ', error))
-  }
-
-  const handleCloseAlert = () => {
-    setAlertOpen(false)
   }
 
   const getDetailUrl = () => {
@@ -97,19 +98,20 @@ function PredictEventCard({ data }) {
           </Stack>
         </CardContent>
       </Box>
-      <Alert
-        sx={{
-          position: 'fixed',
-          bottom: 16,
-          left: 16,
-          zIndex: 9999
-        }}
-        severity='success'
-        onClose={handleCloseAlert}
-        open={alertOpen}
-      >
-        URL copiada para área de transferência
-      </Alert>
+      {alertOpen && (
+        <Alert
+          sx={{
+            position: 'fixed',
+            bottom: 16,
+            left: 16,
+            zIndex: 9999
+          }}
+          severity='success'
+          onClose={() => setAlertOpen(false)}
+        >
+          URL copiada para área de transferência
+        </Alert>
+      )}
     </Card>
   )
 }
