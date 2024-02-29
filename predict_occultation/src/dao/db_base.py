@@ -22,14 +22,14 @@ class DBBase:
         # DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
         # db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
         #     "postgres", "postgres", "172.18.0.2", "5432", "tno_v2")
-        # DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
+        # DB_CATALOG_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
         try:
-            db_uri = os.environ["DB_URI_ADMIN"]
+            db_uri = os.environ["DB_ADMIN_URI"]
             return db_uri
         except:
             raise MissingDBURIException(
                 "Required environment variable with URI to access the database."
-                "example DB_URI_ADMIN=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
+                "example DB_ADMIN_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
             )
 
     def get_db_engine(self):

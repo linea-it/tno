@@ -251,4 +251,4 @@ if __name__ == "__main__":
 
 
 # Exemplo usando o script Run.py
-# docker run -it --rm --user 10139:10000 --volume /home/glauber/linea/1999RB216:/home/glauber/linea/1999RB216 --volume /home/glauber/linea/praia_occultation/src/run.py:/app/run.py --volume /home/glauber/linea/praia_occultation/src/library.py:/app/library.py --network host -e DB_URI=postgresql+psycopg2://postgres:postgres@172.18.0.2:5432/tno_v2 linea/praiaoccultation:v2.8.2 python run.py 1999RB216 2021-10-01 2023-01-01 --number 137295 --step 600 --path /home/glauber/linea/1999RB216
+# docker run -it --rm --user 10139:10000 --volume /home/glauber/linea/1999RB216:/home/glauber/linea/1999RB216 --volume /home/glauber/linea/praia_occultation/src/run.py:/app/run.py --volume /home/glauber/linea/praia_occultation/src/library.py:/app/library.py --network host -e DB_CATALOG_URI=postgresql+psycopg2://postgres:postgres@172.18.0.2:5432/tno_v2 linea/praiaoccultation:v2.8.2 python run.py 1999RB216 2021-10-01 2023-01-01 --number 137295 --step 600 --path /home/glauber/linea/1999RB216

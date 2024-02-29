@@ -11,12 +11,12 @@ if [[ "$PARSL_ENV" = "linea" ]]
 then
     echo "Setting up LIneA Remote envs"
 
+    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}/predict_occultation
+    export PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
+    export SSHKEY=/home/app.tno/.ssh/id_rsa
+
     echo "Running Rsync: /app/src/predict_occultation/ ${PIPELINE_PREDIC_OCC}"
     rsync -r /app/src/predict_occultation/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/
-
-    # export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}/predict_occultation
-    # export PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
-    # export REMOTE_CONDA_PATH=${REMOTE_PIPELINE_ROOT}/miniconda/bin
 
     # ulimit -s 100000
     # ulimit -u 100000
@@ -42,6 +42,7 @@ then
     else
         echo "Remote Conda py3 environment does not exist."
         echo "Trying to create the environment."
+        source ${REMOTE_PIPELINE_ROOT}/miniconda/bin/activate
         $remote_conda_bin env create -f environment.py3.yml
         echo "Remote Conda enviroment Created!"
     fi

@@ -4,8 +4,9 @@ Criar pasta raiz para o portal e subdiretórios
 
 ```bash
 mkdir tno_prod && cd tno_prod
-mkdir -p database_subset logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public
-cd .. && chmod -R g+w tno_prod/ && cd tno_prod
+mkdir -p  logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public data/public/database_subset
+chmod -R g+w logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public data/public/database_subset
+
 ```
 
 # TODO: Chmod na pasta tno_prod deve ser depois das pastas criadas

@@ -34,7 +34,7 @@ def get_config(key, jobpath):
         # Linea SSH user keys
         sshkey = os.getenv("SSHKEY")
         # Linea DB prod_gavo DB uri. Catalog DB.
-        db_uri = os.getenv("DB_URI")
+        db_uri = os.getenv("DB_CATALOG_URI")
 
         # Env.sh que sera executado antes de iniciar as tasks no cluster
         cluster_env_sh = pipeline_pred_occ.joinpath("cluster.sh")
@@ -76,7 +76,7 @@ def get_config(key, jobpath):
                                 ]
                             ),
                             "PREDICT_OUTPUTS": str(predict_outputs),
-                            "DB_URI": db_uri,
+                            "DB_CATALOG_URI": db_uri,
                         },
                     ),
                 ),
