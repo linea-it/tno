@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
@@ -11,8 +11,11 @@ import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500'
 import { blue } from '@mui/material/colors'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
+import Alert from '@mui/material/Alert'
 
 function PredictEventCard({ data }) {
+  const [alertOpen, setAlertOpen] = useState(false)
+
   const getDisplayName = (name, number) => {
     return number !== null ? `${name} (${number})` : `${name}`
   }
@@ -43,9 +46,18 @@ function PredictEventCard({ data }) {
   }
 
   const handleShare = () => {
-    // const url = getDetailUrl();
-    // TODO: Copiar a url para area de transferencia e avisar.
+    const { protocol, hostname } = window.location
+    const url = `${protocol}//${hostname}${getDetailUrl()}`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => setAlertOpen(true))
+      .catch((error) => console.error('Failed to copy URL: ', error))
   }
+
+  const handleCloseAlert = () => {
+    setAlertOpen(false)
+  }
+
   const getDetailUrl = () => {
     return `/prediction-event-detail/${data.id}`
   }
@@ -75,7 +87,7 @@ function PredictEventCard({ data }) {
               {starMag(data.g_star)}
             </Stack>
             <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-              <Button size='small' onClick={handleShare} disabled={true}>
+              <Button size='small' onClick={handleShare}>
                 Share
               </Button>
               <Button size='small' href={getDetailUrl()} target='_blank'>
@@ -85,6 +97,19 @@ function PredictEventCard({ data }) {
           </Stack>
         </CardContent>
       </Box>
+      <Alert
+        sx={{
+          position: 'fixed',
+          bottom: 16,
+          left: 16,
+          zIndex: 9999
+        }}
+        severity='success'
+        onClose={handleCloseAlert}
+        open={alertOpen}
+      >
+        URL copiada para área de transferência
+      </Alert>
     </Card>
   )
 }
