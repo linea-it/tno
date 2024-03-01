@@ -18,13 +18,13 @@ chmod -R g+w logs data data/tmp data/predict_occultations data/rabbitmq data/ast
 Generate SECRET_KEY
 
 ```bash
-docker-compose run -it backend python -c "import secrets; print(secrets.token_urlsafe())"
+docker compose run -it backend python -c "import secrets; print(secrets.token_urlsafe())"
 ```
 
 Run Backend
 
 ```bash
-docker-compose up backend
+docker compose up backend
 ```
 
 Create a superuser in Django
@@ -32,24 +32,24 @@ run createsuperuser to create a admin user in Django.
 with the docker running open a new terminal and run this command.
 
 ```bash
-docker-compose exec backend python manage.py createsuperuser
+docker compose exec backend python manage.py createsuperuser
 ```
 
 Table preparation for Q3C
 run create_q3c_index for create indexes.
 
 ```bash
-docker-compose exec backend python manage.py create_q3c_index
+docker compose exec backend python manage.py create_q3c_index
 ```
 
 Load Initial Data (LeapSecond, BspPlanetary, Stelar Catalog)
 
 ```bash
-docker-compose exec backend python manage.py loaddata initial_data.yaml
+docker compose exec backend python manage.py loaddata initial_data.yaml
 ```
 
 Load Initial Asteroids Data
 
 ```bash
-docker-compose exec backend python manage.py update_asteroid_table
+docker compose exec backend python manage.py update_asteroid_table
 ```
