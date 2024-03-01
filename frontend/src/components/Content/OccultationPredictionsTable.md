@@ -2,7 +2,8 @@
 
 The occultation table shows a summary of predictions events available starting from your current date and time, with one event by row. By default, it exhibits the columns: **Map**, **Object**, **Dynamical Class**, **C/A Instant**, **C/A**, **Velocity**, **Local Solar Time**, and **G Gaia**. More hidden columns are availabe once you click on the columns menu. All columns are sortable.
 
-> **Warning**
+> **WARNING**
+>
 > Occultation ID values are NOT static. If the occultation predictions are updated for a certain asteroid, the old ID will no longer be available.
 
 Below are the descriptions of each available column.

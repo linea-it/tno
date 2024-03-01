@@ -6,8 +6,11 @@ This database was developed to universalize access in an easy and interactive wa
 
 ---
 
-> **Initial Release Advisory**
+> **INITIAL RELEASE ADVISORY**
+>
 > Please be aware that this is our inaugural release, and we are currently refining our database access performance. We are eager to receive your feedback regarding any challenges or problems encountered, as it will help us improve the overall user experience.
+
+---
 
 ## A quick note on Stellar Occultations
 
