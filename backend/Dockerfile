@@ -29,16 +29,45 @@ COPY requirements.txt /tmp/pip-tmp/
 RUN pip --disable-pip-version-check --no-cache-dir install -r /tmp/pip-tmp/requirements.txt \
     && rm -rf /tmp/pip-tmp
 
-ARG USERNAME=tnouser
-ARG USER_UID=1000
-ARG USER_GID=1000
-
 # add user so we can run things as non-root
 # https://code.visualstudio.com/remote/advancedcontainers/add-nonroot-user
-RUN groupadd --gid $USER_GID $USERNAME \
-    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    && mkdir /usr/src/app /usr/src/app/django_static /archive /log \
-    && chown -R $USER_UID:$USER_GID /usr/src/app /usr/src/app/django_static /archive /log
+ARG USERNAME=vscode
+ARG USERUID=1000
+ARG USERGID=1000
+
+RUN groupadd --gid  $USERGID $USERNAME \
+    && groupadd --gid 15007 linea-members \
+    && groupadd -r ton --gid 15010
+
+# Create NonRoot user and add to groups
+RUN useradd --uid ${USERUID} --gid ${USERGID} --shell /bin/bash --create-home ${USERNAME} \
+    && usermod -a -G 15010,15007 ${USERNAME}
+
+RUN useradd --uid 31670 --gid 15010 -m app.tno \
+    && usermod -a -G 15010,15007 app.tno
+
+RUN mkdir -p /usr/src/app \
+    /usr/src/app/django_static \
+    /usr/src/app/django_static/rest_framework \
+    /archive \
+    /archive/tmp \
+    /archive/maps \
+    /archive/skybot_outputs \
+    /logs \
+    /.astropy/cache \
+    /.config/matplotlib \
+    && chown -R $USER_UID:$USER_GID \
+    /usr/src/app \
+    /archive \
+    /logs \
+    /.astropy \
+    /.config \
+    && chmod -R 777 /usr/src/app/django_static \
+    && chmod -R g+w  \
+    /archive \
+    /logs \
+    /.astropy \
+    /.config
 
 ENV PYTHON_PATH="/usr/src/app:$PYTHON_PATH"
 ENV DJANGO_SETTINGS_MODULE=coreAdmin.settings
@@ -54,7 +83,7 @@ COPY --chmod=0775 ./start_flower.sh /start_flower.sh
 
 
 # Switch to non-priviliged user and run app
-USER tnouser
+USER $USERNAME
 
 # NÃO adicionar o script /start.sh no entrypoint
 # O /start.sh deve ser adicionado no docker-compose command.

@@ -21,8 +21,8 @@ uwsgi \
     --wsgi-file /usr/src/app/coreAdmin/wsgi.py \
     --module coreAdmin.wsgi:application \
     --buffer-size=32768 \
-    --processes=4 \
-    --threads=2 \
+    --processes=${DJANGO_UWSGI_WORKER_CONCURRENCY:-4} \
+    --threads=${DJANGO_UWSGI_WORKER_CONCURRENCY:-4}\
     --http-timeout=120 \
     --static-map /django_static=/usr/src/app/django_static \
     --py-autoreload=1

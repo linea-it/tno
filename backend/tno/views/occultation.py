@@ -404,7 +404,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 dpi=50,
             )
             res.wait()
-
         if filepath.exists():
             return Response(
                 {

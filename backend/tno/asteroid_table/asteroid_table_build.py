@@ -1077,34 +1077,34 @@ def import_asteroid_table(asteroid_table, log):
         )
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
 
-    # Reconfigure logging within the main function
-    log_path = "/log"
-    if not os.path.exists(os.path.dirname(log_path)):
-        os.makedirs(os.path.dirname(log_path))
-    log_filename = os.path.join(log_path, "asteroid_table_build.log")
-    logfile = os.path.join(log_path, log_filename)
-    log = logging.getLogger(log_filename.split(".log")[0])
-    log.setLevel(logging.INFO)
-    formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-    file_handler = logging.FileHandler(logfile)
-    file_handler.setFormatter(formatter)
-    log.addHandler(file_handler)
+#     # Reconfigure logging within the main function
+#     log_path = "/logs"
+#     if not os.path.exists(os.path.dirname(log_path)):
+#         os.makedirs(os.path.dirname(log_path))
+#     log_filename = os.path.join(log_path, "asteroid_table_build.log")
+#     logfile = os.path.join(log_path, log_filename)
+#     log = logging.getLogger(log_filename.split(".log")[0])
+#     log.setLevel(logging.INFO)
+#     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
+#     file_handler = logging.FileHandler(logfile)
+#     file_handler.setFormatter(formatter)
+#     log.addHandler(file_handler)
 
-    try:
-        table_path = "/archive/asteroid_table/"
-        csv_filename = "asteroid_table_build.csv"
+#     try:
+#         table_path = "/archive/asteroid_table/"
+#         csv_filename = "asteroid_table_build.csv"
 
-        # Executa a funcao e retorna um dataframe
-        df = asteroid_table_build(table_path, log)
+#         # Executa a funcao e retorna um dataframe
+#         df = asteroid_table_build(table_path, log)
 
-        # Cria o arquivo csv.
-        df.to_csv(os.path.join(table_path, csv_filename), index=False)
+#         # Cria o arquivo csv.
+#         df.to_csv(os.path.join(table_path, csv_filename), index=False)
 
-        # Importa o dataframe no banco de dados
-        import_asteroid_table(df, log)
+#         # Importa o dataframe no banco de dados
+#         import_asteroid_table(df, log)
 
-    except Exception as e:
-        log.error(e)
-        raise e
+#     except Exception as e:
+#         log.error(e)
+#         raise e

@@ -10,6 +10,6 @@ rm -f '/tmp/celery.pid'
 celery -A coreAdmin worker \
     -l INFO \
     --pidfile="/tmp/%n.pid" \
-    --logfile="/log/%n%I.log"
+    --logfile="/logs/%n%I.log"
 
 # --concurrency=1 \

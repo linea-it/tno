@@ -14,8 +14,64 @@ import os
 import urllib.parse
 from pathlib import Path
 
+import environ
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+env = environ.Env()
+
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
+if READ_DOT_ENV_FILE:
+    # OS environment variables take precedence over variables from .env
+    env.read_env(str(BASE_DIR / ".env"))
+
+# GENERAL
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#debug
+DEBUG = env.bool("DJANGO_DEBUG", False)
+# https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env("DJANGO_SECRET_KEY", default="fasheefdhjsyaefdvcswqtfgyhudsaipfygbdsa")
+# https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
+# CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+    CORS_ALLOW_CREDENTIALS = True
+    SESSION_COOKIE_SAMESITE = None
+else:
+    ALLOWED_HOSTS = env.list(
+        "DJANGO_ALLOWED_HOSTS", default=["solarsystem.linea.org.br"]
+    )
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/2.0/topics/i18n/
+# Local time zone. Choices are
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# though not all of them may be available with every OS.
+# In Windows, this must be set to your system time zone.
+TIME_ZONE = "UTC"
+# https://docs.djangoproject.com/en/dev/ref/settings/#language-code
+LANGUAGE_CODE = "en-us"
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
+USE_I18N = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-tz
+USE_TZ = True
+# https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
+USE_L10N = True
+
+# DATABASES
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#databases
+DATABASE_ROUTERS = ["tno.router.CatalogRouter"]
+DATABASES = {"default": env.db("DB_ADMIN_URI"), "catalog": env.db("DB_CATALOG_URI")}
+# IF Database need a Schema use this
+# DATABASES["default"]["OPTIONS"] = {"options": "-c search_path=<DB_SCHEMA>,public"}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+# https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
 
 # Diretorio com scripts externos.
 BIN_DIR = os.path.join(BASE_DIR, "bin")
@@ -23,7 +79,7 @@ BIN_DIR = os.path.join(BASE_DIR, "bin")
 # PROJECT PATHS
 # estes diretorios estao montados no container utilizando variaveis de ambiente, mas para o container sempre vao ser
 # os mesmos listados aqui.
-LOG_DIR = "/log"
+LOG_DIR = "/logs"
 LOGGING_LEVEL = "INFO"
 ARCHIVE_DIR = Path("/archive")
 PROCCESS_DIR = "/proccess"
@@ -34,7 +90,7 @@ DES_CCD_CATALOGS_DIR = "/archive/des/public/catalogs/"
 SKYBOT_ROOT = "skybot_output"
 SKYBOT_OUTPUT = Path.joinpath(ARCHIVE_DIR, SKYBOT_ROOT)
 if not SKYBOT_OUTPUT.exists():
-    SKYBOT_OUTPUT.mkdir(parents=True, exist_ok=False)
+    SKYBOT_OUTPUT.mkdir(parents=True, exist_ok=True)
 
 # JHONSTONS_ARCHIVE_ROOT = "jhonstons_archive"
 # JHONSTONS_ARCHIVE = os.path.join(ARCHIVE_DIR, JHONSTONS_ARCHIVE_ROOT)
@@ -51,15 +107,16 @@ if not MEDIA_TMP_DIR.exists():
 MEDIA_TMP_URL = urllib.parse.urljoin(MEDIA_URL, "tmp/")
 
 DATA_URL = "/data/"
+
 DATA_TMP_DIR = MEDIA_TMP_DIR
 DATA_TMP_URL = urllib.parse.urljoin(DATA_URL, "tmp/")
 
 PREDICTION_URL = "maps/"
-PREDICTION_MAP_DIR = MEDIA_TMP_DIR.joinpath("maps")
+PREDICTION_MAP_DIR = MEDIA_ROOT.joinpath("maps")
 if not PREDICTION_MAP_DIR.exists():
     PREDICTION_MAP_DIR.mkdir(parents=True, exist_ok=False)
 
-PREDICTION_MAP_URL = urllib.parse.urljoin(DATA_TMP_URL, PREDICTION_URL)
+PREDICTION_MAP_URL = urllib.parse.urljoin(DATA_URL, PREDICTION_URL)
 # Tamanho maximo em MB do diretório de mapas.
 PREDICTION_MAP_MAX_FOLDER_SIZE = 500
 # Determina a quantidade de mapas/subtasks submetidos a cada execução da task
@@ -67,7 +124,7 @@ PREDICTION_MAP_MAX_FOLDER_SIZE = 500
 PREDICTION_MAP_BLOCK_SIZE = 100
 
 
-ENVIRONMENT_NAME = os.environ.get("ENVIRONMENT_NAME", "Development")
+ENVIRONMENT_NAME = env("DJANGO_ENVIRONMENT_NAME", default="Development")
 
 # Emails
 # Notifications Email
@@ -88,17 +145,10 @@ EMAIL_HOST_USER = ""
 EMAIL_HOST_PASSWORD = ""
 
 
-APPLICATION_NAME = "SSSO - Solar System Small Object"
+APPLICATION_NAME = "Solar System - LIneA"
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "m=5=08^4a(il)bba)$cd%f*#wrcammi(r(q#($b$n^-jz8%+j0"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
-
-ALLOWED_HOSTS = ["*"]
 
 # Application definition
 
@@ -161,31 +211,6 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, "staticfiles"),)
 
 WSGI_APPLICATION = "coreAdmin.wsgi.application"
 
-DATABASE_ROUTERS = ["tno.router.CatalogRouter"]
-# Database
-# https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "database",
-        "PORT": 5432,
-        # IF Need Schema
-        # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
-    },
-    "catalog": {
-        "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "postgres",
-        "USER": "postgres",
-        "PASSWORD": "postgres",
-        "HOST": "database",
-        "PORT": 5432,
-    },
-}
-
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Password validation
 # https://docs.djangoproject.com/en/2.0/ref/settings/#auth-password-validators
@@ -205,18 +230,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/2.0/topics/i18n/
-
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
@@ -250,25 +263,19 @@ REST_FRAMEWORK = {
     "HTML_SELECT_CUTOFF": 50,
 }
 
-# CORS com essa combinação o serv de desenvolvimento do frontend consegue se authenticar
-if DEBUG:
-    ALLOWED_HOSTS = "*"
-    CORS_ALLOW_CREDENTIALS = True
-    SESSION_COOKIE_SAMESITE = None
-
 
 # TODO: Talves nao esteja mais sendo utilizado
 # Url para download dos CCDs,
 # usar None para desativar esta opcao.
 # ex: 'https://desar2.cosmology.illinois.edu/DESFiles/desarchive/'
-DES_ARCHIVE_URL = os.getenv("DES_ARCHIVE_URL")
-if DES_ARCHIVE_URL is not None:
-    try:
-        # Username e Password no DES.
-        DES_USERNAME = os.getenv("DES_USERNAME")
-        DES_PASSWORD = os.getenv("DES_PASSWORD")
-    except Exception as e:
-        raise Exception("DES user settings are required in .env file")
+# DES_ARCHIVE_URL = os.getenv("DES_ARCHIVE_URL")
+# if DES_ARCHIVE_URL is not None:
+#     try:
+#         # Username e Password no DES.
+#         DES_USERNAME = os.getenv("DES_USERNAME")
+#         DES_PASSWORD = os.getenv("DES_PASSWORD")
+#     except Exception as e:
+#         raise Exception("DES user settings are required in .env file")
 
 
 # Skybot Server
@@ -277,10 +284,46 @@ if DES_ARCHIVE_URL is not None:
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
-CELERY_BROKER_URL = os.getenv(
-    "CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost"
-)
+# CELERY_BROKER_URL = os.getenv(
+#     "CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost"
+# )
+# CELERY_RESULT_BACKEND = "django-db"
+
+# Celery
+# ------------------------------------------------------------------------------
+if USE_TZ:
+    # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-timezone
+    CELERY_TIMEZONE = TIME_ZONE
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-broker_url
+CELERY_BROKER_URL = env("DJANGO_CELERY_BROKER_URL")
+CELERY_WORKER_CONCURRENCY = env.int("DJANGO_CELERY_WORKER_CONCURRENCY", 2)
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-result_backend
 CELERY_RESULT_BACKEND = "django-db"
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#result-extended
+CELERY_RESULT_EXTENDED = True
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#result-backend-always-retry
+# https://github.com/celery/celery/pull/6122
+CELERY_RESULT_BACKEND_ALWAYS_RETRY = True
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#result-backend-max-retries
+CELERY_RESULT_BACKEND_MAX_RETRIES = 10
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-accept_content
+CELERY_ACCEPT_CONTENT = ["json"]
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-task_serializer
+CELERY_TASK_SERIALIZER = "json"
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-result_serializer
+CELERY_RESULT_SERIALIZER = "json"
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-time-limit
+# TODO: set to whatever value is adequate in your circumstances
+CELERY_TASK_TIME_LIMIT = 5 * 60
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-soft-time-limit
+# TODO: set to whatever value is adequate in your circumstances
+CELERY_TASK_SOFT_TIME_LIMIT = 120
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#beat-scheduler
+# CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#worker-send-task-events
+CELERY_WORKER_SEND_TASK_EVENTS = True
+# https://docs.celeryq.dev/en/stable/userguide/configuration.html#std-setting-task_send_sent_event
+CELERY_TASK_SEND_SENT_EVENT = True
 
 # Autenticacao com Shibboleth desativada por padrão
 SHIBBOLETH_ENABLED = False
@@ -312,6 +355,7 @@ if SHIBBOLETH_ENABLED is True:
     AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
 
     SHIBBOLETH_ENABLED = True
+
 
 LOGGING = {
     "version": 1,

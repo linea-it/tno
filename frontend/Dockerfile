@@ -36,5 +36,7 @@ COPY --from=builder_all /app/build /var/www/frontend
 
 RUN chgrp nginx /var/www/frontend
 RUN chmod -R g+w /var/www/frontend
+RUN chgrp nginx /var/log/nginx/
+RUN chmod -R g+w /var/log/nginx/
 # ADD ./nginx/production.conf /etc/nginx/conf.d/default.conf
 USER nginx
