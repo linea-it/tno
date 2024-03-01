@@ -122,31 +122,47 @@ function PublicDocumentation() {
               <Typography color='textPrimary'>Documentation</Typography>
             </Breadcrumbs>
             <Box id='overview' sx={{ display: selectedMenuItem === 'overview' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.overview || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.overview || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box id='release-notes' sx={{ display: selectedMenuItem === 'release-notes' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.releaseNotes || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.releaseNotes || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box
               id='occultation-predictions-table'
               sx={{ display: selectedMenuItem === 'occultation-predictions-table' ? 'block' : 'none' }}
             >
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.occultationPredictionsTable || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.occultationPredictionsTable || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box id='filtering-events' sx={{ display: selectedMenuItem === 'filtering-events' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.filterEvents || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.filterEvents || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box id='api' sx={{ display: selectedMenuItem === 'api' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.api || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.api || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box id='occultation-details-page' sx={{ display: selectedMenuItem === 'occultation-details-page' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.occultationDetailsPage || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.occultationDetailsPage || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box id='faq' sx={{ display: selectedMenuItem === 'faq' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.faq || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.faq || ''}</ReactMarkdown>
+              </div>
             </Box>
             <Box id='citation' sx={{ display: selectedMenuItem === 'citation' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.citation || ''}</ReactMarkdown>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.citation || ''}</ReactMarkdown>
+              </div>
             </Box>
           </Box>
         </Grid>
