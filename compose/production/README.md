@@ -4,8 +4,8 @@ Criar pasta raiz para o portal e subdiretórios
 
 ```bash
 mkdir tno_prod && cd tno_prod
-mkdir -p  logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public data/public/database_subset /data/public/maps data/skybot_output
-chmod -R g+w logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public data/public/database_subset /data/public/maps data/skybot_output
+mkdir -p  logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public data/public/database_subset /data/public/maps data/skybot_output data/asteroid_table
+chmod -R g+w logs data data/tmp data/predict_occultations data/rabbitmq data/astropy_cache data/public data/public/database_subset /data/public/maps data/skybot_output data/asteroid_table
 
 ```
 
