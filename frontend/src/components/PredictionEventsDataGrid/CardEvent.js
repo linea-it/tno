@@ -11,10 +11,10 @@ import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500'
 import { blue } from '@mui/material/colors'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
-import Alert from '@mui/material/Alert'
+import Snackbar from '@mui/material/Snackbar'
 
 function PredictEventCard({ data }) {
-  const [alertOpen, setAlertOpen] = useState(false)
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
 
   const getDisplayName = (name, number) => {
     return number !== null ? `${name} (${number})` : `${name}`
@@ -46,17 +46,20 @@ function PredictEventCard({ data }) {
   }
 
   const handleShare = () => {
-    const { protocol, hostname } = window.location
-    const url = `${protocol}//${hostname}${getDetailUrl()}`
+    const url = `${window.location.origin}${getDetailUrl()}`
     navigator.clipboard
       .writeText(url)
       .then(() => {
-        setAlertOpen(true)
-        setTimeout(() => {
-          setAlertOpen(false)
-        }, 2500)
+        setSnackbarOpen(true)
       })
       .catch((error) => console.error('Failed to copy URL: ', error))
+  }
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
   }
 
   const getDetailUrl = () => {
@@ -98,20 +101,7 @@ function PredictEventCard({ data }) {
           </Stack>
         </CardContent>
       </Box>
-      {alertOpen && (
-        <Alert
-          sx={{
-            position: 'fixed',
-            bottom: 16,
-            left: 16,
-            zIndex: 9999
-          }}
-          severity='success'
-          onClose={() => setAlertOpen(false)}
-        >
-          URL copiada para área de transferência
-        </Alert>
-      )}
+      <Snackbar open={snackbarOpen} autoHideDuration={2500} onClose={handleCloseSnackbar} message='URL copied to clipboard' />
     </Card>
   )
 }
