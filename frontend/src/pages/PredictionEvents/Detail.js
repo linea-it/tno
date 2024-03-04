@@ -50,7 +50,7 @@ function PredictionEventDetail() {
       {
         title: 'Star position (ICRF)',
         tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `${occultation.ra_star_candidate}, ${occultation.dec_star_candidate}`
+        value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`
       },
       {
         title: 'Closest Approach',
@@ -75,11 +75,6 @@ function PredictionEventDetail() {
         title: 'G mag',
         tooltip: 'Gaia magnitude',
         value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`
-      },
-      {
-        title: 'RP mag',
-        tooltip: 'Gaia RP magnitude',
-        value: `${occultation.g_mag_vel_corrected ? occultation.g_mag_vel_corrected.toFixed(3) : null}`
       },
       {
         title: 'H mag',
@@ -113,19 +108,19 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: `${starObj.ra ? starObj.ra.toFixed(8) : null} ${starObj.dec ? starObj.dec.toFixed(7) : null}`
+        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}, Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
-        value: `${occultation.ra_star_with_pm} ${occultation.dec_star_with_pm}`
+        value: `RA ${occultation.ra_star_with_pm}, Dec ${occultation.dec_star_with_pm}`
       },
       {
         title: 'Star apparent position (date)',
-        value: `${occultation.ra_star_to_date} ${occultation.dec_star_to_date}`
+        value: `RA ${occultation.ra_star_to_date}, Dec ${occultation.dec_star_to_date}`
       },
       {
         title: 'Proper motion',
-        value: `RA: ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec: ${
+        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec ${
           starObj.pmdec ? starObj.pmdec.toFixed(1) : null
         } ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`
       },
@@ -135,10 +130,12 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in the star position',
-        value: `${starObj.ra_error ? starObj.ra_error.toFixed(1) : null} ${starObj.dec_error ? starObj.dec_error.toFixed(1) : null} (mas)`
+        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null}, Dec ${
+          starObj.dec_error ? starObj.dec_error.toFixed(1) : null
+        } (mas)`
       },
       {
-        title: 'G magnitude',
+        title: 'G magnitude (source: GaiaDR2)',
         value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
       },
       {
@@ -170,12 +167,12 @@ function PredictionEventDetail() {
       },
       {
         title: "Object's Astrometric Position (ICRF)",
-        value: `${occultation.ra_target} ${occultation.dec_target}`
+        value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
       },
       {
         title: "Object's Apparent Position (date)",
         tooltip: "Relative to the Earth's center",
-        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`
+        value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
       },
       {
         title: 'Absolute Magnitude',
@@ -187,31 +184,22 @@ function PredictionEventDetail() {
       },
       {
         title: 'Diameter',
-        value: `${occultation.diameter} (Km)`
+        value: `${occultation.diameter ? occultation.diameter.toFixed(0) : null} (Km)`
       },
       {
         title: 'Aparent Diameter',
         value: `${occultation.aparent_diameter ? occultation.aparent_diameter.toFixed(4) : null} (mas)`
       },
       {
-        title: "Object's Astrometric Position (ICRF)",
-        value: `${occultation.ra_target} ${occultation.dec_target}`
-      },
-      {
-        title: "Object's Apparent Position (date)",
-        tooltip: "Relative to the Earth's center",
-        value: `${occultation.ra_target_apparent} ${occultation.dec_target_apparent}`
-      },
-      {
         title: 'Uncertainty in position',
-        value: `RA: ${occultation.e_ra_target}, Dec: ${occultation.e_dec_target} (mas)`
+        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`
       },
       {
         title: 'Ephemeris',
         value: `${occultation.ephemeris_version}`
       },
       {
-        title: 'Dynamic class',
+        title: 'Dynamic class (Skybot)',
         value: `${occultation.dynclass}`
       },
       {
