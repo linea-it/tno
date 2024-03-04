@@ -162,7 +162,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
 
             # Calcula a queda em magnitude durante a ocultacao
             try:
-                magnitude_drop = compute_magnitude_drop(ast_vis_mag, row["g_star"])
+                magnitude_drop = compute_magnitude_drop(ast_vis_mag, gaia_g_mag)
             except:
                 magnitude_drop = None
 

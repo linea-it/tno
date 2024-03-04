@@ -16,52 +16,70 @@ import Box from '@mui/material/Box'
 
 import styles from './styles'
 
-import IntroductionContent from '../../../components/Content/Introduction.md'
-import PlanetsContent from '../../../components/Content/Planets.md'
-import MoonsContent from '../../../components/Content/Moons.md'
-import AsteroidsCometsContent from '../../../components/Content/Asteroids_Comets.md'
-import InteractiveToolsContent from '../../../components/Content/Interactive_Tools.md'
+import OverviewContent from '../../../components/Content/Overview.md'
+import OccultationPredictionsTableContent from '../../../components/Content/OccultationPredictionsTable.md'
+import FilterEventsContent from '../../../components/Content/FilterEvents.md'
+import APIContent from '../../../components/Content/API.md'
+import OccultationDetailsPageContent from '../../../components/Content/OccultationDetailsPage.md'
+import ReleaseNotesContent from '../../../components/Content/ReleaseNotes.md'
+import FAQContent from '../../../components/Content/FAQ.md'
+import CitationContent from '../../../components/Content/Citations.md'
 
 const menuItems = [
-  { label: 'Introduction to the Solar System', id: 'introduction' },
-  { label: 'Planets of the Solar System', id: 'planets' },
-  { label: 'Moons of the Solar System', id: 'moons' },
-  { label: 'Asteroids and Comets', id: 'asteroids-comets' },
-  { label: 'Interactive Tools in the Solar System Portal', id: 'interactive-tools' }
+  { label: 'Overview', id: 'overview' },
+  { label: 'Release Notes', id: 'release-notes' },
+  { label: 'Occultation Predictions Table', id: 'occultation-predictions-table' },
+  { label: 'Filtering Events', id: 'filtering-events' },
+  { label: 'API', id: 'api' },
+  { label: 'Occultation Details Page', id: 'occultation-details-page' },
+  { label: 'FAQ', id: 'faq' },
+  { label: 'Citations', id: 'citation' }
 ]
 
 function PublicDocumentation() {
   const classes = styles()
-  const [selectedMenuItem, setSelectedMenuItem] = useState('introduction')
+  const [selectedMenuItem, setSelectedMenuItem] = useState('overview')
   const [content, setContent] = useState({
-    introduction: null,
-    planets: null,
-    moons: null,
-    asteroidsComets: null,
-    interactiveTools: null
+    overview: null,
+    releaseNotes: null,
+    occultationPredictionsTable: null,
+    filterEvents: null,
+    api: null,
+    occultationDetailsPage: null,
+    faq: null,
+    citation: null
   })
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const introductionResponse = await fetch(IntroductionContent)
-        const planetsResponse = await fetch(PlanetsContent)
-        const moonsResponse = await fetch(MoonsContent)
-        const asteroidsCometsResponse = await fetch(AsteroidsCometsContent)
-        const interactiveToolsResponse = await fetch(InteractiveToolsContent)
+        const overviewResponse = await fetch(OverviewContent)
+        const releaseNotesResponse = await fetch(ReleaseNotesContent)
+        const occultationPredictionsTableResponse = await fetch(OccultationPredictionsTableContent)
+        const filterEventsResponse = await fetch(FilterEventsContent)
+        const apiResponse = await fetch(APIContent)
+        const occultationDetailsPageResponse = await fetch(OccultationDetailsPageContent)
+        const FAQResponse = await fetch(FAQContent)
+        const CitationResponse = await fetch(CitationContent)
 
-        const introductionText = await introductionResponse.text()
-        const planetsText = await planetsResponse.text()
-        const moonsText = await moonsResponse.text()
-        const asteroidsCometsText = await asteroidsCometsResponse.text()
-        const interactiveToolsText = await interactiveToolsResponse.text()
+        const overviewText = await overviewResponse.text()
+        const releaseNotesText = await releaseNotesResponse.text()
+        const occultationPredictionsTableText = await occultationPredictionsTableResponse.text()
+        const filterEventsText = await filterEventsResponse.text()
+        const apiText = await apiResponse.text()
+        const occultationDetailsPageText = await occultationDetailsPageResponse.text()
+        const faqText = await FAQResponse.text()
+        const citationText = await CitationResponse.text()
 
         setContent({
-          introduction: introductionText,
-          planets: planetsText,
-          moons: moonsText,
-          asteroidsComets: asteroidsCometsText,
-          interactiveTools: interactiveToolsText
+          overview: overviewText,
+          releaseNotes: releaseNotesText,
+          occultationPredictionsTable: occultationPredictionsTableText,
+          filterEvents: filterEventsText,
+          api: apiText,
+          occultationDetailsPage: occultationDetailsPageText,
+          faq: faqText,
+          citation: citationText
         })
       } catch (error) {
         console.error('Error fetching content:', error)
@@ -103,20 +121,48 @@ function PublicDocumentation() {
               </Link>
               <Typography color='textPrimary'>Documentation</Typography>
             </Breadcrumbs>
-            <Box id='introduction' sx={{ display: selectedMenuItem === 'introduction' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.introduction || ''}</ReactMarkdown>
+            <Box id='overview' sx={{ display: selectedMenuItem === 'overview' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.overview || ''}</ReactMarkdown>
+              </div>
             </Box>
-            <Box id='planets' sx={{ display: selectedMenuItem === 'planets' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.planets || ''}</ReactMarkdown>
+            <Box id='release-notes' sx={{ display: selectedMenuItem === 'release-notes' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.releaseNotes || ''}</ReactMarkdown>
+              </div>
             </Box>
-            <Box id='moons' sx={{ display: selectedMenuItem === 'moons' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.moons || ''}</ReactMarkdown>
+            <Box
+              id='occultation-predictions-table'
+              sx={{ display: selectedMenuItem === 'occultation-predictions-table' ? 'block' : 'none' }}
+            >
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.occultationPredictionsTable || ''}</ReactMarkdown>
+              </div>
             </Box>
-            <Box id='asteroids-comets' sx={{ display: selectedMenuItem === 'asteroids-comets' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.asteroidsComets || ''}</ReactMarkdown>
+            <Box id='filtering-events' sx={{ display: selectedMenuItem === 'filtering-events' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.filterEvents || ''}</ReactMarkdown>
+              </div>
             </Box>
-            <Box id='interactive-tools' sx={{ display: selectedMenuItem === 'interactive-tools' ? 'block' : 'none' }}>
-              <ReactMarkdown remarkPlugins={[gfm]}>{content.interactiveTools || ''}</ReactMarkdown>
+            <Box id='api' sx={{ display: selectedMenuItem === 'api' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.api || ''}</ReactMarkdown>
+              </div>
+            </Box>
+            <Box id='occultation-details-page' sx={{ display: selectedMenuItem === 'occultation-details-page' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.occultationDetailsPage || ''}</ReactMarkdown>
+              </div>
+            </Box>
+            <Box id='faq' sx={{ display: selectedMenuItem === 'faq' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.faq || ''}</ReactMarkdown>
+              </div>
+            </Box>
+            <Box id='citation' sx={{ display: selectedMenuItem === 'citation' ? 'block' : 'none' }}>
+              <div className={classes.markdownContent}>
+                <ReactMarkdown remarkPlugins={[gfm]}>{content.citation || ''}</ReactMarkdown>
+              </div>
             </Box>
           </Box>
         </Grid>
