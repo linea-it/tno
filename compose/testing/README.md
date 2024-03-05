@@ -14,9 +14,9 @@ gh repo clone linea-it/tno tno_temp \
 && mkdir -p tno_testing tno_testing/logs tno_testing/data tno_testing/data/rabbitmq \
 && chmod -R g+w tno_testing \
 && cd tno_testing \
-&& cp .env-template .env \
-&& cp docker-compose-template.yml docker-compose.yml \
-&& cp local_settings-template.py local_settings.py
+&& mv .env-template .env \
+&& mv docker-compose-template.yml docker-compose.yml \
+&& mv local_settings-template.py local_settings.py
 ´´´
 
 Install Miniconda in PWD/tno_testing/miniconda and create enviroment named py3 with environment.py3.yml
