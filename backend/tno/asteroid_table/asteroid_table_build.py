@@ -896,7 +896,7 @@ def clean_duplicate_asteroids(dataframe, category="name"):
     return dataframe
 
 
-def asteroid_table_build(table_path, log):
+def asteroid_table_build(table_path, log, use_local_files):
     """
     Main function to orchestrate the download, loading, and processing of asteroid data.
 
@@ -918,9 +918,21 @@ def asteroid_table_build(table_path, log):
         # Define the local filename for the downloaded file
         mpcext_local_filename = "mpcorb_extended.json.gz"
 
-        download_file_if_not_exists_or_changed(
-            mpcext_url, table_path, mpcext_local_filename, log
-        )
+        # Define the URL of the file
+        ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest.ecsv.bz2"
+        # Define the local filename for the downloaded file
+        ssoBFT_local_filename = "ssoBFT-latest.ecsv.bz2"
+
+        if not use_local_files:
+            download_file_if_not_exists_or_changed(
+                mpcext_url, table_path, mpcext_local_filename, log
+            )
+            download_file_if_not_exists_or_changed(
+                ssoBFT_url, table_path, ssoBFT_local_filename, log
+            )
+        else:
+            log.info("Using local files. Skipping Download.")
+
         data_mpc = load_mpcorb_extended(
             os.path.join(table_path, mpcext_local_filename), log
         )
@@ -929,15 +941,6 @@ def asteroid_table_build(table_path, log):
         # data_mpc = data_mpc.iloc[0:5, ]
         # index = [1,2,3,4,5,131240,644901,201725,656765,470433,710161]
         # data_mpc = data_mpc.iloc[index]
-
-        # Define the URL of the file
-        ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest.ecsv.bz2"
-        # Define the local filename for the downloaded file
-        ssoBFT_local_filename = "ssoBFT-latest.ecsv.bz2"
-
-        download_file_if_not_exists_or_changed(
-            ssoBFT_url, table_path, ssoBFT_local_filename, log
-        )
         data_bft = load_ssoBFT(os.path.join(table_path, ssoBFT_local_filename), log)
 
         asteroid_table = crossmatch_dataframes(data_mpc, data_bft)

@@ -20,6 +20,7 @@ from tno.dao import AsteroidDao, AsteroidJobDao
 
 
 class AsteroidTableManager:
+
     def __init__(self, stdout=False):
 
         # self.log = logging.getLogger("asteroids")
@@ -116,7 +117,7 @@ class AsteroidTableManager:
 
         self.job_dao.update(self.job_id, status=4, error=msg, traceback=trace)
 
-        self.rollback()
+        # self.rollback()
         raise Exception(msg)
 
     def on_complete(self, start):

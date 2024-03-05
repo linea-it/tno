@@ -7,6 +7,17 @@ from tno.asteroid_table.asteroid_table_manager import AsteroidTableManager
 class Command(BaseCommand):
     help = "Updates the asteroid table data using data downloaded from MPC."
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--local",
+            type=bool,
+            default=False,
+            help="Does not download the files, uses the local files in /data/asteroid_table",
+        )
+
     def handle(self, *args, **options):
+
+        local = options.get("local", False)
+
         atm = AsteroidTableManager(stdout=True)
-        atm.run_update_asteroid_table()
+        atm.run_update_asteroid_table(use_local_files=local)
