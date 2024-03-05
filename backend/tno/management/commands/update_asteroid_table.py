@@ -10,7 +10,8 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "--local",
-            type=bool,
+            action="store_true",
+            dest="local",
             default=False,
             help="Does not download the files, uses the local files in /data/asteroid_table",
         )

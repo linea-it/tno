@@ -120,7 +120,7 @@ docker compose run -it --rm backend python manage.py loaddata initial_data.yaml
 Load Initial Asteroids Data
 
 ```bash
-docker compose exec backend python manage.py update_asteroid_table
+docker compose run -it --rm backend python manage.py update_asteroid_table
 ```
 
 > A criação da tabela de asteorids demora alguns minutos.
@@ -129,12 +129,12 @@ docker compose exec backend python manage.py update_asteroid_table
 
 **Workaround:**
 
-A criação da tabela de asteroid depende de 2 arquivos baixados de serviços externos pode ser que ao executar o comando de algum erro caso esses arquivos estejam indisponiveis. Para corrigir isso utilize os arquivos de sample deixados no home do usuario app.tno
+A criação da tabela de asteroid depende de 2 arquivos baixados de serviços externos pode ser que ao executar o comando de algum erro caso esses arquivos estejam indisponiveis. Para corrigir isso utilize os arquivos de sample deixados no home do usuario app.tno e execute o comando com a opcao --local.
 
 ```bash
 cp /lustre/t1/scratch/users/app.tno/data_sample/ssoBFT-latest.ecsv.bz2 data/asteroid_table/ \
 && cp /lustre/t1/scratch/users/app.tno/data_sample/mpcorb_extended.json.gz data/asteroid_table/ \
-&& docker compose exec backend python manage.py update_asteroid_table
+&& docker compose run -it --rm backend python manage.py update_asteroid_table --local
 ```
 
 ---
