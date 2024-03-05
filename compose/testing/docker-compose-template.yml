@@ -1,0 +1,91 @@
+services:
+  backend:
+    &backend
+    image: linea/tno:backend_${TNO_IMAGE_TAG:-8fa8fae}
+    user: ${TNO_UID:-31670}:${TNO_GID:-15010}
+    group_add:
+      - "15007"
+      - "15010"
+    volumes:
+      - ${TNO_PROJ_DIR:-.}/local_settings.py:/usr/src/app/coreAdmin/local_settings.py
+      - ${TNO_PROJ_DIR:-.}/logs:/logs
+      - ${TNO_PROJ_DIR:-.}/data:/archive
+      # - ${TNO_PROJ_DIR:-.}/data/skybot_output:/archive/skybot_output
+      # - ${TNO_PROJ_DIR:-.}/data/asteroid_table:/archive/asteroid_table
+      # - ${TNO_PROJ_DIR:-.}/data/public/maps:/archive/maps
+      # - ${TNO_PROJ_DIR:-.}/data/tmp:/archive/tmp
+    env_file:
+      - .env
+    command: /start.sh
+    depends_on:
+      - rabbit
+
+  # Frontend Servidor Web NGINX
+  # Apps em React builded (apenas arquivos staticos html, js, css, etc.)
+  frontend:
+    image: linea/tno:frontend_${TNO_IMAGE_TAG:-8fa8fae}
+    ports:
+      - ${TNO_PORT:-8060}:8080
+    volumes:
+      - ${TNO_PROJ_DIR:-.}/nginx_proxy.conf:/etc/nginx/conf.d/default.conf
+      - ${TNO_PROJ_DIR:-.}/data/public:/var/www/data
+      # - ${TNO_PROJ_DIR:-.}/logs/:/var/log/nginx/
+      # - ${TNO_PROJ_DIR:-.}/data/database_subset:/var/www/data/database_subset
+    depends_on:
+      - backend
+      - rabbit
+      - celery_flower
+
+  predict_occultation:
+    image: linea/tno:predict_occ_${TNO_IMAGE_TAG:-8fa8fae}
+    user: ${TNO_UID:-31670}:${TNO_GID:-15010}
+    group_add:
+      - "15007"
+      - "15010"
+      - "900"
+    command: /app/src/daemon.sh
+    # command: /bin/sh -c "while sleep 1000; do :; done"
+    network_mode: "host"
+    volumes:
+      - ${TNO_PROJ_DIR:-.}:${TNO_PROJ_DIR:-.}
+      - ${TNO_SSHKEY}:/home/app.tno/.ssh/id_rsa
+    environment:
+      - PARSL_ENV=linea
+      - REMOTE_PIPELINE_ROOT=${TNO_PROJ_DIR:-.}
+      - PREDICT_OUTPUTS=${TNO_PROJ_DIR:-.}/data/predict_occultations
+      - DB_ADMIN_URI=${DB_ADMIN_URI}
+      - DB_CATALOG_URI=${DB_CATALOG_URI}
+
+  # Celery Workers (Tarefas do backend em background)
+  celery_worker:
+    <<: *backend
+    command: /start_worker.sh
+    depends_on:
+      - backend
+
+  # Celery Beat (Tarefas agendadas do backend)
+  celery_beat:
+    <<: *backend
+    command: /start_beat.sh
+    depends_on:
+      - backend
+
+  celery_flower:
+    <<: *backend
+    command: /start_flower.sh
+    depends_on:
+      - backend
+      - celery_worker
+      - celery_beat
+
+  # Message-Broker RabbitMQ
+  # Documentation: https://www.rabbitmq.com/docs/documentation
+  # Docker Image: https://hub.docker.com/_/rabbitmq
+  rabbit:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-tno}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-tno}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-tno_vhost}
+    volumes:
+      - ${TNO_PROJ_DIR:-.}/data/rabbitmq:/var/lib/rabbitmq/
