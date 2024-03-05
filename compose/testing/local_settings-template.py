@@ -1,9 +1,6 @@
 # Level do Log (INFO, DEBUG, WARNING, ERROR, CRITICAL)
 LOGGING_LEVEL = "INFO"
 
-# https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["solarsystem.linea.org.br"]
-
 # the hostname and port number of the current Server URL
 # TODO: Verificar onde se ainda é utilizado?
 HOST_URL = "//tno-dev.linea.org.br/"

@@ -1,3 +1,7 @@
+
+volumes:
+  rabbitmq-data:
+
 services:
   backend:
     &backend
@@ -88,4 +92,4 @@ services:
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-tno}
       RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-tno_vhost}
     volumes:
-      - ${TNO_PROJ_DIR:-.}/data/rabbitmq:/var/lib/rabbitmq/
+      - rabbitmq-data:/var/lib/rabbitmq/

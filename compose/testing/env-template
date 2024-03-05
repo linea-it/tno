@@ -26,5 +26,5 @@ DJANGO_UWSGI_WORKER_THREADS=2
 
 # DATABASE used in Django and Predict Occultation container
 # -------------------------------------
-DB_ADMIN_URI=postgresql://tnouseradmindev:TnoDev405060@desdb4.linea.gov.br:5432/tnodbdev
-DB_CATALOG_URI=postgresql://untrustedprod:untrusted@desdb4.linea.gov.br:5432/prod_gavo
+DB_ADMIN_URI=postgresql://<DB_USER>:<DB_USER>@desdb4.linea.gov.br:5432/<DB_NAME>
+DB_CATALOG_URI=postgresql://<DB_USER>:<DB_USER>@desdb4.linea.gov.br:5432/prod_gavo
