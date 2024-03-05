@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
@@ -11,8 +11,11 @@ import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500'
 import { blue } from '@mui/material/colors'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
+import Snackbar from '@mui/material/Snackbar'
 
 function PredictEventCard({ data }) {
+  const [snackbarOpen, setSnackbarOpen] = useState(false)
+
   const getDisplayName = (name, number) => {
     return number !== null ? `${name} (${number})` : `${name}`
   }
@@ -43,9 +46,22 @@ function PredictEventCard({ data }) {
   }
 
   const handleShare = () => {
-    // const url = getDetailUrl();
-    // TODO: Copiar a url para area de transferencia e avisar.
+    const url = `${window.location.origin}${getDetailUrl()}`
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setSnackbarOpen(true)
+      })
+      .catch((error) => console.error('Failed to copy URL: ', error))
   }
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    setSnackbarOpen(false)
+  }
+
   const getDetailUrl = () => {
     return `/prediction-event-detail/${data.id}`
   }
@@ -75,7 +91,7 @@ function PredictEventCard({ data }) {
               {starMag(data.g_star)}
             </Stack>
             <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-              <Button size='small' onClick={handleShare} disabled={true}>
+              <Button size='small' onClick={handleShare}>
                 Share
               </Button>
               <Button size='small' href={getDetailUrl()} target='_blank'>
@@ -85,6 +101,7 @@ function PredictEventCard({ data }) {
           </Stack>
         </CardContent>
       </Box>
+      <Snackbar open={snackbarOpen} autoHideDuration={2500} onClose={handleCloseSnackbar} message='URL copied to clipboard' />
     </Card>
   )
 }
