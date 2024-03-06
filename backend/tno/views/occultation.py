@@ -101,7 +101,7 @@ class OccultationFilter(django_filters.FilterSet):
     def solar_time(self, queryset, name, value):
         # Se value.start for maior que value.stop
         if value.start > value.stop:
-            # Periodo de Meio dia até o meio meia noite e de meia noite até meio dia
+            # Periodo de Meio dia até meia noite e de meia noite até meio dia
             # Na pratica o start é de meio dia até meio dia do proximo dia.
             after = Q(loc_t__gte=value.start, loc_t__lte=time(23, 59, 59))
             before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=value.stop)
