@@ -83,9 +83,7 @@ services:
   # Docker Image: https://hub.docker.com/_/rabbitmq
   rabbit:
     image: rabbitmq:3-management
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-tno}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-tno}
-      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_DEFAULT_VHOST:-tno_vhost}
+    env_file:
+      - .env
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq/
