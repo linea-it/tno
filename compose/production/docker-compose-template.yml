@@ -25,7 +25,7 @@ services:
   frontend:
     image: linea/tno:frontend_${TNO_IMAGE_TAG:-8fa8fae}
     ports:
-      - ${TNO_PORT:-8060}:8080
+      - ${TNO_PORT:-8097}:8080
     volumes:
       - ${TNO_PROJ_DIR:-.}/nginx_proxy.conf:/etc/nginx/conf.d/default.conf
       - ${TNO_PROJ_DIR:-.}/data/public:/var/www/data
