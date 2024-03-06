@@ -304,25 +304,26 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
-    def highlights(self, request):
+    def highlights_unique_asteroids(self, request):
 
         count = Occultation.objects.count()
+        unique_asteroids = Occultation.objects.values("name").distinct().count()
         first_datetime = Occultation.objects.earliest("date_time")
         last_datetime = Occultation.objects.latest("date_time")
-        unique_asteroids = Occultation.objects.values("name").distinct().count()
+        return Response(
+            {
+                "count": count,
+                "unique_asteroids": unique_asteroids,
+                "earliest": first_datetime.date_time.isoformat(),
+                "latest": last_datetime.date_time.isoformat(),
+            }
+        )
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def highlights_weekly_forecast(self, request):
 
         today_utc = datetime.utcnow().date()
         today_events = Occultation.objects.filter(date_time__date=today_utc)
-
-        # Total de eventos para hoje que já possuem mapas.
-        maps_size = []
-        for event in today_events:
-            map_filepath = event.get_map_filepath()
-            if map_filepath.exists():
-                maps_size.append(map_filepath.stat().st_size)
-
-        today_already_have_map = len(maps_size)
-        total_maps_size = sum(maps_size)
 
         week_number = today_utc.isocalendar().week
         next_week_number = week_number + 1
@@ -333,6 +334,18 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         next_week_count = Occultation.objects.filter(
             date_time__date__week=next_week_number
         ).count()
+        return Response(
+            {
+                "today_count": today_events.count(),
+                "week_count": this_week_count,
+                "next_week_count": next_week_count,
+            }
+        )
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def highlights_monthly_forecast(self, request):
+
+        today_utc = datetime.utcnow().date()
 
         next_month = today_utc + relativedelta(months=1)
         this_month_count = Occultation.objects.filter(
@@ -342,24 +355,17 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             date_time__date__month=next_month.month
         ).count()
 
-        maps_stats = maps_folder_stats()
-
         return Response(
             {
-                "count": count,
-                "earliest": first_datetime.date_time.isoformat(),
-                "latest": last_datetime.date_time.isoformat(),
-                "unique_asteroids": unique_asteroids,
-                "today_count": today_events.count(),
-                "today_already_have_map": today_already_have_map,
-                "total_maps_size": total_maps_size,
-                "week_count": this_week_count,
-                "next_week_count": next_week_count,
                 "month_count": this_month_count,
                 "next_month_count": next_month_count,
-                "maps_stats": maps_stats,
             }
         )
+
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def highlights_maps_stats(self, request):
+
+        return Response(maps_folder_stats())
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def create_maps_for_today(self, request):

@@ -218,16 +218,20 @@ def sora_occultation_map(
 
 
 def get_longest_consecutive_numbers(numbers):
-    # https://stackoverflow.com/questions/55616217/find-longest-consecutive-range-of-numbers-in-list
-    idx = max(
-        (
-            list(map(itemgetter(0), g))
-            for i, g in groupby(enumerate(np.diff(numbers) == 1), itemgetter(1))
-            if i
-        ),
-        key=len,
-    )
-    return (idx[0], idx[-1] + 1)
+    numbers = sorted(numbers)
+    try:
+        # https://stackoverflow.com/questions/55616217/find-longest-consecutive-range-of-numbers-in-list
+        idx = max(
+            (
+                list(map(itemgetter(0), g))
+                for i, g in groupby(enumerate(np.diff(numbers) == 1), itemgetter(1))
+                if i
+            ),
+            key=len,
+        )
+        return (idx[0], idx[-1] + 1, True)
+    except:
+        return (0, -1, False)
 
 
 def maps_folder_stats():
@@ -291,13 +295,15 @@ def maps_folder_stats():
         if len(maps_dates) > 1:
             # Convert dates to integer
             date_ints = [d.toordinal() for d in maps_dates]
-            start, end = get_longest_consecutive_numbers(list(date_ints))
+            print(date_ints)
+            start, end, consecutive = get_longest_consecutive_numbers(list(date_ints))
             first_map = maps_dates[start]
             last_map = maps_dates[end]
 
         result.update(
             {
                 "period": [first_map.isoformat(), last_map.isoformat()],
+                "period_is_consecutive": consecutive,
                 "oldest_file": oldest,
                 "newest_file": newest,
             }

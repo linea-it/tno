@@ -71,8 +71,20 @@ export const getOrCreatePredictionMap = ({ queryKey }) => {
   return api.get(`/occultations/${id}/get_or_create_map`, { params: { force: force } }).then((res) => res.data)
 }
 
-export const getOccultationHighlights = () => {
-  return api.get(`/occultations/highlights/`).then((res) => res.data)
+export const getHighlightsUniqueAsteroids = () => {
+  return api.get(`/occultations/highlights_unique_asteroids/`).then((res) => res.data)
+}
+
+export const getHighlightsWeeklyForecast = () => {
+  return api.get(`/occultations/highlights_weekly_forecast/`).then((res) => res.data)
+}
+
+export const getHighlightsMonthlyForecast = () => {
+  return api.get(`/occultations/highlights_monthly_forecast/`).then((res) => res.data)
+}
+
+export const getHighlightsMapsStats = () => {
+  return api.get(`/occultations/highlights_maps_stats/`).then((res) => res.data)
 }
 
 export const geoFilterIsValid = (value) => {
