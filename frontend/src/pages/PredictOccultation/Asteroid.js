@@ -32,14 +32,16 @@ function PredictionAsteroid() {
           ...prev,
           filters: {
             ...prev.filters,
-            date_time_after: undefined,
-            date_time_before: undefined,
             filterType: 'name',
             filterValue: [{ name: res.name }],
+            jobid: res.job,
             maginitudeMax: undefined,
             nightside: false,
             geo: false,
-            jobid: res.job
+            date_time_after: undefined,
+            date_time_before: undefined,
+            solar_time_after: undefined,
+            solar_time_before: undefined
           }
         }
       })

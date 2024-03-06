@@ -146,9 +146,11 @@ const parsePredictEventsFilters = (params) => {
     newFilters.mag_g_max = filters.maginitudeMax
 
     // Filtro por Local Solar Time
-    if (filters.solar_time_after.isValid() && filters.solar_time_before.isValid()) {
-      newFilters.local_solar_time_after = filters.solar_time_after.format('HH:mm:ss')
-      newFilters.local_solar_time_before = filters.solar_time_before.format('HH:mm:ss')
+    if (filters.solar_time_after !== undefined && filters.solar_time_before !== '') {
+      if (filters.solar_time_after.isValid() && filters.solar_time_before.isValid()) {
+        newFilters.local_solar_time_after = filters.solar_time_after.format('HH:mm:ss')
+        newFilters.local_solar_time_before = filters.solar_time_before.format('HH:mm:ss')
+      }
     }
 
     // Filtro por Nighside
