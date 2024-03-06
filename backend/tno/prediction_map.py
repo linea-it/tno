@@ -1,15 +1,10 @@
 import logging
-import os
-from datetime import datetime, timezone
-from itertools import groupby
-from operator import itemgetter
+from datetime import datetime, timezone, time
 from pathlib import Path
 from typing import Optional, Union
-
+from django.db.models import Q
 import humanize
-import numpy as np
 from django.conf import settings
-from sora.prediction.occmap import plot_occ_map as occmap
 from tno.models import Occultation
 
 
@@ -95,13 +90,14 @@ def upcoming_events_to_create_maps(
     date_start: Optional[str] = None,
     date_end: Optional[str] = None,
     limit: Optional[int] = None,
+    magnitude_limit: Optional[int] = 16,
 ) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
 
     # Checar o tamanho da pasta x tamanho limite im MB
     # Recupera proximos eventos
-    # Dividir em blocos 100
+    # Dividir em blocos
     # checa se já existe mapa.
     # Checa se a predição é mais recente do que o arquivo mapa.
     # Retorna uma lista de eventos que precisam de mapa.
@@ -131,6 +127,14 @@ def upcoming_events_to_create_maps(
     if isinstance(date_end, str):
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
         next_events.filter(date_time__lte=date_end)
+
+    # Filtro por magnitude
+    next_events.filter(g_star__lte=magnitude_limit)
+
+    # Filtro por Solar Time 18:00 - 06:00
+    after = Q(loc_t__gte=time(18, 0, 0), loc_t__lte=time(23, 59, 59))
+    before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=time(6, 0, 0))
+    next_events.filter(Q(after | before))
 
     logger.debug(f"Next events count: {next_events.count()}")
     for obj in next_events:
