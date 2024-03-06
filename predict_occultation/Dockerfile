@@ -28,6 +28,11 @@ RUN set -x && \
     && chmod =2775 /opt/conda \
     && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh
 
+# Create Groups ton, conda
+# Grupo ton existe no ambiente do linea
+RUN groupadd -r ton --gid 15010 \
+    && groupadd -r conda --gid 900
+
 # -------------- PRAIA OCC compile Stage --------------
 FROM base as praia_occ
 ADD praia_occ_src /tmp/praia_occ_src
@@ -88,9 +93,6 @@ RUN wget --no-verbose --show-progress \
 # PRAIA OCC binaries
 COPY --from=praia_occ /tmp/praia_occ/* /usr/local/bin
 
-# # Python 2.7 environment
-# COPY --chown=:conda --chmod=775 --from=py2_build /opt/conda/envs/py2 /opt/conda/envs/py2
-
 # Python 3.8 environment
 COPY --chown=:conda --chmod=775 --from=py3_build /opt/conda/envs/py3 /opt/conda/envs/py3
 
@@ -108,16 +110,15 @@ ARG USERNAME=vscode
 ARG USERUID=1000
 ARG USERGID=1000
 
-# Create remote user
-# Create the conda group and add remote user to the group
-RUN groupadd --gid ${USERGID} ${USERNAME} \
+# Create NonRoot user and add to groups
+RUN groupadd --gid ${USERGID} ${USERNAME}  \
     && useradd --uid ${USERUID} --gid ${USERGID} --shell /bin/bash --create-home ${USERNAME} \
-    && groupadd --gid 15010 ton \
-    && useradd --uid 31670 --gid 15010 --shell /bin/bash --create-home apptno \
-    && groupadd -r conda --gid 900 \
-    && usermod -aG conda,ton ${USERNAME} \
-    && usermod -aG conda apptno
+    && usermod -a -G 15010,900 ${USERNAME}
 
+# Create remote user for cluster, this user app.tno exists in linea enviroment
+RUN groupadd --gid 15007 linea-members  \
+    && useradd --uid 31670 --gid 15007 --shell /bin/bash --create-home app.tno \
+    && usermod -a -G 15010,900 app.tno
 
 
 ENV PIPELINE_ROOT=${APP_HOME}/src
@@ -126,13 +127,14 @@ ENV PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
 
 # quando parsl_env = local o diretório remoto é o mesmo que o local.
 # mas quando parsl_env = linea o diretório remoto é por ex: /lustre/t1/scratch/users/app.tno/tno_testing
-# ENV REMOTE_PIPELINE_ROOT=$PIPELINE_ROOT
-# ENV PREDICT_OUTPUTS=${PIPELINE_ROOT}/outputs/predict_occultation
 ENV REMOTE_CONDA_PATH=/opt/conda/bin
 
 COPY --chown=${USERNAME}:ton --chmod=775 src /app/src
 COPY --chown=${USERNAME}:ton --chmod=775 entrypoint.sh ${APP_HOME}
 COPY --chown=${USERNAME}:ton --chmod=775 check_enviroment.py ${APP_HOME}
+
+# Copia o enviroment utilizado dentro do container para atualizar ou criar o enviroment fora do container.
+COPY --chown=${USERNAME}:ton --chmod=2775 environment.py3.yml ${APP_HOME}
 
 RUN chmod -R =2775 ${PIPELINE_ROOT} \
     && chmod =2775 ${APP_HOME} \
@@ -141,19 +143,12 @@ RUN chmod -R =2775 ${PIPELINE_ROOT} \
 
 WORKDIR ${APP_HOME}
 
-USER apptno
-# RUN /bin/bash --login -c "conda init bash \
-#     && echo 'conda activate py3' >> ~/.bashrc \
-#     && source ~/.bashrc"
+USER app.tno
 RUN /bin/bash --login -c "conda init bash \
     && echo 'source /app/src/env.sh' >> ~/.bashrc \
     && source ~/.bashrc"
-ENV PATH=${PATH}:/home/apptno/.local/bin
+ENV PATH=${PATH}:/home/app.tno/.local/bin
 
-# USER ${USERNAME}
-# RUN /bin/bash --login -c "conda init bash \
-#     && echo 'conda activate py3' >> ~/.bashrc \
-#     && source ~/.bashrc"
 USER ${USERNAME}
 RUN /bin/bash --login -c "conda init bash \
     && echo 'source /app/src/env.sh' >> ~/.bashrc \

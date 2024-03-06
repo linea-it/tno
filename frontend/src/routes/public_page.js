@@ -3,7 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import PublicHeader from '../pages/PublicPortal/Header/index'
 import PublicHome from '../pages/PublicPortal/Home'
 import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
-import PublicDocumentation from '../pages/PublicPortal/Documentation/index'
+// import PublicDocumentation from '../pages/PublicPortal/Documentation/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
@@ -62,16 +62,7 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
-      <Route
-        isHomePage
-        exact
-        path='/documentation'
-        element={
-          <PublicPortalPage>
-            <PublicDocumentation />
-          </PublicPortalPage>
-        }
-      />
+      {/* <Route isHomePage exact path='/documentation' element={<Navigate to='/docs/' />} /> */}
     </>
   )
 }

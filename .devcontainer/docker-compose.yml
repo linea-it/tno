@@ -14,10 +14,10 @@ services:
     volumes:
       # Update this to wherever you want VS Code to mount the folder of your project
       - ..:/workspaces:cached
-      # Diretório de Logs
-      - ./log:/log
+      # # Diretório de Logs
+      - ${TNO_PROJ_DIR:-.}/logs:/logs
       # Diretório de Dados
-      - ./archive:/archive
+      - ${TNO_PROJ_DIR:-.}/data:/archive
 
 
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.

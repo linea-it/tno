@@ -1,0 +1,38 @@
+# API
+
+Under construction.
+
+<!-- Occultation FilterSet
+
+Data Range = http://localhost/api/occultations/?date_time_after=2023-10-03&date_time_before=2023-10-04
+
+Date Min-Only = http://localhost/api/occultations/?date_time_after=2023-10-03
+
+Data Max-Only = http://localhost/api/occultations/?date_time_before=2023-10-04
+
+Asteroid Name In (exact) = http://localhost/api/occultations/?name=Chiron,Eris
+
+Asteroid Search by Name(icontains) = http://localhost/api/occultations/?search=Chiron
+
+Asteroid Search by Number (icontains) = http://localhost/api/occultations/?search=2060
+
+Asteroid Name (iexact ?)
+
+Asteroid Dynclass iexact = http://localhost/api/occultations/?dynclass=KBO>Resonant>5:2
+
+Asteroid Base Dynclass iexact = http://localhost/api/occultations/?base_dynclass=KBO
+
+Magnitude Range = http://localhost/api/occultations/?mag_g_min=4&mag_g_max=14
+
+Magnitude Min Only = http://localhost/api/occultations/?mag_g_min=4
+
+Magnitude Max Only = http://localhost/api/occultations/?mag_g_max=14
+
+Geo Filter Boolean
+
+User Position Only: http://localhost/api/occultations/?lat=-22.90278&long=-43.2075&radius=500
+
+User Position and Period: http://localhost/api/occultations/?date_time_after=2023-08-01&
+date_time_before=2023-08-30&lat=-22.90278&long=-43.2075&radius=500
+
+Nightside Boolean: http://localhost/api/occultations/?nightside=True -->

@@ -20,6 +20,7 @@ from tno.dao import AsteroidDao, AsteroidJobDao
 
 
 class AsteroidTableManager:
+
     def __init__(self, stdout=False):
 
         # self.log = logging.getLogger("asteroids")
@@ -43,7 +44,7 @@ class AsteroidTableManager:
         self.asteroids_before = 0
         self.asteroids_after = 0
 
-    def run_update_asteroid_table(self):
+    def run_update_asteroid_table(self, use_local_files: bool = False):
         start = datetime.now(tz=timezone.utc)
         try:
             self.log.info("-------< New asteroid table build execution >-------")
@@ -60,7 +61,7 @@ class AsteroidTableManager:
             self.path.mkdir(parents=True, exist_ok=True)
 
             # Create dataframe with asteroids
-            df = asteroid_table_build(str(self.path), self.log)
+            df = asteroid_table_build(str(self.path), self.log, use_local_files)
 
             # Write the dataframe to csv file as a debug file.
             df.to_csv(self.path.joinpath("asteroid_table_debug.csv"), index=False)
@@ -116,7 +117,7 @@ class AsteroidTableManager:
 
         self.job_dao.update(self.job_id, status=4, error=msg, traceback=trace)
 
-        self.rollback()
+        # self.rollback()
         raise Exception(msg)
 
     def on_complete(self, start):

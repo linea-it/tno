@@ -8,6 +8,7 @@ node_modules
 
 # Log Dir
 /log
+/logs
 
 .tmp
 .publish
@@ -40,6 +41,7 @@ local_settings.py
 
 # Develop Archive
 /archive
+/data
 
 # Nginx conf
 /nginx/nginx-proxy.conf

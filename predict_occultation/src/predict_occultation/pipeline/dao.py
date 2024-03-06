@@ -24,14 +24,14 @@ class Dao:
         # db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
         #     "postgres", "postgres", "172.18.0.2", "5432", "tno_v2")
 
-        # DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
+        # DB_CATALOG_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
         try:
-            db_uri = os.environ["DB_URI"]
+            db_uri = os.environ["DB_CATALOG_URI"]
             return db_uri
         except:
             raise MissingDBURIException(
                 "Required environment variable with URI to access the database where GAIA DR2 is."
-                "example DB_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
+                "example DB_CATALOG_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
             )
 
     def get_db_engine(self):

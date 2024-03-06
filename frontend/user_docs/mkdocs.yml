@@ -1,0 +1,13 @@
+site_name: Solar System
+
+nav:
+  - Home: 'index.md'
+  - User Guide:
+      - Filter Events: 'user-guide/filter-events.md'
+      - Occultation Details Page: 'user-guide/occultation-details-page.md'
+      - Occultation Predictions Table: 'user-guide/occultation-predictions-table.md'
+      - API: 'user-guide/api.md'
+      - Citations: 'user-guide/citations.md'
+      - Release Notes: 'release-notes.md'
+  - FAQ: 'faq.md'
+  - About: 'about.md'

@@ -9,20 +9,21 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 
 const PublicHeader = () => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const menus = [
     { description: 'Home', href: '/', target: '_self' },
     { description: 'About', href: '/about-us', target: '_self' },
-    { description: 'Documentation', href: '/documentation', target: '_self' },
+    { description: 'Documentation', href: '/docs/', target: '_target' },
     { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
-  const handleCardClick = (pathname) => {
-    navigate(pathname)
-    setDrawerOpen(false)
-  }
+  // TODO: Revisar essa função os botões foram alterados para utilizar href ao inves de onClick.
+  // const handleCardClick = (pathname) => {
+  //   navigate(pathname)
+  //   setDrawerOpen(false)
+  // }
 
   return (
     <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>
@@ -33,7 +34,7 @@ const PublicHeader = () => {
           </Box>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {menus.map((menu) => (
-              <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+              <Button key={menu.description} color='inherit' href={menu.href} target={menu.target}>
                 {menu.description}
               </Button>
             ))}
@@ -60,7 +61,7 @@ const PublicHeader = () => {
           onKeyDown={() => setDrawerOpen(false)}
         >
           {menus.map((menu) => (
-            <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+            <Button key={menu.description} color='inherit' href={menu.href} target={menu.target}>
               {menu.description}
             </Button>
           ))}

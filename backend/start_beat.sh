@@ -13,4 +13,4 @@ celery -A coreAdmin beat \
     -l INFO \
     -s /tmp/celerybeat-schedule \
     --pidfile="/tmp/celeryd.pid" \
-    --logfile="/log/celeryd.log"
+    --logfile="/logs/celeryd.log"
