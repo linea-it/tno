@@ -4,8 +4,9 @@ umask ug=rwx,o=r
 
 
 # Baixa e instala o miniconda
-# No diretório atual PWD/miniconda
+# IMPORTANTE! Pode ser necessário alterar o path de instalação
 miniconda_path="/lustre/t1/scratch/users/app.tno/tno_prod/miniconda"
+
 conda_bin="$miniconda_path/bin/conda"
 miniconda_sh="$miniconda_path/miniconda.sh"
 if [ ! -f $conda_bin ];
