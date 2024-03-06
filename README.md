@@ -1,10 +1,8 @@
 # Transneptunian Occultation Network Portal
 
-Esta aplicação é composta por dois modulos a aplicação web que é este repositório e os pipelines que ficam [neste repositório](https://github.com/linea-it/tno_pipelines)
-
-Docker Hub for builded images: <https://hub.docker.com/repository/docker/linea/tno/general>
-
 Ambiente de Validação/Testing: <https://tno-dev.linea.org.br>
+Ambiente de Produção: <https://solarsystem.linea.org.br>
+Docker Hub for builded images: <https://hub.docker.com/repository/docker/linea/tno/general>
 
 ## Documentation
 
