@@ -63,7 +63,7 @@ edit local variables if necessary.
 
 ## Configuração das Variaveis de ambiente
 
-Os arquivos de configuração .env e local_settings já estão preenchidos com valores compativeis com o ambiente de testing. Mas é necessário alterar/preencher as variaveis relacionadas a segurança e acessos.
+Os arquivos de configuração .env e local_settings já estão preenchidos com valores compativeis com o ambiente local. Mas é necessário alterar/preencher as variaveis relacionadas a segurança e acessos.
 
 ```bash
 vim .env
@@ -120,15 +120,15 @@ DB_CATALOG_URI=postgresql://untrustedprod:untrusted@host.docker.internal:3307/pr
 <!-- TOC --><a name="setup-backend"></a>
 
 ## Setup Backend
+Na primeira vez é necessário ligar o database primeiro para que seja criado o db.
 
-Run Database container (Na primeira vez é necessário ligar o database primeiro para que seja criado o db)
+Run Database container 
 
 ```bash
 docker compose up database
 ```
 
-Espere pela mensagem "database system is ready to accept connections" apos a mensagem, desligue o container pressionando
-ctrl + c e inicie o serviço novamente com parametro -d
+Espere pela mensagem "database system is ready to accept connections" apos a mensagem, desligue o container pressionando `ctrl + c` e inicie o serviço novamente com parametro `-d`
 
 ```bash
 docker compose up -d database
@@ -344,9 +344,9 @@ docker build -t linea/tno:frontend_$(git describe --always) .
 docker push linea/tno:frontend_$(git describe --always)
 
 # Pipelines
-cd tno/pipelines
-docker build -t linea/tno:pipelines_$(git describe --always) .
-docker push linea/tno:pipelines_$(git describe --always)
+cd tno/predict_occultation
+docker build -t linea/tno:predict_occ_$(git describe --always) .
+docker push linea/tno:predict_occ_$(git describe --always)
 ```
 
 <!-- TOC --><a name="run-ci-github_actions-localy"></a>
