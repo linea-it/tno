@@ -24,7 +24,7 @@ PREDICTION_MAP_MAX_FOLDER_SIZE = 1048
 # Determina a quantidade de mapas/subtasks submetidos a cada execução da task
 # Em desenvolvimento um numero muito alto pode incomodo devido ao consumo de processamento.
 # Block_size = 10 significa que 10 mapas serão criados por hora.
-PREDICTION_MAP_BLOCK_SIZE = 500
+PREDICTION_MAP_BLOCK_SIZE = 250
 
 # Shibboleth Authentication
 # Habilita ou desabilita autenticação pelo shibboleth.
