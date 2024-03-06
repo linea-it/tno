@@ -9,7 +9,7 @@ import IconButton from '@mui/material/IconButton'
 import MenuIcon from '@mui/icons-material/Menu'
 
 const PublicHeader = () => {
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const menus = [
@@ -19,10 +19,11 @@ const PublicHeader = () => {
     { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
-  const handleCardClick = (pathname) => {
-    navigate(pathname)
-    setDrawerOpen(false)
-  }
+  // TODO: Revisar essa função os botões foram alterados para utilizar href ao inves de onClick.
+  // const handleCardClick = (pathname) => {
+  //   navigate(pathname)
+  //   setDrawerOpen(false)
+  // }
 
   return (
     <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>

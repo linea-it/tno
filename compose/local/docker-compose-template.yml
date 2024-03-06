@@ -2,7 +2,7 @@ version: "3.6"
 volumes:
   rabbitmq-data:
   postgres-data:
-  
+
 services:
 
   # Backend Django
@@ -11,7 +11,7 @@ services:
     user: ${TNO_UID:-31670}:${TNO_GID:-15010}
     group_add:
       - "15007"
-      - "15010"    
+      - "15010"
     volumes:
       # Diretório de Código fonte da aplicação
       - ${TNO_PROJ_DIR:-.}/backend:/usr/src/app
@@ -20,10 +20,10 @@ services:
       # Diretório de Logs
       - ${TNO_PROJ_DIR:-.}/logs:/logs
       # Diretório de Dados
-      - ${TNO_PROJ_DIR:-.}/data:/archive      
+      - ${TNO_PROJ_DIR:-.}/data:/archive
     env_file:
       - .env
-    command: /start.sh      
+    command: /start.sh
     depends_on:
       - database
       - rabbit
@@ -174,5 +174,3 @@ services:
   #     - ~/.Xauthority:/root/.Xauthority:rw
   #     - /tmp/.X11-unix:/tmp/.X11-unix
   #     - /mnt/wslg:/mnt/wslg
-
-

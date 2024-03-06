@@ -8,7 +8,7 @@ Docker Hub for builded images: <https://hub.docker.com/repository/docker/linea/t
 
 
 
-## Instalação de ambiente de Desenvolvimento 
+## Instalação de ambiente de Desenvolvimento
 <https://github.com/linea-it/tno/blob/main/compose/local/README.md>
 
 ## Instalação de ambiente de Testing
