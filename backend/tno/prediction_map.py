@@ -6,6 +6,12 @@ from django.db.models import Q
 import humanize
 from django.conf import settings
 from tno.models import Occultation
+from sora.prediction.occmap import plot_occ_map
+import os
+from itertools import groupby
+from operator import itemgetter
+import numpy as np
+from tno.models import Occultation
 
 
 def get_size_of_map_folder():
@@ -198,7 +204,7 @@ def sora_occultation_map(
     # Time format is isoformat in UTC withou +00:00
     # ex: 2023-09-26T00:54:13.683590Z
     time = date_time.isoformat().replace("+00:00", "Z")
-    occmap(
+    plot_occ_map(
         name=name,
         radius=radius,
         coord=coord,
