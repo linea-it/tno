@@ -1,13 +1,16 @@
+# Solar Systerm Portal Develompment
+
 <!-- TOC start (generated with https://github.com/derlin/bitdowntoc) -->
 
 - [Setup Development Environment](#setup-development-environment)
   - [Setup Backend](#setup-backend)
   - [Setup Frontend](#setup-frontend)
   - [Setup Pipeline Predict Occultation](#setup-pipeline-predict-occultation)
-  - [Setup Pipeline Skybot Discovery ](#setup-pipeline-skybot-discovery)
+  - [Setup Pipeline Skybot Discovery](#setup-pipeline-skybot-discovery)
     - [Load DES release data](#load-des-release-data)
   - [Start and Stop Services](#start-and-stop-services)
   - [Test in brownser](#test-in-brownser)
+  - [Public Page user documentation](#public_page_documentation)
   - [Useful commands](#useful-commands)
     - [Open bash in backend container](#open-bash-in-backend-container)
     - [Run Django Manage.py](#run-django-managepy)
@@ -15,9 +18,9 @@
     - [Build manual das imagens e push para docker hub](#build-manual-das-imagens-e-push-para-docker-hub)
     - [Run CI Github Actions Locally](#run-ci-github_actions-localy)
 
-
 <!-- TOC end -->
-# Dependencias:
+
+## Dependencias
 
 - Docker version 25.0.1
 - git version 2.39.3
@@ -27,6 +30,7 @@
 ---
 
 Este passos foram escritos considerando :
+
 - Maquina local do desenvolvedor
 - Usuario 1000 Grupo 1000
 - Instalação feita no path: `/home/<user>/linea/tno`
@@ -35,13 +39,14 @@ Este passos foram escritos considerando :
 
 <!-- TOC --><a name="setup-development-environment"></a>
 
-# Setup Development Environment
+## Setup Development Environment
 
 Clone this repository
 
 ```bash
 git clone https://github.com/linea-it/tno.git tno
 ```
+
 Create directorys
 
 ```bash
@@ -50,13 +55,15 @@ cd tno && mkdir -p logs data database_subset
 
 Inside project folder tno:
 
-Copy docker-compose.yml local_settings.py and .env 
+Copy docker-compose.yml local_settings.py and .env
+
 ```bash
 cp compose/local/docker-compose-development-template.yml docker-compose.yml \
 && cp compose/local/env-template .env \
 && cp compose/local/local_settings-template.py local_settings.py \
 && cp compose/local/nginx-proxy-template.conf nginx-proxy.conf
 ```
+
 edit local variables if necessary.
 
 > Este repositório tem devcontainer configurado, mas é necessário executar todas as etapas deste readme antes de tentar usar o devcontainer.
@@ -82,7 +89,7 @@ Alterar o arquivo de configuração do Django de acordo com a necessidade.
 vim local_settings.py
 ```
 
-> Editar o arquivo docker-compose.yml e conferir os pontos de montagem. 
+> Editar o arquivo docker-compose.yml e conferir os pontos de montagem.
 
 > Para preencher a variavel de ambiente .env/DJANGO_SECRET_KEY é necessário executar um comando dentro do container de backend para gerar uma chave aleatória.
 
@@ -120,9 +127,10 @@ DB_CATALOG_URI=postgresql://untrustedprod:untrusted@host.docker.internal:3307/pr
 <!-- TOC --><a name="setup-backend"></a>
 
 ## Setup Backend
+
 Na primeira vez é necessário ligar o database primeiro para que seja criado o db.
 
-Run Database container 
+Run Database container
 
 ```bash
 docker compose up database
@@ -163,9 +171,10 @@ Load Initial Asteroids Data
 ```bash
 docker compose run -it --rm backend python manage.py update_asteroid_table
 ```
+
 > A criação da tabela de asteorids demora alguns minutos.
 
-> A criação da tabela de asteroid depende de 2 arquivos baixados de serviços externos, eventualmente esses arquivos podem estar indisponiveis. caso o comando falhe utilize o workaround abaixo. 
+> A criação da tabela de asteroid depende de 2 arquivos baixados de serviços externos, eventualmente esses arquivos podem estar indisponiveis. caso o comando falhe utilize o workaround abaixo.
 
 ---
 
@@ -287,6 +296,19 @@ Django Rest: <http://localhost/api/>
 Celery Flower: <http://localhost/flower/>
 
 Rabbitmq: <http://localhost/rabbitmq/>
+
+<!-- TOC --><a name="public_page_documentation"></a>
+
+## Public Page user documentation
+
+A documentação de usuario utiliza um mkdocs localizado no diretório `frontend/user_docs`.
+Para editar a documentação basta adicionar ou alterar os arquivos .md dentro do diretório raiz do mkdocs `frontend/user_docs/docs`.
+
+Para visualizar as mudanças basta acessar localhost:8000 para ter acesso ao serviço do mkdocs com live-reload.
+
+> No momento o acesso pela url localhost/docs/ está com bug no live-reload o que causa um loop infinito podendo travar o navegador. por enquanto só acessar a documentação pela porta 8000.
+
+O build do mkdocs está junto com o build do frontend/Dockerfile. é feito o build e copiado a pasta para o ngnix.
 
 <!-- TOC --><a name="useful-commands"></a>
 

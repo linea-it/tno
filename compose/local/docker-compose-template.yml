@@ -7,7 +7,7 @@ services:
 
   # Backend Django
   backend: &backend
-    build: ./backend
+    build: ${TNO_PROJ_DIR:-.}/backend
     user: ${TNO_UID:-31670}:${TNO_GID:-15010}
     group_add:
       - "15007"
@@ -42,7 +42,7 @@ services:
     command: yarn start
 
   predict_occultation:
-    build: ./predict_occultation
+    build: ${TNO_PROJ_DIR:-.}/predict_occultation
     group_add:
       - "15007"
       - "15010"
@@ -55,10 +55,27 @@ services:
     network_mode: "host"
     volumes:
       - ${TNO_PROJ_DIR:-.}/predict_occultation:/app
-      - ${TNO_PROJ_DIR:-.}/data/predict_occultation:/app/outputs/predict_occultation
+      - ${TNO_PROJ_DIR:-.}/data/predict_occultations:/app/outputs/predict_occultations
     environment:
       - PARSL_ENV=local
-      - PREDICT_OUTPUTS=/app/outputs/predict_occultation
+      - PREDICT_OUTPUTS=/app/outputs/predict_occultations
+
+  # Servidor Web NGINX
+  nginx:
+    image: nginx:latest
+    # image: linea/tno:frontend_teste
+    ports:
+      - ${TNO_PORT:-80}:8080
+    volumes:
+      # Arquivo de configuração do Ngnix para este ambiente.
+      - ${TNO_PROJ_DIR:-.}/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      # Diretório onde o backend manipula arquivos, e que deve ficar acessivel ao servidor web.
+      - ${TNO_PROJ_DIR:-.}/data:/var/www/data
+    depends_on:
+      - backend
+      - frontend
+      - celery_flower
+      - rabbit
 
   # Copia do serviço backend, mas executando outro comando
   celery_worker: &celery_worker
@@ -93,7 +110,7 @@ services:
       - 5432:5432
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./database_subset:/data
+      # - ${TNO_PROJ_DIR:-.}/database_subset:/data
 
   # Message-Broker Software RabbitMQ
   rabbit:
@@ -103,22 +120,22 @@ services:
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq/
 
-  # Servidor Web NGINX
-  nginx:
-    image: nginx:latest
-    # image: linea/tno:frontend_teste
-    ports:
-      - ${TNO_PORT:-80}:8080
+  mkdocs:
+    build: ${TNO_PROJ_DIR:-.}/frontend/user_docs
     volumes:
-      # Arquivo de configuração do Ngnix para este ambiente.
-      - ${TNO_PROJ_DIR:-.}/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
-      # Diretório onde o backend manipula arquivos, e que deve ficar acessivel ao servidor web.
-      - ${TNO_PROJ_DIR:-.}/data:/var/www/data
-    depends_on:
-      - backend
-      - frontend
-      - celery_flower
-      - rabbit
+      - ${TNO_PROJ_DIR:-.}/frontend/user_docs:/mkdocs
+    ports:
+      - "8000:8000"
+    environment:
+      LIVE_RELOAD_SUPPORT: 'true'
+      ADD_MODULES: 'fontawesome-markdown mkdocs-git-revision-date-localized-plugin mkdocs-material'
+      FAST_MODE: 'true'
+      DOCS_DIRECTORY: '/mkdocs'
+      GIT_REPO: 'git@github.com/linea-it/tno.git'
+      UPDATE_INTERVAL: 15
+      AUTO_UPDATE: 'true'
+
+
 
 
 

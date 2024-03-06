@@ -15,7 +15,7 @@ const PublicHeader = () => {
   const menus = [
     { description: 'Home', href: '/', target: '_self' },
     { description: 'About', href: '/about-us', target: '_self' },
-    { description: 'Documentation', href: '/documentation', target: '_self' },
+    { description: 'Documentation', href: '/docs/', target: '_target' },
     { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
@@ -33,7 +33,7 @@ const PublicHeader = () => {
           </Box>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {menus.map((menu) => (
-              <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+              <Button key={menu.description} color='inherit' href={menu.href} target={menu.target}>
                 {menu.description}
               </Button>
             ))}
@@ -60,7 +60,7 @@ const PublicHeader = () => {
           onKeyDown={() => setDrawerOpen(false)}
         >
           {menus.map((menu) => (
-            <Button key={menu.description} color='inherit' onClick={() => handleCardClick(menu.href)}>
+            <Button key={menu.description} color='inherit' href={menu.href} target={menu.target}>
               {menu.description}
             </Button>
           ))}
