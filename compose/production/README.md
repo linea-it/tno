@@ -28,8 +28,10 @@ Considerando:
 
 Clone do repositório para uma pasta temporaria `tno_temp`, Criação das pastas e arquivos de configuração, remoção dos arquivos usados na instalação.
 
+<!-- markdownlint-disable-next-line -->
+
 ```bash
-git clone <https://github.com/linea-it/tno.git> tno_temp \
+git clone https://github.com/linea-it/tno.git tno_temp \
 && cp -r tno_temp/compose/production tno_prod \
 && cp tno_temp/predict_occultation/environment.py3.yml tno_prod \
 && mkdir -p tno_prod tno_prod/logs tno_prod/data tno_prod/data/rabbitmq \
