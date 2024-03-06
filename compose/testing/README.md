@@ -40,8 +40,7 @@ git clone https://github.com/linea-it/tno.git tno_temp \
 && mv env-template .env \
 && mv docker-compose-template.yml docker-compose.yml \
 && mv local_settings-template.py local_settings.py \
-&& mv nginx_proxy-template.conf nginx_proxy.conf \
-&& cd .. && rm -rf tno_temp tno_dev/environment.py3.yml tno_dev/install_miniconda.sh && cd tno_dev
+&& mv nginx_proxy-template.conf nginx_proxy.conf
 ```
 
 > Daqui em diante todos os comandos estão considerando que a pasta atual é tno_dev.
@@ -64,7 +63,8 @@ Execute os comandos a seguir para criar o enviroment py3
 ./install_miniconda.sh \
 && source miniconda/bin/activate \
 && conda env create -f environment.py3.yml \
-&& conda deactivate
+&& conda deactivate \
+&& cd .. && rm -rf tno_temp tno_dev/environment.py3.yml tno_dev/install_miniconda.sh && cd tno_dev
 ```
 
 ## Configuração das Variaveis de ambiente
