@@ -19,9 +19,9 @@ function PredictEventList() {
   const { data, isLoading } = useQuery({
     queryKey: ['predictionEvents', { paginationModel, sortModel, filters, search }],
     queryFn: listAllPredictionEvents,
-    keepPreviousData: true,
+    keepPreviousData: false,
     refetchInterval: false,
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: true,
     refetchOnmount: false,
     refetchOnReconnect: false,
     // retry: 1,
