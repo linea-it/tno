@@ -5,13 +5,17 @@ from common.dates_interval import get_days_interval
 from des.dao import CcdDao, DesSkybotPositionDao
 from des.models import Ccd
 from des.serializers import CcdSerializer
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
+@extend_schema(exclude=True)
 class CcdViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = Ccd.objects.all()
     serializer_class = CcdSerializer
     filter_fields = ("id", "exposure", "filename")

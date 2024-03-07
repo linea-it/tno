@@ -167,8 +167,9 @@ INSTALLED_APPS = [
     "corsheaders",
     "shibboleth",
     "django_celery_results",
+    "drf_spectacular",
     # "django_celery_beat",
-    # Project Apps
+    # Project Apps''
     "common",
     "tno",
     "skybot",
@@ -251,9 +252,10 @@ REST_FRAMEWORK = {
     ),
     "DEFAULT_PAGINATION_CLASS": "common.pagination.StandardResultsSetPagination",
     "PAGE_SIZE": 100,
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
+    ),
     "DEFAULT_FILTER_BACKENDS": (
-        # "url_filter.integrations.drf.DjangoFilterBackend",
         "django_filters.rest_framework.DjangoFilterBackend",
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
@@ -261,6 +263,17 @@ REST_FRAMEWORK = {
     "TEST_REQUEST_DEFAULT_FORMAT": "json",
     # https://www.django-rest-framework.org/api-guide/relations/#select-field-cutoffs
     "HTML_SELECT_CUTOFF": 50,
+    # https://drf-spectacular.readthedocs.io/en/latest/readme.html#installation
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+# https://drf-spectacular.readthedocs.io/en/latest/settings.html
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Solar System LIneA API",
+    "DESCRIPTION": "Your project description",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    # OTHER SETTINGS
 }
 
 

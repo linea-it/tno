@@ -8,10 +8,6 @@ export const countAsteroidTable = () => {
   return api.get('asteroids/count_asteroid_table/')
 }
 
-export const clearAsteroidTable = () => {
-  return api.post('asteroids/delete_all/')
-}
-
 export const getDynClassList = () => api.get(`/asteroids/dynclasses/`).then((res) => res.data.results)
 
 export const getBaseDynClassList = () => api.get(`/asteroids/base_dynclasses/`).then((res) => res.data.results)

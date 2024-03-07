@@ -34,9 +34,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 from django.views.decorators.csrf import csrf_exempt
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import DefaultRouter, SimpleRouter
 from skybot.views import PositionViewSet
+
 from tno.views import (
     AsteroidJobViewSet,
     AsteroidViewSet,
@@ -49,7 +55,11 @@ from tno.views import (
     UserViewSet,
 )
 
-router = DefaultRouter()
+if settings.DEBUG:
+    router = DefaultRouter()
+else:
+    router = SimpleRouter()
+
 router.register(r"users", UserViewSet)
 
 router.register(r"des/skybot_job", SkybotJobViewSet)
@@ -96,5 +106,16 @@ urlpatterns = [
     re_path(
         r"^api/des/clear_des_data_preparation_tables",
         des_management_views.clear_des_data_preparation_tables,
+    ),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path(
+        "api/schema/swagger-ui/",
+        SpectacularSwaggerView.as_view(url_name="schema"),
+        name="swagger-ui",
+    ),
+    path(
+        "api/schema/redoc/",
+        SpectacularRedocView.as_view(url_name="schema"),
+        name="redoc",
     ),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -35,6 +35,7 @@ django-timezone-field==5.0
 django-url-filter==0.3.15
 django-environ==0.11.2
 djangorestframework==3.14.0
+drf-spectacular==0.27.1
 enum-compat==0.0.3
 Fiona==1.9.4.post1
 flower==1.2.0
