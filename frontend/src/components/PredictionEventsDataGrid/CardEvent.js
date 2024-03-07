@@ -66,13 +66,20 @@ function PredictEventCard({ data }) {
     return `/prediction-event-detail/${data.id}`
   }
 
+  const handleImageError = (e) => {
+    console.log('handleImageError')
+    e.target.onerror = null
+    e.target.src = 'https://placehold.co/250?text=No%20Image'
+  }
+
   return (
     <Card sx={{ display: 'flex', height: 170 }}>
       <CardMedia
         sx={{
           width: 250
         }}
-        image={data?.map_url}
+        image={!data?.map_url ? 'https://placehold.co/250?text=No%20Image' : data.map_url}
+        onError={handleImageError}
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         <CardHeader

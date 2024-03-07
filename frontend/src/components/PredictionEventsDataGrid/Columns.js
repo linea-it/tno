@@ -1,28 +1,15 @@
 import Box from '@mui/material/Box'
 import moment from 'moment'
 function ImageCell(props) {
-  if (props.value == null) {
-    return (
-      <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank'>
-        <Box
-          // width={props.colDef.computedWidth}
-          // height={props.colDef.computedWidth}
-          height={68}
-        >
-          {/* TODO Adicionar uma imagem placeholder */}
-        </Box>
-      </Box>
-    )
-  }
   return (
-    <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank'>
+    <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank' sx={{ justify: 'center', alignItems: 'center' }}>
       <Box
         component='img'
         // width={props.colDef.computedWidth}
         width='auto'
         height={68}
         alt=''
-        src={props.value}
+        src={props.value !== null ? props.value : 'https://placehold.co/100x75?text=No%20Image'}
       />
     </Box>
   )
