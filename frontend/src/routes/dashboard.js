@@ -2,11 +2,11 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 import Dashboard from '../pages/Dashboard'
-import Skybot from '../pages/Skybot'
-import SkybotDetail from '../pages/Skybot/Detail'
-import SkybotAsteroid from '../pages/Skybot/Asteroid'
-import SkybotStatistics from '../pages/Skybot/Statistics'
-import OrbitTrace from '../pages/OrbitTrace/'
+// import Skybot from '../pages/Skybot'
+// import SkybotDetail from '../pages/Skybot/Detail'
+// import SkybotAsteroid from '../pages/Skybot/Asteroid'
+// import SkybotStatistics from '../pages/Skybot/Statistics'
+// import OrbitTrace from '../pages/OrbitTrace/'
 import DesManagement from '../pages/DesManagement'
 
 import PredictionJobs from '../pages/PredictionJobs'
@@ -67,7 +67,7 @@ export function DashboardPageRoutes() {
           </DashboardPage>
         }
       />
-      <Route
+      {/* <Route
         isPrivate
         exact
         path='/dashboard/data-preparation/des/discovery'
@@ -146,7 +146,7 @@ export function DashboardPageRoutes() {
             <DesManagement />
           </DashboardPage>
         }
-      />
+      /> */}
       <Route
         isPrivate
         exact

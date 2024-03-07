@@ -18,11 +18,11 @@ function Interfaces() {
       app_url: '/dashboard/stats',
       app_display_name: 'Statistics'
     },
-    {
-      id: '2',
-      app_url: '/dashboard/data-preparation/des/discovery',
-      app_display_name: 'Discovery'
-    },
+    // {
+    //   id: '2',
+    //   app_url: '/dashboard/data-preparation/des/discovery',
+    //   app_display_name: 'Discovery'
+    // },
     {
       id: '3',
       app_url: '/dashboard/prediction-of-occultation',

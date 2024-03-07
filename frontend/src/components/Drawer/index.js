@@ -14,9 +14,9 @@ import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import ExpandLess from '@mui/icons-material/ExpandLess'
-import ExpandMore from '@mui/icons-material/ExpandMore'
-import Collapse from '@mui/material/Collapse'
+// import ExpandLess from '@mui/icons-material/ExpandLess'
+// import ExpandMore from '@mui/icons-material/ExpandMore'
+// import Collapse from '@mui/material/Collapse'
 import DashToolbar from '../Toolbar'
 import Logo from '../../assets/img/logo.png'
 import Footer from '../Footer'
@@ -67,12 +67,12 @@ const DrawerHeader = styled('div')(({ theme }) => ({
 }))
 
 const routes = [
-  { path: '/dashboard/data-preparation/des/discovery', title: 'Skybot Discovery' },
-  { path: '/dashboard/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
-  { path: '/dashboard/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
-  { path: '/dashboard/data-preparation/des/statistics', title: 'Skybot Statistics' },
-  { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
-  { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
+  // { path: '/dashboard/data-preparation/des/discovery', title: 'Skybot Discovery' },
+  // { path: '/dashboard/data-preparation/des/discovery/:id', title: 'Skybot Discovery' },
+  // { path: '/dashboard/data-preparation/des/discovery/asteroid/:id', title: 'Skybot Discovery' },
+  // { path: '/dashboard/data-preparation/des/statistics', title: 'Skybot Statistics' },
+  // { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
+  // { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
   { path: '/dashboard/prediction-of-occultation', title: 'Predict Occultation' },
   { path: '/dashboard/data-preparation/predict-detail/:id', title: 'Predict Occultation Details' },
   { path: '/dashboard/data-preparation/predict-asteroid/:id', title: 'Predict Occultation Asteroid' },
@@ -169,7 +169,7 @@ export default function PersistentDrawerLeft({ children }) {
           </ListItemButton>
           <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
           {/* DES Data Preparation */}
-          <ListItemButton onClick={handleClickDes}>
+          {/* <ListItemButton onClick={handleClickDes}>
             <ListItemText primary='DES Data Preparation' />
             {desOpen ? <ExpandLess /> : <ExpandMore />}
           </ListItemButton>
@@ -189,7 +189,7 @@ export default function PersistentDrawerLeft({ children }) {
               </ListItemButton>
             </List>
           </Collapse>
-          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} />
+          <Divider sx={{ backgroundColor: 'rgba(255, 255, 255, 0.32)' }} /> */}
           {/* Predict Occultation */}
           <ListItemButton onClick={() => navigate('/dashboard/prediction-of-occultation')}>
             <ListItemText primary='Predict Occultation' />
