@@ -10,7 +10,7 @@ import Skeleton from '@mui/material/Skeleton'
 import Alert from '@mui/material/Alert'
 import Typography from '@mui/material/Typography'
 import Stack from '@mui/material/Stack'
-import CircularProgress from '@mui/material/CircularProgress'
+// import CircularProgress from '@mui/material/CircularProgress'
 import ResultsCount from './ResultsCount'
 // https://researchgate.github.io/react-intersection-observer/?path=/story/recipes--higher-order-component
 // https://github.com/researchgate/react-intersection-observer/blob/master/docs/docs/components/WindowRoot/WindowRoot.js
@@ -53,14 +53,14 @@ function PredictEventGrid() {
     return (
       <React.Fragment>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
+          {/* <Grid item xs={12}>
             <Stack direction='row' justifyContent='center' alignItems='center' spacing={1}>
               <CircularProgress size='1rem' />
               <Typography variant='body2' sx={{ mb: 2 }} color='text.secondary'>
                 {message}
               </Typography>
             </Stack>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12}>
             <Skeleton variant='rectangular' width={'100%'} height={250} />
           </Grid>

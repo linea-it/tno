@@ -10,6 +10,10 @@ import MenuItem from '@mui/material/MenuItem'
 import { geoFilterIsValid } from '../../services/api/Occultation'
 import Grid from '@mui/material/Grid'
 import Alert from '@mui/material/Alert'
+import Stack from '@mui/material/Stack'
+import Button from '@mui/material/Button'
+import LocationOnIcon from '@mui/icons-material/LocationOn'
+import LocationOffIcon from '@mui/icons-material/LocationOff'
 function GeoFilter({ value, onChange }) {
   const [error, setError] = useState(false)
 
@@ -20,7 +24,8 @@ function GeoFilter({ value, onChange }) {
 
   const options = options1.concat(options2).concat(options3).concat(options4)
 
-  const setUserLocation = (newValue) => {
+  const setUserLocation = () => {
+    const newValue = value
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
         const latitude = position.coords.latitude
@@ -33,13 +38,15 @@ function GeoFilter({ value, onChange }) {
     }
   }
 
+  const handleClearLocation = () => {
+    const newValue = value
+    newValue.latitude = undefined
+    newValue.longitude = undefined
+    onChange(newValue)
+  }
+
   const handleChange = (newValue) => {
-    // console.log("handleChange()", newValue)
-    if (newValue.geo === true && newValue.latitude === undefined && newValue.longitude === undefined) {
-      setUserLocation(newValue)
-    } else {
-      onChange(newValue)
-    }
+    onChange(newValue)
   }
 
   useEffect(() => {
@@ -49,20 +56,32 @@ function GeoFilter({ value, onChange }) {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={value.geo}
-              onChange={(event) => {
-                handleChange({
-                  ...value,
-                  geo: event.target.checked
-                })
-              }}
-            />
-          }
-          label='Geo Filter'
-        />
+        <Stack direction='row' spacing={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={value.geo}
+                onChange={(event) => {
+                  handleChange({
+                    ...value,
+                    geo: event.target.checked
+                  })
+                }}
+              />
+            }
+            label='Geo Location'
+          />
+          {navigator.geolocation && value.latitude === undefined && value.longitude === undefined && (
+            <Button variant='text' startIcon={<LocationOnIcon />} disabled={!value.geo} onClick={setUserLocation}>
+              My location
+            </Button>
+          )}
+          {value.latitude !== undefined && value.longitude !== undefined && (
+            <Button variant='text' startIcon={<LocationOffIcon />} onClick={handleClearLocation}>
+              Clear location
+            </Button>
+          )}
+        </Stack>
       </Grid>
       <Grid item xs={12} sm={4}>
         <TextField

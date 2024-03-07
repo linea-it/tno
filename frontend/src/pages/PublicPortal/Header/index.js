@@ -46,7 +46,7 @@ const PublicHeader = () => {
           </IconButton>
         </Box>
       </Toolbar>
-      <Drawer anchor='' open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+      <Drawer anchor='left' open={drawerOpen} onClose={() => setDrawerOpen(false)}>
         <Box
           sx={{
             width: 250,
