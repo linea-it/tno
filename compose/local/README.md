@@ -58,7 +58,7 @@ Inside project folder tno:
 Copy docker-compose.yml local_settings.py and .env
 
 ```bash
-cp compose/local/docker-compose-development-template.yml docker-compose.yml \
+cp compose/local/docker-compose-template.yml docker-compose.yml \
 && cp compose/local/env-template .env \
 && cp compose/local/local_settings-template.py local_settings.py \
 && cp compose/local/nginx-proxy-template.conf nginx-proxy.conf
