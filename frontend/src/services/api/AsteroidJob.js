@@ -1,8 +1,7 @@
 import { api } from './Api'
 
 export const listAllAsteroidJobs = ({ queryKey }) => {
-  const [params] = queryKey
-
+  const params = queryKey[1]
   const { paginationModel, filters, sortModel } = params
   const { pageSize } = paginationModel
 

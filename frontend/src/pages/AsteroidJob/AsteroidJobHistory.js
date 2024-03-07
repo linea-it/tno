@@ -152,11 +152,12 @@ export function PredictionEventsDataGrid() {
   const { data, isLoading } = useQuery({
     queryKey: ['asteroidJobs', { paginationModel, sortModel, filters }],
     queryFn: listAllAsteroidJobs,
-    keepPreviousData: false,
-    refetchInterval: false,
-    refetchOnWindowFocus: false,
+    keepPreviousData: true,
+    refetchInterval: 5000,
+    refetchOnWindowFocus: true,
     refetchOnmount: false,
     refetchOnReconnect: false,
+    retry: false,
     staleTime: 1 * 60 * 60 * 1000
   })
   // Some API clients return undefined while loading

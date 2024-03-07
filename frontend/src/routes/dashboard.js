@@ -7,7 +7,7 @@ import Dashboard from '../pages/Dashboard'
 // import SkybotAsteroid from '../pages/Skybot/Asteroid'
 // import SkybotStatistics from '../pages/Skybot/Statistics'
 // import OrbitTrace from '../pages/OrbitTrace/'
-import DesManagement from '../pages/DesManagement'
+// import DesManagement from '../pages/DesManagement'
 
 import PredictionJobs from '../pages/PredictionJobs'
 // import PredictOccultation from '../pages/PredictOccultation'
@@ -18,8 +18,8 @@ import { useAuth } from '../contexts/AuthContext.js'
 import Header from '../components/LandingPage/Header'
 import Footer from '../components/LandingPage/Footer'
 import PersistentDrawerLeft from '../components/Drawer'
-import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
-import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
+// import OrbitTraceDetail from '../pages/OrbitTrace/Detail'
+// import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
 import PredictionEvents from '../pages/PredictionEvents/index'
 
 import AsteroidJob from '../pages/AsteroidJob/index'
@@ -147,7 +147,7 @@ export function DashboardPageRoutes() {
           </DashboardPage>
         }
       /> */}
-      <Route
+      {/* <Route
         isPrivate
         exact
         path='/dashboard/data-preparation/des/management'
@@ -156,7 +156,7 @@ export function DashboardPageRoutes() {
             <DesManagement />
           </DashboardPage>
         }
-      />
+      /> */}
       <Route
         isPrivate
         exact

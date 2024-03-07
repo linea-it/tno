@@ -107,11 +107,11 @@ export default function PersistentDrawerLeft({ children }) {
     setOpen(false)
   }
 
-  const [desOpen, setDesOpen] = React.useState(false)
+  // const [desOpen, setDesOpen] = React.useState(false)
 
-  const handleClickDes = () => {
-    setDesOpen(!desOpen)
-  }
+  // const handleClickDes = () => {
+  //   setDesOpen(!desOpen)
+  // }
 
   return (
     <Box sx={{ display: 'flex' }}>
