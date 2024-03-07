@@ -33,7 +33,7 @@ function PublicContact() {
               <p>
                 <span>
                   If you have any problems related to the usage of the applications,
-                  <Link href='/documentation' variant='body2'>
+                  <Link href='/docs/' variant='body2'>
                     &nbsp;click here&nbsp;
                   </Link>
                   <br />
