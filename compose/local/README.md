@@ -147,6 +147,19 @@ Build backend container
 ```bash
 docker compose build backend
 ```
+Na primeira vez é necessário ligar o backend para que seja aplicado as migrações e criação das tabelas.
+
+Run Backend container
+
+```bash
+docker compose up backend
+```
+
+Espere pela mensagem `*** uWSGI is running in multiple interpreter mode ***` apos a mensagem, desligue o container pressionando `ctrl + c` e inicie o serviço novamente com parametro `-d`
+
+```bash
+docker compose up -d backend
+```
 
 Crie um usuario administrativo para o Django.
 
