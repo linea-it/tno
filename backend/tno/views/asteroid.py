@@ -3,10 +3,22 @@ from datetime import datetime
 
 import humanize
 from des.models import Observation
-from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.types import OpenApiTypes
+from drf_spectacular.utils import (
+    OpenApiExample,
+    OpenApiParameter,
+    extend_schema,
+    inline_serializer,
+)
+from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated,
+    IsAuthenticatedOrReadOnly,
+)
 from rest_framework.response import Response
 from tno.dao.asteroids import AsteroidDao
 from tno.models import Asteroid, Occultation, PredictionJobResult
@@ -14,115 +26,73 @@ from tno.serializers import AsteroidSerializer
 
 
 class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [AllowAny]
     queryset = Asteroid.objects.select_related().all()
     serializer_class = AsteroidSerializer
-    filter_fields = ("id", "name", "number", "dynclass", "base_dynclass")
-    search_fields = ("name", "number")
-
-    @action(
-        detail=False, methods=["POST", "GET"], permission_classes=(IsAuthenticated,)
+    filter_fields = (
+        "id",
+        "name",
+        "number",
+        "principal_designation",
+        "dynclass",
+        "base_dynclass",
     )
-    def update_asteroid_table(self, request):
-        """Esta função é utilizada para povoar a tabela Asteroid.
-        Faz uma query nas tabelas de resultados do skybot, e efetua um insert/update
-        na tabela asteroid, inserindo informações de Nome, numero, classe
+    search_fields = ("name", "number", "principal_designation")
+    ordering_fields = ("id", "name", "number", "principal_designation")
+    ordering = ("name",)
 
-        Returns:
-            dict: {
-                "success": bool,
-                "count_before": int Quantidade de Asteroids antes do Insert/Update,
-                "count_after": int Quantidade de Asteroids depois do Insert/Update,
-                "new_asteroids": int Quantidade de novos Asteroids,
-                "execution_time": str Tempo de execução,
-                "h_execution_time": str Tempo de execução Humanizado
-            }
-        """
-        # TODO: Deveria ser executada apenas por Admin.
-        try:
-            # t0 = datetime.now()
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="AsteroidsCount",
+                fields={
+                    "count": serializers.IntegerField(),
+                },
+            )
+        },
+    )
+    @action(detail=False, methods=["GET"], permission_classes=(AllowAny,))
+    def count(self, request):
+        """Total asteroids.
+        Returns the total number of unique asteroids registered on the portal."""
+        return Response(dict({"count": Asteroid.objects.count()}))
 
-            # log = logging.getLogger("asteroids")
-
-            # log.info("--------------------------------------------------------")
-            # log.info("Update Asteroid Table Started!")
-
-            # dao = AsteroidDao(pool=False)
-
-            # count_before = dao.count()
-            # log.info(f"Total Asteroid Before Update: [{count_before}]")
-
-            # count_affected = dao.insert_update()
-
-            # count_after = dao.count()
-            # log.info(f"Total Asteroid After Update: [{count_after}]")
-
-            # log.info(f"Affected Rows: [{count_affected}]")
-
-            # new_asteroids = count_after - count_before
-            # log.info(f"New Asteroids: {new_asteroids}")
-
-            # t1 = datetime.now()
-            # tdelta = t1 - t0
-
-            # result = dict(
-            #     {
-            #         "success": True,
-            #         "count_before": count_before,
-            #         "count_after": count_after,
-            #         "new_asteroids": new_asteroids,
-            #         "execution_time": tdelta,
-            #         "h_execution_time": str(
-            #             humanize.naturaldelta(tdelta, minimum_unit="seconds")
-            #         ),
-            #     }
-            # )
-
-            return Response({})
-
-        except Exception as e:
-            # TODO Implementar error handling
-            pass
-
-    @action(detail=False, methods=["GET"], permission_classes=(IsAuthenticated,))
-    def count_asteroid_table(self, request):
-
-        count = Asteroid.objects.count()
-
-        return Response(dict({"count": count}))
-
-    @action(detail=False, methods=["POST"], permission_classes=(IsAuthenticated,))
-    def delete_all(self, request):
-        """Apaga todos os Asteroids e seus resultados do banco de dados.
-        Utilizada duranto o desenvolvimento dos pipelines ou quando se deseja gerar novos resultados.
-        Isso implica em perder todos os resultados gerados pelas etapas posteriores ao Skybot Discovery que são:
-            Orbit Trace: Cada posição encontrada pelo pipeline é associada a um Asteroid. Todos os registros na tabela DES_OBSERVATION serão apagados.
-            Predict Occultation: Toda Ocultação encontrada pelo pipeline é associada a um Asteroid. Todos os registros na tabela TNO_OCCULTATION serão apagados.
-
-        Após está operação será necessário:
-            Update Asteroid Table: Executar o função "Update Asteroid Table" para gerar novamente a lista de Asteroids.
-            Orbit Trace: Executar o pipeline "Orbit Trace" para gerar novos registros de Observações na tabela DES_OBSERVATION.
-            Predict Occultation: Executar o pipeline "Predict Occultation" para gerar novos resultados de Predição de Ocultação registrados na tabela TNO_OCCULTATION.
-        """
-        # TODO: Deveria ser executada apenas por Admin.
-        # Deleta todas as observações de posições de asteroids no DES.
-        Observation.objects.all().delete()
-        # Deleta todas as ocultações antes de apagar os asteroids
-        Occultation.objects.all().delete()
-        Asteroid.objects.all().delete()
-
-        return Response(dict({"success": True}))
-
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="Dynclass",
+                fields={
+                    "results": serializers.ListSerializer(
+                        child=serializers.CharField()
+                    ),
+                    "count": serializers.IntegerField(),
+                },
+            )
+        },
+    )
     @action(detail=False, methods=["GET"], permission_classes=(AllowAny,))
     def dynclasses(self, request):
         """All Dynamic Classes.
-        Distinct dynclass in tno_asteroid table.
+        Distinct dynclass in asteroid table.
         """
 
         rows = AsteroidDao(pool=False).distinct_dynclass()
 
         return Response(dict({"results": rows, "count": len(rows)}))
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="BaseDynclass",
+                fields={
+                    "results": serializers.ListSerializer(
+                        child=serializers.CharField()
+                    ),
+                    "count": serializers.IntegerField(),
+                },
+            )
+        },
+    )
     @action(detail=False, methods=["GET"], permission_classes=(AllowAny,))
     def base_dynclasses(self, request):
         """All Base Dynamic Classes.
@@ -134,10 +104,22 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
 
         return Response(dict({"results": rows, "count": len(rows)}))
 
-    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    # https://github.com/tfranzel/drf-spectacular/issues/277#issuecomment-775027578
+    # https://stackoverflow.com/questions/71431687/how-to-generate-a-schema-for-a-custom-pagination-in-django-rfw-with-drf-spectacu
+    @extend_schema(
+        responses={200: AsteroidSerializer(many=True)},
+    )
+    @action(
+        detail=False,
+        methods=["get"],
+        permission_classes=(AllowAny,),
+        pagination_class=PageNumberPagination,
+        filter_fields=("name",),
+        filter_backends=(DjangoFilterBackend,),
+    )
     def with_prediction(self, request):
         """Returns all asteroids that have at least one prediction event.
-        Asteroids can be filtered by name using the name parameter.
+        Asteroids can be filtered by name using the name parameter case insensitive.
 
         """
         filtro = self.request.query_params.get("name", None)

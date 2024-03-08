@@ -1,11 +1,14 @@
 from des.models import SkybotPosition
 from des.serializers import SkybotPositionSerializer
-from django_filters import rest_framework as filters
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 
+@extend_schema(exclude=True)
 class DesSkybotPositionViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = SkybotPosition.objects.select_related().all()
     # queryset = SkybotPosition.objects.all()
     serializer_class = SkybotPositionSerializer

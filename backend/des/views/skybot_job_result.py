@@ -6,13 +6,17 @@ from des.dao import DesSkybotJobResultDao
 from des.dao.exposure import ExposureDao
 from des.models import SkybotJobResult
 from des.serializers import SkybotJobResultSerializer
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
+@extend_schema(exclude=True)
 class SkybotJobResultViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = SkybotJobResult.objects.select_related().all()
     serializer_class = SkybotJobResultSerializer
     filter_fields = (

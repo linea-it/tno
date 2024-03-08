@@ -1,25 +1,17 @@
-import json
-import os
-import threading
-
-import django_filters
 from des.models import Observation
 from des.serializers import ObservationSerializer
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from tno.asteroid_utils import plot_observations_by_asteroid
-from tno.models import Asteroid
-
-# class ObservationFilter(django_filters.FilterSet):
-#     asteroid_id = django_filters.NumberFilter(field_name='asteroid__id', lookup_expr='exact')
-#     class Meta:
-#         model = Observation
-#         fields = ['asteroid_id']
 
 
+@extend_schema(exclude=True)
 class ObservationViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = Observation.objects.select_related().all()
     serializer_class = ObservationSerializer
     # filterset_class = ObservationFilter

@@ -1,24 +1,16 @@
-import json
-import os
-import threading
 from datetime import datetime, timedelta
 
-import numpy as np
-import pandas as pd
-from common.dates_interval import get_days_interval
-from common.read_csv import csv_to_dataframe
-from des.dao import CcdDao, DesSkybotJobResultDao, ExposureDao
 from des.models import OrbitTraceJob
 from des.serializers import OrbitTraceJobSerializer, OrbitTraceJobStatusSerializer
-from des.skybot.pipeline import DesSkybotPipeline
-from des.summary import SummaryResult
-from django.core.paginator import Paginator
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from tno.models import BspPlanetary, LeapSecond
 
 
+@extend_schema(exclude=True)
 class OrbitTraceJobViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -29,6 +21,8 @@ class OrbitTraceJobViewSet(
     o Endpoint submit_job é responsavel por iniciar o pipeline que será executado em background.
     """
 
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = OrbitTraceJob.objects.all()
     serializer_class = OrbitTraceJobSerializer
     ordering_fields = (
@@ -46,21 +40,6 @@ class OrbitTraceJobViewSet(
         "avg_exec_time_ccd",
     )
     ordering = ("-start",)
-
-    # def estimate_execution_time(self, to_execute):
-
-    #     dao = DesSkybotJobResultDao(pool=False)
-
-    #     se = dao.skybot_estimate()
-
-    #     try:
-    #         average_time = se["t_exec_time"] / int(se["total"])
-    #         estimated_time = (int(to_execute) * average_time).total_seconds()
-
-    #     except:
-    #         estimated_time = 0
-
-    #     return estimated_time
 
     @action(detail=False, methods=["post"])
     def submit_job(self, request, pk=None):

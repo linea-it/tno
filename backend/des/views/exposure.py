@@ -5,13 +5,17 @@ from common.dates_interval import get_days_interval
 from des.dao.exposure import ExposureDao
 from des.models import Exposure
 from des.serializers import ExposureSerializer
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
+@extend_schema(exclude=True)
 class ExposureViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = Exposure.objects.all()
     serializer_class = ExposureSerializer
     ordering_fields = (

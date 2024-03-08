@@ -8,13 +8,17 @@ from des.models import (
 from des.models import SkybotPosition as DesSkybotPosition
 from des.models import SummaryDynclass
 from django.db import connection
-from rest_framework.decorators import api_view, renderer_classes
+from drf_spectacular.utils import extend_schema
+from rest_framework.decorators import api_view, permission_classes, renderer_classes
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from skybot.models import Position
 
 
+@extend_schema(exclude=True)
 @api_view(["POST"])
+@permission_classes([IsAuthenticated])
 @renderer_classes((JSONRenderer,))
 def clear_des_data_preparation_tables(request):
     """Apaga tadas as tabelas relacionada ao Data Preparation do DES.

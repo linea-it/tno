@@ -4,23 +4,18 @@ from datetime import datetime, time, timezone
 import django_filters
 import humanize
 from dateutil.relativedelta import relativedelta
-from django.conf import settings
 from django.db.models import F, FloatField, Q, Value
-from rest_framework import viewsets
-from rest_framework.authentication import (
-    BasicAuthentication,
-    SessionAuthentication,
-    TokenAuthentication,
-)
+from drf_spectacular.utils import extend_schema, inline_serializer
+from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tno.db import CatalogDB
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
-from tno.tasks import create_occ_map_task, create_prediction_maps
+from tno.tasks import create_occ_map_task
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
@@ -127,13 +122,13 @@ class OccultationFilter(django_filters.FilterSet):
 
 
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
-
-    authentication_classes = [
-        SessionAuthentication,
-        BasicAuthentication,
-        TokenAuthentication,
-    ]
     permission_classes = [AllowAny]
+
+    # authentication_classes = [
+    #     SessionAuthentication,
+    #     BasicAuthentication,
+    #     TokenAuthentication,
+    # ]
 
     serializer_class = OccultationSerializer
 
@@ -303,6 +298,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         logger.info(f"Query Completed in {humanize.naturaldelta(dt)}")
         return queryset
 
+    @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_unique_asteroids(self, request):
 
@@ -319,6 +315,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             }
         )
 
+    @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_weekly_forecast(self, request):
 
@@ -342,6 +339,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             }
         )
 
+    @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_monthly_forecast(self, request):
 
@@ -362,25 +360,36 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             }
         )
 
+    @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_maps_stats(self, request):
 
         return Response(maps_folder_stats())
 
-    @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
-    def create_maps_for_today(self, request):
-        create_prediction_maps.delay()
-
-        block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
-        return Response(
-            {
-                "success": True,
-                "message": f"It was submitted to create {block_size} maps in the background.",
-            }
-        )
-
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="OccultationMap",
+                fields={
+                    "url": serializers.URLField(),
+                    "occultation": serializers.IntegerField(),
+                    "name": serializers.CharField(),
+                    "date_time": serializers.DateTimeField(),
+                    "filename": serializers.CharField(),
+                    "filezise": serializers.IntegerField(),
+                    "creation_time": serializers.DateTimeField(),
+                },
+            )
+        },
+    )
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_or_create_map(self, request, pk):
+        """Retorna o mapa para o evento de ocultação.
+
+        Verifica se já existe mapa para o evento especifico para o ID.
+        se existir apenas retorna os dados do mapa e a url.
+        se não exisitir cria o mapa, a criação pode demorar alguns segundos e seu timeout será de 180s.
+        """
         obj = self.get_object()
 
         filepath = obj.get_map_filepath()
@@ -432,6 +441,19 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 }
             )
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="BaseDynclassWithEvents",
+                fields={
+                    "results": serializers.ListSerializer(
+                        child=serializers.CharField()
+                    ),
+                    "count": serializers.IntegerField(),
+                },
+            )
+        },
+    )
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def base_dynclass_with_prediction(self, request):
         """Returns all base_dynclass that have at least one prediction event."""
@@ -442,6 +464,19 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         rows = [x.base_dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="DynclassWithEvents",
+                fields={
+                    "results": serializers.ListSerializer(
+                        child=serializers.CharField()
+                    ),
+                    "count": serializers.IntegerField(),
+                },
+            )
+        },
+    )
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def dynclass_with_prediction(self, request):
         """Returns all dynclass that have at least one prediction event."""
@@ -450,22 +485,38 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         rows = [x.dynclass for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
+    @extend_schema(
+        responses={
+            200: inline_serializer(
+                name="AsteroidsNamesWithEvents",
+                fields={
+                    "results": serializers.ListSerializer(
+                        child=serializers.CharField()
+                    ),
+                    "count": serializers.IntegerField(),
+                },
+            )
+        },
+    )
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def asteroids_with_prediction(self, request):
-        """Returns all Asteroid that have at least one prediction event."""
+        """Returns all asteroid name that have at least one prediction event.
+
+        Não paginada
+        """
         queryset = Occultation.objects.order_by("name").distinct("name")
 
         rows = [x.name for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))
 
+    @extend_schema(exclude=True)
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_star_by_event(self, request, pk=None):
         pre_occ = self.get_object()
         ra = pre_occ.ra_star_deg
         dec = pre_occ.dec_star_deg
 
-        # TODO: No futuro vai ser necessário identificar qual o catalogo de estrela foi utilizado
-        # nas predição, no momento todas as predições estão utilizando o gaia.DR2
+        # TODO: Fazer a consulta baseado na versao de catalogo gaia especifica para o evento.
         try:
             db = CatalogDB(pool=False)
             rows = db.radial_query(

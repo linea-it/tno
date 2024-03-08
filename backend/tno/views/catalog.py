@@ -1,17 +1,20 @@
 import logging
 
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from tno.db import CatalogDB
 from tno.models import Catalog
 from tno.serializers import CatalogSerializer
 
 
+@extend_schema(exclude=True)
 class CatalogViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = Catalog.objects.all()
     serializer_class = CatalogSerializer
     filterset_fields = (

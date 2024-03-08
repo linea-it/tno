@@ -1,11 +1,15 @@
 from django.contrib.auth.models import User
+from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 from tno.serializers import UserSerializer
 
 
+@extend_schema(exclude=True)
 class UserViewSet(viewsets.ModelViewSet):
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
