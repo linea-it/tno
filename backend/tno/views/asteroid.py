@@ -26,7 +26,7 @@ from tno.serializers import AsteroidSerializer
 
 
 class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
     queryset = Asteroid.objects.select_related().all()
     serializer_class = AsteroidSerializer
     filter_fields = (

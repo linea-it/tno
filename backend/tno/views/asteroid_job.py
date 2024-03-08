@@ -1,7 +1,6 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-
 from tno.models import AsteroidJob
 from tno.serializers import AsteroidJobSerializer
 

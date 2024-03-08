@@ -94,7 +94,7 @@ router.register(r"prediction_job_result", PredictionJobResultViewSet)
 urlpatterns = [
     path("admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
-    re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
+    # re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
     path("api/auth/", include("rest_framework.urls")),
     re_path(r"^api/logout/", common_views.logout_view),
     # re_path(
@@ -107,12 +107,12 @@ urlpatterns = [
     # re_path(r"^api/test_background_task", common_views.test_background_task),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
-        "api/schema/swagger-ui/",
+        "api/docs/",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
     ),
     path(
-        "api/schema/redoc/",
+        "api/redoc/",
         SpectacularRedocView.as_view(url_name="schema"),
         name="redoc",
     ),

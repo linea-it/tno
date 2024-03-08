@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
 from tno.db import CatalogDB
 from tno.models import Catalog
 from tno.serializers import CatalogSerializer

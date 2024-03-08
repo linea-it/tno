@@ -1,16 +1,16 @@
 import logging
-from datetime import datetime, timezone, time
-from pathlib import Path
-from typing import Optional, Union
-from django.db.models import Q
-import humanize
-from django.conf import settings
-from tno.models import Occultation
-from sora.prediction.occmap import plot_occ_map
 import os
+from datetime import datetime, time, timezone
 from itertools import groupby
 from operator import itemgetter
+from pathlib import Path
+from typing import Optional, Union
+
+import humanize
 import numpy as np
+from django.conf import settings
+from django.db.models import Q
+from sora.prediction.occmap import plot_occ_map
 from tno.models import Occultation
 
 
