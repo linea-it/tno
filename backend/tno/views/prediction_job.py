@@ -7,8 +7,10 @@ import humanize
 import numpy as np
 import pandas as pd
 from django.core.paginator import Paginator
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from tno.models import (
     BspPlanetary,
@@ -20,10 +22,12 @@ from tno.models import (
 from tno.serializers import PredictionJobSerializer, PredictionJobStatusSerializer
 
 
+@extend_schema(exclude=True)
 class PredictionJobViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = PredictionJob.objects.all()
     serializer_class = PredictionJobSerializer
     ordering_fields = (

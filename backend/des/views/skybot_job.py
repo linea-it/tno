@@ -14,11 +14,14 @@ from des.serializers import SkybotJobSerializer
 from des.skybot.pipeline import DesSkybotPipeline
 from des.summary import SummaryResult
 from django.core.paginator import Paginator
+from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 
+@extend_schema(exclude=True)
 class SkybotJobViewSet(
     mixins.RetrieveModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet
 ):
@@ -29,6 +32,8 @@ class SkybotJobViewSet(
     o Endpoint submit_job é responsavel por iniciar o pipeline que será executado em background.
     """
 
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = SkybotJob.objects.all()
     serializer_class = SkybotJobSerializer
     ordering_fields = (

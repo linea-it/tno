@@ -5,7 +5,7 @@ export const updateAsteroidTable = () => {
 }
 
 export const countAsteroidTable = () => {
-  return api.get('asteroids/count_asteroid_table/')
+  return api.get('asteroids/count/')
 }
 
 export const getDynClassList = () => api.get(`/asteroids/dynclasses/`).then((res) => res.data.results)

@@ -16,10 +16,10 @@ from rest_framework.response import Response
 from skybot.models import Position
 
 
+@extend_schema(exclude=True)
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 @renderer_classes((JSONRenderer,))
-@extend_schema(exclude=True)
 def clear_des_data_preparation_tables(request):
     """Apaga tadas as tabelas relacionada ao Data Preparation do DES.
     Esta operação não afeta os dados gerados após a etapa de Orbit Trace.

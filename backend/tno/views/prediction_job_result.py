@@ -1,15 +1,7 @@
-import json
-import os
-import threading
-from datetime import datetime, timedelta
-
 import django_filters
-import numpy as np
-import pandas as pd
-from django.core.paginator import Paginator
-from rest_framework import mixins, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 from tno.models import PredictionJobResult
 from tno.serializers import PredictionJobResultSerializer
 
@@ -23,8 +15,10 @@ class PredictionJobResultFilter(django_filters.FilterSet):
         fields = ["job", "status"]
 
 
+@extend_schema(exclude=True)
 class PredictionJobResultViewSet(viewsets.ReadOnlyModelViewSet):
-
+    permission_classes = [IsAuthenticated]
+    swagger_schema = None
     queryset = PredictionJobResult.objects.all()
     serializer_class = PredictionJobResultSerializer
     filterset_class = PredictionJobResultFilter
