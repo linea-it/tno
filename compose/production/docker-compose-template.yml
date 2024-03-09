@@ -63,6 +63,15 @@ services:
     command: /start_worker.sh
     depends_on:
       - backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "10.0"
+          memory: 16G
+        reservations:
+          cpus: "15"
+          memory: 1G
 
   # Celery Beat (Tarefas agendadas do backend)
   celery_beat:
