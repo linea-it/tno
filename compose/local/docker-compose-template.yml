@@ -56,9 +56,8 @@ services:
     volumes:
       - ${TNO_PROJ_DIR:-.}/predict_occultation:/app
       - ${TNO_PROJ_DIR:-.}/data/predict_occultations:/app/outputs/predict_occultations
-    environment:
-      - PARSL_ENV=local
-      - PREDICT_OUTPUTS=/app/outputs/predict_occultations
+    env_file:
+      - .env
 
   # Servidor Web NGINX
   nginx:

@@ -50,12 +50,8 @@ services:
     volumes:
       - ${TNO_PROJ_DIR:-.}:${TNO_PROJ_DIR:-.}
       - ${TNO_SSHKEY}:/home/app.tno/.ssh/id_rsa
-    environment:
-      - PARSL_ENV=linea
-      - REMOTE_PIPELINE_ROOT=${TNO_PROJ_DIR:-.}
-      - PREDICT_OUTPUTS=${TNO_PROJ_DIR:-.}/data/predict_occultations
-      - DB_ADMIN_URI=${DB_ADMIN_URI}
-      - DB_CATALOG_URI=${DB_CATALOG_URI}
+    env_file:
+      - .env
 
   # Celery Workers (Tarefas do backend em background)
   celery_worker:
