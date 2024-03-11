@@ -56,9 +56,8 @@ services:
     volumes:
       - ${TNO_PROJ_DIR:-.}/predict_occultation:/app
       - ${TNO_PROJ_DIR:-.}/data/predict_occultations:/app/outputs/predict_occultations
-    environment:
-      - PARSL_ENV=local
-      - PREDICT_OUTPUTS=/app/outputs/predict_occultations
+    env_file:
+      - .env
 
   # Servidor Web NGINX
   nginx:
@@ -83,7 +82,15 @@ services:
     command: /start_worker.sh
     depends_on:
       - backend
-
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 200M
+        reservations:
+          cpus: "0.5"
+          memory: 20M
   # Copia do serviço backend, mas executando outro comando
   celery_beat: &celery_beat
     <<: *backend
