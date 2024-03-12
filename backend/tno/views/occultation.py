@@ -1,9 +1,13 @@
+import hashlib
+import json
 import logging
 from datetime import datetime, time, timezone
+from pathlib import Path
 
 import django_filters
 import humanize
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.db.models import F, FloatField, Q, Value
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers, viewsets
@@ -16,10 +20,6 @@ from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
 from tno.tasks import create_occ_map_task
-import hashlib
-import json
-from django.conf import settings
-from pathlib import Path
 from tno.views.geo_location import GeoLocation
 
 
@@ -317,7 +317,10 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
             gl = GeoLocation(params.dict(), queryset)
 
-            return gl.execute()
+            queryset = gl.execute()
+            page = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(page, many=True)
+            result = self.get_paginated_response(serializer.data)
 
         else:
             logger.info("QUERY NORMAL")
