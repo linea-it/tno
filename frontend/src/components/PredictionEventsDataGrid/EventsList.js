@@ -20,12 +20,12 @@ function PredictEventList() {
     queryKey: ['predictionEvents', { paginationModel, sortModel, filters, search }],
     queryFn: listAllPredictionEvents,
     keepPreviousData: false,
-    refetchInterval: false,
-    refetchOnWindowFocus: true,
+    refetchInterval: filters.geo ? 5000 : false,
+    refetchOnWindowFocus: false,
     refetchOnmount: false,
-    refetchOnReconnect: false,
+    refetchOnReconnect: false
     // retry: 1,
-    staleTime: 5 * 60 * 60 * 1000
+    // staleTime: 5 * 60 * 60 * 1000
   })
   // Some API clients return undefined while loading
   // Following lines are here to prevent `rowCountState` from being undefined during the loading
