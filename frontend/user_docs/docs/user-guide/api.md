@@ -9,7 +9,6 @@ The LIneA Occultation Prediction Database (LOPD) API is a solution for querying 
 - Access geolocation filtering (experimental) for refined results, among other things.
 - Query asteroids properties, and more.
 
-
 The LOPD API is intended for developers, researchers, and enthusiasts looking to integrate or explore book data quickly and easily. The API uses the JSON format for requests and responses, adhering to RESTful standards for architecture and design.
 
 In addition to providing the schema in the OpenAPI standard, this API also offers Swagger UI and ReDoc interfaces. These interfaces are tools that allow for interactive and user-friendly visualization and testing of the API.
@@ -26,13 +25,14 @@ You can access the interfaces via the URL /docs/, selecting the desired option i
 
 > **Warning**
 >
->The current version of the LOPD API is 1.0.0. The API is in the development phase and may undergo changes without prior notice. To stay updated on API updates and news, visit the [repository](https://github.com/linea-it/tno) of the API.
+> The current version of the LOPD API is 1.0.0. The API is in the development phase and may undergo changes without prior notice. To stay updated on API updates and news, visit the [repository](https://github.com/linea-it/tno) of the API.
 
 ## Terms of Use
 
 To use the LOPD API, you must agree to the following terms of use:
 
 <!--- You must register with the API and obtain a valid and unique API key for each application using the API.-->
+
 - Use the API responsibly and ethically.
 - Limit the number of API requests to 1000 per day and 100 per hour. If you require a higher limit, contact API support.
 - Aknowledge the API as the source of the data used or displayed in your application, including a link to the API documentation.
@@ -66,34 +66,31 @@ The LOPD API handles the following features:
 - **Base Dynclass**: Contains the main dynamic classifications of asteroids as defined by [Skybot](https://ssp.imcce.fr/webservices/skybot/).
 - **Dynclass**: Contains the set of dynamic subclassifications of asteroids as defined by [Skybot](https://ssp.imcce.fr/webservices/skybot/).
 
-
 ## Endpoints
-
 
 The LOPD API features the following endpoints, organized by categories:
 
 ### Occultations
 
--   **GET /api/occultations**: Returns a list of occultation predictions, which can be filtered by object, date, among other parameters.
--   **GET /api/occultations/{id}**: Returns the details of a specific occultation prediction identified by its ID.
--   **GET /api/occultations/{id}/get_or_create_map**: Returns the details of the map for a specific occultation prediction, generating the map if it doesn't exist.
--   **GET /api/occultations/asteroids_with_prediction**: Returns the list of asteroids with predictions in the database.
--   **GET /api/occultations/dynclass_with_prediction**: Returns the list of dynamic subclasses (Skybot) of asteroids with predictions in the database.
--   **GET /api/occultations/base_dynclass_with_prediction**: Returns the list of base dynamic classes (Skybot) of asteroids with predictions in the database.
+- **GET /api/occultations**: Returns a list of occultation predictions, which can be filtered by object, date, among other parameters.
+- **GET /api/occultations/{id}**: Returns the details of a specific occultation prediction identified by its ID.
+- **GET /api/occultations/{id}/get_or_create_map**: Returns the details of the map for a specific occultation prediction, generating the map if it doesn't exist.
+- **GET /api/occultations/asteroids_with_prediction**: Returns the list of asteroids with predictions in the database.
+- **GET /api/occultations/dynclass_with_prediction**: Returns the list of dynamic subclasses (Skybot) of asteroids with predictions in the database.
+- **GET /api/occultations/base_dynclass_with_prediction**: Returns the list of base dynamic classes (Skybot) of asteroids with predictions in the database.
 
 ### Asteroids
 
--   **GET /api/asteroids**: Returns the list of asteroids registered in the database.
--   **GET /api/asteroids/{id}**: Returns the details of an asteroid identified by its ID.
--   **GET /api/asteroids/count**: Returns the number of asteroids registered in the database.
--   **GET /api/asteroids/dynclasses**: Returns the list of dynamic subclasses (Skybot) of asteroids registered in the database.
--   **GET /api/asteroids/base_dynclasses**: Returns the list of base dynamic classes (Skybot) of asteroids registered in the database.
--   **GET /api/asteroids/with_prediction**: Returns the list of asteroids registered in the database with occultation prediction and their details.
+- **GET /api/asteroids**: Returns the list of asteroids registered in the database.
+- **GET /api/asteroids/{id}**: Returns the details of an asteroid identified by its ID.
+- **GET /api/asteroids/count**: Returns the number of asteroids registered in the database.
+- **GET /api/asteroids/dynclasses**: Returns the list of dynamic subclasses (Skybot) of asteroids registered in the database.
+- **GET /api/asteroids/base_dynclasses**: Returns the list of base dynamic classes (Skybot) of asteroids registered in the database.
+- **GET /api/asteroids/with_prediction**: Returns the list of asteroids registered in the database with occultation prediction and their details.
 
 ## Examples
 
 Below are provided some practical examples of using the LOPD API, demonstrating how to perform common or complex operations with the resources and endpoints. The examples are presented in JSON format and using the `curl` command to make requests.
-
 
 ```bash
 curl -X GET "https://solarsystem.linea.org.br/api/asteroids/with_prediction"
@@ -153,15 +150,14 @@ A resposta será um objeto com os dados do livro, como o título, o autor, o gê
 
 The LOPD API can return the following errors, specifying the error codes and messages:
 
--   **400 Bad Request**: The request was malformed or invalid, for example, missing a required parameter or using an incorrect format.
--   **401 Unauthorized**: The request was not authenticated, for example, missing or using an invalid API key.
--   **403 Forbidden**: The request was authenticated, but does not have permission to access the requested resource, for example, trying to edit or remove a book that does not belong to your personal collection.
--   **404 Not Found**: The requested resource was not found, for example, using a nonexistent ID or an invalid route.
--   **405 Method Not Allowed**: The HTTP method used in the request is not supported by the requested resource, for example, using the POST method on an endpoint that only accepts the GET method.
--   **429 Too Many Requests**: The request exceeded the limit of requests allowed by the API, for example, making more than 1000 requests per day or more than 100 requests per hour.
--   **500 Internal Server Error**: The request caused an internal error on the API server, for example, due to a bug or application failure.
--
-<!-- Occultation FilterSet
+- **400 Bad Request**: The request was malformed or invalid, for example, missing a required parameter or using an incorrect format.
+- **401 Unauthorized**: The request was not authenticated, for example, missing or using an invalid API key.
+- **403 Forbidden**: The request was authenticated, but does not have permission to access the requested resource, for example, trying to edit or remove a book that does not belong to your personal collection.
+- **404 Not Found**: The requested resource was not found, for example, using a nonexistent ID or an invalid route.
+- **405 Method Not Allowed**: The HTTP method used in the request is not supported by the requested resource, for example, using the POST method on an endpoint that only accepts the GET method.
+- **429 Too Many Requests**: The request exceeded the limit of requests allowed by the API, for example, making more than 1000 requests per day or more than 100 requests per hour.
+- **500 Internal Server Error**: The request caused an internal error on the API server, for example, due to a bug or application failure.
+- <!-- Occultation FilterSet
 
 Data Range = http://localhost/api/occultations/?date_time_after=2023-10-03&date_time_before=2023-10-04
 
