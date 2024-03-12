@@ -14,6 +14,7 @@ import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import LocationOffIcon from '@mui/icons-material/LocationOff'
+import TravelExploreIcon from '@mui/icons-material/TravelExplore'
 function GeoFilter({ value, onChange }) {
   const [error, setError] = useState(false)
 
@@ -56,7 +57,7 @@ function GeoFilter({ value, onChange }) {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
-        <Stack direction='row' spacing={2}>
+        <Stack direction='row' spacing={2} alignItems='stretch'>
           <FormControlLabel
             control={
               <Switch
@@ -83,7 +84,7 @@ function GeoFilter({ value, onChange }) {
           )}
         </Stack>
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={3}>
         <TextField
           type='number'
           label='Latitude (deg)'
@@ -104,7 +105,7 @@ function GeoFilter({ value, onChange }) {
           fullWidth
         />
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={3}>
         <TextField
           type='number'
           label='Longitude (deg)'
@@ -125,7 +126,7 @@ function GeoFilter({ value, onChange }) {
           fullWidth
         />
       </Grid>
-      <Grid item xs={12} sm={4}>
+      <Grid item xs={12} sm={3}>
         <FormControl fullWidth>
           <InputLabel id='radius-select-label'>Radius (Km)</InputLabel>
           <Select
@@ -152,6 +153,20 @@ function GeoFilter({ value, onChange }) {
           </Select>
         </FormControl>
       </Grid>
+      <Grid item xs={12} sm={3}>
+        <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={2} sx={{ height: '100%' }}>
+          <Button
+            variant='contained'
+            startIcon={<TravelExploreIcon />}
+            onClick={handleClearLocation}
+            size='large'
+            disabled={!value.geo || value.latitude === undefined || value.longitude === undefined}
+          >
+            Search By Location
+          </Button>
+        </Stack>
+      </Grid>
+
       {value.geo === true && (
         <Grid item xs={12}>
           <Alert severity='info'>
