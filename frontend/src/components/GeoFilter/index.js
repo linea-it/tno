@@ -15,8 +15,10 @@ import Button from '@mui/material/Button'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
 import LocationOffIcon from '@mui/icons-material/LocationOff'
 import TravelExploreIcon from '@mui/icons-material/TravelExplore'
+import SearchOffIcon from '@mui/icons-material/SearchOff'
 function GeoFilter({ value, onChange }) {
   const [error, setError] = useState(false)
+  const [enabled, setEnabled] = useState(false)
 
   const options1 = Array.from({ length: 10 }, (_, i) => i * 10 + 10) // 10-100
   const options2 = Array.from({ length: 18 }, (_, i) => i * 50 + 150) // 150-1000
@@ -50,6 +52,14 @@ function GeoFilter({ value, onChange }) {
     onChange(newValue)
   }
 
+  const handleEnabled = (e) => {
+    handleChange({
+      ...value,
+      geo: false
+    })
+    setEnabled(e.target.checked)
+  }
+
   useEffect(() => {
     setError(!geoFilterIsValid(value))
   }, [value.latitude, value.longitude, value])
@@ -58,27 +68,14 @@ function GeoFilter({ value, onChange }) {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Stack direction='row' spacing={2} alignItems='stretch'>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={value.geo}
-                onChange={(event) => {
-                  handleChange({
-                    ...value,
-                    geo: event.target.checked
-                  })
-                }}
-              />
-            }
-            label='Geo Location'
-          />
+          <FormControlLabel control={<Switch checked={enabled} onChange={handleEnabled} />} label='Geo Location' />
           {navigator.geolocation && value.latitude === undefined && value.longitude === undefined && (
-            <Button variant='text' startIcon={<LocationOnIcon />} disabled={!value.geo} onClick={setUserLocation}>
+            <Button variant='text' startIcon={<LocationOnIcon />} disabled={!enabled} onClick={setUserLocation}>
               My location
             </Button>
           )}
           {value.latitude !== undefined && value.longitude !== undefined && (
-            <Button variant='text' startIcon={<LocationOffIcon />} onClick={handleClearLocation}>
+            <Button variant='text' startIcon={<LocationOffIcon />} onClick={handleClearLocation} disabled={!enabled}>
               Clear location
             </Button>
           )}
@@ -90,7 +87,7 @@ function GeoFilter({ value, onChange }) {
           label='Latitude (deg)'
           variant='outlined'
           required
-          disabled={!value.geo}
+          disabled={!enabled}
           value={value.latitude === undefined ? '' : value.latitude}
           min={-90}
           max={90}
@@ -111,7 +108,7 @@ function GeoFilter({ value, onChange }) {
           label='Longitude (deg)'
           variant='outlined'
           required
-          disabled={!value.geo}
+          disabled={!enabled}
           value={value.longitude === undefined ? '' : value.longitude}
           min={0}
           max={360}
@@ -135,7 +132,7 @@ function GeoFilter({ value, onChange }) {
             id='radius-select-'
             value={value.radius === undefined ? '' : value.radius}
             label='Radius (Km)'
-            disabled={!value.geo}
+            disabled={!enabled}
             onChange={(event) => {
               handleChange({
                 ...value,
@@ -154,20 +151,45 @@ function GeoFilter({ value, onChange }) {
         </FormControl>
       </Grid>
       <Grid item xs={12} sm={3}>
-        <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={2} sx={{ height: '100%' }}>
-          <Button
-            variant='contained'
-            startIcon={<TravelExploreIcon />}
-            onClick={handleClearLocation}
-            size='large'
-            disabled={!value.geo || value.latitude === undefined || value.longitude === undefined}
-          >
-            Search By Location
-          </Button>
-        </Stack>
+        {value.geo === false && (
+          <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={2} sx={{ height: '100%' }}>
+            <Button
+              variant='contained'
+              startIcon={<TravelExploreIcon />}
+              onClick={(event) => {
+                handleChange({
+                  ...value,
+                  geo: true
+                })
+              }}
+              size='large'
+              disabled={!enabled || value.latitude === undefined || value.longitude === undefined}
+            >
+              Search By Location
+            </Button>
+          </Stack>
+        )}
+        {value.geo === true && (
+          <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={2} sx={{ height: '100%' }}>
+            <Button
+              variant='contained'
+              startIcon={<SearchOffIcon />}
+              onClick={(event) => {
+                handleChange({
+                  ...value,
+                  geo: false
+                })
+              }}
+              size='large'
+              disabled={!enabled || value.latitude === undefined || value.longitude === undefined}
+            >
+              Stop Search
+            </Button>
+          </Stack>
+        )}
       </Grid>
 
-      {value.geo === true && (
+      {enabled === true && (
         <Grid item xs={12}>
           <Alert severity='info'>
             The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and
