@@ -5,6 +5,7 @@ from pathlib import Path
 
 from django.conf import settings
 from rest_framework.response import Response
+from tno.occviz import visibility_from_coeff
 
 
 class GeoLocation:
@@ -23,38 +24,103 @@ class GeoLocation:
     def create_async_job(self):
         self.log.info("Create async job for check visibility for each candidates")
 
+        # Add Limit to queryset
+        queryset = self.queryset[0:1000]
         job = {
             "job_id": self.request_hash,
             "count": 0,
             "results": [],
-            "candidates": self.queryset.count(),
+            "candidates": queryset.count(),
             "pageParam": self.params.get("pageParam", 1),
             "next": None,
             "previous": None,
         }
         self.log.info(f"Filepath: {self.get_file_path(self.request_hash)}")
+        self.write_async_job_results(job)
+
+        self.apply_visibility(
+            queryset,
+            float(self.params["lat"]),
+            float(self.params["long"]),
+            float(self.params["radius"]),
+        )
+
+    def apply_visibility(self, queryset, lat: float, long: float, radius: float):
+        self.log.info(f"Applying the visibility function to each result")
+        self.log.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+
+        wanted_ids = []
+        count = 0
+        processed = 0
+        for event in queryset:
+            is_visible, info = visibility_from_coeff(
+                latitude=lat,
+                longitude=long,
+                radius=radius,
+                date_time=event.date_time,
+                inputdict=event.occ_path_coeff,
+                # object_diameter=event.diameter,
+                # ring_diameter=event.diameter,
+                # n_elements= 1500,
+                # ignore_nighttime= False,
+                # latitudinal= False
+            )
+            processed += 1
+
+            if is_visible:
+                wanted_ids.append(event.id)
+                count += 1
+
+                self.log.info(
+                    f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
+                )
+
+                self.update_async_job_results(event.id)
+            # else:
+            #     self.log.debug(
+            #         f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
+            #     )
+
+        self.log.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
+        self.log.info(f"Number of events processed: [{processed}]")
+        self.log.info(
+            f"Number of events that the visibility function returned true: [{count}]"
+        )
+
+    def update_async_job_results(self, event_id: int):
+        job = self.read_async_job_results()
+        job["results"].append(event_id)
+        self.write_async_job_results(job)
+
+    def read_async_job_results(self) -> dict:
+        with open(self.get_file_path(self.request_hash)) as fp:
+            job = json.load(fp)
+            return job
+
+    def write_async_job_results(self, job):
         with open(self.get_file_path(self.request_hash), "w") as fp:
             json.dump(job, fp)
 
-    def read_async_job_results(self) -> dict:
-        self.log.info("Read job file and return results")
+    def filter_queryset_by_visibility(self):
+        self.log.info("Arquivo já existe abrir e ler o conteudo e retornar")
+        job = self.read_async_job_results()
 
-        with open(self.get_file_path(self.request_hash)) as fp:
-            job = json.load(fp)
-            self.log.debug(job)
-
-            return job
+        queryset = self.queryset.filter(id__in=job["results"])
+        self.log.info(f"Results after visibility function: [{queryset.count()}]")
+        self.log.debug(queryset.query)
+        return queryset
 
     def execute(self):
         # Verificar se já existe dados para este hash
-        if self.file_exists(self.request_hash):
-            self.log.info("Arquivo já existe abrir e ler o conteudo e retornar")
-            self.read_async_job_results()
-        else:
+        if not self.file_exists(self.request_hash):
             self.log.info("Arquivo nao existe submeter as tasks em background")
             self.create_async_job()
 
-        return Response(self.read_async_job_results())
+        queryset = self.filter_queryset_by_visibility()
+
+        self.log.info("Read job file and return results")
+
+        return queryset
 
     def get_file_path(self, request_hash) -> Path:
         temp_path = Path(settings.DATA_TMP_DIR)
