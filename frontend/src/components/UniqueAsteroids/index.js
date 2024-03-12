@@ -40,12 +40,16 @@ function UniqueAsteroids() {
         <Typography variant='body2' sx={{ margin: '5px 0', fontSize: '1rem' }}>
           <strong>Unique Asteroids:</strong> {data?.unique_asteroids}
         </Typography>
-        <Typography variant='body2' sx={{ margin: '5px 0', fontSize: '1rem' }}>
-          <strong>Earliest:</strong> {moment(data?.earliest).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)
-        </Typography>
-        <Typography variant='body2' sx={{ margin: '0px 0', fontSize: '1rem' }}>
-          <strong>Latest:</strong> {moment(data?.latest).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)
-        </Typography>
+        {data?.earliest !== undefined && (
+          <Typography variant='body2' sx={{ margin: '5px 0', fontSize: '1rem' }}>
+            <strong>Earliest:</strong> {moment(data?.earliest).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)
+          </Typography>
+        )}
+        {data?.latest !== undefined && (
+          <Typography variant='body2' sx={{ margin: '0px 0', fontSize: '1rem' }}>
+            <strong>Latest:</strong> {moment(data?.latest).utc().format('YYYY-MM-DD HH:mm:ss')} (UTC)
+          </Typography>
+        )}
       </CardContent>
     </Card>
   )

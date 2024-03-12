@@ -8,3 +8,4 @@ from tno.views.occultation import OccultationViewSet
 from tno.views.prediction_job import PredictionJobViewSet
 from tno.views.prediction_job_result import PredictionJobResultViewSet
 from tno.views.user import UserViewSet
+from tno.views.geo_location import GeoLocation
