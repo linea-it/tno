@@ -3,9 +3,11 @@ import json
 import logging
 from pathlib import Path
 
+from celery import group
 from django.conf import settings
 from rest_framework.response import Response
 from tno.occviz import visibility_from_coeff
+from tno.tasks import assync_visibility_from_coeff
 
 
 class GeoLocation:
@@ -25,7 +27,9 @@ class GeoLocation:
         self.log.info("Create async job for check visibility for each candidates")
 
         # Add Limit to queryset
+        # queryset = self.queryset.filter(id__in=[1167340, 1128316, 963963, 845826])
         queryset = self.queryset[0:1000]
+
         job = {
             "job_id": self.request_hash,
             "count": 0,
@@ -48,6 +52,25 @@ class GeoLocation:
     def apply_visibility(self, queryset, lat: float, long: float, radius: float):
         self.log.info(f"Applying the visibility function to each result")
         self.log.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+
+        # job = group(
+        #     assync_visibility_from_coeff.s(
+        #         event_id=event.id,
+        #         result_file=str(self.get_file_path(self.request_hash)),
+        #         latitude=lat,
+        #         longitude=long,
+        #         radius=radius,
+        #         date_time=event.date_time.isoformat(),
+        #         inputdict=event.occ_path_coeff,
+        #         object_diameter=event.diameter,
+        #         # ring_diameter=event.diameter,
+        #         # n_elements= 1500,
+        #         # ignore_nighttime= False,
+        #         # latitudinal= False
+        #     )
+        #     for event in queryset
+        # )
+        # job.apply_async()
 
         wanted_ids = []
         count = 0
@@ -74,18 +97,7 @@ class GeoLocation:
                 self.log.info(
                     f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
                 )
-
                 self.update_async_job_results(event.id)
-            # else:
-            #     self.log.debug(
-            #         f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-            #     )
-
-        self.log.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
-        self.log.info(f"Number of events processed: [{processed}]")
-        self.log.info(
-            f"Number of events that the visibility function returned true: [{count}]"
-        )
 
     def update_async_job_results(self, event_id: int):
         job = self.read_async_job_results()

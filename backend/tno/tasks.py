@@ -1,6 +1,8 @@
 # Create your tasks here
+import json
 import logging
 from datetime import datetime
+from pathlib import Path
 from time import sleep
 from typing import Optional
 
@@ -181,8 +183,17 @@ def create_occultation_path_coeff():
 
 
 @shared_task
-def assync_visibility_from_coeff(event_id, **kwargs):
+def assync_visibility_from_coeff(event_id, result_file, **kwargs):
     is_visible, info = visibility_from_coeff(**kwargs)
+
+    if is_visible:
+        with open(Path(result_file)) as fp:
+            job = json.load(fp)
+            job["results"].append(event_id)
+
+        with open(Path(result_file)) as fp:
+            json.dump(job, fp)
+
     return event_id, bool(is_visible)
 
 
