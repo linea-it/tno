@@ -1,103 +1,102 @@
-# Solar System API
+# LIneA Occultation Predictions Database API
 
-## Introdução
+## Introduction
 
-A API de Livros é uma solução que permite consultar e gerenciar livros em uma biblioteca online. Com a API de Livros, você pode:
+The LIneA Occultation Prediction Database (LOPD) API is a solution for querying and managing predictions of stellar occultations programatically. With this API, you can:
 
-- Pesquisar livros por título, autor, gênero, ano ou ISBN
-- Visualizar os detalhes de cada livro, como sinopse, avaliação, número de páginas e capa
-- Adicionar, editar ou remover livros da sua coleção pessoal
-- Comentar, avaliar ou recomendar livros para outros usuários
-- Acessar estatísticas e recomendações personalizadas de livros
+- Search for occultation prediction events by various parameters such as date, time, magnitude.
+- Customize and filter occultation prediction events based on date/time intervals, magnitude limits, object names, dynamical classes, and subclasses.
+- Access geolocation filtering (experimental) for refined results, among other things.
+- Query asteroids properties, and more.
 
-A API de Livros é destinada a desenvolvedores, pesquisadores e entusiastas que querem integrar ou explorar os dados de livros de forma simples e rápida. A API de Livros usa o formato JSON para as requisições e as respostas, e segue os padrões RESTful para a arquitetura e o design.
 
-Esta API além de disponibilizar o schema no padrão OpenAPI disponibiliza também as interfaces Swagger UI e ReDoc. Essas interfaces são ferramentas que permitem visualizar e testar a API de forma interativa e amigável.
+The LOPD API is intended for developers, researchers, and enthusiasts looking to integrate or explore book data quickly and easily. The API uses the JSON format for requests and responses, adhering to RESTful standards for architecture and design.
 
-O Swagger UI é uma ferramenta que oferece uma interface interativa e amigável, que permite executar requisições e ver as respostas da sua API.
+In addition to providing the schema in the OpenAPI standard, this API also offers Swagger UI and ReDoc interfaces. These interfaces are tools that allow for interactive and user-friendly visualization and testing of the API.
 
-O ReDoc é uma ferramenta que oferece uma interface elegante e responsiva, que permite navegar pela documentação da API.
+Swagger UI is a tool that provides an interactive and user-friendly interface, enabling the execution of requests and viewing of API responses.
 
-Você pode acessar as interfaces pela URL /docs/, escolhendo a opção desejada no canto superior direito da página.
+ReDoc is a tool that offers an elegant and responsive interface, allowing navigation through the API documentation.
+
+You can access the interfaces via the URL /docs/, selecting the desired option in the top right corner of the page.
 
 - OpenApi Schema: [/api/schema](https://solarsystem.linea.org.br/api/schema)
 - Swagger UI: [/api/docs/](https://solarsystem.linea.org.br/api/docs/)
 - ReDoc: [api/redoc/](https://solarsystem.linea.org.brapi/redoc/)
 
-A versão atual da API de Livros é a 1.0.0, lançada em 01/01/2024. A API de Livros está em fase de desenvolvimento e pode sofrer alterações sem aviso prévio. Para acompanhar as atualizações e as novidades da API de Livros, o [repositório](https://github.com/linea-it/tno) da API.
+> **Warning**
+>
+>The current version of the LOPD API is 1.0.0. The API is in the development phase and may undergo changes without prior notice. To stay updated on API updates and news, visit the [repository](https://github.com/linea-it/tno) of the API.
 
-## Termos de uso
+## Terms of Use
 
-Para usar a API de Livros, você deve concordar com os seguintes termos de uso:
+To use the LOPD API, you must agree to the following terms of use:
 
-- Você deve se registrar na API de Livros e obter uma chave de acesso (API key) válida e única para cada aplicação que usar a API.
-- Você deve usar a API de Livros de forma responsável e ética, respeitando os direitos autorais e a privacidade dos autores e dos usuários dos livros.
-- Você deve limitar o número de requisições à API de Livros a 1000 por dia e 100 por hora. Se você precisar de um limite maior, entre em contato com o suporte da API.
-- Você deve citar a API de Livros como a fonte dos dados que você usar ou exibir em sua aplicação, incluindo um link para a documentação da API.
-- Você deve notificar o suporte da API sobre qualquer problema, erro ou falha que você encontrar ao usar a API de Livros.
-- Você deve aceitar que a API de Livros não oferece nenhuma garantia de disponibilidade, qualidade, precisão ou segurança dos dados, e que você é o único responsável pelo uso e pelas consequências da API de Livros em sua aplicação.
+<!--- You must register with the API and obtain a valid and unique API key for each application using the API.-->
+- Use the API responsibly and ethically.
+- Limit the number of API requests to 1000 per day and 100 per hour. If you require a higher limit, contact API support.
+- Aknowledge the API as the source of the data used or displayed in your application, including a link to the API documentation.
+- Notify API support of any issues, errors, or failures encountered while using the API.
+- Accept that the API provides no guarantee of availability, quality, accuracy, or security of the data, and you are solely responsible for the use and consequences of the API in your application.
 
-Ao usar a API de Livros, você declara que leu, entendeu e concordou com os termos de uso acima. O descumprimento dos termos de uso pode resultar na suspensão ou no cancelamento do seu acesso à API de Livros.
+By using the LOPD API, you declare that you have read, understood, and agreed to the above terms of use. Non-compliance with the terms of use may result in the suspension or cancellation of your access to the API.
 
-## Autenticação
+<!-- ## Authentication
 
-Para acessar a API de Livros, você precisa se autenticar com uma chave de acesso (API key) válida e única para cada aplicação que usar a API. A API key é um token alfanumérico de 32 caracteres que identifica e autoriza a sua aplicação a usar a API de Livros.
+To access the LOPD API, you need to authenticate with a valid and unique API key for each application using the API. The API key is a 32-character alphanumeric token that identifies and authorizes your application to use the Books API.
 
-Para obter a sua API key, você deve se registrar na API de Livros, informando o seu nome, e-mail e o nome da sua aplicação. Após o registro, você receberá um e-mail com a sua API key e um link para ativar a sua conta. Você pode gerenciar as suas API keys na sua área de usuário na API de Livros.
+To obtain your API key, you must register with the LOPD API, providing your name, email, and the name of your application. After registration, you will receive an email with your API key and a link to activate your account. You can manage your API keys in your user area on the LOPD API.
 
-Para usar a sua API key, você deve incluí-la no cabeçalho `Authorization` de cada requisição à API de Livros, usando o formato `Bearer <API key>`. Por exemplo:
+To use your API key, include it in the `Authorization` header of each request to the Books API, using the format `Bearer <API key>`. For example:
 
 ```http
-GET /books?title=Harry+Potter HTTP/1.1
-Host: api.livros.com
+GET /api/occultations?name=Chiron HTTP/1.1
+Host: solarsystem.linea.org.br
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiMTIzNDU2Nzg5MGFiY2RlZmdoaWprbG1ub3BxcnN0dXYiLCJhcHBfbmFtZSI6Ik1pbmhhQXBwIiwidXNlcl9pZCI6IjU2Nzg5MDEyMzQiLCJpYXQiOjE2MjEwMjM0NTZ9.4kGkqBS8wXTz6tHwzZYkNzYkNzYkNzYkNzYkNzYkNzY
 ```
 
-A API key é pessoal e intransferível, e não deve ser compartilhada com terceiros. Você é o único responsável pelo uso e pela segurança da sua API key. Se você suspeitar que a sua API key foi comprometida, você deve alterá-la ou revogá-la imediatamente na sua área de usuário na API de Livros.
+The API key is personal and non-transferable, and should not be shared with third parties. You are solely responsible for the use and security of your API key. If you suspect that your API key has been compromised, you should immediately change or revoke it in your user area on the LOPD API. -->
 
-## Recursos
+## Resources
 
-A API de Livros manipula os seguintes recursos:
+The LOPD API handles the following features:
 
-- **Occultations**: Um livro é uma obra literária que contém informações sobre o título, o autor, o gênero, o ano, o ISBN, a sinopse, a avaliação, o número de páginas e a capa. Um livro pode ter vários comentários e recomendações de outros usuários. Um livro pode pertencer ou não à coleção pessoal de um usuário.
-- **Asteroids**: Um comentário é uma opinião ou uma crítica de um usuário sobre um livro. Um comentário contém informações sobre o autor, o conteúdo, a data e a avaliação do comentário. Um comentário pode ter respostas de outros usuários.
-- **Dynclass**: Uma recomendação é uma sugestão de um usuário para que outro usuário leia um livro. Uma recomendação contém informações sobre o autor, o destinatário, o livro e a data da recomendação. Uma recomendação pode ter respostas de outros usuários.
-- **Base Dynclass**: Um usuário é uma pessoa que se registrou na API de
+- **Occultation**: It is an event that contains information regarding the occulting object, such as date and time, apparent magnitude, geocentric distance, etc. Additionally, it provides information about the candidate star to be occulted, such as right ascension, declination, apparent magnitude, etc. Moreover, it includes predictive information about the event, such as the expected drop in magnitude during the occultation, among other data.
+- **Asteroid**: Aggregates the set of information about a small body in the Solar System, including its orbital properties and, when available, some physical properties.
+- **Base Dynclass**: Contains the main dynamic classifications of asteroids as defined by [Skybot](https://ssp.imcce.fr/webservices/skybot/).
+- **Dynclass**: Contains the set of dynamic subclassifications of asteroids as defined by [Skybot](https://ssp.imcce.fr/webservices/skybot/).
 
-Claro, eu posso adicionar as seções Endpoints, Errors, Exemplos e Referências em markdown. Essas seções são importantes para documentar os detalhes técnicos, os possíveis problemas e as soluções práticas da sua API. Seguindo o template que eu gerei anteriormente, as seções ficariam assim:
 
 ## Endpoints
 
-A API de Livros possui os seguintes endpoints, organizados por categorias:
+
+The LOPD API features the following endpoints, organized by categories:
 
 ### Occultations
 
-- **GET /api/occultations**: Retorna uma lista de livros, podendo ser filtrada por título, autor, gênero, ano ou ISBN.
-- **GET /api/occultations/{id}**: Retorna os detalhes de um livro específico, identificado pelo seu ID. Requer autenticação.
-- **GET /api/occultations/{id}/get_or_create_map**: Adiciona um novo livro à coleção pessoal do usuário. Requer autenticação e permissão de escrita.
-- **GET /api/occultations/asteroids_with_prediction**: Edita os dados de um livro existente na coleção pessoal do usuário. Requer autenticação e permissão de escrita.
-- **GET /api/occultations/dynclass_with_prediction**: Remove um livro da coleção pessoal do usuário. Requer autenticação e permissão de escrita.
-- **GET /api/occultations/base_dynclass_with_prediction**: Retorna uma lista de comentários sobre um livro.
+-   **GET /api/occultations**: Returns a list of occultation predictions, which can be filtered by object, date, among other parameters.
+-   **GET /api/occultations/{id}**: Returns the details of a specific occultation prediction identified by its ID.
+-   **GET /api/occultations/{id}/get_or_create_map**: Returns the details of the map for a specific occultation prediction, generating the map if it doesn't exist.
+-   **GET /api/occultations/asteroids_with_prediction**: Returns the list of asteroids with predictions in the database.
+-   **GET /api/occultations/dynclass_with_prediction**: Returns the list of dynamic subclasses (Skybot) of asteroids with predictions in the database.
+-   **GET /api/occultations/base_dynclass_with_prediction**: Returns the list of base dynamic classes (Skybot) of asteroids with predictions in the database.
 
 ### Asteroids
 
-- **GET /api/asteroids**: Retorna uma lista de comentários sobre um livro específico.
-- **GET /api/asteroids/{id}**: Retorna os detalhes de um comentário específico, identificado pelo seu ID.
-- **GET /api/asteroids/count**: Adiciona um novo comentário sobre um livro específico.
-- **GET /api/asteroids/dynclasses**: Retorna uma lista de comentários existente.
-- **GET /api/asteroids/base_dynclasses**: Retorna uma lista de comentários existente.
-- **GET /api/asteroids/with_prediction**: Requer autenticação e permissão de escrita.
+-   **GET /api/asteroids**: Returns the list of asteroids registered in the database.
+-   **GET /api/asteroids/{id}**: Returns the details of an asteroid identified by its ID.
+-   **GET /api/asteroids/count**: Returns the number of asteroids registered in the database.
+-   **GET /api/asteroids/dynclasses**: Returns the list of dynamic subclasses (Skybot) of asteroids registered in the database.
+-   **GET /api/asteroids/base_dynclasses**: Returns the list of base dynamic classes (Skybot) of asteroids registered in the database.
+-   **GET /api/asteroids/with_prediction**: Returns the list of asteroids registered in the database with occultation prediction and their details.
 
-## Exemplos
+## Examples
 
-A seguir, são fornecidos alguns exemplos práticos de uso da API de Livros, mostrando como realizar operações comuns ou complexas com os recursos e os endpoints. Os exemplos são apresentados em formato JSON e usando o comando `curl` para fazer as requisições.
+Below are provided some practical examples of using the LOPD API, demonstrating how to perform common or complex operations with the resources and endpoints. The examples are presented in JSON format and using the `curl` command to make requests.
 
-### Pesquisar livros por gênero
-
-Para pesquisar livros por gênero, você pode usar o endpoint `GET /books` com o parâmetro `genre`. Por exemplo, para pesquisar livros de ficção científica, você pode usar o seguinte comando:
 
 ```bash
-curl -X GET "https://minhaapp.com/books?genre=ficção+científica" -H "Authorization: Bearer <API key>"
+curl -X GET "https://solarsystem.linea.org.br/api/asteroids/with_prediction"
 ```
 
 A resposta será uma lista de livros que correspondem ao gênero pesquisado, com os seus respectivos IDs, títulos, autores e capas. Por exemplo:
@@ -150,18 +149,18 @@ A resposta será um objeto com os dados do livro, como o título, o autor, o gê
 }
 ```
 
-## Erros
+## Errors
 
-A API de Livros pode retornar os seguintes erros, especificando os códigos e as mensagens dos erros:
+The LOPD API can return the following errors, specifying the error codes and messages:
 
-- **400 Bad Request**: A requisição foi malformada ou inválida, por exemplo, faltando um parâmetro obrigatório ou usando um formato incorreto.
-- **401 Unauthorized**: A requisição não foi autenticada, por exemplo, faltando ou usando uma API key inválida.
-- **403 Forbidden**: A requisição foi autenticada, mas não tem permissão para acessar o recurso solicitado, por exemplo, tentando editar ou remover um livro que não pertence à sua coleção pessoal.
-- **404 Not Found**: O recurso solicitado não foi encontrado, por exemplo, usando um ID inexistente ou uma rota inválida.
-- **405 Method Not Allowed**: O método HTTP usado na requisição não é suportado pelo recurso solicitado, por exemplo, usando o método POST em um endpoint que só aceita o método GET.
-- **429 Too Many Requests**: A requisição excedeu o limite de requisições permitido pela API, por exemplo, fazendo mais de 1000 requisições por dia ou mais de 100 requisições por hora.
-- **500 Internal Server Error**: A requisição causou um erro interno no servidor da API, por exemplo, devido a um bug ou uma falha na aplicação.
-
+-   **400 Bad Request**: The request was malformed or invalid, for example, missing a required parameter or using an incorrect format.
+-   **401 Unauthorized**: The request was not authenticated, for example, missing or using an invalid API key.
+-   **403 Forbidden**: The request was authenticated, but does not have permission to access the requested resource, for example, trying to edit or remove a book that does not belong to your personal collection.
+-   **404 Not Found**: The requested resource was not found, for example, using a nonexistent ID or an invalid route.
+-   **405 Method Not Allowed**: The HTTP method used in the request is not supported by the requested resource, for example, using the POST method on an endpoint that only accepts the GET method.
+-   **429 Too Many Requests**: The request exceeded the limit of requests allowed by the API, for example, making more than 1000 requests per day or more than 100 requests per hour.
+-   **500 Internal Server Error**: The request caused an internal error on the API server, for example, due to a bug or application failure.
+-
 <!-- Occultation FilterSet
 
 Data Range = http://localhost/api/occultations/?date_time_after=2023-10-03&date_time_before=2023-10-04
