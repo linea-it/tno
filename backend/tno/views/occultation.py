@@ -19,7 +19,7 @@ from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
-from tno.tasks import create_occ_map_task
+from tno.tasks import assync_visibility_from_coeff, create_occ_map_task
 from tno.views.geo_location import GeoLocation
 
 
@@ -332,29 +332,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         dt = t1 - t0
         logger.info(f"Query Completed in {humanize.naturaldelta(dt)}")
         return result
-
-    # @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
-    # def by_location(self, request):
-    #     """ """
-    #     logger = logging.getLogger("predict_events")
-    #     # logger.info(f"------------------------------------------------")
-    #     # logger.info(f"Prediction query GEO LOCATION for the following parameters")
-
-    #     params = self.request.query_params
-    #     # logger.info(dict(params))
-    #     # 09fb48d7b9e4c2f464c3c5dd42eed9d0
-    #     # 09fb48d7b9e4c2f464c3c5dd42eed9d0
-    #     logger.info(f"------------------------------------------------")
-    #     str_params = json.dumps(params.dict(), sort_keys=True)
-    #     # logger.info(str_params)
-    #     request_hash = hashlib.md5(str_params.encode()).hexdigest()
-
-    #     logger.info(request_hash)
-    #     logger.info(f"------------------------------------------------")
-
-    #     # queryset = self.get_queryset()
-
-    #     return Response(dict({"results": [], "count": 0}))
 
     @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
