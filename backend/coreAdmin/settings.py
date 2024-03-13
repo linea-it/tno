@@ -82,7 +82,7 @@ DATABASES = {
         # IF Need Schema
         # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
     },
-    'catalog': {
+    "catalog": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": env("DATABASE_CATALOG_DB", default="postgres"),
         "USER": env("DATABASE_CATALOG_USER", default="postgres"),
