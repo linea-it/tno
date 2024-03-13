@@ -65,13 +65,35 @@ USE_L10N = True
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASE_ROUTERS = ["tno.router.CatalogRouter"]
-DATABASES = {"default": env.db("DB_ADMIN_URI"), "catalog": env.db("DB_CATALOG_URI")}
-# IF Database need a Schema use this
-# DATABASES["default"]["OPTIONS"] = {"options": "-c search_path=<DB_SCHEMA>,public"}
-DATABASES["default"]["ATOMIC_REQUESTS"] = True
+
+
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Django Admin Database
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env("DATABASE_ADMIN_DB", default="postgres"),
+        "USER": env("DATABASE_ADMIN_USER", default="postgres"),
+        "PASSWORD": env("DATABASE_ADMIN_USER", default="postgres"),
+        "HOST": env("DATABASE_ADMIN_HOST", default="database"),
+        "PORT": env("DATABASE_ADMIN_PORT", default=5432),
+        # IF Need Schema
+        # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
+    },
+    'catalog': {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env("DATABASE_CATALOG_DB", default="postgres"),
+        "USER": env("DATABASE_CATALOG_USER", default="postgres"),
+        "PASSWORD": env("DATABASE_CATALOG_USER", default="postgres"),
+        "HOST": env("DATABASE_CATALOG_HOST", default="database"),
+        "PORT": env("DATABASE_CATALOG_PORT", default=5432),
+    },
+}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+# IF Database need a Schema use this
+# DATABASES["default"]["OPTIONS"] = {"options": "-c search_path=<DB_SCHEMA>,public"}
 
 # Diretorio com scripts externos.
 BIN_DIR = os.path.join(BASE_DIR, "bin")
