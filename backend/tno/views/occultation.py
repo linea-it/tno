@@ -1,9 +1,13 @@
+import hashlib
+import json
 import logging
 from datetime import datetime, time, timezone
+from pathlib import Path
 
 import django_filters
 import humanize
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.db.models import F, FloatField, Q, Value
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers, viewsets
@@ -15,7 +19,8 @@ from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
-from tno.tasks import create_occ_map_task
+from tno.tasks import assync_visibility_from_coeff, create_occ_map_task
+from tno.views.geo_location import GeoLocation
 
 
 class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
@@ -124,12 +129,7 @@ class OccultationFilter(django_filters.FilterSet):
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
-    # authentication_classes = [
-    #     SessionAuthentication,
-    #     BasicAuthentication,
-    #     TokenAuthentication,
-    # ]
-
+    queryset = Occultation.objects.all()
     serializer_class = OccultationSerializer
 
     filterset_class = OccultationFilter
@@ -195,123 +195,167 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         return lat, long, radius
 
-    def get_queryset(self):
-        t0 = datetime.now()
+    # def get_queryset(self):
+    #     t0 = datetime.now()
 
+    #     # Recupera os parametros da requisição
+    #     params = self.request.query_params
+    #     logger.info(dict(params))
+
+    #     # Base queryset usando join com a tabela asteroids
+    #     queryset = Occultation.objects.select_related().all()
+    #     # Aplica os fitros da classe OccultationFilter
+    #     # Filter_Queryset  aplica todos os filtros passados por parametro
+    #     # Mas não calcula a visibilidade
+    #     queryset = self.filter_queryset(queryset)
+    #     # print(queryset.query)
+    #     logger.info(f"Results after filters in the database: [{queryset.count()}]")
+
+    # lat, long, radius = self.check_user_location_params(params)
+
+    # # TODO: Necessário implementar forma de fazer a paginação.
+    # # TODO: Implementar memcache para eventos já processados
+    # pageSize = int(params.get("pageSize", 10))
+
+    # # Sync Method
+    # if None not in [lat, long, radius]:
+    #     logger.info(f"Applying the visibility function to each result")
+    #     logger.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+
+    #     wanted_ids = []
+    #     count = 0
+    #     processed = 0
+    #     for event in queryset:
+    #         is_visible, info = visibility_from_coeff(
+    #             latitude=lat,
+    #             longitude=long,
+    #             radius=radius,
+    #             date_time=event.date_time,
+    #             inputdict=event.occ_path_coeff,
+    #             # object_diameter=event.diameter,
+    #             # ring_diameter=event.diameter,
+    #             # n_elements= 1500,
+    #             # ignore_nighttime= False,
+    #             # latitudinal= False
+    #         )
+    #         processed += 1
+
+    #         if is_visible:
+    #             wanted_ids.append(event.id)
+    #             count += 1
+    #             logger.info(
+    #                 f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
+    #             )
+    #         else:
+    #             logger.debug(
+    #                 f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
+    #             )
+
+    #         if count == pageSize:
+    #             logger.info("The page's registration limit has been reached.")
+    #             break
+
+    #     logger.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
+    #     logger.info(f"Number of events processed: [{processed}]")
+    #     logger.info(
+    #         f"Number of events that the visibility function returned true: [{count}]"
+    #     )
+
+    #     if count > 0:
+    #         queryset = queryset.filter(id__in=wanted_ids)
+    #         logger.info(f"Results after visibility function: [{queryset.count()}]")
+    #         logger.debug(queryset.query)
+
+    # TODO: Estudar a possibilidade de um metodo asyncrono
+    # Teste Com metodo assincrono pode ser promissor!
+    # if None not in [lat, long, radius]:
+    #     # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+    #     job = group(
+    #         assync_visibility_from_coeff.s(
+    #             event_id=event.id,
+    #             latitude=lat,
+    #             longitude=long,
+    #             radius=radius,
+    #             date_time=event.date_time.isoformat(),
+    #             inputdict=event.occ_path_coeff,
+    #             # object_diameter=event.diameter,
+    #             # ring_diameter=event.diameter,
+    #             # n_elements= 1500,
+    #             # ignore_nighttime= False,
+    #             # latitudinal= False
+    #          ) for event in queryset)
+
+    #     result = job.apply_async()
+    #     while result.ready() == False:
+    #         print(f"Completed: {result.completed_count()}")
+    #         sleep(1)
+    # t1 = datetime.now()
+    # dt = t1 - t0
+    # logger.info(f"Query Completed in {humanize.naturaldelta(dt)}")
+    # return queryset
+
+    def list(self, request):
+        t0 = datetime.now()
         logger = logging.getLogger("predict_events")
         logger.info(f"------------------------------------------------")
         logger.info(f"Prediction query for the following parameters")
 
-        # Recupera os parametros da requisição
-        params = self.request.query_params
-        logger.info(dict(params))
-
-        # Base queryset usando join com a tabela asteroids
-        queryset = Occultation.objects.select_related().all()
         # Aplica os fitros da classe OccultationFilter
-        # Filter_Queryset  aplica todos os filtros passados por parametro
         # Mas não calcula a visibilidade
-        queryset = self.filter_queryset(queryset)
-        # print(queryset.query)
+        queryset = self.filter_queryset(self.get_queryset())
+        # logger.debug(queryset.query)
         logger.info(f"Results after filters in the database: [{queryset.count()}]")
 
+        # Recupera os parametros da requisição
+        params = self.request.query_params
+        # logger.debug(dict(params))
+
+        # Verifica se é uma consulta por geo localização.
         lat, long, radius = self.check_user_location_params(params)
-
-        # TODO: Necessário implementar forma de fazer a paginação.
-        # TODO: Implementar memcache para eventos já processados
-        pageSize = int(params.get("pageSize", 10))
-
-        # Sync Method
         if None not in [lat, long, radius]:
-            logger.info(f"Applying the visibility function to each result")
-            logger.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
+            logger.info("QUERY POR POSICAO")
 
-            wanted_ids = []
-            count = 0
-            processed = 0
-            for event in queryset:
-                is_visible, info = visibility_from_coeff(
-                    latitude=lat,
-                    longitude=long,
-                    radius=radius,
-                    date_time=event.date_time,
-                    inputdict=event.occ_path_coeff,
-                    # object_diameter=event.diameter,
-                    # ring_diameter=event.diameter,
-                    # n_elements= 1500,
-                    # ignore_nighttime= False,
-                    # latitudinal= False
-                )
-                processed += 1
+            gl = GeoLocation(params.dict(), queryset)
 
-                if is_visible:
-                    wanted_ids.append(event.id)
-                    count += 1
-                    logger.info(
-                        f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-                    )
-                else:
-                    logger.debug(
-                        f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-                    )
+            queryset = gl.execute()
+            page = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(page, many=True)
+            result = self.get_paginated_response(serializer.data)
 
-                if count == pageSize:
-                    logger.info("The page's registration limit has been reached.")
-                    break
+        else:
+            logger.info("QUERY NORMAL")
+            page = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(page, many=True)
+            result = self.get_paginated_response(serializer.data)
 
-            logger.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
-            logger.info(f"Number of events processed: [{processed}]")
-            logger.info(
-                f"Number of events that the visibility function returned true: [{count}]"
-            )
-
-            if count > 0:
-                queryset = queryset.filter(id__in=wanted_ids)
-                logger.info(f"Results after visibility function: [{queryset.count()}]")
-                logger.debug(queryset.query)
-
-        # TODO: Estudar a possibilidade de um metodo asyncrono
-        # Teste Com metodo assincrono pode ser promissor!
-        # if None not in [lat, long, radius]:
-        #     # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
-        #     job = group(
-        #         assync_visibility_from_coeff.s(
-        #             event_id=event.id,
-        #             latitude=lat,
-        #             longitude=long,
-        #             radius=radius,
-        #             date_time=event.date_time.isoformat(),
-        #             inputdict=event.occ_path_coeff,
-        #             # object_diameter=event.diameter,
-        #             # ring_diameter=event.diameter,
-        #             # n_elements= 1500,
-        #             # ignore_nighttime= False,
-        #             # latitudinal= False
-        #          ) for event in queryset)
-
-        #     result = job.apply_async()
-        #     while result.ready() == False:
-        #         print(f"Completed: {result.completed_count()}")
-        #         sleep(1)
         t1 = datetime.now()
         dt = t1 - t0
         logger.info(f"Query Completed in {humanize.naturaldelta(dt)}")
-        return queryset
+        return result
 
     @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_unique_asteroids(self, request):
 
         count = Occultation.objects.count()
-        unique_asteroids = Occultation.objects.values("name").distinct().count()
-        first_datetime = Occultation.objects.earliest("date_time")
-        last_datetime = Occultation.objects.latest("date_time")
+
+        unique_asteroids = 0
+        first_datetime = None
+        last_datetime = None
+
+        if count > 0:
+            unique_asteroids = Occultation.objects.values("name").distinct().count()
+            first_datetime = Occultation.objects.earliest("date_time")
+            last_datetime = Occultation.objects.latest("date_time")
+            first_datetime = first_datetime.date_time.isoformat()
+            last_datetime = last_datetime.date_time.isoformat()
+
         return Response(
             {
                 "count": count,
                 "unique_asteroids": unique_asteroids,
-                "earliest": first_datetime.date_time.isoformat(),
-                "latest": last_datetime.date_time.isoformat(),
+                "earliest": first_datetime,
+                "latest": last_datetime,
             }
         )
 

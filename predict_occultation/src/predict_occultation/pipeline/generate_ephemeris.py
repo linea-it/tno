@@ -179,6 +179,7 @@ def run_elimina(eph_filename, centers_filename):
         )
 
     # set the input parameters to the script
+    print("Elimina CMD: [ elimina %s ]" % strParameters.replace("\n", " "))
     p.communicate(str.encode(strParameters))
 
     if os.path.exists(output):
