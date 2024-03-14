@@ -76,7 +76,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": env("DATABASE_ADMIN_DB", default="postgres"),
         "USER": env("DATABASE_ADMIN_USER", default="postgres"),
-        "PASSWORD": env("DATABASE_ADMIN_USER", default="postgres"),
+        "PASSWORD": env("DATABASE_ADMIN_PASSWORD", default="postgres"),
         "HOST": env("DATABASE_ADMIN_HOST", default="database"),
         "PORT": env("DATABASE_ADMIN_PORT", default=5432),
         # IF Need Schema
@@ -86,7 +86,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": env("DATABASE_CATALOG_DB", default="postgres"),
         "USER": env("DATABASE_CATALOG_USER", default="postgres"),
-        "PASSWORD": env("DATABASE_CATALOG_USER", default="postgres"),
+        "PASSWORD": env("DATABASE_CATALOG_PASSWORD", default="postgres"),
         "HOST": env("DATABASE_CATALOG_HOST", default="database"),
         "PORT": env("DATABASE_CATALOG_PORT", default=5432),
     },

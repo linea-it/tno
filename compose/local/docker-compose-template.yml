@@ -87,10 +87,10 @@ services:
       resources:
         limits:
           cpus: "2.0"
-          memory: 200M
+          memory: 4G
         reservations:
           cpus: "0.5"
-          memory: 20M
+          memory: 200M
   # Copia do serviço backend, mas executando outro comando
   celery_beat: &celery_beat
     <<: *backend
