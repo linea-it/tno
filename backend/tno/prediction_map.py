@@ -96,7 +96,7 @@ def upcoming_events_to_create_maps(
     date_start: Optional[str] = None,
     date_end: Optional[str] = None,
     limit: Optional[int] = None,
-    magnitude_limit: Optional[int] = 16,
+    magnitude_limit: Optional[int] = 15,
 ) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
@@ -132,17 +132,18 @@ def upcoming_events_to_create_maps(
 
     if isinstance(date_end, str):
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
-        next_events.filter(date_time__lte=date_end)
+        next_events = next_events.filter(date_time__lte=date_end)
 
     # Filtro por magnitude
-    next_events.filter(g_star__lte=magnitude_limit)
+    next_events = next_events.filter(g_star__lte=magnitude_limit)
 
     # Filtro por Solar Time 18:00 - 06:00
     after = Q(loc_t__gte=time(18, 0, 0), loc_t__lte=time(23, 59, 59))
     before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=time(6, 0, 0))
-    next_events.filter(Q(after | before))
+    next_events = next_events.filter(Q(after | before))
 
-    logger.debug(f"Next events count: {next_events.count()}")
+    logger.info(f"Next events count: {next_events.count()}")
+    logger.info(f"Query: {next_events.query}")
     for obj in next_events:
         # Verifica se existe mapa já criado e se esta atualizado
         if obj.map_is_updated():
