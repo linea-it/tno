@@ -446,8 +446,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             filepath.unlink()
 
         if not filepath.exists():
-            # Generate in background with celery
-            res = create_occ_map_task.delay(
+            res = create_occ_map_task(
                 name=obj.name,
                 diameter=obj.diameter,
                 ra_star_candidate=obj.ra_star_candidate,
@@ -462,7 +461,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 filepath=str(filepath),
                 dpi=50,
             )
-            res.wait()
         if filepath.exists():
             return Response(
                 {
