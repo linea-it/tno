@@ -1,6 +1,6 @@
 # Overview
 
-Welcome to the LIneA Occultation Prediction Database!
+**Welcome to the LIneA Occultation Prediction Database!**
 
 This database was developed to universalize access in an easy and interactive way to predictions of stellar occultations by small bodies of the Solar System. To do this, we constantly collect information about the orbits of these small bodies and, in combination with the Gaia stellar catalog and our software stack, compute updated predictions of stellar occultations using an HPC system. Our aim is to reduce the computational burden for amateur and professional astronomers by providing millions of stellar occultation predictions that can be easily accessed and to walk the preparation path for the Legacy Survey of Space and Time (LSST) era.
 

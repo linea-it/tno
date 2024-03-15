@@ -21,7 +21,7 @@ You can access the interfaces via the URL /docs/, selecting the desired option i
 
 - OpenApi Schema: [/api/schema](https://solarsystem.linea.org.br/api/schema)
 - Swagger UI: [/api/docs/](https://solarsystem.linea.org.br/api/docs/)
-- ReDoc: [api/redoc/](https://solarsystem.linea.org.brapi/redoc/)
+- ReDoc: [/api/redoc/](https://solarsystem.linea.org.br/api/redoc/)
 
 > **Warning**
 >
@@ -88,6 +88,7 @@ The LOPD API features the following endpoints, organized by categories:
 - **GET /api/asteroids/base_dynclasses**: Returns the list of base dynamic classes (Skybot) of asteroids registered in the database.
 - **GET /api/asteroids/with_prediction**: Returns the list of asteroids registered in the database with occultation prediction and their details.
 
+<!--
 ## Examples
 
 Below are provided some practical examples of using the LOPD API, demonstrating how to perform common or complex operations with the resources and endpoints. The examples are presented in JSON format and using the `curl` command to make requests.
@@ -145,6 +146,7 @@ A resposta será um objeto com os dados do livro, como o título, o autor, o gê
   "cover": "https://minhaapp.com/covers/1.jpg"
 }
 ```
+-->
 
 ## Errors
 
@@ -157,7 +159,8 @@ The LOPD API can return the following errors, specifying the error codes and mes
 - **405 Method Not Allowed**: The HTTP method used in the request is not supported by the requested resource, for example, using the POST method on an endpoint that only accepts the GET method.
 - **429 Too Many Requests**: The request exceeded the limit of requests allowed by the API, for example, making more than 1000 requests per day or more than 100 requests per hour.
 - **500 Internal Server Error**: The request caused an internal error on the API server, for example, due to a bug or application failure.
-- <!-- Occultation FilterSet
+
+<!-- Occultation FilterSet
 
 Data Range = http://localhost/api/occultations/?date_time_after=2023-10-03&date_time_before=2023-10-04
 
