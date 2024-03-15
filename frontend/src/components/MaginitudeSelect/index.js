@@ -35,7 +35,7 @@ function MaginitudeSelect({ value, onChange, min, max }) {
 
 MaginitudeSelect.defaultProps = {
   min: 4,
-  max: 23
+  max: 18
 }
 MaginitudeSelect.propTypes = {
   min: PropTypes.number,
