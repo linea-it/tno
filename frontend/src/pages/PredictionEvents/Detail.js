@@ -169,11 +169,11 @@ function PredictionEventDetail() {
         title: "Object's Astrometric Position (ICRF)",
         value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
       },
-      {
-        title: "Object's Apparent Position (date)",
-        tooltip: "Relative to the Earth's center",
-        value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
-      },
+      // {
+      //   title: "Object's Apparent Position (date)",
+      //   tooltip: "Relative to the Earth's center",
+      //   value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
+      // },
       {
         title: 'Absolute Magnitude',
         value: `${occultation.h ? occultation.h.toFixed(3) : null}`
@@ -196,7 +196,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Ephemeris',
-        value: `${occultation.ephemeris_version}`
+        value: `${occultation.ephemeris_version ? occultation.ephemeris_version : null}`
       },
       {
         title: 'Dynamic class (Skybot)',

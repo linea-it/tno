@@ -125,13 +125,13 @@ function GeoFilter({ value, onChange }) {
       </Grid>
       <Grid item xs={12} sm={3}>
         <FormControl fullWidth>
-          <InputLabel id='radius-select-label'>Radius (Km)</InputLabel>
+          <InputLabel id='radius-select-label'>Loc. Radius (Km)</InputLabel>
           <Select
             labelId='radius-select--label'
             variant='outlined'
             id='radius-select-'
             value={value.radius === undefined ? '' : value.radius}
-            label='Radius (Km)'
+            label='Loc. Radius (Km)'
             disabled={!enabled}
             onChange={(event) => {
               handleChange({
