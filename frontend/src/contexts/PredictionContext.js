@@ -18,7 +18,7 @@ export function PredictionEventsProvider({ children }) {
         date_time_after: dayjs().utc().format(),
         dt_before_local: null,
         date_time_before: null,
-        filterType: 'name',
+        filterType: '',
         filterValue: undefined,
         maginitudeMax: 15,
         solar_time_after: dayjs().set('hour', 18).startOf('hour'),
