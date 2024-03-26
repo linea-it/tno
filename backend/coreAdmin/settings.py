@@ -196,6 +196,7 @@ INSTALLED_APPS = [
     "tno",
     "skybot",
     "des",
+    "newsletter",
 ]
 
 MIDDLEWARE = [

@@ -38,9 +38,11 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from newsletter.views import SubscriptionViewSet
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from skybot.views import PositionViewSet
+
 from tno.views import (
     AsteroidJobViewSet,
     AsteroidViewSet,
@@ -90,6 +92,8 @@ router.register(r"catalog", CatalogViewSet)
 router.register(r"prediction_job", PredictionJobViewSet)
 
 router.register(r"prediction_job_result", PredictionJobResultViewSet)
+
+router.register(r"subscription", SubscriptionViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
