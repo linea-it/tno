@@ -164,10 +164,18 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Button variant='outlined' onClick={clearFilter}>
-              Clear
-            </Button>
+          <Grid item container xs={12} spacing={2} alignItems='center'>
+            <Grid item>
+              <Button variant='outlined' onClick={clearFilter}>
+                Clear
+              </Button>
+            </Grid>
+            <Grid item xs />
+            <Grid item>
+              <Button variant='outlined' href='/docs/user-guide/filter-events/' target='blank'>
+                Help
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
       </LocalizationProvider>
