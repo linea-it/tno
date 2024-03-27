@@ -142,6 +142,8 @@ services:
       UPDATE_INTERVAL: 15
       AUTO_UPDATE: 'true'
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
 
 
 
