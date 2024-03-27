@@ -840,6 +840,7 @@ class Asteroid:
                     "name",
                     "number",
                     "date_time",
+                    "gaia_source_id",
                     "ra_star_candidate",
                     "dec_star_candidate",
                     "ra_target",

@@ -555,6 +555,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_star_by_event(self, request, pk=None):
         pre_occ = self.get_object()
+
+        source_id = pre_occ.gaia_source_id
         ra = pre_occ.ra_star_deg
         dec = pre_occ.dec_star_deg
 
@@ -569,6 +571,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 ra=float(ra),
                 dec=float(dec),
                 radius=0.001,
+                source_id=source_id,
             )
             if len(rows) > 0:
                 return Response(rows[0])
