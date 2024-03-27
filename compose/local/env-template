@@ -48,8 +48,14 @@ DATABASE_CATALOG_DB=prod_gavo
 PARSL_ENV=local
 PREDICT_OUTPUTS=/app/outputs/predict_occultations
 # DATABASE used Predict Occultation container
-DB_ADMIN_URI=postgresql://${DATABASE_ADMIN_USER}:${DATABASE_ADMIN_PASSWORD}@${DATABASE_ADMIN_HOST}:${DATABASE_ADMIN_PORT}/${DATABASE_ADMIN_DB}
-DB_CATALOG_URI=postgresql://${DATABASE_CATALOG_USER}:${DATABASE_CATALOG_PASSWORD}@${DATABASE_CATALOG_HOST}:${DATABASE_CATALOG_PORT}/${DATABASE_CATALOG_DB}
+# A configuração é diferente por que o container precisa de rede do tipo host, então ele não reconhece o database.
+# A porta do banco de dados precisa estar exposta para o host.
+# Using Docker host internal.
+# DB_ADMIN_URI=postgresql://${DATABASE_ADMIN_USER}:${DATABASE_ADMIN_PASSWORD}@host.docker.internal:${DATABASE_ADMIN_PORT}/${DATABASE_ADMIN_DB}
+# DB_CATALOG_URI=postgresql://${DATABASE_CATALOG_USER}:${DATABASE_CATALOG_PASSWORD}@host.docker.internal:${DATABASE_CATALOG_PORT}/${DATABASE_CATALOG_DB}
+# Using localhost
+DB_ADMIN_URI=postgresql://${DATABASE_ADMIN_USER}:${DATABASE_ADMIN_PASSWORD}@localhost:${DATABASE_ADMIN_PORT}/${DATABASE_ADMIN_DB}
+DB_CATALOG_URI=postgresql://${DATABASE_CATALOG_USER}:${DATABASE_CATALOG_PASSWORD}@localhost:${DATABASE_CATALOG_PORT}/${DATABASE_CATALOG_DB}
 
 # Postgres Admin Database
 # -------------------------------------

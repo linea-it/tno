@@ -95,6 +95,14 @@ class Occultation(models.Model):
         verbose_name="Date Time", auto_now_add=False, null=False, blank=False
     )
 
+    gaia_source_id = models.PositiveBigIntegerField(
+        verbose_name="GAIA Source ID",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="GAIA source id Star candidate",
+    )
+
     ra_star_candidate = models.CharField(
         verbose_name="RA Star Candidate",
         max_length=20,

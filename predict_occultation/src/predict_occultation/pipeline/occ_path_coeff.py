@@ -364,6 +364,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "name",
                 "number",
                 "date_time",
+                "gaia_source_id",
                 "ra_star_candidate",
                 "dec_star_candidate",
                 "ra_target",
