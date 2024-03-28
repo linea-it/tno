@@ -19,6 +19,5 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
 
         local = options.get("local", False)
-
         atm = AsteroidTableManager(stdout=True)
         atm.run_update_asteroid_table(use_local_files=local)

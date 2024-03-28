@@ -48,6 +48,10 @@ import numpy as np
 import pandas as pd
 import requests
 import tqdm
+from tno.asteroid_table.asteroid_dynamical_classification import (
+    astorbClassification,
+    skybotClassification,
+)
 from tno.dao import AsteroidDao, AsteroidJobDao
 
 
@@ -502,19 +506,21 @@ def crossmatch_dataframes(data_mpc, data_bft):
 # Function to separate Base classes from Subclasses for skybot dynamical class classifications
 def conform_skybot_dynclass(dataframe, log):
     """
-    Separates base classes from subclasses for skybot dynamical class classifications in a DataFrame.
+       Separates base classes from subclasses for skybot dynamical class classifications in a DataFrame.
 
-    Parameters:
+       Parameters:
+
     - dataframe (pandas.DataFrame): The DataFrame to modify.
 
-    Returns:
-    pandas.DataFrame: The modified DataFrame with separated dynamical classes.
+       Returns:
+       pandas.DataFrame: The modified DataFrame with separated dynamical classes.
     """
     # Add a new column at index 3 named 'skybot_dynbaseclass'
-    dataframe.insert(3, "skybot_dynbaseclass", None)
+    dataframe.insert(3, "skybot_dynbaseclass", "Unclassified")
 
     # Rename column 'sso_class' to 'skybot_dynsubclass'
     dataframe.rename(columns={"sso_class": "skybot_dynsubclass"}, inplace=True)
+    dataframe["skybot_dynsubclass"].fillna("Unclassified", inplace=True)
 
     log.info("Parsing dynamical classes according to Skybot database...")
 
@@ -529,205 +535,39 @@ def conform_skybot_dynclass(dataframe, log):
         "Centaur": "Centaur",
         "KBO": "Kuiper Belt Object",
         "IOC": "Inner Oort Cloud",
+        "Unclassified": "Unclassified",
     }
+
+    total_items = len(dataframe["skybot_dynsubclass"])
 
     # Iterate over each value of 'skybot_dynsubclass'
-    for index, value in enumerate(dataframe["skybot_dynsubclass"]):
-        try:
-            # If it has a '>' in the name, split by '>'
-            if ">" in value:
-                split_result = value.split(">")
-                # Take the first element (result) in the split list
-                result = split_result[0]
-                # Add it to the newly created 'skybot_dynbaseclass' using the 'baseclasses' dictionary
-                dataframe.at[index, "skybot_dynbaseclass"] = baseclasses.get(
-                    result, result
-                )
-            else:
-                dataframe.at[index, "skybot_dynbaseclass"] = baseclasses.get(
-                    value, value
-                )
-        except:
-            dataframe.at[index, "skybot_dynbaseclass"] = "Unclassified"
-            dataframe.at[index, "skybot_dynsubclass"] = "Unclassified"
+    for index, value in tqdm.tqdm(
+        dataframe["skybot_dynsubclass"].items(),
+        total=total_items,
+        unit=" Asteroids",
+        ncols=80,
+    ):
+        # Split the value by '>'
+        baseclass = value.split(">")[0]
+        # Update the corresponding value in 'skybot_dynbaseclass' column
+        dataframe.at[index, "skybot_dynbaseclass"] = baseclasses[baseclass]
+
+    # for unclassified try to find a classification
+    unclassified_indices = dataframe[
+        dataframe["skybot_dynbaseclass"] == "Unclassified"
+    ].index
+    total_items = len(unclassified_indices)
+    log.info("Classifying cases with unknown Skybot dynamical class...")
+    for index in tqdm.tqdm(
+        unclassified_indices, total=total_items, unit=" Asteroids", ncols=80
+    ):
+        a = dataframe.iloc[index]["semimajor_axis"]
+        e = dataframe.iloc[index]["eccentricity"]
+        baseclass, subclass = skybotClassification(a, e)
+        dataframe.at[index, "skybot_dynbaseclass"] = baseclass
+        dataframe.at[index, "skybot_dynsubclass"] = subclass
 
     return dataframe
-
-
-# Function to compute the dynamical classes as used by astorb database at Lowell Observatory
-def compute_astorb_dynclass(a, e, i, q, Q, pha):
-    """
-    Computes the dynamical classes as used by the astorb database at Lowell Observatory.
-
-    Parameters:
-    - a (float): Semi-major axis.
-    - e (float): Eccentricity.
-    - i (float): Inclination.
-    - q (float): Perihelion distance.
-    - Q (float): Aphelion distance.
-    - pha (int): Flag indicating if the object is a Potentially Hazardous Asteroid.
-
-    Returns:
-    list: [base class, sub class] as determined by the parameters.
-    """
-    # Dictionary mapping skybot_dynsubclass values to their corresponding base classes
-    baseclasses = {
-        "NEO": "Near-Earth Object",
-        "MBA": "Main Belt Asteroid",
-        "Mars Crosser": "Mars Crosser",
-        "Jovian Trojan": "Jovian Trojan",
-        "Jupiter Crossers": "Jupiter Crossers",
-        "Damocloid": "Damocloid",
-        "Centaur": "Centaur",
-        "TNO": "Trans Neptunian Object",
-        "IOC": "Inner Oort Cloud",
-    }
-
-    # Near-Earth Object (NEO)
-    if q is not None:
-        if q < 1.3:
-            base = baseclasses["NEO"]
-            sub = baseclasses["NEO"]
-
-            # NEO: Potentially Hazardous Asteroid (PHA)
-            if pha is not None:
-                if pha == 1:
-                    sub = "NEO: Potentially Hazardous Asteroid"
-                    return [base, sub]
-
-            # NEO: Apollo
-            if all(param is not None for param in [a, q]):
-                if (a >= 1.0) and (q <= 1.017):
-                    sub = "NEO: Apollo"
-                    return [base, sub]
-
-            # NEO: Aten
-            if all(param is not None for param in [a, Q]):
-                if (a < 1.0) and (Q > 0.983):
-                    sub = "NEO: Aten"
-                    return [base, sub]
-
-            # NEO: Amor
-            if all(param is not None for param in [a, q]):
-                if (a > 1.0) and (q > 1.017) and (q < 1.3):
-                    sub = "NEO: Amor"
-                    return [base, sub]
-
-            # NEO: Atira
-            if all(param is not None for param in [a, Q]):
-                if (a < 1.0) and (Q < 0.983):
-                    sub = "NEO: Atira"
-                    return [base, sub]
-
-            return [
-                base,
-                sub,
-            ]  # returns both as baseclass names since it couldn't compute subclass
-
-    # Mars Crosser (MC)
-    if q is not None:
-        if (q >= 1.3) and (q <= 1.666):
-            base = "Mars Crosser"
-            sub = "Mars Crosser"
-            return [base, sub]
-
-    # Main Belt Asteroid (MBA)
-    if all(param is not None for param in [a, q]):
-        if (q > 1.666) and (a < 4.8):
-            base = "Main Belt Asteroid"
-            sub = "Main Belt Asteroid"
-
-            # MBA: Inner belt
-            if a is not None:
-                if (a >= 2) and (a <= 2.5):
-                    sub = "MBA: Inner belt"
-                    return [base, sub]
-
-            # MBA: Middle belt
-            elif a is not None:
-                if (a > 2.5) and (a <= 2.82):
-                    sub = "MBA: Middle belt"
-                    return [base, sub]
-
-            # MBA: Outer belt
-            else:
-                if a is not None:
-                    if (a > 2.82) and (a < 4.8):
-                        # MBA: Hildas
-                        if e is not None:
-                            if (a >= 3.7) and (a <= 4.2) and (e <= 0.3):
-                                sub = "MBA: Hildas"
-                                return [base, sub]
-                        sub = "MBA: Inner Belt"
-                        return [base, sub]
-
-    # Jovian Trojan
-    if all(param is not None for param in [a, e]):
-        if (a >= 4.8) and (a <= 5.5) and (e <= 0.3):
-            base = baseclasses["Jovian Trojan"]
-            sub = baseclasses["Jovian Trojan"]
-            return [base, sub]
-
-    # Jupiter Crossers (JC)
-    if all(param is not None for param in [a, e]):
-        if (a >= 4.8) and (a <= 5.5) and (e > 0.3):
-            base = baseclasses["Jupiter Crossers"]
-            sub = baseclasses["Jupiter Crossers"]
-            return [base, sub]
-
-    # Damocloid
-    if all(param is not None for param in [a, i, e]):
-        ref = (5.204267 / a) + 2 * np.cos(i * np.pi / 180) * (
-            (a / 5.204267) * (1 - e**2)
-        ) ** 0.5
-        if ref < 2:
-            base = baseclasses["Damocloid"]
-            sub = baseclasses["Damocloid"]
-            return [base, sub]
-
-    # Centaur
-    if all(param is not None for param in [a]):
-        if (a > 5.5) and (a <= 30.0709):
-            base = baseclasses["Centaur"]
-            sub = baseclasses["Centaur"]
-            return [base, sub]
-
-    # Trans Neptunian Object (TNO)
-    if a is not None:
-        if a > 30.0709:
-            base = baseclasses["TNO"]
-            sub = baseclasses["TNO"]
-
-            # TNO: Cold Classical
-            if all(param is not None for param in [i, q, a]):
-                if ((i < 5) and (q >= 37) and (a >= 37) and (a <= 40)) or (
-                    (i < 5) and (q >= 38) and (a >= 42) and (a <= 48)
-                ):
-                    sub = "TNO: Cold Classical"
-                    return [base, sub]
-
-            # TNO: Hot Classical
-            if all(param is not None for param in [i, q, a]):
-                if (i > 5) and (q >= 37) and (a >= 37) and (a <= 48):
-                    sub = "TNO: Hot Classical"
-                    return [base, sub]
-
-            # TNO: Scattered Disk Object
-            if all(param is not None for param in [e, q]):
-                if (e > 0.4) and (q >= 25) and (q <= 35):
-                    sub = "TNO: Scattered Disk Object"
-                    return [base, sub]
-
-            # TNO: Detached
-            if all(param is not None for param in [e, q]):
-                if (e > 0.25) and (q > 40):
-                    sub = "TNO: Detached"
-                    return [base, sub]
-
-            return [base, sub]
-
-        else:
-            return ["Unclassified", "Unclassified"]
 
 
 # Function to separate Base classes from Subclasses for astorb dynamical class classifications
@@ -747,23 +587,23 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
     dataframe.insert(6, "astorb_dynsubclass", None)
 
     log.info("Computing and parsing dynamical classes according to ASTORB database...")
-    log.debug("Estimating remaining time...")
+    # log.debug("Estimating remaining time...")
     total_rows = len(dataframe)
-    modref = 1000 if (1000 / total_rows) < 0.1 else np.ceil(total_rows * 0.1)
-    start_time = time.time()  # Record the start time
+    # modref = 1000 if (1000 / total_rows) < 0.1 else np.ceil(total_rows * 0.1)
+    # start_time = time.time()  # Record the start time
 
-    for index in range(total_rows):
-        if index == modref:
-            remaining_time = (total_rows - modref) * (time.time() - start_time) / modref
-            log.debug(
-                f"Remaining Time: {remaining_time:.0f} seconds..."
-                if remaining_time <= 60
-                else (
-                    f"Remaining Time: {remaining_time/60:.0f} minutes..."
-                    if remaining_time <= 3600
-                    else f"Remaining Time: {remaining_time/3600:.0f} hours..."
-                )
-            )
+    for index in tqdm.tqdm(range(total_rows), unit=" Asteroids", ncols=80):
+        # if index == modref:
+        #     remaining_time = (total_rows - modref) * (time.time() - start_time) / modref
+        #     log.debug(
+        #         f"Remaining Time: {remaining_time:.0f} seconds..."
+        #         if remaining_time <= 60
+        #         else (
+        #             f"Remaining Time: {remaining_time/60:.0f} minutes..."
+        #             if remaining_time <= 3600
+        #             else f"Remaining Time: {remaining_time/3600:.0f} hours..."
+        #         )
+        #     )
 
         try:
             a = dataframe.iloc[index]["semimajor_axis"]
@@ -785,7 +625,7 @@ def conform_astorb_lowell_obs_dynclass(dataframe, log):
                 Q = None if pd.isna(Q) else Q
                 pha = 0 if pd.isna(pha) else pha
 
-            base, sub = compute_astorb_dynclass(a, e, i, q, Q, pha)
+            base, sub = astorbClassification(a, e, i, q, Q, pha)
             dataframe.at[index, "astorb_dynbaseclass"] = base
             dataframe.at[index, "astorb_dynsubclass"] = sub
 
@@ -838,49 +678,50 @@ def validate_last_obs_included(date_string):
     try:
         datetime.strptime(date_string, "%Y-%m-%d")
         return date_string
-    except:
+    except ValueError:
         try:
             dummy_test = int(date_string[:4])
             return date_string[:4] + "-01-01"
-        except:
+        except IndexError:
             return "1800-01-01"
 
 
 def clean_duplicate_asteroids(dataframe, category="name"):
     """
-    Clean a DataFrame by removing duplicate rows based on a specified category column.
+        Clean a DataFrame by removing duplicate rows based on a specified category column.
 
-    Parameters:
-    -----------
-    dataframe : pandas DataFrame
-        The input DataFrame containing asteroid data.
-    category : str, optional
-        The name of the column used for grouping and identifying duplicates.
-        Default is 'name'.
+        Parameters:
+        -----------
+        dataframe : pandas DataFrame
+            The input DataFrame containing asteroid data.
+        category : str, optional
+            The name of the column used for grouping and identifying duplicates.
+            Default is 'name'.
 
-    Returns:
-    --------
-    pandas DataFrame
-        A cleaned DataFrame with duplicate rows removed.
+        Returns:
+        --------
+        pandas DataFrame
+            A cleaned DataFrame with duplicate rows removed.
 
-    Example:
-    --------
-    # Import pandas and create a sample DataFrame
-    import pandas as pd
-    data = {'name': ['Asteroid1', 'Asteroid2', 'Asteroid1', 'Asteroid3'],
-            'diameter_km': [5, 8, 5, 10]}
-    df = pd.DataFrame(data)
+        Example:
+        --------
+        # Import pandas and create a sample DataFrame
+        import pandas as pd
+    from tno.asteroid_table.load_data import load_mpcorb_extended
+        data = {'name': ['Asteroid1', 'Asteroid2', 'Asteroid1', 'Asteroid3'],
+                'diameter_km': [5, 8, 5, 10]}
+        df = pd.DataFrame(data)
 
-    # Clean the DataFrame by removing duplicate asteroids based on 'name'
-    cleaned_df = clean_duplicate_asteroids(df, category='name')
+        # Clean the DataFrame by removing duplicate asteroids based on 'name'
+        cleaned_df = clean_duplicate_asteroids(df, category='name')
 
-    # Display the cleaned DataFrame
-    print(cleaned_df)
+        # Display the cleaned DataFrame
+        print(cleaned_df)
 
-    Output:
-        name  diameter_km
-    1  Asteroid2            8
-    3  Asteroid3           10
+        Output:
+            name  diameter_km
+        1  Asteroid2            8
+        3  Asteroid3           10
     """
     data_groups = dataframe.groupby(category)
 
@@ -919,9 +760,10 @@ def asteroid_table_build(table_path, log, use_local_files):
         mpcext_local_filename = "mpcorb_extended.json.gz"
 
         # Define the URL of the file
-        ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest.ecsv.bz2"
+        ssoBFT_url = "https://ssp.imcce.fr/data/ssoBFT-latest_Asteroid.ecsv.bz2"
         # Define the local filename for the downloaded file
-        ssoBFT_local_filename = "ssoBFT-latest.ecsv.bz2"
+        # ssoBFT_local_filename = "ssoBFT-latest.ecsv.bz2"
+        ssoBFT_local_filename = "ssoBFT-latest_Asteroid.ecsv.bz2"
 
         if not use_local_files:
             download_file_if_not_exists_or_changed(
@@ -931,16 +773,17 @@ def asteroid_table_build(table_path, log, use_local_files):
                 ssoBFT_url, table_path, ssoBFT_local_filename, log
             )
         else:
-            log.info("Using local files. Skipping Download.")
+            log.info("Using local files. Skipping download.")
 
         data_mpc = load_mpcorb_extended(
             os.path.join(table_path, mpcext_local_filename), log
         )
 
         # Development Only
-        # data_mpc = data_mpc.iloc[0:5, ]
-        # index = [1,2,3,4,5,131240,644901,201725,656765,470433,710161]
+        # data_mpc = data_mpc.iloc[0:15000,]
+        # index = [1, 2, 3, 4, 5, 131240, 644901, 201725, 656765, 470433, 710161]
         # data_mpc = data_mpc.iloc[index]
+
         data_bft = load_ssoBFT(os.path.join(table_path, ssoBFT_local_filename), log)
 
         asteroid_table = crossmatch_dataframes(data_mpc, data_bft)
