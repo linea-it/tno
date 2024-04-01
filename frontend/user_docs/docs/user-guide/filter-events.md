@@ -18,19 +18,23 @@ There are three ways of filtering objects: by name/principal designation, dynami
 - **Dynamical class**: selects the group of objects that belong to a specific dynamical class. Asteroid dynamical classes (and subclasses) are used as defined by Skybot ([more information](https://ssp.imcce.fr/webservices/skybot/)).
 - **Dynamical subclass**: selects the group of objects that belong to a specific subclass.
 
-### Nightime only
+### Local Solar Time
+
+On by default. When activated, it takes a step further in constraining the closest approach instant to a specific local time (in terms of longitude). Selecting a time range from 6 PM to 6 AM will filter out all events whose closest approach instant is not within this range. This helps, for example, to filter out events occurring during dawn, dusk, or less interesting events whose closest approach occurs at daylight. It strictly considers solar time, not to be confused with the local time taking into account timezones.
+
+
+### Hide Diurn Events
 
 On by default, it filters out occultations whose paths happen exclusively during daytime and paths that do not cross the Earth at all.
 
-### Local time filter
-
-It is a step further to constraint the closest approach instant to a certain local time. Selecting a time range from 06 PM to 06 AM will filter out all events whose C/A instant is locally within this range. It helps, for example, filter out events that happen during dawn or dusk.
 
 ### Geolocation filter
 
 *The geolocation filter is experimental and is intended to be the last filter option to be applied.* Since it is computationally costly, we recomend to filter down your results using the previous filtering options to an amount of **at most 2000 events** as indicated in the image below. It can be acomplished for instance using a narrower datetime interval or set of objects.
 
+Latitude and longitude must be presented in degrees. Negative latitudes indicate the South, while positive ones indicate the North. Negative longitudes correspond to the West, while positive ones correspond to the East. The radius represents the distance in kilometers around the provided latitude and longitude.
+
 >**Atention**
 ><br/>Be aware that activating this filter without following the instructions will result either in incomplete results or in timeout by the server.
 
-![Image Alt Text](../static/geolocation_filter.jpg)
+![Image Alt Text](../static/geolocation_filter.png)
