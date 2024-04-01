@@ -28,4 +28,9 @@ It is a step further to constraint the closest approach instant to a certain loc
 
 ### Geolocation filter
 
-The geolocation filter is experimental and is intended to be the last filter option to be applied. Since it is computationally costly, we recomend to filter down your results using the previous filtering options to an amount of at most 500 events. It can be acomplished for instance using a narrower datetime interval or set of objects. Be aware that activating this filter with a big number of events will result in timeout by server, sometimes without warning.
+*The geolocation filter is experimental and is intended to be the last filter option to be applied.* Since it is computationally costly, we recomend to filter down your results using the previous filtering options to an amount of **at most 2000 events** as indicated in the image below. It can be acomplished for instance using a narrower datetime interval or set of objects.
+
+>**Atention**
+><br/>Be aware that activating this filter without following the instructions will result either in incomplete results or in timeout by the server.
+
+![Image Alt Text](../static/geolocation_filter.jpg)
