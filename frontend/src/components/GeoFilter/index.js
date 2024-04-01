@@ -110,8 +110,8 @@ function GeoFilter({ value, onChange }) {
           required
           disabled={!enabled}
           value={value.longitude === undefined ? '' : value.longitude}
-          min={0}
-          max={360}
+          min={-180}
+          max={180}
           onChange={(event) => {
             handleChange({
               ...value,

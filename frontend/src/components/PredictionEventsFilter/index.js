@@ -102,26 +102,36 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
             <SolarTimeFilter
-              value={[queryOptions.filters.solar_time_after, queryOptions.filters.solar_time_before]}
+              value={{
+                solar_time_enabled: queryOptions.filters.solar_time_enabled,
+                solar_time_after: queryOptions.filters.solar_time_after,
+                solar_time_before: queryOptions.filters.solar_time_before
+              }}
               onChange={(value) => {
                 setQueryOptions((prev) => {
                   return {
                     ...prev,
                     filters: {
                       ...prev.filters,
-                      solar_time_after: value[0],
-                      solar_time_before: value[1]
+                      ...value
                     }
                   }
                 })
               }}
             ></SolarTimeFilter>
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          {/* <Grid item xs={12} md={3} container justifyContent='flex-end'> */}
+          <Grid item xs={12} container>
             <FormControlLabel
-              label='Nighttime Only'
+              label='Hide Diurn Events'
               control={
                 <Switch
                   checked={queryOptions.filters.nightside}
