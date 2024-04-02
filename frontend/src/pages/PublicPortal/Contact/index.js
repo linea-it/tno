@@ -12,6 +12,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Link from '@mui/material/Link'
 import styles from './styles'
 import Box from '@mui/material/Box'
+import HelpDesk from '../../../components/Helpdesk/index'
 
 function PublicContact() {
   const classes = styles()
@@ -36,8 +37,20 @@ function PublicContact() {
                   <Link href='/docs/' variant='body2' target='_blank'>
                     &nbsp;click here&nbsp;
                   </Link>
+                  .
                   <br />
-                  <p>To get in touch with technical support you can send an email to: helpdesk at linea dot org dot br</p>
+                  <p>
+                    To get in touch with technical support you can send an email{' '}
+                    <HelpDesk
+                      p1='&#104;&#101;&#108;&#112;'
+                      p2='&#100;&#101;&#115;&#107;'
+                      p3='&#108;&#105;&#110;&#101;&#097;'
+                      p4='&#111;&#114;&#103;&#046;&#098;&#114;'
+                      project='[Solar System Portal]'
+                      text='clicking here'
+                    />
+                    .
+                  </p>
                   We stand ready to assist you with any inquiries, ideas, or remarks you may have.
                 </span>
               </p>
