@@ -48,7 +48,7 @@ function SolarTimeFilter({ value, onChange }) {
             </Grid>
             <Grid item xs={12} sm={4}>
               <TimeField
-                label='Local Solar Time'
+                label='Show Events Before'
                 slotProps={{ textField: { fullWidth: true } }}
                 value={value.solar_time_before}
                 onChange={(newValue) =>
