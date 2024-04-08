@@ -195,77 +195,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         return lat, long, radius
 
-    # def get_queryset(self):
-    #     t0 = datetime.now()
-
-    #     # Recupera os parametros da requisição
-    #     params = self.request.query_params
-    #     logger.info(dict(params))
-
-    #     # Base queryset usando join com a tabela asteroids
-    #     queryset = Occultation.objects.select_related().all()
-    #     # Aplica os fitros da classe OccultationFilter
-    #     # Filter_Queryset  aplica todos os filtros passados por parametro
-    #     # Mas não calcula a visibilidade
-    #     queryset = self.filter_queryset(queryset)
-    #     # print(queryset.query)
-    #     logger.info(f"Results after filters in the database: [{queryset.count()}]")
-
-    # lat, long, radius = self.check_user_location_params(params)
-
-    # # TODO: Necessário implementar forma de fazer a paginação.
-    # # TODO: Implementar memcache para eventos já processados
-    # pageSize = int(params.get("pageSize", 10))
-
-    # # Sync Method
-    # if None not in [lat, long, radius]:
-    #     logger.info(f"Applying the visibility function to each result")
-    #     logger.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
-
-    #     wanted_ids = []
-    #     count = 0
-    #     processed = 0
-    #     for event in queryset:
-    #         is_visible, info = visibility_from_coeff(
-    #             latitude=lat,
-    #             longitude=long,
-    #             radius=radius,
-    #             date_time=event.date_time,
-    #             inputdict=event.occ_path_coeff,
-    #             # object_diameter=event.diameter,
-    #             # ring_diameter=event.diameter,
-    #             # n_elements= 1500,
-    #             # ignore_nighttime= False,
-    #             # latitudinal= False
-    #         )
-    #         processed += 1
-
-    #         if is_visible:
-    #             wanted_ids.append(event.id)
-    #             count += 1
-    #             logger.info(
-    #                 f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-    #             )
-    #         else:
-    #             logger.debug(
-    #                 f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-    #             )
-
-    #         if count == pageSize:
-    #             logger.info("The page's registration limit has been reached.")
-    #             break
-
-    #     logger.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
-    #     logger.info(f"Number of events processed: [{processed}]")
-    #     logger.info(
-    #         f"Number of events that the visibility function returned true: [{count}]"
-    #     )
-
-    #     if count > 0:
-    #         queryset = queryset.filter(id__in=wanted_ids)
-    #         logger.info(f"Results after visibility function: [{queryset.count()}]")
-    #         logger.debug(queryset.query)
-
     # TODO: Estudar a possibilidade de um metodo asyncrono
     # Teste Com metodo assincrono pode ser promissor!
     # if None not in [lat, long, radius]:
@@ -313,8 +242,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         # Verifica se é uma consulta por geo localização.
         lat, long, radius = self.check_user_location_params(params)
         if None not in [lat, long, radius]:
-            logger.info("QUERY POR POSICAO")
-
             gl = GeoLocation(params.dict(), queryset)
 
             queryset = gl.execute()
@@ -323,7 +250,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             result = self.get_paginated_response(serializer.data)
 
         else:
-            logger.info("QUERY NORMAL")
             page = self.paginate_queryset(queryset)
             serializer = self.get_serializer(page, many=True)
             result = self.get_paginated_response(serializer.data)
