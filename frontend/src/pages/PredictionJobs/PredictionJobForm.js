@@ -42,7 +42,7 @@ function PredictionJobForm() {
     predict_start_date: dayjs().utc().startOf('date'),
     predict_end_date: dayjs().utc().add(1, 'month'),
     predict_step: 60,
-    catalog: 1,
+    catalog: 2,
     bsp_planetary: 2,
     leap_second: 1,
     debug: false
@@ -146,7 +146,6 @@ function PredictionJobForm() {
       }
       error={'catalog' in validationErrors}
       required
-      readOnly
     />
   )
 

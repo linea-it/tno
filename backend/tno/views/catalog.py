@@ -21,6 +21,7 @@ class CatalogViewSet(viewsets.ReadOnlyModelViewSet):
         "id",
         "name",
     )
+    ordering = ("-id",)
 
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def q3c_radial_query(self, request):

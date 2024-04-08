@@ -77,17 +77,25 @@ class GaiaDao(Dao):
     # Para alterar o catalogo GAIA para DR3 por exemplo criar uma nova classe igual a essa
     # e alterar os atributos do catalogo.
     # e na hora de usar criar um parametro para escolher qual classe instanciar.
-    def __init__(self):
-        self.catalog_name = "GAIA DR2"
+    def __init__(
+        self,
+        name: str,
+        display_name: str,
+        schema: str,
+        tablename: str,
+        ra_property: str,
+        dec_property: str,
+    ):
+        self.internal_name = name
+        self.catalog_name = display_name
+        self.schema = schema
+        self.ra_property = ra_property
+        self.dec_property = dec_property
 
-        self.catalog = dict(
-            {
-                "schema": "gaia",
-                "tablename": "dr2",
-                "ra_property": "ra",
-                "dec_property": "dec",
-            }
-        )
+        if schema is not None:
+            self.tablename = f"{schema}.{tablename}"
+        else:
+            tablename = tablename
 
         self.gaia_properties = [
             "source_id",
@@ -117,8 +125,8 @@ class GaiaDao(Dao):
     def q3c_clause(self, ra, dec, radius):
 
         clause = 'q3c_radial_query("%s", "%s", %s, %s, %s)' % (
-            self.catalog["ra_property"],
-            self.catalog["dec_property"],
+            self.ra_property,
+            self.dec_property,
             ra,
             dec,
             radius,
@@ -136,23 +144,15 @@ class GaiaDao(Dao):
 
         try:
 
-            if self.catalog["schema"] is not None:
-                tablename = "%s.%s" % (
-                    self.catalog["schema"],
-                    self.catalog["tablename"],
-                )
-            else:
-                tablename = self.catalog["tablename"]
-
             columns = ", ".join(self.gaia_properties)
 
-            df_results = None
+            df_results = pd.DataFrame()
 
             print("GAIA Querys:")
             print("-----------------------------------")
             # Agrupar clausulas em grupos para diminuir a quantidade de querys
             for gpos in self.chunks_positions(positions, self.POSITION_GROUP):
-
+                print(gpos)
                 clauses = []
 
                 for pos in gpos:
@@ -163,7 +163,11 @@ class GaiaDao(Dao):
                 if max_mag:
                     where = "%s AND (%s)" % (self.mag_max_clause(max_mag), where)
 
-                stm = """SELECT %s FROM %s WHERE %s """ % (columns, tablename, where)
+                stm = """SELECT %s FROM %s WHERE %s """ % (
+                    columns,
+                    self.tablename,
+                    where,
+                )
 
                 print(text(stm))
                 df_rows = pd.read_sql(text(stm), con=self.get_db_engine())
@@ -193,6 +197,7 @@ class GaiaDao(Dao):
 
         except Exception as e:
             # logger.error(e)
+            print(e)
             raise e
 
     def write_gaia_catalog(self, rows, filename):
