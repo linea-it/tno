@@ -1,0 +1,6 @@
+# Science
+# ------------------------------------------------------------------------------
+apache-airflow==2.8.0
+pyspark==3.3.1 # https://spark.apache.org/
+apache-airflow-providers-apache-spark==4.7.1 # https://airflow.apache.org/docs/apache-airflow-providers-apache-spark/stable/index.html
+yfinance==0.2.37 # https://pypi.org/project/yfinance/
