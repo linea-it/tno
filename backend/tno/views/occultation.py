@@ -15,7 +15,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tno.db import CatalogDB
-from tno.models import Occultation
+from tno.models import Catalog, Occultation
 from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
@@ -486,14 +486,17 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         ra = pre_occ.ra_star_deg
         dec = pre_occ.dec_star_deg
 
-        # TODO: Fazer a consulta baseado na versao de catalogo gaia especifica para o evento.
+        # Faz a consulta baseado na versao de catalogo gaia
+        # utilizada na predição do evento.
+        catalog = Catalog.objects.get(display_name=pre_occ.catalog)
+
         try:
             db = CatalogDB(pool=False)
             rows = db.radial_query(
-                tablename="dr2",
-                schema="gaia",
-                ra_property="ra",
-                dec_property="dec",
+                tablename=catalog.tablename,
+                schema=catalog.schema,
+                ra_property=catalog.ra_property,
+                dec_property=catalog.dec_property,
                 ra=float(ra),
                 dec=float(dec),
                 radius=0.001,

@@ -27,3 +27,14 @@
     ra_property: ra
     dec_property: dec
     registration_date: 2023-01-30 23:59:11.554084+00:00
+- model: tno.catalog
+  pk: 2
+  fields:
+    name: gaia_dr3
+    display_name: GAIA DR3
+    database: prod_gavo
+    schema: gaia
+    tablename: dr3
+    ra_property: ra
+    dec_property: dec
+    registration_date: 2024-04-08 12:00:00.554084+00:00

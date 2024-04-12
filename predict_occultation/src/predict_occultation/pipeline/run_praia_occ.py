@@ -14,6 +14,7 @@ from library import (
     check_bsp_planetary,
     check_leapsec,
     clear_for_rerun,
+    read_asteroid_json,
 )
 from search_candidates import search_candidates
 
@@ -107,6 +108,11 @@ def start_praia_occ(
         ],
     )
 
+    # Procura por um arquivo json com os dados do objeto
+    # Se o arquivo exisitir os dados da execução das etapas sera escrito nele.
+    # Se não existir sera um dicionario vazio onde serão colocados esses dados e depois salvo como asteroidename.json
+    obj_data = read_asteroid_json(name)
+
     # Checar o arquivo de leapserconds
     leap_sec = check_leapsec(leap_sec_filename)
     print("Leap Second: [%s]" % leap_sec_filename)
@@ -156,7 +162,14 @@ def start_praia_occ(
     # Para cada posição executa a query no banco de dados.
     print("Maximum Visual Magnitude: [%s]" % max_mag)
 
-    dao = GaiaDao()
+    dao = GaiaDao(
+        name=obj_data["star_catalog"]["name"],
+        display_name=obj_data["star_catalog"]["display_name"],
+        schema=obj_data["star_catalog"]["schema"],
+        tablename=obj_data["star_catalog"]["tablename"],
+        ra_property=obj_data["star_catalog"]["ra_property"],
+        dec_property=obj_data["star_catalog"]["dec_property"],
+    )
     df_catalog = dao.catalog_by_positions(
         center_positions, radius=0.15, max_mag=max_mag
     )

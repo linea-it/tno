@@ -66,6 +66,7 @@ class Asteroid:
     ot_theo_pos: dict
     ot_ing_obs: dict
 
+    star_catalog: dict = {}
     des_observations: dict
     bsp_jpl: dict
     observations: dict
@@ -117,6 +118,7 @@ class Asteroid:
         # Como atributos da instancia dessa classe.
         self.__dict__.update(ast_data)
 
+        self.star_catalog = {}
         self.des_observations = {}
         self.bsp_jpl = {}
         self.observations = {}
@@ -207,6 +209,29 @@ class Asteroid:
 
     def set_failure(self):
         self.status = 2
+
+    def set_star_catalog(
+        self,
+        name: str,
+        display_name: str,
+        schema: str,
+        tablename: str,
+        ra_property: str,
+        dec_property: str,
+        **kwargs,
+    ):
+        self.star_catalog = {
+            "name": name,
+            "display_name": display_name,
+            "schema": schema,
+            "tablename": tablename,
+            "ra_property": ra_property,
+            "dec_property": dec_property,
+        }
+        self.write_asteroid_json()
+
+    def get_star_catalog(self):
+        return self.star_catalog
 
     def read_asteroid_json(self):
         filename = "{}.json".format(self.alias)
