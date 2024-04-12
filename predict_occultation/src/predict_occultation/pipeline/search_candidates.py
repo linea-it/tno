@@ -9,6 +9,35 @@ import numpy as np
 from library import HMS2deg
 
 
+def get_best_projected_search_circle(object_ephemeris):
+    """
+    Calculate the best projected search circle based on object ephemeris.
+
+    Parameters:
+        object_ephemeris (str): The path to the object ephemeris file.
+
+    Returns:
+        float: The size of the projected search circle in arcseconds.
+
+    Notes:
+        The object ephemeris file should contain distance data in a specific format.
+        The function calculates the best distance from the ephemeris and computes the projected search circle size.
+    """
+    earth_radius = 6371  # km
+    body_radius_compensation = 1000  # km
+    distances = []
+    with open(object_ephemeris, "r") as file:
+        for i, line in enumerate(file, start=3):
+            distances.append(line[120:160])
+    distances = np.array(distances[3:], dtype=float)
+    best_distance = distances.min()
+    projected_search_circle = (
+        2 * (earth_radius + body_radius_compensation) / best_distance
+    )
+    projected_search_circle *= 3600 * 180 / np.pi  # converts to arcsec
+    return np.around(projected_search_circle, 4)
+
+
 def praia_occ_input_file(star_catalog, object_ephemeris):
 
     # TODO: Alguns dos parametros podem vir da interface.
@@ -50,6 +79,10 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
             name = os.path.join(data_dir, stars_parameters_of_occultation_plot_filename)
             data = data.replace(
                 "{stars_parameters_of_occultation_plot}", name.ljust(50)
+            )
+            data = data.replace(
+                "{projected_search_circle}",
+                str(get_best_projected_search_circle(object_ephemeris)).ljust(50),
             )
 
             with open(output, "w") as new_file:
