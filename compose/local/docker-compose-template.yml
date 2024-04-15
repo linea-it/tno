@@ -143,6 +143,8 @@ services:
       AUTO_UPDATE: 'true'
 
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
 
 
 
