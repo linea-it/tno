@@ -57,6 +57,11 @@ PREDICT_OUTPUTS=/app/outputs/predict_occultations
 DB_ADMIN_URI=postgresql://${DATABASE_ADMIN_USER}:${DATABASE_ADMIN_PASSWORD}@localhost:${DATABASE_ADMIN_PORT}/${DATABASE_ADMIN_DB}
 DB_CATALOG_URI=postgresql://${DATABASE_CATALOG_USER}:${DATABASE_CATALOG_PASSWORD}@localhost:${DATABASE_CATALOG_PORT}/${DATABASE_CATALOG_DB}
 
+# Apache AIRFLOW
+# -------------------------------------
+AIRFLOW_UID=${TNO_UID}
+AIRFLOW_DB=airflow
+
 # Postgres Admin Database
 # -------------------------------------
 POSTGRES_USER=${DATABASE_ADMIN_USER}
