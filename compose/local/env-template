@@ -59,7 +59,7 @@ DB_CATALOG_URI=postgresql://${DATABASE_CATALOG_USER}:${DATABASE_CATALOG_PASSWORD
 
 # Apache AIRFLOW
 # -------------------------------------
-AIRFLOW_UID=${TNO_UID}
+AIRFLOW_UID=1000
 AIRFLOW_DB=airflow
 
 # Postgres Admin Database
