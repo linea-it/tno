@@ -6,7 +6,7 @@ DE435/JPL                                         | Ephemeris label
 {stars_catalog_xy}| output file : candidate stars xy catalog
 {stars_parameters_of_occultation}| output file : star parameters of occultation (minimum geocentric distance,t_occ,t_initial,t_final, etc)
 {stars_parameters_of_occultation_plot}| output file : star parameters of occultation (Bruno Sicardy data plot format)
-00.9000                                           | radius (arcsec) of projected search circle (~ projected Earth figure + occultation body)
+{projected_search_circle}| radius (arcsec) of projected search circle (~ projected Earth figure + occultation body)
 01.0000                                           | minimum outreach radius (arcsec) for fast elimination of farway ephemeris points
 12d0  12d0                                        | exclusion range of Local Solar Time (day light): min max (hours)
 2005                                              | to (years - see below)
