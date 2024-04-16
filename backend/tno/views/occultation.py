@@ -46,7 +46,14 @@ class OccultationFilter(django_filters.FilterSet):
     long = django_filters.NumberFilter(method="longitude_filter", label="Longitude")
 
     nightside = django_filters.BooleanFilter(
-        field_name="occ_path_is_nightside", label="nightside"
+        field_name="occ_path_is_nightside",
+        label="nightside",
+    )
+
+    magnitude_drop = django_filters.NumberFilter(
+        label="Magnitude Drop",
+        field_name="magnitude_drop",
+        lookup_expr="gte",
     )
 
     def longitude_filter(self, queryset, name, value):
