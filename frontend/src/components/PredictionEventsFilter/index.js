@@ -9,6 +9,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import MaginitudeSelect from '../MaginitudeSelect/index'
 import MaginitudeDropSelect from '../MaginitudeDropSelect/index'
+import ObjectDiameterFilter from '../ObjectDiameterFilter/index'
 import AsteroidSelect from '../AsteroidSelect/AsteroidSelect'
 import GeoFilter from '../GeoFilter/index'
 import { PredictionEventsContext } from '../../contexts/PredictionContext'
@@ -154,16 +155,35 @@ function PredictionEventsFilter() {
           <Grid item xs={12}>
             <Divider />
           </Grid>
-          <Grid item xs={4} container>
+          <Grid item xs={3} container>
             <MaginitudeDropSelect
               value={queryOptions.filters.maginitudeDropMin}
-              onChange={(event) => {
+              onChange={(newValue) => {
                 setQueryOptions((prev) => {
                   return {
                     ...prev,
                     filters: {
                       ...prev.filters,
-                      maginitudeDropMin: event.target.value
+                      maginitudeDropMin: newValue
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={6} container>
+            <ObjectDiameterFilter
+              value={{
+                diameterMin: queryOptions.filters.diameterMin,
+                diameterMax: queryOptions.filters.diameterMax
+              }}
+              onChange={(value) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      ...value
                     }
                   }
                 })
