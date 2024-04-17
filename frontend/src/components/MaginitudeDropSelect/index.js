@@ -8,12 +8,12 @@ function MaginitudeDropSelect({ value, onChange, min, max }) {
   const options = Array.from({ length: max - min + 1 }, (_, i) => i + min)
   return (
     <FormControl size='normal' fullWidth>
-      <InputLabel id='magnitude-drop-select-label'>Mag Drop</InputLabel>
+      <InputLabel id='magnitude-drop-select-label'>Magnitude Drop</InputLabel>
       <Select
         labelId='magnitude-drop-select-label'
         id='magnitude-drop-select'
         value={value !== undefined ? value : ''}
-        label='Mag Drop'
+        label='Magnitude Drop'
         onChange={onChange}
       >
         <MenuItem value=''>Empty</MenuItem>
