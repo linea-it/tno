@@ -11,6 +11,9 @@ from library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
+    get_apparent_diameter,
+    get_event_duration,
+    get_moon_and_sun_separation,
     ra_hms_to_deg,
 )
 from occviz import occultation_path_coeff
@@ -120,6 +123,10 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "apparent_magnitude": None,
                 "magnitude_drop": None,
                 "aparent_diameter": None,
+                "event_duration": None,
+                "instant_uncertainty": None,
+                "moon_separation": None,
+                "sun_elongation": None,
                 "have_path_coeff": False,
                 "occ_path_min_longitude": None,
                 "occ_path_max_longitude": None,
@@ -148,15 +155,18 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             #         convém analisar esse comportamente no futuro.
             # ------------------------------------------------------------------------
             try:
-                ast_vis_mag = asteroid_visual_magnitude(
-                    obj_data["bsp_jpl"]["filename"],
-                    obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
-                    obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
-                    dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
-                    h=obj_data["h"],
-                    g=obj_data["g"],
-                    spice_global=True,
-                )
+                if (
+                    obj_data["h"] < 99
+                ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
+                    ast_vis_mag = asteroid_visual_magnitude(
+                        obj_data["bsp_jpl"]["filename"],
+                        obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
+                        obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
+                        dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
+                        h=obj_data["h"],
+                        g=obj_data["g"],
+                        spice_global=True,
+                    )
             except:
                 ast_vis_mag = None
 
@@ -166,29 +176,41 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             except:
                 magnitude_drop = None
 
-            # Calcula o diametro apararente do objeto se o diametro em km existe
-            if obj_data["diameter"] is not None:
-                aparent_diameter = (
-                    2
-                    * np.arctan(
-                        0.5 * obj_data["diameter"] / (row["delta"] * 149_597_870.7)
-                    )
-                    * 206_264_806
+            # Calcula o diametro apararente o diametro em km existe
+            try:
+                apparent_diameter = get_apparent_diameter(
+                    obj_data["diameter"], row["delta"]
                 )
-            else:
-                aparent_diameter = None
+            except:
+                apparent_diameter = None
 
-            if any(
-                none_value is not None
-                for none_value in [ast_vis_mag, magnitude_drop, aparent_diameter]
-            ):
-                new_row.update(
-                    {
-                        "apparent_magnitude": ast_vis_mag,
-                        "magnitude_drop": magnitude_drop,
-                        "aparent_diameter": aparent_diameter,
-                    }
+            # Calcula a duração do evento se o diametro existir
+            try:
+                event_duration = get_event_duration(
+                    obj_data["diameter"], row["velocity"]
                 )
+            except:
+                event_duration = None
+
+            # Calcula a separação angular da lua e do sol do objeto no instante da ocultação
+            try:
+                moon_separation, sun_elongation = get_moon_and_sun_separation(
+                    row["ra_target_deg"], row["dec_target_deg"], row["date_time"]
+                )
+            except:
+                moon_separation, sun_elongation = None, None
+
+            new_row.update(
+                {
+                    "apparent_magnitude": ast_vis_mag,
+                    "magnitude_drop": magnitude_drop,
+                    "aparent_diameter": apparent_diameter,
+                    "event_duration": event_duration,
+                    # "instant_uncertainty": None,
+                    "moon_separation": moon_separation,
+                    "sun_elongation": sun_elongation,
+                }
+            )
 
             occ_coeff = occultation_path_coeff(
                 date_time=dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S")
@@ -248,6 +270,10 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             df["apparent_magnitude"] = df_coeff["apparent_magnitude"]
             df["magnitude_drop"] = df_coeff["magnitude_drop"]
             df["aparent_diameter"] = df_coeff["aparent_diameter"]
+            df["event_duration"] = df_coeff["event_duration"]
+            df["instant_uncertainty"] = df_coeff["instant_uncertainty"]
+            df["moon_separation"] = df_coeff["moon_separation"]
+            df["sun_elongation"] = df_coeff["sun_elongation"]
 
             df["have_path_coeff"] = df_coeff["have_path_coeff"]
             df["occ_path_max_longitude"] = df_coeff["occ_path_max_longitude"]
@@ -264,6 +290,10 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             df["apparent_magnitude"] = None
             df["magnitude_drop"] = None
             df["aparent_diameter"] = None
+            df["event_duration"] = None
+            df["instant_uncertainty"] = None
+            df["moon_separation"] = None
+            df["sun_elongation"] = None
 
             df["have_path_coeff"] = False
             df["occ_path_max_longitude"] = None
@@ -461,6 +491,9 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "rms",
                 "g_star",
                 "h_star",
+                "event_duration",
+                "moon_separation",
+                "sun_elongation",
             ]
         )
 
