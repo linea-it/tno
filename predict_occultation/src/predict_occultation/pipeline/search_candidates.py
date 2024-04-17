@@ -9,7 +9,7 @@ import numpy as np
 from library import HMS2deg
 
 
-def get_best_projected_search_circle(object_ephemeris):
+def get_best_projected_search_radius(object_ephemeris, object_diameter):
     """
     Calculate the best projected search circle based on object ephemeris.
 
@@ -24,21 +24,30 @@ def get_best_projected_search_circle(object_ephemeris):
         The function calculates the best distance from the ephemeris and computes the projected search circle size.
     """
     earth_radius = 6371  # km
-    body_radius_compensation = 1000  # km
+    body_radius_compensation = (
+        0 if object_diameter is None else object_diameter / 2
+    )  # km
     distances = []
     with open(object_ephemeris, "r") as file:
         for i, line in enumerate(file, start=3):
             distances.append(line[120:160])
     distances = np.array(distances[3:], dtype=float)
     best_distance = distances.min()
-    projected_search_circle = (
-        2 * (earth_radius + body_radius_compensation) / best_distance
+    projected_search_diameter = (
+        2 * (earth_radius + body_radius_compensation * 2) / best_distance
     )
-    projected_search_circle *= 3600 * 180 / np.pi  # converts to arcsec
-    return np.around(projected_search_circle, 4)
+    projected_search_diameter *= 3600 * 180 / np.pi  # converts to arcsec
+    projected_search_radius = projected_search_diameter / 2
+    return np.around(projected_search_radius, 4)
 
 
-def praia_occ_input_file(star_catalog, object_ephemeris):
+def get_minimum_outreach_radius(projected_search_radius):
+    # The minimum outreach radius is X % greater than the projected search radius.
+    # All stars outside this region will be discounted to accelarate computations
+    return projected_search_radius * 1
+
+
+def praia_occ_input_file(star_catalog, object_ephemeris, object_diameter):
 
     # TODO: Alguns dos parametros podem vir da interface.
     try:
@@ -80,9 +89,19 @@ def praia_occ_input_file(star_catalog, object_ephemeris):
             data = data.replace(
                 "{stars_parameters_of_occultation_plot}", name.ljust(50)
             )
+            projected_search_circle = get_best_projected_search_radius(
+                object_ephemeris, object_diameter
+            )
             data = data.replace(
                 "{projected_search_circle}",
-                str(get_best_projected_search_circle(object_ephemeris)).ljust(50),
+                f"{projected_search_circle:2.7f}".ljust(50),
+            )
+            minimum_outreach_radius = get_minimum_outreach_radius(
+                projected_search_circle
+            )
+            data = data.replace(
+                "{minimum_outreach_radius}",
+                f"{minimum_outreach_radius:2.7f}".ljust(50),
             )
 
             with open(output, "w") as new_file:
@@ -206,7 +225,7 @@ def ascii_to_csv(inputFile, outputFile):
     np.savetxt(outputFile, newData, fmt="%s", header=colNames, delimiter=";")
 
 
-def search_candidates(star_catalog, object_ephemeris, filename):
+def search_candidates(star_catalog, object_ephemeris, filename, object_diameter):
 
     try:
         app_path = os.environ.get("APP_PATH").rstrip("/")
@@ -225,7 +244,9 @@ def search_candidates(star_catalog, object_ephemeris, filename):
 
         # Criar arquivo .dat baseado no template.
         search_input = praia_occ_input_file(
-            star_catalog=star_catalog, object_ephemeris=object_ephemeris
+            star_catalog=star_catalog,
+            object_ephemeris=object_ephemeris,
+            object_diameter=object_diameter,
         )
 
         print("PRAIA OCC .DAT: [%s]" % search_input)

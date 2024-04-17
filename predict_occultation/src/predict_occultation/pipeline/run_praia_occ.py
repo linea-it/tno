@@ -184,12 +184,25 @@ def start_praia_occ(
 
     print("Gaia CSV: [%s]" % gaia_csv)
 
+    # Quando o diametro do objeto exitir no json, ele é passado para a função search_candidates
+    # que cria o arquivo praia_occ_star_search_12.dat. Sua função é reduzir o numero de calculo necessário
+    # especialmente para objetos de diametros pequenos.
+    object_diameter_upper_limit = obj_data.get("diameter_err_max", None)
+    object_diameter = obj_data.get("diameter", None)
+    if object_diameter_upper_limit is None:
+        if object_diameter is not None:
+            object_diameter *= 1.2
+    else:
+        object_diameter += object_diameter_upper_limit
+    print("Object Diameter: [%s]" % object_diameter)
+
     # Run PRAIA OCC Star Search 12
     # Criar arquivo .dat baseado no template.
     occultation_file = search_candidates(
         star_catalog=gaia_cat,
         object_ephemeris=eph_file,
         filename=occultation_table_filename,
+        object_diameter=object_diameter,
     )
 
     print("Occultation CSV Table: [%s]" % occultation_file)
