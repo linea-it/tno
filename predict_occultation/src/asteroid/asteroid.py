@@ -894,7 +894,7 @@ class Asteroid:
                     "ra_target_deg",
                     "dec_target_deg",
                     "created_at",
-                    "aparent_diameter",
+                    "apparent_diameter",
                     "aphelion",
                     "apparent_magnitude",
                     "dec_star_to_date",
@@ -960,6 +960,9 @@ class Asteroid:
                     "rms",
                     "g_star",
                     "h_star",
+                    "event_duration",
+                    "moon_separation",
+                    "sun_elongation",
                 ]
             )
 

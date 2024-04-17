@@ -342,14 +342,37 @@ class Occultation(models.Model):
         default=None,
     )
 
-    aparent_diameter = models.FloatField(
-        verbose_name="aparent_diameter",
+    apparent_diameter = models.FloatField(
+        verbose_name="apparent_diameter",
         null=True,
         blank=True,
         default=None,
         help_text="Apparent diameter of the Earth as seen from the Asteroid (degrees)",
     )
 
+    event_duration = models.FloatField(
+        verbose_name="event_duration",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Event duration (seconds)",
+    )
+
+    moon_separation = models.FloatField(
+        verbose_name="moon_separation",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Moon distance to the object (degrees)",
+    )
+
+    sun_elongation = models.FloatField(
+        verbose_name="sun_elongation",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Sun elongation (degrees)",
+    )
     # ------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
     # ------------------------------------------------------

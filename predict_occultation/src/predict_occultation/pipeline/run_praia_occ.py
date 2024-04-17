@@ -170,6 +170,7 @@ def start_praia_occ(
         ra_property=obj_data["star_catalog"]["ra_property"],
         dec_property=obj_data["star_catalog"]["dec_property"],
     )
+    # TODO: otimizar a query no gaia com base no tamanho aparente do objeto no ceu (rodrigo)
     df_catalog = dao.catalog_by_positions(
         center_positions, radius=0.15, max_mag=max_mag
     )
