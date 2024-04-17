@@ -147,7 +147,7 @@ const parsePredictEventsFilters = (params) => {
 
     // Filtro por magnitude Drop Maior que
     if (filters.maginitudeDropMin !== undefined && filters.maginitudeDropMin !== '') {
-      newFilters.magnitude_drop__gte = filters.maginitudeDropMin
+      newFilters.magnitude_drop = filters.maginitudeDropMin
     }
     // Filtro por Local Solar Time
     if (filters.solar_time_enabled === true) {
