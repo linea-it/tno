@@ -37,6 +37,8 @@ class OccultationFilter(django_filters.FilterSet):
 
     mag_g = django_filters.RangeFilter(field_name="g_star")
 
+    diameter = django_filters.RangeFilter(field_name="diameter")
+
     dynclass = django_filters.CharFilter(field_name="dynclass", lookup_expr="iexact")
 
     base_dynclass = django_filters.CharFilter(

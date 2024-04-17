@@ -149,6 +149,16 @@ const parsePredictEventsFilters = (params) => {
     if (filters.maginitudeDropMin !== undefined && filters.maginitudeDropMin !== '') {
       newFilters.magnitude_drop = filters.maginitudeDropMin
     }
+
+    // Filtro por Object Diameter Range min, max
+    if (filters.diameterMin !== undefined && filters.diameterMin !== '') {
+      newFilters.diameter_min = filters.diameterMin
+    }
+
+    if (filters.diameterMax !== undefined && filters.diameterMax !== '') {
+      newFilters.diameter_max = filters.diameterMax
+    }
+
     // Filtro por Local Solar Time
     if (filters.solar_time_enabled === true) {
       if (filters.solar_time_after !== undefined && filters.solar_time_before !== '') {
