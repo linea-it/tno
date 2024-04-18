@@ -45,6 +45,17 @@ export const NameCol = {
   }
 }
 
+export const floatFixedPrecision1 = {
+  type: 'number',
+  width: 100,
+  valueFormatter: (params) => {
+    if (params.value !== undefined && params.value !== null) {
+      return `${params.value.toFixed(1)}`
+    }
+    return ''
+  }
+}
+
 export const floatFixedPrecision2 = {
   type: 'number',
   width: 100,
@@ -182,6 +193,33 @@ export const PredictionEventsColumns = [
     headerAlign: 'center',
     align: 'center',
     ...floatFixedPrecision2
+  },
+  {
+    field: 'diameter',
+    headerName: 'Diameter',
+    description: 'Diameter of the object (km)',
+    type: 'number',
+    headerAlign: 'center',
+    align: 'center',
+    ...floatFixedPrecision2
+  },
+  {
+    field: 'event_duration',
+    headerName: 'Duration',
+    description: 'Event duration (s)',
+    type: 'number',
+    headerAlign: 'center',
+    align: 'center',
+    ...floatFixedPrecision1
+  },
+  {
+    field: 'magnitude_drop',
+    headerName: 'Mag Drop',
+    description: 'Expected drop in magnitude (mag)',
+    type: 'number',
+    headerAlign: 'center',
+    align: 'center',
+    ...floatFixedPrecision1
   },
   {
     field: 'long',
@@ -397,6 +435,9 @@ export const predictionEventsColumnVisibilityModel = {
   position_angle: false,
   velocity: true,
   delta: false,
+  diameter: false,
+  event_duration: false,
+  magnitude_drop: false,
   long: false,
   loc_t: true,
   off_ra: false,

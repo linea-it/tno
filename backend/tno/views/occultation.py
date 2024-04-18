@@ -184,6 +184,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         "ra_target_deg",
         "dec_target_deg",
         "created_at",
+        "diameter",
+        "event_duration",
+        "magnitude_drop",
     )
     ordering = ("date_time",)
 
