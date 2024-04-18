@@ -455,6 +455,9 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     Returns:
     - float: The magnitude drop of the asteroid relative to the star.
     """
+    if asteroid_visual_magnitude is None or star_visual_magnitude is None:
+        return None
+
     delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude
     drop_magnitude = 2.5 * np.log10(1 + 10 ** (delta_magnitude * 0.4))
     return drop_magnitude
