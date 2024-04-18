@@ -101,7 +101,7 @@ function PredictionEventDetail() {
         value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null}`
       },
       {
-        title: 'Creation Date',
+        title: 'Creation date',
         // tooltip: "Date of the prediction's computation",
         value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
       }
@@ -177,7 +177,7 @@ function PredictionEventDetail() {
         value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
       },
       {
-        title: "Object's Astrometric Position (ICRF)",
+        title: "Object's astrometric position (ICRF)",
         value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
       },
       // {
@@ -186,11 +186,11 @@ function PredictionEventDetail() {
       //   value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
       // },
       {
-        title: 'Absolute Magnitude',
+        title: 'Absolute magnitude',
         value: `${occultation.h ? occultation.h.toFixed(3) : null}`
       },
       {
-        title: 'Apparent Magnitude',
+        title: 'Apparent magnitude',
         value: `${occultation.apparent_magnitude ? occultation.apparent_magnitude.toFixed(3) : null}`
       },
       {
@@ -204,7 +204,7 @@ function PredictionEventDetail() {
         }`
       },
       {
-        title: 'Apparent Diameter',
+        title: 'Apparent diameter',
         value: `${occultation.apparent_diameter ? occultation.apparent_diameter.toFixed(4) : null} (mas)`
       },
       {
@@ -224,7 +224,7 @@ function PredictionEventDetail() {
       //   value: `${occultation.astorb_dynbaseclass ? occultation.astorb_dynbaseclass : null}`
       // },
       {
-        title: 'Semimajor Axis',
+        title: 'Semi-major axis',
         value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`
       },
       {
