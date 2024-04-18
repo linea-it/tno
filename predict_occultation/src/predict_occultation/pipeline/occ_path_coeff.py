@@ -331,6 +331,10 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         for column in ast_data_columns:
             df[column] = obj_data.get(column)
 
+        # Correcao de valores nao validos para H (magnitude absoluta do asteroide)
+        if obj_data["h"] > 99:
+            df["h"] = None
+
         # -------------------------------------------------
         # Provenance Fields
         # Adiciona algumas informacoes de Proveniencia a cada evento de predicao
