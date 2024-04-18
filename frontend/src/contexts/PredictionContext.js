@@ -28,6 +28,7 @@ export function PredictionEventsProvider({ children }) {
         maginitudeDropMin: undefined,
         diameterMin: undefined,
         diameterMax: undefined,
+        eventDurationMin: undefined,
         geo: false,
         latitude: undefined,
         longitude: undefined,
