@@ -14,7 +14,7 @@ function ObjectDiameterFilter({ value, onChange }) {
           <Grid item xs={12} sm={6}>
             <TextField
               type='number'
-              label='Object Diameter Min'
+              label='Diameter Min (Km)'
               variant='outlined'
               value={value.diameterMin !== undefined ? value.diameterMin : ''}
               onChange={(event) => {
@@ -29,7 +29,7 @@ function ObjectDiameterFilter({ value, onChange }) {
           <Grid item xs={12} sm={6}>
             <TextField
               type='number'
-              label='Object Diameter Max'
+              label='Diameter Max (Km)'
               variant='outlined'
               value={value.diameterMax !== undefined ? value.diameterMax : ''}
               onChange={(event) => {
