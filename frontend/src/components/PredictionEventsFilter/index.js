@@ -10,6 +10,7 @@ import Switch from '@mui/material/Switch'
 import MaginitudeSelect from '../MaginitudeSelect/index'
 import MaginitudeDropSelect from '../MaginitudeDropSelect/index'
 import ObjectDiameterFilter from '../ObjectDiameterFilter/index'
+import EventDurationField from '../EventDurationField/index'
 import AsteroidSelect from '../AsteroidSelect/AsteroidSelect'
 import GeoFilter from '../GeoFilter/index'
 import { PredictionEventsContext } from '../../contexts/PredictionContext'
@@ -165,6 +166,22 @@ function PredictionEventsFilter() {
                     filters: {
                       ...prev.filters,
                       maginitudeDropMin: newValue
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={3} container>
+            <EventDurationField
+              value={queryOptions.filters.eventDurationMin}
+              onChange={(value) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      eventDurationMin: value
                     }
                   }
                 })

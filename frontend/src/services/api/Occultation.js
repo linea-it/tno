@@ -143,11 +143,16 @@ const parsePredictEventsFilters = (params) => {
     }
 
     // Filtro por magnitude maxima
-    newFilters.mag_g_max = filters.maginitudeMax
+    newFilters.magnitude_max = filters.maginitudeMax
 
     // Filtro por magnitude Drop Maior que
     if (filters.maginitudeDropMin !== undefined && filters.maginitudeDropMin !== '') {
-      newFilters.magnitude_drop = filters.maginitudeDropMin
+      newFilters.magnitude_drop_min = filters.maginitudeDropMin
+    }
+
+    // Filtro por Event Duration Maior que
+    if (filters.eventDurationMin !== undefined && filters.eventDurationMin !== '') {
+      newFilters.event_duration_min = filters.eventDurationMin
     }
 
     // Filtro por Object Diameter Range min, max
@@ -175,9 +180,9 @@ const parsePredictEventsFilters = (params) => {
 
     // GEO Filter
     if (filters.geo === true && geoFilterIsValid(filters)) {
-      newFilters.lat = filters.latitude
-      newFilters.long = filters.longitude
-      newFilters.radius = filters.radius
+      newFilters.latitude = filters.latitude
+      newFilters.longitude = filters.longitude
+      newFilters.location_radius = filters.radius
     }
 
     // Filtro por Jobid

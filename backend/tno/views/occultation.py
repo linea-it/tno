@@ -35,27 +35,27 @@ class OccultationFilter(django_filters.FilterSet):
 
     number = CharInFilter(field_name="number", lookup_expr="in")
 
-    mag_g = django_filters.RangeFilter(field_name="g_star")
+    dynclass = django_filters.CharFilter(field_name="dynclass", lookup_expr="iexact")
+
+    magnitude = django_filters.RangeFilter(field_name="g_star", label="Magnitude g")
 
     diameter = django_filters.RangeFilter(field_name="diameter")
 
-    dynclass = django_filters.CharFilter(field_name="dynclass", lookup_expr="iexact")
+    event_duration = django_filters.RangeFilter(field_name="event_duration")
 
     base_dynclass = django_filters.CharFilter(
         field_name="base_dynclass", lookup_expr="iexact"
     )
-
-    long = django_filters.NumberFilter(method="longitude_filter", label="Longitude")
 
     nightside = django_filters.BooleanFilter(
         field_name="occ_path_is_nightside",
         label="nightside",
     )
 
-    magnitude_drop = django_filters.NumberFilter(
-        label="Magnitude Drop",
-        field_name="magnitude_drop",
-        lookup_expr="gte",
+    magnitude_drop = django_filters.RangeFilter(field_name="magnitude_drop")
+
+    longitude = django_filters.NumberFilter(
+        method="longitude_filter", label="Longitude"
     )
 
     def longitude_filter(self, queryset, name, value):
@@ -75,7 +75,7 @@ class OccultationFilter(django_filters.FilterSet):
             temp_longitude__lte=F("occ_path_max_longitude"),
         )
 
-    lat = django_filters.NumberFilter(method="latitude_filter", label="Latitude")
+    latitude = django_filters.NumberFilter(method="latitude_filter", label="Latitude")
 
     def latitude_filter(self, queryset, name, value):
         value = float(value)
@@ -94,7 +94,9 @@ class OccultationFilter(django_filters.FilterSet):
             temp_latitude__lte=F("occ_path_max_latitude"),
         )
 
-    radius = django_filters.NumberFilter(method="radius_filter", label="Radius")
+    location_radius = django_filters.NumberFilter(
+        method="radius_filter", label="Location Radius"
+    )
 
     def radius_filter(self, queryset, name, value):
         # O filtro por latitude vai ser aplicado na get_queryset
@@ -123,12 +125,14 @@ class OccultationFilter(django_filters.FilterSet):
         model = Occultation
         fields = [
             "date_time",
-            "mag_g",
-            "dynclass",
-            "base_dynclass",
             "name",
             "number",
-            "long",
+            "base_dynclass",
+            "dynclass",
+            "magnitude",
+            "magnitude_drop",
+            "diameter",
+            "event_duration",
             "local_solar_time",
             "nightside",
             "jobid",
