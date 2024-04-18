@@ -191,9 +191,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     ordering = ("date_time",)
 
     def check_user_location_params(self, params):
-        lat = params.get("lat", None)
-        long = params.get("long", None)
-        radius = params.get("radius", None)
+        lat = params.get("latitude", None)
+        long = params.get("longitude", None)
+        radius = params.get("location_radius", None)
 
         if None in [lat, long, radius]:
             return lat, long, radius

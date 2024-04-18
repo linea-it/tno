@@ -44,9 +44,9 @@ class GeoLocation:
 
         self.apply_visibility(
             queryset,
-            float(self.params["lat"]),
-            float(self.params["long"]),
-            float(self.params["radius"]),
+            float(self.params["latitude"]),
+            float(self.params["longitude"]),
+            float(self.params["location_radius"]),
         )
 
     def apply_visibility(self, queryset, lat: float, long: float, radius: float):
