@@ -25,7 +25,6 @@ from dao import (
 
 try:
     from parsl_config import get_config
-
     from predict_occultation.app import run_pipeline
 except Exception as error:
     print("Error: %s" % str(error))
