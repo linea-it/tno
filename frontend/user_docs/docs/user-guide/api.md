@@ -9,7 +9,7 @@ The LIneA Occultation Prediction Database (LOPD) API is a solution for querying 
 - Access geolocation filtering (experimental) for refined results, among other things.
 - Query asteroids properties, and more.
 
-The LOPD API is intended for developers, researchers, and enthusiasts looking to integrate or explore book data quickly and easily. The API uses the JSON format for requests and responses, adhering to RESTful standards for architecture and design.
+The LOPD API is intended for researchers and enthusiasts looking to integrate or explore occultation prediction events quickly and easily. The API uses the JSON format for requests and responses, adhering to RESTful standards for architecture and design.
 
 In addition to providing the schema in the OpenAPI standard, this API also offers Swagger UI and ReDoc interfaces. These interfaces are tools that allow for interactive and user-friendly visualization and testing of the API.
 
