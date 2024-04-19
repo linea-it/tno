@@ -953,8 +953,13 @@ def submit_tasks(jobid: int):
                         )
                     else:
                         step2_success += 1
-                        start_date = str(PREDICT_START.date())
-                        end_date = str(PREDICT_END.date())
+
+                        start_date = str(
+                            PREDICT_START.replace(hour=0, minute=0, second=0)
+                        )
+                        end_date = str(
+                            PREDICT_END.replace(hour=23, minute=59, second=59)
+                        )
 
                         ingested_occ_count = ast_obj.register_occultations(
                             start_date, end_date, jobid

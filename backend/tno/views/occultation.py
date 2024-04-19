@@ -159,7 +159,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         "ra_star_candidate",
         "dec_star_candidate",
         "ra_target",
-        " dec_target",
+        "dec_target",
         "closest_approach",
         "position_angle",
         "velocity",
