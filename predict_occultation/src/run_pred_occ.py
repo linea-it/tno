@@ -16,6 +16,7 @@ from asteroid import Asteroid
 from dao import (
     AsteroidDao,
     LeapSecondDao,
+    OccultationDao,
     PlanetaryEphemerisDao,
     PredictOccultationJobDao,
     PredictOccultationJobResultDao,
@@ -25,6 +26,7 @@ from dao import (
 
 try:
     from parsl_config import get_config
+
     from predict_occultation.app import run_pipeline
 except Exception as error:
     print("Error: %s" % str(error))
@@ -953,8 +955,13 @@ def submit_tasks(jobid: int):
                         )
                     else:
                         step2_success += 1
-                        start_date = str(PREDICT_START.date())
-                        end_date = str(PREDICT_END.date())
+
+                        start_date = str(
+                            PREDICT_START.replace(hour=0, minute=0, second=0)
+                        )
+                        end_date = str(
+                            PREDICT_END.replace(hour=23, minute=59, second=59)
+                        )
 
                         ingested_occ_count = ast_obj.register_occultations(
                             start_date, end_date, jobid

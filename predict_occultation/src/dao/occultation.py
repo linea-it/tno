@@ -3,10 +3,12 @@ from sqlalchemy.sql import and_, delete
 
 
 class OccultationDao(DBBase):
-    def __init__(self):
+    def __init__(self, log):
         super(OccultationDao, self).__init__()
 
         self.tbl = self.get_table("tno_occultation")
+
+        self.log = log
 
     def delete_by_asteroid_name(self, name):
 
@@ -18,19 +20,24 @@ class OccultationDao(DBBase):
 
             return rows
 
-    def delete_by_asteroid_name(self, id, start_period: str, end_period: str):
+    def delete_by_asteroid_name_period(
+        self, name: str, start_period: str, end_period: str
+    ):
 
         stm = delete(self.tbl).where(
             and_(
-                self.tbl.c.name == id,
+                self.tbl.c.name == name,
                 self.tbl.c.date_time.between(start_period, end_period),
             )
         )
 
         engine = self.get_db_engine()
         with engine.connect() as con:
-            rows = con.execute(stm)
-
+            result = con.execute(stm)
+            rows = result.rowcount
+            self.log.info(
+                f"Removed {rows} events for {name} in period {start_period} - {end_period}"
+            )
             return rows
 
     def import_occultations(self, data):

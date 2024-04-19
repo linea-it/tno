@@ -825,13 +825,18 @@ class Asteroid:
 
     def register_occultations(self, start_period: str, end_period: str, jobid: int):
         log = self.get_log()
-
-        if "filename" not in self.predict_occultation:
-            # Nao executou a etapa de predicao.
-            return 0
+        t0 = dt.now(tz=timezone.utc)
 
         try:
-            t0 = dt.now(tz=timezone.utc)
+            dao = OccultationDao(log=log)
+            # Apaga as occultations já registradas para este asteroid antes de inserir.
+            # IMPORTANTE! apaga mesmo que não tenham sido gerados resultados.
+            dao.delete_by_asteroid_name_period(self.name, start_period, end_period)
+
+            if "filename" not in self.predict_occultation:
+                log.warning("There is no file with the predictions.")
+                # Nao executou a etapa de predicao.
+                return 0
 
             predict_table_path = pathlib.Path(
                 self.path, self.predict_occultation["filename"]
@@ -840,11 +845,6 @@ class Asteroid:
             if not predict_table_path.exists():
                 # Arquivo com resultados da predicao nao foi criado
                 return 0
-
-            dao = OccultationDao()
-
-            # Apaga as occultations já registradas para este asteroid antes de inserir.
-            dao.delete_by_asteroid_name(self.name, start_period, end_period)
 
             # Le o arquivo occultation table e cria um dataframe
             # occultation_date;ra_star_candidate;dec_star_candidate;ra_object;dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde

@@ -14,6 +14,7 @@ from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
 from tno.db import CatalogDB
 from tno.models import Catalog, Occultation
 from tno.occviz import visibility_from_coeff
@@ -159,7 +160,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         "ra_star_candidate",
         "dec_star_candidate",
         "ra_target",
-        " dec_target",
+        "dec_target",
         "closest_approach",
         "position_angle",
         "velocity",
