@@ -26,6 +26,10 @@ On by default. When activated, it takes a step further in constraining the close
 
 On by default, it filters out occultations whose paths happen exclusively during daytime and paths that do not cross the Earth at all.
 
+### Duration and Size
+
+Provide options to filter events by the expected magnitude drop (lower limit), the event duration (lower limit, only when the object's diameter is defined) and size of the asteroid (interval, only when the object's diameter is defined).
+
 ### Geolocation Filter
 
 _The geolocation filter is experimental and is intended to be the last filter option to be applied._ Since it is computationally costly, we recomend to filter down your results using the previous filtering options to an amount of **at most 2000 events** as indicated in the image below. It can be acomplished for instance using a narrower datetime interval or set of objects.
