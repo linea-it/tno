@@ -40,7 +40,7 @@ function UniqueAsteroids() {
             <Typography variant='h6' sx={{ fontWeight: 700, fontSize: '1.0rem', color: '#4f4e4e' }}>
               TOTAL FORECAST
             </Typography>
-            <IconButton href='/docs/release-notes/' target='_blank' aria-label='help'>
+            <IconButton href='/docs/release-notes/latest-release/' target='_blank' aria-label='help'>
               <HelpOutlineIcon />
             </IconButton>
           </Box>
