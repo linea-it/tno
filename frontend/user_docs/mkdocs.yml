@@ -10,7 +10,8 @@ theme:
 nav:
   - Overview: 'index.md'
   - Release Notes:
-      - Initial Release: 'release-notes.md'
+      - Gaia DR3 Update: 'release-notes/latest-release.md' # rename to 'release-notes/02-2024-gaia-dr3-update.md' upon new release
+      - Initial Release: 'release-notes/01-2024-initial-release.md'
   - User Guide:
       - Filter Events: 'user-guide/filter-events.md'
       - Occultation Details Page: 'user-guide/occultation-details-page.md'
