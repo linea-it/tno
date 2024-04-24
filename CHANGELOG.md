@@ -1,3 +1,9 @@
+## v3.2.0 (2024-04-24)
+
+### Feat
+
+- **Commitzen**: Added Commitzen to devcontainer
+
 ## v3.1.0 (2024-04-19) Integration with GAIA DR3 catalog
 
 - Fixed #903 - Prediction detail now filter only for asteroid name and … by @glaubervila in https://github.com/linea-it/tno/pull/905
