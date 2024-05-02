@@ -1,0 +1,63 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .banner{
+            width: 100vw;
+        }
+        .rodape>img{
+            margin-top: 70px;
+            width: 100vw;
+        }
+        .table{
+            padding: 10px;
+            width: 80vw;
+            margin: auto;
+        }
+        h2{
+            text-align: center;
+            padding: 10px;
+            width: 60vw;
+        }
+        p{
+            text-align: center; 
+            padding: 10px;
+            width: 60vw;
+        }
+        a{
+            text-decoration: none;
+            color: red;
+        }
+        tr{
+            background-color: #fafafa
+        }
+    </style>
+
+</head>
+{% block body %}
+<body>
+    <tr class="table">
+        <td class="td-table">
+            {% block branding %}
+            <img class="banner" src="http://localhost/img/publicPortalBanner.jpg" alt="">
+            <!--<img src="https://codeskulptor-demos.commondatastorage.googleapis.com/GalaxyInvaders/back01.jpg" alt="">-->
+            <h2>Seja bem vindo!</h2>
+            <p> 
+                Obrigado {{nome}}, por se inscrever na newsletter do nosso Solar System Portal!
+                <a href="#">Clique aqui</a> e preencha o formulário com suas configurações desejadas para começar a receber periodicamente nossos relatórios com as predições.
+                <!-- Obrigado , por se cadastrar na newsletter do nosso Solar System Portal! Em breve iniciaremos o envio periódico dos nossos relatórios com os eventos de predições de ocultação estelar. -->
+            </p>
+            <p>Para se descadastrar, <a href="#">clique aqui</a></p>
+            {% endblock %}
+        </td>
+    </tr>
+    <footer class="rodape">
+        <img src="/media/Captura de tela 2024-03-15 105142.png" alt="">
+    </footer>
+</body>
+</html>
+{% endblock %}

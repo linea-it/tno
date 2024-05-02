@@ -8,6 +8,7 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+from rest_framework import status
 
 
 @extend_schema(exclude=True)
@@ -39,4 +40,4 @@ class SubscriptionViewSet(
         # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
 
         # TODO: Retornar Código 201 de atualizado
-        return Response(status=200)
+        return Response(status=status.HTTP_200_ok)

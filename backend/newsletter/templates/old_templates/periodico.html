@@ -1,0 +1,418 @@
+<!doctype html>
+<html>
+
+<head>
+    <title></title><!--[if !mso]>-->
+    <meta http-equiv="X-UA-Compatible" content="IEedge"><!--<![endif]-->
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=3Ddevice-width,initial-scale=1">
+    <style type="text/css">
+        #outlook a {
+            padding: 0;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+        }
+
+        table,
+        td {
+            border-collapse: collapse;
+            /*mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;*/
+        }
+
+        img {
+            border: 0;
+            height: auto;
+            line-height: 100%;
+            outline: none;
+            text-decoration: none;
+            -ms-interpolation-mode: bicubic;
+        }
+
+        p {
+            display: block;
+            margin: 13px 0;
+        }
+    </style>
+    <style type="text/css">
+        @media only screen and (min-width:480px) {
+            .mj-column-per-100 {
+                width: 100% !important;
+                max-width: 100%;
+            }
+
+            .mj-column-per-15 {
+                width: 15% !important;
+                max-width: 15%;
+            }
+
+            .mj-column-per-85 {
+                width: 85% !important;
+                max-width: 85%;
+            }
+        }
+    </style>
+    <style type="text/css">
+        @media only screen and (max-width:480px) {
+            table.mj-full-width-mobile {
+                width: 100% !important;
+            }
+
+            td.mj-full-width-mobile {
+                width: auto !important;
+            }
+        }
+    </style>
+    <style type="text/css">
+        .body-subtitle div {
+            font-size: 17px !important;
+        }
+
+        .body-title div {
+            font-size: 25px !important;
+        }
+
+        .header-title div {
+            font-size: 25px !important;
+        }
+
+        .body-normal div {
+            font-size: 17px !important;
+        }
+
+        .body-bullets div {
+            font-size: 25px !important;
+        }
+
+        .body-blog div {
+            font-size: 20px !important;
+        }
+
+        .body-footer div {
+            font-size: 18px !important;
+        }
+
+        .body-footer-legal div {
+            font-size: 24px !important;
+        }
+
+        .button-white a {
+            font-size: 17px !important;
+        }
+
+        .link-none {
+            text-decoration: none;
+            color: FFFFFF;
+        }
+
+        @media only screen and (max-width: 480px) {
+
+            .body-subtitle div {
+                font-size: 11px !important;
+            }
+
+            .body-title div {
+                font-size: 15px !important;
+            }
+
+            .header-title div {
+                font-size: 15px !important;
+            }
+
+            .body-normal div {
+                font-size: 14px !important;
+            }
+
+            .body-bullets div {
+                font-size: 16px !important;
+            }
+
+            .body-blog div {
+                font-size: 12px !important;
+            }
+
+            .body-footer div {
+                font-size: 15px !important;
+            }
+
+            .body-footer-legal div {
+                font-size: 18px !important;
+            }
+
+            .button-white a {
+                font-size: 15px !important;
+            }
+
+        }
+    </style>
+</head>
+<body style="background-color:#E5E5E5;">
+    <!-- Baner logo TON -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:23px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 50px; width:600px; padding: 10px; background-color: #212121;"><img style="width: 70px;" src="https://solarsystem.linea.org.br/img/tno_logo_projetos.png" alt="">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- Termina baner logo TON--> 
+    <!-- baner titulo -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:23px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 30px; width:600px; padding: 10px; background-color: #212121;">LIneA Occultation Prediction Database
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!--  Termina baner titulo--> 
+    <!-- baner texto do titulo -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:Helvetica;font-size:10px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 70px; width:600px; padding: 10px; background-color: #0076BC;">This is a database of predictions for stellar occultations by small <br> Solar System objects, calculated from the legacy
+                            positions provided <br> by the Dark Energy Survey (DES) and the constantly updated <br> positions from the Minor Planet Center (MPC).
+                            These predictions are <br> regularly updated. Use our advanced filters to refine your search and <br> find more suitable events.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- baner texto do titulo --> 
+    <!--  Termina baner--> 
+    <!-- blank -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="text-align: center;color:#E5E5E5;  height: 20px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- termina blank -->
+    <!-- titulo email -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:Roboto,-apple-system,BlinkMacSystemFont,Segoe UI,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-size:20px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 30px; width:600px; padding: 10px; background-color: #0076BC;">Periódico de Predição de Ocultações Estelar Solar System Portal
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- Termina titulo email --> 
+    <!-- blank --> 
+    <!--
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="text-align: center;color:#E5E5E5;  height: 50px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>--><!-- Termina blank -->
+    <!-- Corpo do email -->
+    <!-- Paragrafo agradecimento -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:18px;font-style:normal;font-weight:bold;text-align: justify;color: rgb(79, 78, 78);  height: 40px; width:600px; padding: 10px; background-color: #F4F4F4;">Aqui estão os resultados que cobrem do dia 2 ao 31 para o seu filtro de São Paulo.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table> <!--https://tno-dev.linea.org.br/prediction-event-detail/322829-->
+    </div><!-- Termina agradecimento--> 
+    <!-- paragrafo 1 -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:18px;font-style:normal;font-weight:bold;text-align: justify;color: rgb(79, 78, 78);  height: 50px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            O resultado completo está em anexo e também está disponível para dawnload em <a href="#" style="color:#FB1010;font-weight: bold; text-decoration: none;"  target="_blank">https://tno-dev.linea.org.br</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- termina paragrafo 1 -->
+    <!-- titulo filtro -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="text-align: center;color:#E5E5E5;  height: 30px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+                                <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:rgb(255, 255, 255);width:100%;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:100px;">
+                                                <div style="font-family:Roboto,-apple-system,BlinkMacSystemFont,Segoe UI,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;font-size:20px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 30px; width:200px; padding: 10px;border-radius:10px; background-color: #0076BC;">São Paulo
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Termina titulo filtro --> 
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="text-align: center;color:#E5E5E5;  height: 150px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                             <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:rgb(255, 255, 255); height:150px ;width:100%;">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width:70px;"> <!-- card com mapa 1 -->
+                                                <div style="text-align:start ;color:#E5E5E5; width: 20px;">
+                                                <img style="width: 100px;" src="https://tno-dev.linea.org.br/data/maps/2020OD8-20241109103917.jpg" alt="">  
+                                                </div>
+                                            </td>
+                                            <td style="width:50px;"> <!-- card com descricao do mapa 1 -->
+                                                <div style="text-align:left ;color:#212121; font-size: 10px;">
+                                                    2013 GY252 <br>2024-03-18 13:27:09 <br>Trojan <br>G (Gaia) 13 400 <br> 
+                                                    
+                                                <div><a style="text-align: center; text-decoration: none;font-size: 10px;" href="#">MORE</a></div>
+                                            </td>
+                                            <td style="width:40px;"> <!-- card com mapa 2 -->
+                                                <div style="text-align:center ;color:#E5E5E5;">
+                                                    <img style="width: 100px;" src="https://tno-dev.linea.org.br/data/maps/2020OD8-20241116012839.jpg" alt="">  
+                                                </div>
+                                            </td>
+                                            <td style="width:50px;"> <!-- card com descricao do mapa 2 -->
+                                                <div style="text-align:left ;color:#212121; font-size: 10px;">
+                                                    2013 GY252 <br>2024-03-18 13:27:09 <br>Trojan <br>G (Gaia) 13 400 <br> 
+                                                    
+                                                </div>
+                                                <div><a style="text-align: center; text-decoration: none;font-size: 10px;" href="#">MORE</a></div>
+                                            </td>
+                                            <td style="width:50px;"> <!-- card com mapa 3 -->
+                                                <div style="text-align:center ;color:#E5E5E5;">
+                                                    <img style="width: 100px;" src="https://tno-dev.linea.org.br/data/maps/2020OD8-20241228041208.jpg" alt="">  
+                                                </div>
+                                            </td>
+                                            <td style="width:50px;"> <!-- card com descricao do mapa 3 -->
+                                                <div style="text-align:left ;color:#212121; font-size: 10px;">
+                                                    2013 GY252 <br>2024-03-18 13:27:09 <br>Trojan <br>G (Gaia) 13 400 <br> 
+                                                    
+                                                </div>
+                                                <div><a style="text-align: center; text-decoration: none; font-size: 10px;" href="#">MORE</a></div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- blank -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="text-align: center;color:#E5E5E5;  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- blank -->
+    <!-- paragrafo 3 -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:15px;font-style:normal;font-weight:bold;text-align: center;color: rgb(79, 78, 78);  height: 50px; width:600px; padding: 10px; background-color: #F4F4F4;">Os filtros e preferências podem ser alterados através do link <a href="#" style="color:#FB1010;font-weight: bold; text-decoration: none;" target="_blank">https://tno-dev.linea.org.br.</a> 
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- termina paragrafo 3 -->
+    <!-- paragrafo descadastrar -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:13px;font-style:normal;font-weight:bold;text-align: center;color: rgb(79, 78, 78);  height: 50px; width:600px; padding: 10px; background-color: #F4F4F4;">Cancelar o recebimento deste email, <a href="#" style="color:#FB1010;font-weight: bold; text-decoration: none;" target="_blank">unsubscribe.</a> 
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- termina paragrafo descadastrar -->
+    <!--  footer -->
+    <!--  supporters -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="text-align: center;color: rgb(79, 78, 78);  height: 76px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            <span style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:15px;font-style:normal;font-weight:bold;text-align: center;color: rgb(79, 78, 78); width:600px; padding: 10px; background-color: #F4F4F4;">LIneA is supported by</span><br>
+                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/capes.png" alt="">
+                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/cnpq.png" alt="">
+                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/faperj.png" alt="">
+                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/finep.png" alt="">
+                            <img style="width: 50px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/e-universo_square.png" alt="">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- termina supporters -->
+    <!-- barra rodapé -->
+    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
+            <tbody>
+                <tr>
+                    <td style="width:100px;">
+                        <div style="font-family:monospace, 'Arial Narrow', Arial, sans-serif;font-size:20px;font-style:normal;font-weight:bold;text-align: right;color:#E5E5E5;  height: 35px; width:600px; padding: 10px; background-color: #212121;">Powered by
+                        <a href="http://www.linea.org.br/"><img style="width: 50px;" src="https://solarsystem.linea.org.br/static/media/linea-logo-mini.af872eca151f1ecc55b4.png" alt=""></a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div><!-- termina barra rodapé -->
+    </body>
+</html>
