@@ -1,5 +1,5 @@
 from django.db import models
-from app_newsletter.models.subscription import Subscription
+from newsletter.models.subscription import Subscription
 
 class Preference(models.Model):
 

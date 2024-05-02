@@ -1,5 +1,5 @@
 from django.db import models
-from app_newsletter.models.preference import Preference
+from newsletter.models.preference import Preference
 
 class EventFilter(models.Model):
 

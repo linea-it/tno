@@ -1,6 +1,6 @@
 from django.db import models
-from app_newsletter.models.subscription import Subscription
-from app_newsletter.models.event_filter import EventFilter
+from newsletter.models.subscription import Subscription
+from newsletter.models.event_filter import EventFilter
 
 class Submission(models.Model):
 

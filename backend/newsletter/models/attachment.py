@@ -1,5 +1,5 @@
 from django.db import models
-from app_newsletter.models.submission import Submission
+from newsletter.models.submission import Submission
 
 class Attachment(models.Model):
 
