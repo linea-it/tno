@@ -17,8 +17,9 @@ def send_welcome_email(sender, instance, signal, created, **kwargs):
         # TODO: Criar função para enviar email de boas vindas.
         #### 
         ## trazer do send_sbscription_teste_mail
+        """
         def renderHtml():    
-            html_content = render_to_string('periodico.html', {"nome": 'Josiane'})
+            html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
             body = EmailMessage(subject,html_content, 
                                  'josianes.silva@gmail.com',
                                 recipient_list)
@@ -28,13 +29,14 @@ def send_welcome_email(sender, instance, signal, created, **kwargs):
         #envio = RenderizaHtml()
         #envio.renderHtml(subject, recipient_list)
         renderHtml(subject, recipient_list)
+        """
     else:
         if instance.unsubscribe == True:
             print("Send email vai com Deus")
             def renderHtml():    
-                html_content = render_to_string('periodico.html', {"nome": 'Josiane'})
-                body = EmailMessage(subject,html_content, 
+                html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
+                body = EmailMessage('subject',html_content, 
                                     'josianes.silva@gmail.com',
-                                    recipient_list)
+                                    'josiane@gmail.com')
                 body.content_subtype = "html and image"
                 return body.send()

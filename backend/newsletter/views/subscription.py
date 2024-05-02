@@ -6,6 +6,7 @@ from newsletter.models import Subscription
 from newsletter.serializers import SubscriptionSerializer
 from rest_framework import viewsets
 from rest_framework.decorators import action
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication 
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
@@ -22,7 +23,9 @@ class SubscriptionViewSet(
     filter_fields = ("email", "activation_code")
     serializer_class = SubscriptionSerializer
 
-    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    #@action(detail=False, methods=["get","delete"], permission_classes=(AllowAny,))
+    #@action(detail=False, methods=["get","delete"], permission_classes=(IsAuthenticated,),  authentication_classes =[SessionAuthentication,BasicAuthentication])
+    @action(detail=False, methods=["get","delete"], permission_classes=(IsAuthenticated,))
     def unsubscribe(self, request):
 
         params = self.request.query_params
@@ -35,7 +38,7 @@ class SubscriptionViewSet(
 
         obj.unsubscribe_date = datetime.now()
         obj.unsubscribe = True
-        obj.save()
+        obj.delete()
 
         # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
 

@@ -90,7 +90,7 @@ class RenderizaHtml():
     def renderHtml(request, subject, recipient_list):
         #html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
         #html_content = render_to_string('base_email.html', {"nome": 'Josiane'})
-        html_content = render_to_string('periodico.html', {"nome": 'Josiane'})
+        html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
         body = EmailMessage(subject,html_content, 
                                  'josianes.silva@gmail.com',
                                 recipient_list)
@@ -123,7 +123,7 @@ class RenderizaHtml():
         if unsubscribe == True:
             print("Send email vai com Deus")
         #return #sys.stdout.write(f"Exemplo de como fazer um print ${unsubscribe}")
-        html_content = render_to_string('table.html', {"nome": 'Josiane'})
+        html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
         body = EmailMessage(unsubscribe,html_content, 
                                     'josianes.silva@gmail.com',
                                     recipient_list)
