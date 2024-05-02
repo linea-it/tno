@@ -8,6 +8,9 @@ import Grid from '@mui/material/Grid'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import MaginitudeSelect from '../MaginitudeSelect/index'
+import MaginitudeDropSelect from '../MaginitudeDropSelect/index'
+import ObjectDiameterFilter from '../ObjectDiameterFilter/index'
+import EventDurationField from '../EventDurationField/index'
 import AsteroidSelect from '../AsteroidSelect/AsteroidSelect'
 import GeoFilter from '../GeoFilter/index'
 import { PredictionEventsContext } from '../../contexts/PredictionContext'
@@ -102,26 +105,36 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
             <SolarTimeFilter
-              value={[queryOptions.filters.solar_time_after, queryOptions.filters.solar_time_before]}
+              value={{
+                solar_time_enabled: queryOptions.filters.solar_time_enabled,
+                solar_time_after: queryOptions.filters.solar_time_after,
+                solar_time_before: queryOptions.filters.solar_time_before
+              }}
               onChange={(value) => {
                 setQueryOptions((prev) => {
                   return {
                     ...prev,
                     filters: {
                       ...prev.filters,
-                      solar_time_after: value[0],
-                      solar_time_before: value[1]
+                      ...value
                     }
                   }
                 })
               }}
             ></SolarTimeFilter>
           </Grid>
-          <Grid item xs={12} md={6} lg={4}>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          {/* <Grid item xs={12} md={3} container justifyContent='flex-end'> */}
+          <Grid item xs={12} container>
             <FormControlLabel
-              label='Nighttime Only'
+              label='Hide Diurn Events'
               control={
                 <Switch
                   checked={queryOptions.filters.nightside}
@@ -138,6 +151,60 @@ function PredictionEventsFilter() {
                   }}
                 />
               }
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid item xs={3} container>
+            <MaginitudeDropSelect
+              value={queryOptions.filters.maginitudeDropMin}
+              onChange={(newValue) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      maginitudeDropMin: newValue
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={3} container>
+            <EventDurationField
+              value={queryOptions.filters.eventDurationMin}
+              onChange={(value) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      eventDurationMin: value
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={6} container>
+            <ObjectDiameterFilter
+              value={{
+                diameterMin: queryOptions.filters.diameterMin,
+                diameterMax: queryOptions.filters.diameterMax
+              }}
+              onChange={(value) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      ...value
+                    }
+                  }
+                })
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -164,10 +231,18 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Button variant='outlined' onClick={clearFilter}>
-              Clear
-            </Button>
+          <Grid item container xs={12} spacing={2} alignItems='center'>
+            <Grid item>
+              <Button variant='outlined' onClick={clearFilter}>
+                Clear
+              </Button>
+            </Grid>
+            <Grid item xs />
+            <Grid item>
+              <Button variant='outlined' href='/docs/user-guide/filter-events/' target='blank'>
+                Help
+              </Button>
+            </Grid>
           </Grid>
         </Grid>
       </LocalizationProvider>

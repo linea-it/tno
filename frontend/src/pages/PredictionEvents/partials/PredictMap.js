@@ -43,7 +43,7 @@ function PredictOccultationMap({ occultationId }) {
     <Card sx={{ height: '100%' }}>
       <CardHeader
         title='Occultation Prediction Map'
-        titleTypographyProps={{ variant: 'h6', fontSize: '1rem' }}
+        titleTypographyProps={{ variant: 'h5', fontSize: '1.5rem' }}
         subheader={data !== undefined ? `Created ${moment(data.creation_time).fromNow()}` : ''}
         subheaderTypographyProps={{ variant: 'subtitle1', fontSize: '0.8rem' }}
         action={
@@ -101,7 +101,7 @@ function PredictOccultationMap({ occultationId }) {
               <Box
                 component='img'
                 sx={{
-                  maxWidth: '90%',
+                  maxWidth: '105%',
                   height: 'auto'
                 }}
                 alt=''

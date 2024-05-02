@@ -15,7 +15,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tno.db import CatalogDB
-from tno.models import Occultation
+from tno.models import Catalog, Occultation
 from tno.occviz import visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
@@ -35,18 +35,27 @@ class OccultationFilter(django_filters.FilterSet):
 
     number = CharInFilter(field_name="number", lookup_expr="in")
 
-    mag_g = django_filters.RangeFilter(field_name="g_star")
-
     dynclass = django_filters.CharFilter(field_name="dynclass", lookup_expr="iexact")
+
+    magnitude = django_filters.RangeFilter(field_name="g_star", label="Magnitude g")
+
+    diameter = django_filters.RangeFilter(field_name="diameter")
+
+    event_duration = django_filters.RangeFilter(field_name="event_duration")
 
     base_dynclass = django_filters.CharFilter(
         field_name="base_dynclass", lookup_expr="iexact"
     )
 
-    long = django_filters.NumberFilter(method="longitude_filter", label="Longitude")
-
     nightside = django_filters.BooleanFilter(
-        field_name="occ_path_is_nightside", label="nightside"
+        field_name="occ_path_is_nightside",
+        label="nightside",
+    )
+
+    magnitude_drop = django_filters.RangeFilter(field_name="magnitude_drop")
+
+    longitude = django_filters.NumberFilter(
+        method="longitude_filter", label="Longitude"
     )
 
     def longitude_filter(self, queryset, name, value):
@@ -66,7 +75,7 @@ class OccultationFilter(django_filters.FilterSet):
             temp_longitude__lte=F("occ_path_max_longitude"),
         )
 
-    lat = django_filters.NumberFilter(method="latitude_filter", label="Latitude")
+    latitude = django_filters.NumberFilter(method="latitude_filter", label="Latitude")
 
     def latitude_filter(self, queryset, name, value):
         value = float(value)
@@ -85,7 +94,9 @@ class OccultationFilter(django_filters.FilterSet):
             temp_latitude__lte=F("occ_path_max_latitude"),
         )
 
-    radius = django_filters.NumberFilter(method="radius_filter", label="Radius")
+    location_radius = django_filters.NumberFilter(
+        method="radius_filter", label="Location Radius"
+    )
 
     def radius_filter(self, queryset, name, value):
         # O filtro por latitude vai ser aplicado na get_queryset
@@ -114,12 +125,14 @@ class OccultationFilter(django_filters.FilterSet):
         model = Occultation
         fields = [
             "date_time",
-            "mag_g",
-            "dynclass",
-            "base_dynclass",
             "name",
             "number",
-            "long",
+            "base_dynclass",
+            "dynclass",
+            "magnitude",
+            "magnitude_drop",
+            "diameter",
+            "event_duration",
             "local_solar_time",
             "nightside",
             "jobid",
@@ -146,7 +159,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         "ra_star_candidate",
         "dec_star_candidate",
         "ra_target",
-        " dec_target",
+        "dec_target",
         "closest_approach",
         "position_angle",
         "velocity",
@@ -171,13 +184,16 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         "ra_target_deg",
         "dec_target_deg",
         "created_at",
+        "diameter",
+        "event_duration",
+        "magnitude_drop",
     )
     ordering = ("date_time",)
 
     def check_user_location_params(self, params):
-        lat = params.get("lat", None)
-        long = params.get("long", None)
-        radius = params.get("radius", None)
+        lat = params.get("latitude", None)
+        long = params.get("longitude", None)
+        radius = params.get("location_radius", None)
 
         if None in [lat, long, radius]:
             return lat, long, radius
@@ -194,77 +210,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             raise Exception("the radius parameter must be between 10 and 5000")
 
         return lat, long, radius
-
-    # def get_queryset(self):
-    #     t0 = datetime.now()
-
-    #     # Recupera os parametros da requisição
-    #     params = self.request.query_params
-    #     logger.info(dict(params))
-
-    #     # Base queryset usando join com a tabela asteroids
-    #     queryset = Occultation.objects.select_related().all()
-    #     # Aplica os fitros da classe OccultationFilter
-    #     # Filter_Queryset  aplica todos os filtros passados por parametro
-    #     # Mas não calcula a visibilidade
-    #     queryset = self.filter_queryset(queryset)
-    #     # print(queryset.query)
-    #     logger.info(f"Results after filters in the database: [{queryset.count()}]")
-
-    # lat, long, radius = self.check_user_location_params(params)
-
-    # # TODO: Necessário implementar forma de fazer a paginação.
-    # # TODO: Implementar memcache para eventos já processados
-    # pageSize = int(params.get("pageSize", 10))
-
-    # # Sync Method
-    # if None not in [lat, long, radius]:
-    #     logger.info(f"Applying the visibility function to each result")
-    #     logger.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
-
-    #     wanted_ids = []
-    #     count = 0
-    #     processed = 0
-    #     for event in queryset:
-    #         is_visible, info = visibility_from_coeff(
-    #             latitude=lat,
-    #             longitude=long,
-    #             radius=radius,
-    #             date_time=event.date_time,
-    #             inputdict=event.occ_path_coeff,
-    #             # object_diameter=event.diameter,
-    #             # ring_diameter=event.diameter,
-    #             # n_elements= 1500,
-    #             # ignore_nighttime= False,
-    #             # latitudinal= False
-    #         )
-    #         processed += 1
-
-    #         if is_visible:
-    #             wanted_ids.append(event.id)
-    #             count += 1
-    #             logger.info(
-    #                 f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-    #             )
-    #         else:
-    #             logger.debug(
-    #                 f"Event: [{event.id}] - IS VISIBLE: [{is_visible}] - {event.date_time} - {event.name}"
-    #             )
-
-    #         if count == pageSize:
-    #             logger.info("The page's registration limit has been reached.")
-    #             break
-
-    #     logger.debug(f"Event IDs with visibility equal to true: {wanted_ids}")
-    #     logger.info(f"Number of events processed: [{processed}]")
-    #     logger.info(
-    #         f"Number of events that the visibility function returned true: [{count}]"
-    #     )
-
-    #     if count > 0:
-    #         queryset = queryset.filter(id__in=wanted_ids)
-    #         logger.info(f"Results after visibility function: [{queryset.count()}]")
-    #         logger.debug(queryset.query)
 
     # TODO: Estudar a possibilidade de um metodo asyncrono
     # Teste Com metodo assincrono pode ser promissor!
@@ -313,8 +258,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         # Verifica se é uma consulta por geo localização.
         lat, long, radius = self.check_user_location_params(params)
         if None not in [lat, long, radius]:
-            logger.info("QUERY POR POSICAO")
-
             gl = GeoLocation(params.dict(), queryset)
 
             queryset = gl.execute()
@@ -323,7 +266,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             result = self.get_paginated_response(serializer.data)
 
         else:
-            logger.info("QUERY NORMAL")
             page = self.paginate_queryset(queryset)
             serializer = self.get_serializer(page, many=True)
             result = self.get_paginated_response(serializer.data)
@@ -555,20 +497,26 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_star_by_event(self, request, pk=None):
         pre_occ = self.get_object()
+
+        source_id = pre_occ.gaia_source_id
         ra = pre_occ.ra_star_deg
         dec = pre_occ.dec_star_deg
 
-        # TODO: Fazer a consulta baseado na versao de catalogo gaia especifica para o evento.
+        # Faz a consulta baseado na versao de catalogo gaia
+        # utilizada na predição do evento.
+        catalog = Catalog.objects.get(display_name=pre_occ.catalog)
+
         try:
             db = CatalogDB(pool=False)
             rows = db.radial_query(
-                tablename="dr2",
-                schema="gaia",
-                ra_property="ra",
-                dec_property="dec",
+                tablename=catalog.tablename,
+                schema=catalog.schema,
+                ra_property=catalog.ra_property,
+                dec_property=catalog.dec_property,
                 ra=float(ra),
                 dec=float(dec),
                 radius=0.001,
+                source_id=source_id,
             )
             if len(rows) > 0:
                 return Response(rows[0])

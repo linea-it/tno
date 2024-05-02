@@ -3,8 +3,11 @@
 import os
 import re
 
+import astropy.units as u
 import numpy as np
 import spiceypy as spice
+from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body
+from astropy.time import Time
 
 
 def check_leapsec(filename):
@@ -452,6 +455,53 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     Returns:
     - float: The magnitude drop of the asteroid relative to the star.
     """
+    if asteroid_visual_magnitude is None or star_visual_magnitude is None:
+        return None
+
     delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude
     drop_magnitude = 2.5 * np.log10(1 + 10 ** (delta_magnitude * 0.4))
     return drop_magnitude
+
+
+def get_moon_and_sun_separation(ra, dec, instant):
+    "Earth location is considered geocentric"
+    instant = Time(instant, scale="utc")
+    object_coord = SkyCoord(ra=ra * u.deg, dec=dec * u.deg, obstime=instant)
+
+    # Set location as geocenter
+    geocenter = EarthLocation(x=0 * u.m, y=0 * u.m, z=0 * u.m)
+
+    # Get the coordinates of the Moon and the Sun at the current time
+    moon_coord = get_body("moon", instant, location=geocenter)
+    sun_coord = get_body("sun", instant, location=geocenter)
+
+    # Convert the celestial coordinates of the object to AltAz frame
+    object_altaz = object_coord.transform_to(AltAz(obstime=instant, location=geocenter))
+
+    # Convert the geocentric coordinates of the Moon and the Sun to AltAz frame
+    moon_altaz = moon_coord.transform_to(AltAz(obstime=instant, location=geocenter))
+    sun_altaz = sun_coord.transform_to(AltAz(obstime=instant, location=geocenter))
+
+    # Calculate the angular separation between the Moon and the object
+    moon_angular_separation = object_altaz.separation(moon_altaz).degree
+    sun_angular_separation = object_altaz.separation(sun_altaz).degree
+    return moon_angular_separation, sun_angular_separation
+
+
+def get_apparent_diameter(diameter, distance):
+    """computes the apparent diameter in mas with diameter given in km and distance in au"""
+    if diameter is not None:
+        apparent_diameter = (
+            2 * np.arctan(0.5 * diameter / (distance * 149_597_870.7)) * 206_264_806
+        )
+        return apparent_diameter
+    else:
+        return None
+
+
+def get_event_duration(diameter, velocity):
+    """Computes the event duration in seconds with diameter given in km and velocity in km/s"""
+    if diameter is not None:
+        return diameter / abs(velocity)
+    else:
+        return None

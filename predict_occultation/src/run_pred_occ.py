@@ -15,9 +15,12 @@ import pandas as pd
 from asteroid import Asteroid
 from dao import (
     AsteroidDao,
+    LeapSecondDao,
+    PlanetaryEphemerisDao,
     PredictOccultationJobDao,
     PredictOccultationJobResultDao,
     PredictOccultationJobStatusDao,
+    StarCatalogDao,
 )
 
 try:
@@ -174,18 +177,13 @@ def make_job_json_file(job, path):
             "debug": bool(job.get("debug", False)),
             "error": None,
             "traceback": None,
-            # TODO: Adicionar parametro para catalog
-            # "catalog_id": job.get('catalog_id')
             # TODO: Estes parametros devem ser gerados pelo pipeline lendo do config.
             # TODO: Bsp e leap second deve fazer a query e verificar o arquivo ou fazer o download.
-            "bsp_planetary": {
-                "name": "de440",
-                "filename": "de440.bsp",
-            },
-            "leap_seconds": {
-                "name": "naif0012",
-                "filename": "naif0012.tls",
-            },
+            "bsp_planetary": PlanetaryEphemerisDao().get_by_id(
+                job["planetary_ephemeris_id"]
+            ),
+            "leap_seconds": LeapSecondDao().get_by_id(job["leap_second_id"]),
+            "star_catalog": StarCatalogDao().get_by_id(job["catalog_id"]),
             "force_refresh_inputs": True,
             "inputs_days_to_expire": 0,
         }
@@ -626,11 +624,14 @@ def submit_tasks(jobid: int):
         LEAP_SECOND = job["leap_seconds"]["filename"]
         log.debug("LEAP_SECOND: [%s]" % LEAP_SECOND)
 
+        STAR_CATALOG = job["star_catalog"]
+        log.debug("STAR_CATALOG: [%s]" % STAR_CATALOG["display_name"])
+
         # Remove resultados e inputs de execuções anteriores
         # Durante o desenvolvimento é util não remover os inputs pois acelera o processamento
         # No uso normal é recomendado sempre regerar os inputs
         FORCE_REFRESH_INPUTS = bool(job.get("force_refresh_inputs", True))
-        log.debug("Force Refresh Inputs: [%s]" % FORCE_REFRESH_INPUTS)
+        log.debug("Force Refresh Inputs: %s" % FORCE_REFRESH_INPUTS)
 
         # Determina a validade dos arquivos de inputs.
         # Durante o desenvolvimento é util não fazer o download a cada execução
@@ -831,6 +832,9 @@ def submit_tasks(jobid: int):
                 # Ignora as proximas etapas para este asteroid.
                 continue
 
+            # STAR CATALOG
+            a.set_star_catalog(**STAR_CATALOG)
+
             step1_success += 1
             current_idx += 1
 
@@ -949,8 +953,13 @@ def submit_tasks(jobid: int):
                         )
                     else:
                         step2_success += 1
-                        start_date = str(PREDICT_START.date())
-                        end_date = str(PREDICT_END.date())
+
+                        start_date = str(
+                            PREDICT_START.replace(hour=0, minute=0, second=0)
+                        )
+                        end_date = str(
+                            PREDICT_END.replace(hour=23, minute=59, second=59)
+                        )
 
                         ingested_occ_count = ast_obj.register_occultations(
                             start_date, end_date, jobid

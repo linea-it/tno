@@ -5,6 +5,8 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
+import IconButton from '@mui/material/IconButton'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import { useQuery } from 'react-query'
 import { getHighlightsUniqueAsteroids } from '../../services/api/Occultation'
 import moment from 'moment'
@@ -32,7 +34,18 @@ function UniqueAsteroids() {
 
   return (
     <Card sx={{ height: 250, borderRadius: '10px' }}>
-      <CardHeader title='TOTAL FORECAST' titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color: '#4f4e4e' }} />
+      <CardHeader
+        title={
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Typography variant='h6' sx={{ fontWeight: 700, fontSize: '1.0rem', color: '#4f4e4e' }}>
+              TOTAL FORECAST
+            </Typography>
+            <IconButton href='/docs/release-notes/latest-release/' target='_blank' aria-label='help'>
+              <HelpOutlineIcon />
+            </IconButton>
+          </Box>
+        }
+      />
       <CardContent>
         <Typography variant='h3' sx={{ fontWeight: 700, fontSize: '1.8rem', textAlign: 'left', paddingBottom: '20px', color: '#0e4686' }}>
           {data?.count}

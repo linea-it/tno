@@ -425,6 +425,7 @@ class CatalogDB(DBBase):
         schema=None,
         columns=None,
         limit=None,
+        source_id=None,
     ):
         s_columns = "*"
         if columns != None and len(columns) > 0:
@@ -437,19 +438,22 @@ class CatalogDB(DBBase):
         if limit != None:
             s_limit = "LIMIT %s" % limit
 
-        stm = (
-            """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """
-            % (
-                s_columns,
-                tablename,
-                ra_property,
-                dec_property,
-                ra,
-                dec,
-                radius,
-                s_limit,
+        if source_id != None:
+            stm = f"SELECT {s_columns} FROM {tablename} WHERE source_id = {source_id}"
+        else:
+            stm = (
+                """SELECT %s FROM %s WHERE q3c_radial_query("%s", "%s", %s, %s, %s) %s """
+                % (
+                    s_columns,
+                    tablename,
+                    ra_property,
+                    dec_property,
+                    ra,
+                    dec,
+                    radius,
+                    s_limit,
+                )
             )
-        )
 
         return self.fetch_all_dict(text(stm))
 

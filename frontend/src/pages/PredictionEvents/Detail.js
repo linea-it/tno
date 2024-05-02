@@ -11,6 +11,9 @@ import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
 
+import IconButton from '@mui/material/IconButton'
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
+
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
@@ -44,54 +47,62 @@ function PredictionEventDetail() {
   useEffect(() => {
     setCircumstances([
       {
-        title: 'Instant of the Closest Approach',
+        title: 'Instant of the closest approach',
         value: moment(occultation.date_time).utc().format('ddd. DD MMMM YYYY HH:mm:ss')
       },
       {
         title: 'Star position (ICRF)',
-        tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
+        // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
         value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`
       },
       {
-        title: 'Closest Approach',
-        tooltip: 'Geocentric closest approach',
+        title: 'Closest approach',
+        // tooltip: 'Geocentric closest approach',
         value: `${occultation.closest_approach} (arcsec)`
       },
       {
-        title: 'Position Angle',
-        tooltip: "Planet's position angle with respect to the star at closest approach",
+        title: 'Position angle',
+        // tooltip: "Planet's position angle with respect to the star at closest approach",
         value: `${occultation.position_angle} (deg)`
       },
       {
         title: 'Velocity',
-        tooltip: 'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
+        // tooltip: 'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
         value: `${occultation.velocity} (km/s)`
       },
       {
-        title: 'Geocentric distance Δ',
+        title: 'Geocentric distance',
         value: `${occultation.delta} (AU)`
       },
       {
-        title: 'G mag',
-        tooltip: 'Gaia magnitude',
+        title: 'Event duration',
+        value: `${occultation.event_duration ? occultation.event_duration.toFixed(1) : null} (s)`
+      },
+      {
+        title: 'Star magnitude (Gaia)',
+        // tooltip: 'Gaia magnitude',
         value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`
       },
       {
-        title: 'H mag',
-        tooltip: '2MASS H magnitude',
+        title: 'H mag (2MASS)',
+        // tooltip: '2MASS H magnitude',
         value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
-        title: 'Magnitude Drop',
-        value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(3) : null}`
+        title: 'Moon separation',
+        value: `${occultation.moon_separation ? occultation.moon_separation.toFixed(1) : null} (deg)`
+      },
+      {
+        title: 'Sun elongation',
+        value: `${occultation.sun_elongation ? occultation.sun_elongation.toFixed(1) : null} (deg)`
       },
       {
         title: 'Uncertainty in Time',
         value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null}`
       },
       {
-        title: 'Creation Date',
-        tooltip: "Date of the prediction's computation",
+        title: 'Creation date',
+        // tooltip: "Date of the prediction's computation",
         value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
       }
     ])
@@ -104,7 +115,7 @@ function PredictionEventDetail() {
       // },
       {
         title: 'Stellar catalogue',
-        value: 'Gaia DR2'
+        value: 'Gaia DR3'
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
@@ -126,7 +137,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Source of proper motion',
-        value: 'Gaia DR2'
+        value: 'Gaia DR3'
       },
       {
         title: 'Uncertainty in the star position',
@@ -135,15 +146,15 @@ function PredictionEventDetail() {
         } (mas)`
       },
       {
-        title: 'G magnitude (source: GaiaDR2)',
+        title: 'G magnitude (source: Gaia DR3)',
         value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
       },
       {
-        title: 'RP magnitude (source: GaiaDR2)',
+        title: 'RP magnitude (source: Gaia DR3)',
         value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
       },
       {
-        title: 'BP magnitude (source: GaiaDR2)',
+        title: 'BP magnitude (source: Gaia DR3)',
         value: `${starObj.phot_bp_mean_mag ? starObj.phot_bp_mean_mag.toFixed(3) : null}`
       },
       {
@@ -166,7 +177,7 @@ function PredictionEventDetail() {
         value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
       },
       {
-        title: "Object's Astrometric Position (ICRF)",
+        title: "Object's astrometric position (ICRF)",
         value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
       },
       // {
@@ -175,20 +186,26 @@ function PredictionEventDetail() {
       //   value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
       // },
       {
-        title: 'Absolute Magnitude',
+        title: 'Absolute magnitude',
         value: `${occultation.h ? occultation.h.toFixed(3) : null}`
       },
       {
-        title: 'Apparent Magnitude',
+        title: 'Apparent magnitude',
         value: `${occultation.apparent_magnitude ? occultation.apparent_magnitude.toFixed(3) : null}`
       },
       {
         title: 'Diameter',
-        value: `${occultation.diameter ? occultation.diameter.toFixed(0) : null} (Km)`
+        value: `${
+          occultation.diameter
+            ? occultation.diameter < 1
+              ? (occultation.diameter * 1000).toFixed(0) + ' (m)'
+              : occultation.diameter.toFixed(0) + ' (Km)'
+            : null
+        }`
       },
       {
-        title: 'Aparent Diameter',
-        value: `${occultation.aparent_diameter ? occultation.aparent_diameter.toFixed(4) : null} (mas)`
+        title: 'Apparent diameter',
+        value: `${occultation.apparent_diameter ? occultation.apparent_diameter.toFixed(4) : null} (mas)`
       },
       {
         title: 'Uncertainty in position',
@@ -202,8 +219,12 @@ function PredictionEventDetail() {
         title: 'Dynamic class (Skybot)',
         value: `${occultation.dynclass}`
       },
+      // {
+      //   title: 'Dynamic class (Lowell Observatory)',
+      //   value: `${occultation.astorb_dynbaseclass ? occultation.astorb_dynbaseclass : null}`
+      // },
       {
-        title: 'Semimajor Axis',
+        title: 'Semi-major axis',
         value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`
       },
       {
@@ -236,7 +257,16 @@ function PredictionEventDetail() {
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title='Occultation Prediction Circumstances' />
+            <CardHeader
+              title='Occultation Prediction Circumstances'
+              action={
+                <>
+                  <IconButton href='/docs/user-guide/occultation-details-page/' target='_blank' aria-label='help'>
+                    <HelpOutlineIcon />
+                  </IconButton>
+                </>
+              }
+            />
             <CardContent>
               <List data={circumstances} />
             </CardContent>

@@ -66,6 +66,7 @@ class Asteroid:
     ot_theo_pos: dict
     ot_ing_obs: dict
 
+    star_catalog: dict = {}
     des_observations: dict
     bsp_jpl: dict
     observations: dict
@@ -117,6 +118,7 @@ class Asteroid:
         # Como atributos da instancia dessa classe.
         self.__dict__.update(ast_data)
 
+        self.star_catalog = {}
         self.des_observations = {}
         self.bsp_jpl = {}
         self.observations = {}
@@ -207,6 +209,29 @@ class Asteroid:
 
     def set_failure(self):
         self.status = 2
+
+    def set_star_catalog(
+        self,
+        name: str,
+        display_name: str,
+        schema: str,
+        tablename: str,
+        ra_property: str,
+        dec_property: str,
+        **kwargs,
+    ):
+        self.star_catalog = {
+            "name": name,
+            "display_name": display_name,
+            "schema": schema,
+            "tablename": tablename,
+            "ra_property": ra_property,
+            "dec_property": dec_property,
+        }
+        self.write_asteroid_json()
+
+    def get_star_catalog(self):
+        return self.star_catalog
 
     def read_asteroid_json(self):
         filename = "{}.json".format(self.alias)
@@ -800,13 +825,18 @@ class Asteroid:
 
     def register_occultations(self, start_period: str, end_period: str, jobid: int):
         log = self.get_log()
-
-        if "filename" not in self.predict_occultation:
-            # Nao executou a etapa de predicao.
-            return 0
+        t0 = dt.now(tz=timezone.utc)
 
         try:
-            t0 = dt.now(tz=timezone.utc)
+            dao = OccultationDao(log=log)
+            # Apaga as occultations já registradas para este asteroid antes de inserir.
+            # IMPORTANTE! apaga mesmo que não tenham sido gerados resultados.
+            dao.delete_by_asteroid_name_period(self.name, start_period, end_period)
+
+            if "filename" not in self.predict_occultation:
+                log.warning("There is no file with the predictions.")
+                # Nao executou a etapa de predicao.
+                return 0
 
             predict_table_path = pathlib.Path(
                 self.path, self.predict_occultation["filename"]
@@ -815,11 +845,6 @@ class Asteroid:
             if not predict_table_path.exists():
                 # Arquivo com resultados da predicao nao foi criado
                 return 0
-
-            dao = OccultationDao()
-
-            # Apaga as occultations já registradas para este asteroid antes de inserir.
-            dao.delete_by_asteroid_name(self.name, start_period, end_period)
 
             # Le o arquivo occultation table e cria um dataframe
             # occultation_date;ra_star_candidate;dec_star_candidate;ra_object;dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde
@@ -840,6 +865,7 @@ class Asteroid:
                     "name",
                     "number",
                     "date_time",
+                    "gaia_source_id",
                     "ra_star_candidate",
                     "dec_star_candidate",
                     "ra_target",
@@ -868,7 +894,7 @@ class Asteroid:
                     "ra_target_deg",
                     "dec_target_deg",
                     "created_at",
-                    "aparent_diameter",
+                    "apparent_diameter",
                     "aphelion",
                     "apparent_magnitude",
                     "dec_star_to_date",
@@ -934,6 +960,9 @@ class Asteroid:
                     "rms",
                     "g_star",
                     "h_star",
+                    "event_duration",
+                    "moon_separation",
+                    "sun_elongation",
                 ]
             )
 

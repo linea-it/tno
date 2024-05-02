@@ -44,33 +44,14 @@ class GeoLocation:
 
         self.apply_visibility(
             queryset,
-            float(self.params["lat"]),
-            float(self.params["long"]),
-            float(self.params["radius"]),
+            float(self.params["latitude"]),
+            float(self.params["longitude"]),
+            float(self.params["location_radius"]),
         )
 
     def apply_visibility(self, queryset, lat: float, long: float, radius: float):
         self.log.info(f"Applying the visibility function to each result")
         self.log.debug(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
-
-        # job = group(
-        #     assync_visibility_from_coeff.s(
-        #         event_id=event.id,
-        #         result_file=str(self.get_file_path(self.request_hash)),
-        #         latitude=lat,
-        #         longitude=long,
-        #         radius=radius,
-        #         date_time=event.date_time.isoformat(),
-        #         inputdict=event.occ_path_coeff,
-        #         object_diameter=event.diameter,
-        #         # ring_diameter=event.diameter,
-        #         # n_elements= 1500,
-        #         # ignore_nighttime= False,
-        #         # latitudinal= False
-        #     )
-        #     for event in queryset
-        # )
-        # job.apply_async()
 
         wanted_ids = []
         count = 0
@@ -143,9 +124,9 @@ class GeoLocation:
 
     def create_request_hash(self, params: dict):
         # remove alguns parametros que são indiferentes para query por posição
-        del params["page"]
-        del params["pageSize"]
-        del params["ordering"]
+        for key in ["page", "pageSize", "ordering"]:
+            if key in params:
+                del params[key]
 
         s_params = json.dumps(params, sort_keys=True)
         # self.log.debug(s_params)

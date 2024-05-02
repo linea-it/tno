@@ -143,13 +143,34 @@ const parsePredictEventsFilters = (params) => {
     }
 
     // Filtro por magnitude maxima
-    newFilters.mag_g_max = filters.maginitudeMax
+    newFilters.magnitude_max = filters.maginitudeMax
+
+    // Filtro por magnitude Drop Maior que
+    if (filters.maginitudeDropMin !== undefined && filters.maginitudeDropMin !== '') {
+      newFilters.magnitude_drop_min = filters.maginitudeDropMin
+    }
+
+    // Filtro por Event Duration Maior que
+    if (filters.eventDurationMin !== undefined && filters.eventDurationMin !== '') {
+      newFilters.event_duration_min = filters.eventDurationMin
+    }
+
+    // Filtro por Object Diameter Range min, max
+    if (filters.diameterMin !== undefined && filters.diameterMin !== '') {
+      newFilters.diameter_min = filters.diameterMin
+    }
+
+    if (filters.diameterMax !== undefined && filters.diameterMax !== '') {
+      newFilters.diameter_max = filters.diameterMax
+    }
 
     // Filtro por Local Solar Time
-    if (filters.solar_time_after !== undefined && filters.solar_time_before !== '') {
-      if (filters.solar_time_after.isValid() && filters.solar_time_before.isValid()) {
-        newFilters.local_solar_time_after = filters.solar_time_after.format('HH:mm:ss')
-        newFilters.local_solar_time_before = filters.solar_time_before.format('HH:mm:ss')
+    if (filters.solar_time_enabled === true) {
+      if (filters.solar_time_after !== undefined && filters.solar_time_before !== '') {
+        if (filters.solar_time_after.isValid() && filters.solar_time_before.isValid()) {
+          newFilters.local_solar_time_after = filters.solar_time_after.format('HH:mm:ss')
+          newFilters.local_solar_time_before = filters.solar_time_before.format('HH:mm:ss')
+        }
       }
     }
 
@@ -159,9 +180,9 @@ const parsePredictEventsFilters = (params) => {
 
     // GEO Filter
     if (filters.geo === true && geoFilterIsValid(filters)) {
-      newFilters.lat = filters.latitude
-      newFilters.long = filters.longitude
-      newFilters.radius = filters.radius
+      newFilters.latitude = filters.latitude
+      newFilters.longitude = filters.longitude
+      newFilters.location_radius = filters.radius
     }
 
     // Filtro por Jobid

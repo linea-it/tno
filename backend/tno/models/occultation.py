@@ -95,6 +95,14 @@ class Occultation(models.Model):
         verbose_name="Date Time", auto_now_add=False, null=False, blank=False
     )
 
+    gaia_source_id = models.PositiveBigIntegerField(
+        verbose_name="GAIA Source ID",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="GAIA source id Star candidate",
+    )
+
     ra_star_candidate = models.CharField(
         verbose_name="RA Star Candidate",
         max_length=20,
@@ -334,14 +342,37 @@ class Occultation(models.Model):
         default=None,
     )
 
-    aparent_diameter = models.FloatField(
-        verbose_name="aparent_diameter",
+    apparent_diameter = models.FloatField(
+        verbose_name="apparent_diameter",
         null=True,
         blank=True,
         default=None,
         help_text="Apparent diameter of the Earth as seen from the Asteroid (degrees)",
     )
 
+    event_duration = models.FloatField(
+        verbose_name="event_duration",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Event duration (seconds)",
+    )
+
+    moon_separation = models.FloatField(
+        verbose_name="moon_separation",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Moon distance to the object (degrees)",
+    )
+
+    sun_elongation = models.FloatField(
+        verbose_name="sun_elongation",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Sun elongation (degrees)",
+    )
     # ------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
     # ------------------------------------------------------

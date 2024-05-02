@@ -47,7 +47,7 @@ export default class AladinV3 extends React.Component {
         survey: 'P/allWISE/color', // set initial image survey
         // survey: 'P/DSS2/color', // set initial image survey
         projection: 'SIN', // set a projection
-        fov: 0.5, // initial field of view in degrees
+        fov: 0.12, // initial field of view in degrees
         // target: 'NGC 2175', // initial target
         cooFrame: 'ICRS', // set galactic frame reticleColor: '#ff89ff', // change reticle color
         showReticle: false,

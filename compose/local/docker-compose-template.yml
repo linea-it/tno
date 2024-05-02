@@ -145,6 +145,8 @@ services:
   mailhog:
     image: mailhog/mailhog:v1.0.0
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
 
 
 
