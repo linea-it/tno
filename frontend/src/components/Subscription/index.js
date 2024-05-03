@@ -14,6 +14,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { color } from 'd3';
 import { Height } from '../../../node_modules/@mui/icons-material/index';
+import { useEffect, useState } from 'react'
 
 /*
 function Copyright(props) {
@@ -34,6 +35,8 @@ function Copyright(props) {
 const defaultTheme = createTheme();
 
 export default function Subscribe() {
+  const [email, setEmail] = useState("")
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
