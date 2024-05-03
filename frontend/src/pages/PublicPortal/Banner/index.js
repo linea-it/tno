@@ -2,6 +2,7 @@ import React from 'react'
 import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
+import Subscribe from '../../../components/Subscription/index'
 
 function PublicBanner() {
   const classes = styles()
@@ -24,6 +25,7 @@ function PublicBanner() {
                 positions provided by the Dark Energy Survey (DES) and the constantly updated positions from the Minor Planet Center (MPC).
                 These predictions are regularly updated. Use our advanced filters to refine your search and find more suitable events.
               </label>
+              <Subscribe></Subscribe>
             </Grid>
           </Box>
         </Grid>
