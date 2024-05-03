@@ -39,7 +39,6 @@ export default function Subscribe() {
     const data = new FormData(event.currentTarget);
     console.log({
       email: data.get('email'),
-      password: data.get('password'),
     });
   };
 
