@@ -37,12 +37,12 @@ const defaultTheme = createTheme();
 
 export default function Subscribe() {
   //const [email, setEmail] = useState("")
-  const [email, setEmail] = useState([])
+  /*const [email, setEmail] = useState([])
 
   useEffect( () => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`/api/subscription/`)
+        const res = await axios.post(`/api/subscription/`)
         setEmail(res.data)
       } catch (error) {
         console.log(error)
@@ -50,7 +50,7 @@ export default function Subscribe() {
     }
     fetchData()
     console.log(email)
-  }, [])
+  }, [])*/
 
   const handleSubmit = (event) => {
     event.preventDefault();
