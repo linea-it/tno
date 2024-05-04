@@ -15,7 +15,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { color } from 'd3';
 import { Height } from '../../../node_modules/@mui/icons-material/index';
 import { useEffect, useState } from 'react'
-
+import axios from 'axios'
 /*
 function Copyright(props) {
   return (
@@ -34,8 +34,23 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
+
 export default function Subscribe() {
-  const [email, setEmail] = useState("")
+  //const [email, setEmail] = useState("")
+  const [email, setEmail] = useState([])
+
+  useEffect( () => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`/api/subscription/`)
+        setEmail(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    fetchData()
+    console.log(email)
+  }, [])
 
   const handleSubmit = (event) => {
     event.preventDefault();
