@@ -21,22 +21,6 @@ import {saveEmailSubscription} from '../../services/api/Subscription'
 import { api } from '../../services/api/Api';
 import { data } from '../../../node_modules/browserslist/index';
 
-/*
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://mui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}*/
-
-// TODO remove, this demo shouldn't need to reset the theme.
-
 const defaultTheme = createTheme();
 
 export default function Subscribe() {
@@ -58,7 +42,6 @@ export default function Subscribe() {
     console.log("Cadastrou email")
   };
 
-  
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
@@ -89,15 +72,14 @@ export default function Subscribe() {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ width: '30vw', height:'35px' }}
+              sx={{ width: '30vw', height:'34px' }}
             >
               Subscribe
             </Button>
-
             </Stack>
-                        <p>
-            Receive reports in your email with the main star occultation predictions in your region.
-            </p>
+              <p>
+                Receive reports in your email with the main star occultation predictions in your region.
+              </p>
           </Box>
         </Box>
       </Container>
