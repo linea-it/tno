@@ -16,6 +16,10 @@ import { color } from 'd3';
 import { Height } from '../../../node_modules/@mui/icons-material/index';
 import { useEffect, useState } from 'react'
 import axios from 'axios'
+import {saveEmailSubscription} from '../../services/api/Subscription'
+import { api } from '../../services/api/Api';
+import { data } from '../../../node_modules/browserslist/index';
+
 /*
 function Copyright(props) {
   return (
@@ -34,37 +38,30 @@ function Copyright(props) {
 
 const defaultTheme = createTheme();
 
-
 export default function Subscribe() {
-  //const [email, setEmail] = useState("")
-  /*const [email, setEmail] = useState([])
+  const [email, setEmail] = useState([])
 
-  useEffect( () => {
-    const fetchData = async () => {
-      try {
-        const res = await axios.post(`/api/subscription/`)
-        setEmail(res.data)
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    fetchData()
-    console.log(email)
-  }, [])*/
+    //api.post("http://localhost/api/subscription/",{
+    //  email: "adriano@gmail.com"
+    //}) // this work
+    //api.delete("http://localhost/api/subscription/unsubscribe/?c=6a48fbd6-6d34-4b9c-b022-ac3648219b3a"
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const r_email = data.get('email')
+    saveEmailSubscription(r_email)
     console.log({
       email: data.get('email'),
     });
+    console.log("Cadastrou email")
   };
 
+  
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        
         <Box
           sx={{
             marginTop: 8,
@@ -76,9 +73,9 @@ export default function Subscribe() {
           }}
         >
             <p>
-                Fique por dentro dos eventos de predicao ocorridos em sua região!
+                Fique por dentro dos eventos de predicao ocorridos em sua região email: {email}!
                 Subscreva-se para receber em seu email relatórios personalizados dos eventos de predição de ocultações estelar  para sua região.
-            </p>
+                </p>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
