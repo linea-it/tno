@@ -88,8 +88,6 @@ from coreAdmin.settings import STATICFILES_DIRS, BASE_DIR, TEMPLATES
 class RenderizaHtml():
     
     def renderHtml(request, subject, recipient_list):
-        #html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
-        #html_content = render_to_string('base_email.html', {"nome": 'Josiane'})
         html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
         body = EmailMessage(subject,html_content, 
                                  'josianes.silva@gmail.com',
@@ -98,20 +96,6 @@ class RenderizaHtml():
         #body = EmailMultiAlternatives(subject,html_content, 
         #                         'josianes.silva@gmail.com',
         #                        recipient_list)
-        """
-        body.mixed_subtype = 'related'
-        body.attach_alternative(html_content, "text/html")
-        #img_dir = '/public/img/'
-        image = '/backend/newsletter/public/img/Captura_de_tela_2024-03-13_190407.png'
-        #file_path = os.path.join(img_dir, image)
-        #print(file_path)
-        #with open(file_path, 'r') as f:
-        #img = MIMEImage(f.read())
-        img = MIMEImage('/backend/newsletter/public/img/Captura_de_tela_2024-03-13_190407.png','png')
-        img.add_header('Content-ID', '<{name}>'.format(name=image))
-        img.add_header('Content-Disposition', 'inline', filename=image)
-        body.attach(img)
-        """
         ####  anexar arquivo
         #file_path = f"./staticfiles/img/Captura_de_tela_2024-03-13_190407.png"
         #file_path = ({TEMPLATES}/'welcome.html')

@@ -23,8 +23,6 @@ class SubscriptionViewSet(
     filter_fields = ("email", "activation_code")
     serializer_class = SubscriptionSerializer
 
-    #@action(detail=False, methods=["get","delete"], permission_classes=(AllowAny,))
-    #@action(detail=False, methods=["get","delete"], permission_classes=(IsAuthenticated,),  authentication_classes =[SessionAuthentication,BasicAuthentication])
     @action(detail=False, methods=["get","delete"], permission_classes=(IsAuthenticated,))
     def unsubscribe(self, request):
 
@@ -42,5 +40,4 @@ class SubscriptionViewSet(
 
         # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
 
-        # TODO: Retornar Código 201 de atualizado
         return Response(status=status.HTTP_200_ok)
