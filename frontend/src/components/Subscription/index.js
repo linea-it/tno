@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { Stack } from '../../../node_modules/@mui/material/index';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { color } from 'd3';
 import { Height } from '../../../node_modules/@mui/icons-material/index';
@@ -62,21 +63,18 @@ export default function Subscribe() {
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
         <CssBaseline />
-        <Box
+        <Box className='container textBanner'
           sx={{
-            marginTop: 8,
+            marginTop: 4,
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'columns',
             alignItems: 'center',
-            color: '#212121',
-            bgcolor: '#F4F4F4',
+            color: '#F4F4F4',
+            borderRadius: '6px', width: '60vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' 
           }}
         >
-            <p>
-                Fique por dentro dos eventos de predicao ocorridos em sua região email: {email}!
-                Subscreva-se para receber em seu email relatórios personalizados dos eventos de predição de ocultações estelar  para sua região.
-                </p>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 , display: 'block'}}>
+          <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
             <TextField
               margin="normal"
               required
@@ -85,16 +83,21 @@ export default function Subscribe() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus
+              autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white', backgroundColor: '#F4F4F450' } }}
             />
             <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              sx={{ width: '30vw', height:'35px' }}
             >
               Subscribe
             </Button>
+
+            </Stack>
+                        <p>
+            Receive reports in your email with the main star occultation predictions in your region.
+            </p>
           </Box>
         </Box>
       </Container>

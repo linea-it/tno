@@ -3,6 +3,7 @@ import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
 import Subscribe from '../../../components/Subscription/index'
+import { AlignHorizontalCenter } from '../../../../node_modules/@mui/icons-material/index'
 
 function PublicBanner() {
   const classes = styles()
@@ -25,9 +26,12 @@ function PublicBanner() {
                 positions provided by the Dark Energy Survey (DES) and the constantly updated positions from the Minor Planet Center (MPC).
                 These predictions are regularly updated. Use our advanced filters to refine your search and find more suitable events.
               </label>
-              <Subscribe></Subscribe>
             </Grid>
+            
           </Box>
+        </Grid>
+        <Grid item xs={9.5} className={classes.textOcultatiom}>
+              <Subscribe></Subscribe>
         </Grid>
       </Grid>
     </Box>
