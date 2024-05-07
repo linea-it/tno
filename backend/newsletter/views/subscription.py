@@ -41,3 +41,22 @@ class SubscriptionViewSet(
         # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
 
         return Response(status=status.HTTP_200_ok)
+    
+    @action(detail=False, methods=["get","post"], permission_classes=(IsAuthenticated,))
+    def activate(self, request):
+
+        params = self.request.query_params
+
+        activation_code = params.get("c", None)
+        if not activation_code:
+            raise Exception("Parametro c obrigatório")
+
+        obj = Subscription.objects.get(activation_code=activation_code)
+
+        obj.activated_date = datetime.now()
+        obj.activated = True
+        obj.save()
+
+        # http://localhost/admin/newsletter/subscription/activate?c=932af871-e0a0-47ce-a75a-acf568c8bd4c
+
+        return Response(status=status.HTTP_200_ok)
