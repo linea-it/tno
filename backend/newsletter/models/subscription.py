@@ -33,3 +33,14 @@ class Subscription(models.Model):
         help_text="Indica que o usuario desativou a sua inscricao.",
         default=False,
     )
+    
+    ####
+    activated_date = models.DateTimeField(
+        verbose_name="Activated Date", null=True, blank=True, default=None
+    )
+
+    activated = models.BooleanField(
+        verbose_name="Activate",
+        help_text="Indica que o usuario ativou a sua inscricao.",
+        default=False,
+    )
