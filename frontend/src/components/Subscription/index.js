@@ -124,8 +124,8 @@ export default function Subscribe() {
               <p>
                 Receive reports in your email with the main star occultation predictions in your region.
               </p>
-              <Snackbar open={snackbarOpen} autoHideDuration={3500} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleCloseSnackbar} message='Email successfully registered' />
-              <Snackbar open={snackbarOpen} autoHideDuration={3500} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleCloseSnackbar} message='Subscription with this Email already exists.' />
+              <Snackbar open={snackbarOpen} autoHideDuration={3500} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleCloseSnackbar} message='Email successfully registered. Check your email inbox.'/>
+              <Snackbar open={snackbarOpen} autoHideDuration={3500} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} onClose={handleCloseSnackbar} message='Subscription with this Email already exists.'/>
           </Box>
         </Box>
       </Container>
