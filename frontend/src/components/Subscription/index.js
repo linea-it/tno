@@ -110,7 +110,6 @@ export default function Subscribe() {
               autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white', backgroundColor: '#F4F4F450' }}}
               value={email}//enteredTitle="";
               onChange={emailChangeHandler}
-              
             />
             <Button
               type="submit"
