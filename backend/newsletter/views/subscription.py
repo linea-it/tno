@@ -23,35 +23,7 @@ class SubscriptionViewSet(
     filter_fields = ("email", "activation_code")
     serializer_class = SubscriptionSerializer
 
-    @action(
-        detail=False, methods=["get", "post"], permission_classes=(IsAuthenticated,)
-    )
-    def unsubscribe(self, request):
-
-        params = self.request.query_params
-
-        activation_code = params.get("c", None)
-        if not activation_code:
-            raise Exception("Parametro c obrigatório")
-
-        obj = Subscription.objects.get(activation_code=activation_code)
-
-        obj.unsubscribe_date = datetime.now()
-        obj.unsubscribe = True
-        obj.save()
-
-        # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
-        # return Response(obj, status=status.HTTP_200_ok)
-        result = dict(
-            {
-                "success": True,
-            }
-        )
-        return Response(result)
-
-    @action(
-        detail=False, methods=["get", "post"], permission_classes=(IsAuthenticated,)
-    )
+    @action(detail=False, methods=["get", "post"], permission_classes=(AllowAny,))
     def activate(self, request):
 
         params = self.request.query_params
@@ -79,4 +51,65 @@ class SubscriptionViewSet(
             }
         )
 
+        return Response(result)
+
+    @action(detail=False, methods=["post"], permission_classes=(AllowAny,))
+    def info(self, request):
+
+        params = self.request.data
+
+        activation_code = params.get("c", None)
+        if not activation_code:
+            raise Exception("Parametro c obrigatório")
+
+        obj = Subscription.objects.get(activation_code=activation_code)
+
+        result = dict({"email": obj.email, "is_active": not obj.unsubscribe})
+
+        return Response(result)
+
+    @action(detail=False, methods=["get", "post"], permission_classes=(AllowAny,))
+    def unsubscribe(self, request):
+        if request.method == "GET":
+            params = self.request.query_params
+        elif request.method == "POST":
+            params = self.request.data
+
+        activation_code = params.get("c", None)
+        if not activation_code:
+            raise Exception("Parametro c obrigatório")
+
+        obj = Subscription.objects.get(activation_code=activation_code)
+
+        obj.unsubscribe_date = datetime.now()
+        obj.unsubscribe = True
+        obj.save()
+
+        result = dict(
+            {
+                "success": True,
+            }
+        )
+        return Response(result)
+
+    @action(detail=False, methods=["post"], permission_classes=(AllowAny,))
+    def reactivate(self, request):
+
+        params = self.request.data
+
+        activation_code = params.get("c", None)
+        if not activation_code:
+            raise Exception("Parametro c obrigatório")
+
+        obj = Subscription.objects.get(activation_code=activation_code)
+
+        obj.unsubscribe_date = None
+        obj.unsubscribe = False
+        obj.save()
+
+        result = dict(
+            {
+                "success": True,
+            }
+        )
         return Response(result)
