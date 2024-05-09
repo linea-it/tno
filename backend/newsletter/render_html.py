@@ -1,4 +1,3 @@
-
 """
 #from django.core.mail import mail_admins, mail_managers, send_mail
 from django.shortcuts import render, redirect
@@ -71,45 +70,63 @@ def contact_me(request):
 
 #####
 """
-from django.http import HttpResponse
-import datetime
-from django.shortcuts import render, redirect
-from django.template.loader import render_to_string, get_template
-import sys
-from django.core.mail import mail_admins, mail_managers, send_mail, EmailMessage, EmailMultiAlternatives 
-from django.utils.html import strip_tags
-from django.template import RequestContext, loader
-#from .management.commands.send_subscription_teste_mail import Command
-from email.mime.image import MIMEImage
-import os
-from django.conf import Settings
-from coreAdmin.settings import STATICFILES_DIRS, BASE_DIR, TEMPLATES
 
-class RenderizaHtml():
-    
-    def renderHtml(request, subject, recipient_list):
-        html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
-        body = EmailMessage(subject,html_content, 
-                                 'josianes.silva@gmail.com',
-                                recipient_list)
+import datetime
+import os
+import sys
+
+# from .management.commands.send_subscription_teste_mail import Command
+from email.mime.image import MIMEImage
+
+from coreAdmin.settings import BASE_DIR, STATICFILES_DIRS, TEMPLATES
+from django.conf import Settings
+from django.core.mail import (
+    EmailMessage,
+    EmailMultiAlternatives,
+    mail_admins,
+    mail_managers,
+    send_mail,
+)
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.template import RequestContext, loader
+from django.template.loader import get_template, render_to_string
+from django.utils.html import strip_tags
+from newsletter.models.subscription import Subscription
+
+
+class RenderizaHtml:
+
+    def send_activation_mail(self, user: Subscription):
+
+        html_content = render_to_string(
+            "welcome.html", {"activation_code": user.activation_code}
+        )
+
+        body = EmailMessage(
+            "Titulo do Email",
+            html_content,
+            "josianes.silva@gmail.com",
+            [user.email],
+        )
         body.content_subtype = "html and image"
-        #body = EmailMultiAlternatives(subject,html_content, 
+        # body = EmailMultiAlternatives(subject,html_content,
         #                         'josianes.silva@gmail.com',
         #                        recipient_list)
         ####  anexar arquivo
-        #file_path = f"./staticfiles/img/Captura_de_tela_2024-03-13_190407.png"
-        #file_path = ({TEMPLATES}/'welcome.html')
-        #body.attach_file(file_path)
+        # file_path = f"./staticfiles/img/Captura_de_tela_2024-03-13_190407.png"
+        # file_path = ({TEMPLATES}/'welcome.html')
+        # body.attach_file(file_path)
         #### end anexar arquivo
         return body.send()
-    
+
     def renderHtmlUnsubscribe(request, unsubscribe, recipient_list):
         if unsubscribe == True:
             print("Send email vai com Deus")
-        #return #sys.stdout.write(f"Exemplo de como fazer um print ${unsubscribe}")
-        html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
-        body = EmailMessage(unsubscribe,html_content, 
-                                    'josianes.silva@gmail.com',
-                                    recipient_list)
-        body.content_subtype = "html and image" 
+        # return #sys.stdout.write(f"Exemplo de como fazer um print ${unsubscribe}")
+        html_content = render_to_string("welcome.html", {"nome": "Josiane"})
+        body = EmailMessage(
+            unsubscribe, html_content, "josianes.silva@gmail.com", recipient_list
+        )
+        body.content_subtype = "html and image"
         return body.send()
