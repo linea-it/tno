@@ -1,76 +1,3 @@
-
-"""
-#from django.core.mail import mail_admins, mail_managers, send_mail
-from django.shortcuts import render, redirect
-from django.template.loader import render_to_string, get_template
-import sys
-from django.core.mail import mail_admins, mail_managers, send_mail, EmailMessage 
-from django.utils.html import strip_tags
-from django.template import RequestContext, loader
-
-class RnderizaHtml():
-    def renderHtml(emails):
-    #def renderHtml():    
-        render_body = render_to_string(
-                    'welcome.html',
-                    {
-                        "visits": "Ola Mundo",
-                    },
-                )
-        body = strip_tags(render_body)
-        sys.stdout.write(f"Exemplo de como fazer um print ${strip_tags(body)}")
-        ####
-        send_mail(
-            subject="teste envio email", #subject,
-            #message="If you're reading this, it was successful.",
-            message= render_body, #body,
-            #message= loader.get_template("welcome.html"),#.render(Context)
-            from_email=None,
-            recipient_list=[emails]
-        )
-        
-        return 
-##########
-#from django.shortcuts import render, redirect
-#from .forms import ContactMeForm
-#from django.conf import settings 
-#from django.template.loader import get_template  
-from django.core.mail import EmailMessage 
-
-def sendmail_contact(data):
-    #message_body = get_template('send.html').render(data)  
-    message_body = get_template('welcome.html').render(data)  
-    email = EmailMessage(data['subject'],
-                            message_body, settings.DEFAULT_FROM_EMAIL,
-                            to=['email@test.com'])
-    email.content_subtype = "html"    
-    return email.send()
-
-# Create your views here.
-def contact_me(request):
-    if request.method == 'POST':
-        form = ContactMeForm(request.POST) 
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.save()
-             
-            # data, puxo as informações dos campos name, email, subject, message.
-            data = { 
-                'name': request.POST.get('name'), 
-                'email': request.POST.get('email'),
-                'subject': request.POST.get('subject'),
-                'message': request.POST.get('message'),
-            } 
-            sendmail_contact(data) # Aqui vou criar uma função para envio
-            # chamei de sendmail_contact
-
-            return redirect('contact')
-    else:
-        form = ContactMeForm()
-    return render(request, 'form-contact.html', {'form': form})
-
-#####
-"""
 from django.http import HttpResponse
 import datetime
 from django.shortcuts import render, redirect
@@ -84,14 +11,20 @@ from email.mime.image import MIMEImage
 import os
 from django.conf import Settings
 from coreAdmin.settings import STATICFILES_DIRS, BASE_DIR, TEMPLATES
+from .views.subscription import SubscriptionSerializer
 
 class RenderizaHtml():
     
+    #context = dict({"activateCode": activateCode})
     def renderHtml(request, subject, recipient_list):
-        html_content = render_to_string('welcome.html', {"nome": 'Josiane'})
+        #email =  #SubscriptionSerializer.__getattribute__(email)
+        #print(email)
+        activateCode = 'c3d2c9d6-7e8c-4a75-8aa1-2f36a45a7e20' #SubscriptionSerializer.__getattribute__(activateCode)
+        print(activateCode)
+        html_content = render_to_string('activate_subscription.html',{"activateCode": activateCode},)
         body = EmailMessage(subject,html_content, 
                                  'josianes.silva@gmail.com',
-                                recipient_list)
+                                recipient_list, headers={"Message-ID": "foo"},)
         body.content_subtype = "html and image"
         #body = EmailMultiAlternatives(subject,html_content, 
         #                         'josianes.silva@gmail.com',

@@ -23,7 +23,7 @@ class SubscriptionViewSet(
     filter_fields = ("email", "activation_code")
     serializer_class = SubscriptionSerializer
 
-    @action(detail=False, methods=["get","delete"], permission_classes=(IsAuthenticated,))
+    @action(detail=False, methods=["get","post"], permission_classes=(IsAuthenticated,))
     def unsubscribe(self, request):
 
         params = self.request.query_params
@@ -36,11 +36,17 @@ class SubscriptionViewSet(
 
         obj.unsubscribe_date = datetime.now()
         obj.unsubscribe = True
-        obj.delete()
+        obj.save()
 
         # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
 
-        return Response(status=status.HTTP_200_ok)
+        #return Response(obj, status=status.HTTP_200_ok)
+        result = dict(
+            {
+                "success": True,
+            }
+        )
+        return Response(result, template_name='results.html') 
     
     @action(detail=False, methods=["get","post"], permission_classes=(IsAuthenticated,))
     def activate(self, request):
@@ -59,4 +65,11 @@ class SubscriptionViewSet(
 
         # http://localhost/admin/newsletter/subscription/activate?c=932af871-e0a0-47ce-a75a-acf568c8bd4c
 
-        return Response(status=status.HTTP_200_ok)
+        #return Response(status=status.HTTP_200_ok)
+        result = dict(
+            {
+                "success": True,
+            }
+        )
+
+        return Response(result)
