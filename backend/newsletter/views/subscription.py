@@ -1,5 +1,6 @@
 from datetime import datetime, tzinfo
 
+from django.http.response import JsonResponse
 from django.shortcuts import render
 from drf_spectacular.utils import extend_schema
 from newsletter.models import Subscription
@@ -9,6 +10,7 @@ from rest_framework import status, viewsets
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.renderers import JSONRenderer, TemplateHTMLRenderer
 from rest_framework.response import Response
 
 
@@ -50,8 +52,10 @@ class SubscriptionViewSet(
                 "success": True,
             }
         )
-
-        return Response(result)
+        if format == "json" or format is None:
+            return JsonResponse(result, status=status.HTTP_200_OK)
+        else:
+            return render(request, "activation_confirm.html", {"context": result})
 
     @action(detail=False, methods=["post"], permission_classes=(AllowAny,))
     def info(self, request):
@@ -90,7 +94,14 @@ class SubscriptionViewSet(
                 "success": True,
             }
         )
-        return Response(result)
+
+        if format == "json" or format is None:
+            return JsonResponse(
+                result,
+                status=status.HTTP_200_OK,
+            )
+        else:
+            return render(request, "unsubscription_confirm.html", {"context": result})
 
     @action(detail=False, methods=["post"], permission_classes=(AllowAny,))
     def reactivate(self, request):
