@@ -32,9 +32,6 @@ export default function Subscribe() {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
   
   const [open, setOpen] = React.useState('')
-  //const handleClose = () => {
-  //  setOpen('')
-  //}
 
   // this function for get our title value from the user.
   function emailChangeHandler(event) {
@@ -54,11 +51,11 @@ export default function Subscribe() {
       setOpen('success')
     })
     axios
-       .get("http://localhost/api/subscription/")
-       .then((res) => checkEmail(res.data))
-       setSnackbarOpen(true)
-       //setOpen('unauthorized')
-    setEmail(" ") 
+      .get("http://localhost/api/subscription/")
+      .then((res) => checkEmail(res.data))
+      setSnackbarOpen(true)
+      setOpen('unauthorized')
+      setEmail(" ") 
   };
 
   const checkEmail = (getdata) => {
@@ -73,10 +70,6 @@ export default function Subscribe() {
     }
   };
   
-  //const mutation = useMutation(() => {
-  //  return 
-  //})
-  
   const handleCloseSnackbar = (event, reason) => {
     if (reason === 'clickaway') {
       return
@@ -84,7 +77,6 @@ export default function Subscribe() {
     setSnackbarOpen(false)
     setOpen('')
   }
-  //{ successAlert()}
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -111,7 +103,7 @@ export default function Subscribe() {
               name="email"
               autoComplete="email"
               autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white', backgroundColor: '#F4F4F450' }}}
-              value={email}//enteredTitle="";
+              value={email}
               onChange={emailChangeHandler}
             />
             <Button
@@ -153,7 +145,6 @@ export default function Subscribe() {
                   </p>
                 </Alert>
               </Snackbar>  
-              
           </Box>
         </Box>
       </Container>

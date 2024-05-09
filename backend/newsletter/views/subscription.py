@@ -46,7 +46,7 @@ class SubscriptionViewSet(
                 "success": True,
             }
         )
-        return Response(result, template_name='results.html') 
+        return Response(result) 
     
     @action(detail=False, methods=["get","post"], permission_classes=(IsAuthenticated,))
     def activate(self, request):
