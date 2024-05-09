@@ -16,48 +16,40 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument(
             "email",
-            nargs="*",
-            help="One or more email addresses to send a test email to.",
+            help="One email addresses to send a test email to.",
         )
 
-    def welcome_mail(self, email: str):
-        ###  trecho glauber
-        # send_mail(
-        #    subject=subject,
-        #    #message="If you're reading this, it was successful.",
-        #    message= body, #renderHtml() #body,
-        #    from_email=None,
-        #    recipient_list=recipient_list,
-        # )
-        ### end trecho glauber
-        try:
-            user = Subscription.objects.get(email=email)
-            envio = RenderizaHtml()
-            envio.send_activation_mail(user)
-
-        except Subscription.DoesNotExist as e:
-            self.stdout.write(f"Email não cadastrado")
+        parser.add_argument(
+            "--step",
+            dest="step",
+            default="activation",
+            help="Define o tipo de email que será enviado.",
+        )
 
     def handle(self, *args, **kwargs):
-        # self.stdout.write(f"Exemplo de como fazer um print")
 
-        self.welcome_mail(email=kwargs["email"][0])
+        available_steps = ["activation", "welcome"]
 
-    """
-    def unsubscribe_mail(self, recipient_list: list):
-        subject = "Test Subscription from %s on %s" % (
-            socket.gethostname(),
-            timezone.now(),
-        )
-    """
-    """ 
-        glauber
-        send_mail(
-            subject=subject,
-            message="If you're reading this, it was successful.",
-            from_email=None,
-            recipient_list=recipient_list,
-        )"""
+        email = kwargs["email"]
+        step = kwargs["step"]
 
-    #    envio_usubscribe = RenderizaHtml()
-    #    envio_usubscribe.renderHtmlUnsubscribe(True, recipient_list)
+        if step not in available_steps:
+            self.stdout.write(
+                f"O parametro step precisar ser um destes valores: {available_steps}"
+            )
+            return
+
+        try:
+            user = Subscription.objects.get(email=email)
+
+            # TODO: Renomear a classe para algo como NewsletterSendEmail
+            envio = RenderizaHtml()
+
+            if step == "activation":
+                envio.send_activation_mail(user)
+
+            if step == "welcome":
+                envio.send_welcome_mail(user)
+
+        except Subscription.DoesNotExist as e:
+            raise Exception(f"Email não cadastrado.")

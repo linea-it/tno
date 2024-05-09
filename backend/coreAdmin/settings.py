@@ -44,6 +44,8 @@ else:
         "DJANGO_ALLOWED_HOSTS", default=["solarsystem.linea.org.br"]
     )
 
+# the hostname and port number of the current Server URL
+SITE_URL = "//localhost"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -150,13 +152,14 @@ ENVIRONMENT_NAME = env("DJANGO_ENVIRONMENT_NAME", default="Development")
 
 # Emails
 # Notifications Email
-EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.gov.br")
+EMAIL_NEWSLETTER_NOREPLY = "noreplysolarsystem@linea.org.br"
+EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.org.br")
 
 
-EMAIL_HELPDESK = os.environ.get("EMAIL_HELPDESK", "helpdesk@linea.gov.br")
+EMAIL_HELPDESK = os.environ.get("EMAIL_HELPDESK", "helpdesk@linea.org.br")
 
 EMAIL_NOTIFICATION_COPY_TO = list(
-    [os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.gov.br")]
+    [os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.org.br")]
 )
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"

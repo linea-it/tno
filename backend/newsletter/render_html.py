@@ -1,76 +1,3 @@
-"""
-#from django.core.mail import mail_admins, mail_managers, send_mail
-from django.shortcuts import render, redirect
-from django.template.loader import render_to_string, get_template
-import sys
-from django.core.mail import mail_admins, mail_managers, send_mail, EmailMessage 
-from django.utils.html import strip_tags
-from django.template import RequestContext, loader
-
-class RnderizaHtml():
-    def renderHtml(emails):
-    #def renderHtml():    
-        render_body = render_to_string(
-                    'welcome.html',
-                    {
-                        "visits": "Ola Mundo",
-                    },
-                )
-        body = strip_tags(render_body)
-        sys.stdout.write(f"Exemplo de como fazer um print ${strip_tags(body)}")
-        ####
-        send_mail(
-            subject="teste envio email", #subject,
-            #message="If you're reading this, it was successful.",
-            message= render_body, #body,
-            #message= loader.get_template("welcome.html"),#.render(Context)
-            from_email=None,
-            recipient_list=[emails]
-        )
-        
-        return 
-##########
-#from django.shortcuts import render, redirect
-#from .forms import ContactMeForm
-#from django.conf import settings 
-#from django.template.loader import get_template  
-from django.core.mail import EmailMessage 
-
-def sendmail_contact(data):
-    #message_body = get_template('send.html').render(data)  
-    message_body = get_template('welcome.html').render(data)  
-    email = EmailMessage(data['subject'],
-                            message_body, settings.DEFAULT_FROM_EMAIL,
-                            to=['email@test.com'])
-    email.content_subtype = "html"    
-    return email.send()
-
-# Create your views here.
-def contact_me(request):
-    if request.method == 'POST':
-        form = ContactMeForm(request.POST) 
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.save()
-             
-            # data, puxo as informações dos campos name, email, subject, message.
-            data = { 
-                'name': request.POST.get('name'), 
-                'email': request.POST.get('email'),
-                'subject': request.POST.get('subject'),
-                'message': request.POST.get('message'),
-            } 
-            sendmail_contact(data) # Aqui vou criar uma função para envio
-            # chamei de sendmail_contact
-
-            return redirect('contact')
-    else:
-        form = ContactMeForm()
-    return render(request, 'form-contact.html', {'form': form})
-
-#####
-"""
-
 import datetime
 import os
 import sys
@@ -79,7 +6,7 @@ import sys
 from email.mime.image import MIMEImage
 
 from coreAdmin.settings import BASE_DIR, STATICFILES_DIRS, TEMPLATES
-from django.conf import Settings
+from django.conf import settings
 from django.core.mail import (
     EmailMessage,
     EmailMultiAlternatives,
@@ -98,27 +25,32 @@ from newsletter.models.subscription import Subscription
 class RenderizaHtml:
 
     def send_activation_mail(self, user: Subscription):
-
+        """Email enviado logo após o registro do usuario
+        Contem o botão "Confirmar" que ao ser clicado atualiza o cadastro como ativo.
+        """
         html_content = render_to_string(
-            "welcome.html", {"activation_code": user.activation_code}
+            "activate_subscription.html",
+            {
+                "host": settings.SITE_URL.rstrip("/"),
+                "activation_code": user.activation_code,
+            },
         )
+        self.send_newsletter_email("Activation Subscription", html_content, user.email)
 
-        body = EmailMessage(
-            "Titulo do Email",
-            html_content,
-            "josianes.silva@gmail.com",
-            [user.email],
+    def send_welcome_mail(self, user: Subscription):
+        """Email enviado após a ativação por parte do usuário.
+        Contem instruções informando o usuario como proceder para criar a lista customizada.
+        """
+        html_content = render_to_string(
+            "welcome.html",
+            {
+                "host": settings.SITE_URL.rstrip("/"),
+                "activation_code": user.activation_code,
+            },
         )
-        body.content_subtype = "html and image"
-        # body = EmailMultiAlternatives(subject,html_content,
-        #                         'josianes.silva@gmail.com',
-        #                        recipient_list)
-        ####  anexar arquivo
-        # file_path = f"./staticfiles/img/Captura_de_tela_2024-03-13_190407.png"
-        # file_path = ({TEMPLATES}/'welcome.html')
-        # body.attach_file(file_path)
-        #### end anexar arquivo
-        return body.send()
+        self.send_newsletter_email(
+            "Welcome to Solar System Newsletter", html_content, user.email
+        )
 
     def renderHtmlUnsubscribe(request, unsubscribe, recipient_list):
         if unsubscribe == True:
@@ -127,6 +59,17 @@ class RenderizaHtml:
         html_content = render_to_string("welcome.html", {"nome": "Josiane"})
         body = EmailMessage(
             unsubscribe, html_content, "josianes.silva@gmail.com", recipient_list
+        )
+        body.content_subtype = "html and image"
+        return body.send()
+
+    def send_newsletter_email(self, subject, body, recipient):
+
+        body = EmailMessage(
+            subject,
+            body,
+            settings.EMAIL_NEWSLETTER_NOREPLY,
+            [recipient],
         )
         body.content_subtype = "html and image"
         return body.send()
