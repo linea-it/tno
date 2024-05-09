@@ -10,7 +10,8 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-
+from rest_framework.renderers import TemplateHTMLRenderer, JSONRenderer
+from django.http.response import JsonResponse
 
 @extend_schema(exclude=True)
 class SubscriptionViewSet(
@@ -40,15 +41,19 @@ class SubscriptionViewSet(
         obj.unsubscribe = True
         obj.save()
 
-        # Exemplo url de unsubscribe: http://localhost/api/subscription/unsubscribe?c=c089bcaf-43a5-436c-a534-77bf257b1e1a
-        # return Response(obj, status=status.HTTP_200_ok)
         result = dict(
             {
                 "success": True,
             }
         )
-        return Response(result)
+        #return Response(template_name='unsubscription_confirm.html')
 
+        if format == 'json' or format is None:
+            return JsonResponse(result, status=status.HTTP_200_OK)
+        else:
+            return render(request,'unsubscription_confirm.html',{"context":result})
+
+            
     @action(
         detail=False, methods=["get", "post"], permission_classes=(IsAuthenticated,)
     )
@@ -79,4 +84,7 @@ class SubscriptionViewSet(
             }
         )
 
-        return Response(result)
+        if format == 'json' or format is None:
+            return JsonResponse(result, status=status.HTTP_200_OK)
+        else:
+            return render(request,'activation_confirm.html',{"context":result})
