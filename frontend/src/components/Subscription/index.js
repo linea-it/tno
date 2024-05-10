@@ -54,7 +54,7 @@ export default function Subscribe() {
       .get("http://localhost/api/subscription/")
       .then((res) => checkEmail(res.data))
       setSnackbarOpen(true)
-      setOpen('unauthorized')
+      setOpen('warning')
       setEmail(" ") 
   };
 

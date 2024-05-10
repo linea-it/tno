@@ -47,6 +47,7 @@ class SubscriptionViewSet(
         # return Response(status=status.HTTP_200_ok)
         # TODO: Retornar uma página html com uma mensagem simples de confirmação
         # https://www.django-rest-framework.org/api-guide/renderers/#templatehtmlrenderer
+
         result = dict(
             {
                 "success": True,
@@ -125,4 +126,7 @@ class SubscriptionViewSet(
                 "success": True,
             }
         )
-        return Response(result)
+        if format == "json" or format is None:
+            return JsonResponse(result, status=status.HTTP_200_OK)
+        else:
+            return render(request, "activation_confirm.html", {"context": result})
