@@ -4,7 +4,7 @@ from django.http.response import JsonResponse
 from django.shortcuts import render
 from drf_spectacular.utils import extend_schema
 from newsletter.models import Subscription
-from newsletter.render_html import RenderizaHtml
+from newsletter.newsletter_send_mail import NewsletterSendEmail
 from newsletter.serializers import SubscriptionSerializer
 from rest_framework import status, viewsets
 from rest_framework.authentication import BasicAuthentication, SessionAuthentication
@@ -41,7 +41,7 @@ class SubscriptionViewSet(
         obj.activated = True
         obj.save()
 
-        envio = RenderizaHtml()
+        envio = NewsletterSendEmail()
         envio.send_welcome_mail(obj)
 
         # return Response(status=status.HTTP_200_ok)

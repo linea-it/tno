@@ -51,10 +51,10 @@ class NewsletterSendEmail:
         self.send_newsletter_email(
             "Welcome to Solar System Newsletter", html_content, user.email
         )
-
+    """
     def renderHtmlUnsubscribe(request, unsubscribe, recipient_list):
         if unsubscribe == True:
-            print("Send email vai com Deus")
+            print("Ok")
         # return #sys.stdout.write(f"Exemplo de como fazer um print ${unsubscribe}")
         html_content = render_to_string("welcome.html", {"nome": "Josiane"})
         body = EmailMessage(
@@ -62,7 +62,8 @@ class NewsletterSendEmail:
         )
         body.content_subtype = "html and image"
         return body.send()
-
+    """
+    
     def send_newsletter_email(self, subject, body, recipient):
 
         body = EmailMessage(
