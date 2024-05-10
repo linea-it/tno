@@ -12,7 +12,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from newsletter.models import Subscription
-from newsletter.render_html import RenderizaHtml
+from newsletter.newsletter_send_mail import NewsletterSendEmail
 
 
 @receiver(post_save, sender=Subscription)
@@ -21,7 +21,7 @@ def send_welcome_email(sender, instance, signal, created, **kwargs):
     Send a Activation email after user send email in subscription form.
     """
     if created:
-        envio = RenderizaHtml()
+        envio = NewsletterSendEmail()
         envio.send_activation_mail(user=instance)
 
     else:
