@@ -1,8 +1,7 @@
 from django.contrib import admin
 from newsletter.models import Subscription
-from .models import EventFilter
-from .models import Submission
-from .models import Attachment
+
+from .models import Attachment, EventFilter, Submission
 
 
 @admin.register(Subscription)
@@ -15,11 +14,13 @@ class SubscriptionAdmin(admin.ModelAdmin):
         "unsubscribe_date",
         "unsubscribe",
     )
+
+
 @admin.register(EventFilter)
 class EventFilterAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "preference_id",
+        "subscription_id",
         "filter_name",
         "frequency",
         "magnitude",
@@ -30,11 +31,12 @@ class EventFilterAdmin(admin.ModelAdmin):
         "event_duration",
         "diameter",
         "geo_location",
-        "lat", 
-        "lon", 
-        "alt",
-        "radius", 
+        "latitude",
+        "longitude",
+        "altitude",
+        "location_radius",
     )
+
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):
@@ -50,6 +52,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "title",
         "sent_date",
     )
+
 
 @admin.register(Attachment)
 class AttachmentAdmin(admin.ModelAdmin):

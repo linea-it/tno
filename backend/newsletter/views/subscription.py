@@ -68,7 +68,9 @@ class SubscriptionViewSet(
 
         obj = Subscription.objects.get(activation_code=activation_code)
 
-        result = dict({"email": obj.email, "is_active": not obj.unsubscribe})
+        result = dict(
+            {"id": obj.id, "email": obj.email, "is_active": not obj.unsubscribe}
+        )
 
         return Response(result)
 

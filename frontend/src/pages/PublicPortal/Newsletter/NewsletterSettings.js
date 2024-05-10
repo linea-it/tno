@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { useQuery } from 'react-query'
 import Grid from '@mui/material/Grid'
-import Box from '@mui/material/Box'
 import Container from '@mui/material/Container'
 import Card from '@mui/material/Card'
+import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
@@ -14,13 +13,13 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import { getSubscriptionInfo, unsubscribe, reactivateSubscription } from '../../../services/api/Newsletter'
-import { CardHeader } from '../../../../node_modules/@mui/material/index'
+import EventFiltersSettings from './EventFiltersSettings'
+import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
 
 function NewsletterSettings() {
   const { id } = useParams()
 
-  const [info, setInfo] = useState({})
+  const [info, setInfo] = useState({ id: undefined })
   const [unsubError, setUnsubError] = useState(false)
   const [activError, setActivError] = useState(false)
 
@@ -29,18 +28,6 @@ function NewsletterSettings() {
       setInfo(res.data)
     })
   }, [id])
-
-  // const { data, isLoading } = useQuery({
-  //   queryKey: ['subscriptionInfo', { id: id }],
-  //   queryFn: getSubscriptionInfo,
-  //   keepPreviousData: true,
-  //   refetchInterval: false,
-  //   refetchOnWindowFocus: false,
-  //   refetchOnmount: false,
-  //   refetchOnReconnect: false,
-  //   // retry: 1,
-  //   staleTime: 1 * 60 * 60 * 1000
-  // })
 
   const handleUnsubscribe = (e) => {
     unsubscribe(id)
@@ -91,13 +78,16 @@ function NewsletterSettings() {
           </Typography>
         </Grid>
         <Grid item xs={12} mt={2}>
-          <Card sx={{ margin: '16px 0' }}>
+          <Card>
             <CardHeader
               title='Filtros e Configurações'
               subheader='Gerencie suas preferencias de filtro e frequencia dos emails.'
             ></CardHeader>
             <CardContent></CardContent>
           </Card>
+        </Grid>
+        <Grid item xs={12} mt={2}>
+          <EventFiltersSettings subscriptionId={info.id}></EventFiltersSettings>
         </Grid>
         <Grid item xs={12} mt={2}>
           <Card>
