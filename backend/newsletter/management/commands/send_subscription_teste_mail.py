@@ -7,7 +7,7 @@ from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.utils import timezone
 from newsletter.models.subscription import Subscription
-from newsletter.render_html import RenderizaHtml
+from newsletter.newsletter_send_mail import NewsletterSendEmail
 
 
 class Command(BaseCommand):
@@ -43,7 +43,7 @@ class Command(BaseCommand):
             user = Subscription.objects.get(email=email)
 
             # TODO: Renomear a classe para algo como NewsletterSendEmail
-            envio = RenderizaHtml()
+            envio = NewsletterSendEmail()
 
             if step == "activation":
                 envio.send_activation_mail(user)
