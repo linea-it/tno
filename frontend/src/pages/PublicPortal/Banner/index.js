@@ -30,7 +30,7 @@ function PublicBanner() {
             
           </Box>
         </Grid>
-        <Grid item xs={9.5} className={classes.textOcultatiom}>
+        <Grid item xs={9.5}>
               <Subscribe></Subscribe>
         </Grid>
       </Grid>
