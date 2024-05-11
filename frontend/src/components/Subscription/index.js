@@ -1,28 +1,16 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Stack } from '../../../node_modules/@mui/material/index';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
 import AlertTitle from '@mui/material/AlertTitle'
-import { color } from 'd3';
-import { Height } from '../../../node_modules/@mui/icons-material/index';
-import { useEffect, useState } from 'react'
-import { useMutation } from 'react-query'
 import axios from 'axios'
 import {saveEmailSubscription} from '../../services/api/Subscription'
-import { api } from '../../services/api/Api';
 import { data } from '../../../node_modules/browserslist/index';
 
 const defaultTheme = createTheme();
@@ -30,18 +18,17 @@ const defaultTheme = createTheme();
 export default function Subscribe() {
   const [email, setEmail] = useState("")
   const [snackbarOpen, setSnackbarOpen] = useState(false)
+  const [validEmail, setValidEmail] = useState(true)
   
   const [open, setOpen] = React.useState('')
 
   // this function for get our title value from the user.
   function emailChangeHandler(event) {
     setEmail(event.target.value);
+    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value)
+    setValidEmail(isValid)
   }
-    //api.post("http://localhost/api/subscription/",{
-    //  email: "adriano@gmail.com"
-    //}) // this work
-    //api.delete("http://localhost/api/subscription/unsubscribe/?c=6a48fbd6-6d34-4b9c-b022-ac3648219b3a"
-
+   
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -51,7 +38,7 @@ export default function Subscribe() {
       setOpen('success')
     })
     axios
-      .get("http://localhost/api/subscription/")
+      .get(`${window.location.origin}/api/subscription/`)
       .then((res) => checkEmail(res.data))
       setSnackbarOpen(true)
       setOpen('warning')
@@ -64,7 +51,7 @@ export default function Subscribe() {
         setSnackbarOpen(true)
         setOpen('warning')
       }else{
-        axios.post("http://localhost/api/subscription/", data).then((res) => {
+        axios.post(`${window.location.origin}/api/subscription/`, data).then((res) => {
         console.log(res.data);
     });
     }
@@ -102,9 +89,12 @@ export default function Subscribe() {
               label="Email Address"
               name="email"
               autoComplete="email"
-              autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white', backgroundColor: '#F4F4F450' }}}
+              autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white' }}}
               value={email}
               onChange={emailChangeHandler}
+              error={!validEmail}
+              helperText={!validEmail ? 'Please enter a valid email address' : ''}
+              InputLabelProps={{ sx: { color: 'white' } }}
             />
             <Button
               type="submit"
