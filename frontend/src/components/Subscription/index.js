@@ -76,68 +76,16 @@ export default function Subscribe() {
             flexDirection: 'columns',
             alignItems: 'center',
             color: '#F4F4F4',
-            borderRadius: '6px', width: '60vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' 
+            borderRadius: '6px', width: '60vw', textAlign: 'center' 
           }}
         >
-          <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
+           <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
           <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white' }}}
-              value={email}
-              onChange={emailChangeHandler}
-              error={!validEmail}
-              helperText={!validEmail ? 'Please enter a valid email address' : ''}
-              InputLabelProps={{ sx: { color: 'white' } }}
-            />
-            <Button
-              type="submit"
-              fullWidth 
-              variant="contained"
-              sx={{ width: '20vw', height:'34px'}}
-            >
-              Subscribe
-            </Button>
-            </Stack>
-              <p>
-                Receive reports in your email with the main star occultation predictions in your region.
-              </p>
-              <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                open={open === 'success'}
-                autoHideDuration={3500}
-                //onClose={handleClose}
-                onClose={handleCloseSnackbar}
-              >
-                <Alert onClose={handleCloseSnackbar} severity='success'>
-                  <AlertTitle>Success</AlertTitle>
-                  <p>
-                    Email successfully registered. Check your email inbox.
-                  </p>
-                </Alert>
-              </Snackbar>  
-              <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                open={open === 'warning'}
-                autoHideDuration={3500}
-                onClose={handleCloseSnackbar}
-              >
-                <Alert onClose={handleCloseSnackbar} severity='warning'>
-                  <AlertTitle>Warning</AlertTitle>
-                  <p>
-                    'Subscription with this Email already exists.'
-                  </p>
-                </Alert>
-              </Snackbar>  
+
+          </Stack>
           </Box>
         </Box>
-      </Container>
+        </Container>
     </ThemeProvider>
-  );
+  )
 }

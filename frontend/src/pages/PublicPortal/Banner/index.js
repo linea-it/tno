@@ -18,7 +18,7 @@ function PublicBanner() {
         <Grid item xs={12} container className={classes.bannerWrapper}>
           <Box
             className='container textBanner'
-            sx={{ borderRadius: '6px', width: '45vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' }}
+            sx={{ borderRadius: '6px', width: '45vw', textAlign: 'center' }}
           >
             <Grid item xs={12} className={classes.textOcultatiom}>
               <label>
