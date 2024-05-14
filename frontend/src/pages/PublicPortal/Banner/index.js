@@ -30,7 +30,7 @@ function PublicBanner() {
             
           </Box>
         </Grid>
-        <Grid item xs={9.5}>
+        <Grid item xs={11.6}>
               <Subscribe></Subscribe>
         </Grid>
       </Grid>
