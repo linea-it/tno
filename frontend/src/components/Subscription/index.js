@@ -12,9 +12,6 @@ import Snackbar from '@mui/material/Snackbar'
 import AlertTitle from '@mui/material/AlertTitle'
 import axios from 'axios'
 import {saveEmailSubscription} from '../../services/api/Subscription'
-import { data } from '../../../node_modules/browserslist/index';
-import { object } from 'prop-types';
-import { array } from '../../../node_modules/i/lib/util';
 
 const defaultTheme = createTheme();
 
@@ -32,22 +29,6 @@ export default function Subscribe() {
     setValidEmail(isValid)
   }
 
-  // verifica se o email digitado exite no banco
-  /*const checkEmail = () => {
-      const emails_bd = 
-        axios.get(`${window.location.origin}/api/subscription/{{ r }}`)
-        //const data = response.data
-        
-        
-        //console.log(error)
-        console.log('Já veriquei o email....')
-        //setSnackbarOpen(true)
-        //setOpen('warning')
-        //setEmail(" ")
-        return emails_bd
-  }*/
-  //checkEmail()
-  //console.log(emails_bd)
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -65,9 +46,9 @@ export default function Subscribe() {
           const campo_email = Object.getOwnPropertyDescriptor(resposta.data.results[i], "email").value
         
           if (r_email == campo_email){
-            console.log(r_email, campo_email),
-            setSnackbarOpen(true),
-            setOpen('warning'),
+            console.log(r_email, campo_email)
+            setSnackbarOpen(true)
+            setOpen('warning')
             console.log('Entrei no if email existe....')
           }else{
             saveEmailSubscription(r_email).then(() => {
@@ -75,19 +56,6 @@ export default function Subscribe() {
               setOpen('success')
               console.log('salvando email no bd')})
           } 
-
-        /*************************************  dont work */
-        /*eslint no-unused-expressions: ["error", { "allowTernary": true }]*/
-        /*r_email == campo_email 
-        ? (console.log(r_email, campo_email), 
-          setSnackbarOpen(true),
-          setOpen('warning'),
-          console.log('Entrei no if email existe....'))
-        : saveEmailSubscription(r_email).then(() => {
-            setSnackbarOpen(true)
-            setOpen('success')
-            console.log('salvando email no bd')
-          })*/
       }
     })
   }
