@@ -30,11 +30,7 @@ function PublicBanner() {
             
           </Box>
         </Grid>
-<<<<<<< HEAD
-        <Grid item xs={9.5}>
-=======
         <Grid item xs={11.6}>
->>>>>>> 941-add-subscribe-on-banner
               <Subscribe></Subscribe>
         </Grid>
       </Grid>

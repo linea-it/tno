@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-=======
 // eslint-disable-next-line no-unused-expressions 
->>>>>>> 941-add-subscribe-on-banner
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,10 +12,6 @@ import Snackbar from '@mui/material/Snackbar'
 import AlertTitle from '@mui/material/AlertTitle'
 import axios from 'axios'
 import {saveEmailSubscription} from '../../services/api/Subscription'
-<<<<<<< HEAD
-import { data } from '../../../node_modules/browserslist/index';
-=======
->>>>>>> 941-add-subscribe-on-banner
 
 const defaultTheme = createTheme();
 
@@ -35,11 +28,6 @@ export default function Subscribe() {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value)
     setValidEmail(isValid)
   }
-<<<<<<< HEAD
-   
-=======
-
->>>>>>> 941-add-subscribe-on-banner
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -69,31 +57,8 @@ export default function Subscribe() {
           } 
       }
     })
-<<<<<<< HEAD
-    axios
-      .get(`${window.location.origin}/api/subscription/`)
-      .then((res) => checkEmail(res.data))
-      setSnackbarOpen(true)
-      setOpen('warning')
-      setEmail(" ") 
-  };
-
-  const checkEmail = (getdata) => {
-    console.log(getdata);
-    if(getdata.includes(email)){
-        setSnackbarOpen(true)
-        setOpen('warning')
-      }else{
-        axios.post(`${window.location.origin}/api/subscription/`, data).then((res) => {
-        console.log(res.data);
-    });
-    }
-  };
-  
-=======
   }
 
->>>>>>> 941-add-subscribe-on-banner
   const handleCloseSnackbar = (event, reason) => {
     if (reason === 'clickaway') {
       return
