@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// eslint-disable-next-line no-unused-expressions 
+>>>>>>> 941-add-subscribe-on-banner
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -11,7 +15,10 @@ import Snackbar from '@mui/material/Snackbar'
 import AlertTitle from '@mui/material/AlertTitle'
 import axios from 'axios'
 import {saveEmailSubscription} from '../../services/api/Subscription'
+<<<<<<< HEAD
 import { data } from '../../../node_modules/browserslist/index';
+=======
+>>>>>>> 941-add-subscribe-on-banner
 
 const defaultTheme = createTheme();
 
@@ -28,15 +35,41 @@ export default function Subscribe() {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value)
     setValidEmail(isValid)
   }
+<<<<<<< HEAD
    
+=======
+
+>>>>>>> 941-add-subscribe-on-banner
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const r_email = data.get('email')
-    saveEmailSubscription(r_email).then(() => {
-      setSnackbarOpen(true)
-      setOpen('success')
+    
+    axios.get(`${window.location.origin}/api/subscription/`).then(function (resposta){
+      
+      const  tamanho = resposta.data.results.length
+      console.log(tamanho)
+      //cores.forEach(function (cor) {
+        //  console.log(cor);
+        //})
+        //const campo_email = [ ]
+        for(let i = 0; i < tamanho; i = i + 1 ) {
+          const campo_email = Object.getOwnPropertyDescriptor(resposta.data.results[i], "email").value
+        
+          if (r_email == campo_email){
+            console.log(r_email, campo_email)
+            setSnackbarOpen(true)
+            setOpen('warning')
+            console.log('Entrei no if email existe....')
+          }else{
+            saveEmailSubscription(r_email).then(() => {
+              setSnackbarOpen(true)
+              setOpen('success')
+              console.log('salvando email no bd')})
+          } 
+      }
     })
+<<<<<<< HEAD
     axios
       .get(`${window.location.origin}/api/subscription/`)
       .then((res) => checkEmail(res.data))
@@ -57,6 +90,10 @@ export default function Subscribe() {
     }
   };
   
+=======
+  }
+
+>>>>>>> 941-add-subscribe-on-banner
   const handleCloseSnackbar = (event, reason) => {
     if (reason === 'clickaway') {
       return
@@ -72,16 +109,17 @@ export default function Subscribe() {
         <Box className='container textBanner'
           sx={{
             marginTop: 4,
+            mx: 'auto',
             display: 'flex',
             flexDirection: 'columns',
             alignItems: 'center',
             color: '#F4F4F4',
-            borderRadius: '6px', width: '60vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' 
+            borderRadius: '6px', width: '60vw', textAlign: 'center' 
           }}
         >
-          <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
+           <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
           <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-            <TextField
+          <TextField
               margin="normal"
               required
               fullWidth
@@ -109,35 +147,28 @@ export default function Subscribe() {
                 Receive reports in your email with the main star occultation predictions in your region.
               </p>
               <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                open={open === 'success'}
-                autoHideDuration={3500}
-                //onClose={handleClose}
+              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+              open={open === 'success' || open === 'warning'}
+              autoHideDuration={3500}
+              onClose={handleCloseSnackbar}
+            >
+              <Alert
                 onClose={handleCloseSnackbar}
+                severity={open === 'success' ? 'success' : 'warning'}
               >
-                <Alert onClose={handleCloseSnackbar} severity='success'>
-                  <AlertTitle>Success</AlertTitle>
-                  <p>
-                    Email successfully registered. Check your email inbox.
-                  </p>
-                </Alert>
-              </Snackbar>  
-              <Snackbar
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-                open={open === 'warning'}
-                autoHideDuration={3500}
-                onClose={handleCloseSnackbar}
-              >
-                <Alert onClose={handleCloseSnackbar} severity='warning'>
-                  <AlertTitle>Warning</AlertTitle>
-                  <p>
-                    'Subscription with this Email already exists.'
-                  </p>
-                </Alert>
-              </Snackbar>  
+                <AlertTitle>
+                  {open === 'success' ? 'Success' : 'Warning'}
+                </AlertTitle>
+                <p>
+                  {open === 'success'
+                    ? 'Email successfully registered. Check your email inbox.'
+                    : 'Subscription with this Email already exists.'}
+                </p>
+              </Alert>
+            </Snackbar>
           </Box>
         </Box>
-      </Container>
+        </Container>
     </ThemeProvider>
-  );
+  )
 }
