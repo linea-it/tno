@@ -53,14 +53,10 @@ function PredictionEventDetail() {
       {
         title: 'Star position (ICRF)',
         // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-       },
-      {
-        title: 'RA',
-        // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
         value: `RA ${occultation.ra_star_candidate}`
       },
       {
-        title: 'Dec',
+        title: 'Star position (ICRF)',
         // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
         value: `Dec ${occultation.dec_star_candidate}`
       },
@@ -127,14 +123,11 @@ function PredictionEventDetail() {
         value: 'Gaia DR3'
       },
       {
-        title: 'Star astrometric position in catalogue (ICRF)'
-      },
-      {
-        title: 'RA',
+        title: 'Star astrometric position in catalogue (ICRF)',
         value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}`
       },
       {
-        title: 'Dec',
+        title: 'Star astrometric position in catalogue (ICRF)',
         value: `Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`
       },
       {
@@ -193,14 +186,11 @@ function PredictionEventDetail() {
         value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
       },
       {
-        title: "Object's astrometric position (ICRF)"
-      },
-      {
-        title: "RA",
+        title: "Object's astrometric position (ICRF)",
         value: `RA ${occultation.ra_target}`
       },
       {
-        title: "Dec",
+        title: "Object's astrometric position (ICRF)",
         value: `Dec ${occultation.dec_target}`
       },
       // {
