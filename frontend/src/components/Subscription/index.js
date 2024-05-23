@@ -28,7 +28,7 @@ export default function Subscribe() {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value)
     setValidEmail(isValid)
   }
-
+   
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -41,11 +41,14 @@ export default function Subscribe() {
       //cores.forEach(function (cor) {
         //  console.log(cor);
         //})
-        //const campo_email = [ ]
+        const campo_email = [ ]
         for(let i = 0; i < tamanho; i = i + 1 ) {
-          const campo_email = Object.getOwnPropertyDescriptor(resposta.data.results[i], "email").value
-        
-          if (r_email == campo_email){
+          campo_email[i] = Object.getOwnPropertyDescriptor(resposta.data.results[i], "email").value
+        }
+
+        //console.log(r_email, campo_email)
+        campo_email.forEach( email => {
+          if (r_email == email){
             console.log(r_email, campo_email)
             setSnackbarOpen(true)
             setOpen('warning')
@@ -55,9 +58,10 @@ export default function Subscribe() {
               setSnackbarOpen(true)
               setOpen('success')
               console.log('salvando email no bd')})
-          } 
+          }
+        })  
       }
-    })
+    )
   }
 
   const handleCloseSnackbar = (event, reason) => {
