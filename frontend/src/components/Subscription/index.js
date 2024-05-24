@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-expressions 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -10,8 +10,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
 import AlertTitle from '@mui/material/AlertTitle'
-import axios from 'axios'
 import {saveEmailSubscription} from '../../services/api/Subscription'
+import {getEmailDb} from '../../services/api/Subscription'
 
 const defaultTheme = createTheme();
 
@@ -21,6 +21,20 @@ export default function Subscribe() {
   const [validEmail, setValidEmail] = useState(true)
   
   const [open, setOpen] = React.useState('')
+  const [resultsEmail, setResultsEmail] = useState([])
+
+  useEffect(() => {
+    // Get results by year
+      getEmailDb()
+      .then((res) => {
+        setResultsEmail(res)
+      })
+      .catch(() => {
+        setResultsEmail([])
+      })
+  }, [])
+  //const getEmail = Object.getOwnPropertyDescriptor(resultsEmail[0], "email").value
+  //console.log(getEmail)
 
   // this function for get our title value from the user.
   function emailChangeHandler(event) {
@@ -28,40 +42,34 @@ export default function Subscribe() {
     const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value)
     setValidEmail(isValid)
   }
-   
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const r_email = data.get('email')
     
-    axios.get(`${window.location.origin}/api/subscription/`).then(function (resposta){
-      
-      const  tamanho = resposta.data.results.length
-      console.log(tamanho)
-      //cores.forEach(function (cor) {
-        //  console.log(cor);
-        //})
-        const campo_email = [ ]
-        for(let i = 0; i < tamanho; i = i + 1 ) {
-          campo_email[i] = Object.getOwnPropertyDescriptor(resposta.data.results[i], "email").value
-        }
+    const  tamanhon = resultsEmail.length
+    console.log(tamanhon)
+    const getEmail = [ ]
+    
+    for(let i = 0; i < tamanhon; i = i + 1 ) {
+      getEmail[i] = Object.getOwnPropertyDescriptor(resultsEmail[i], "email").value
+      //console.log(getEmail)
+    }
 
-        //console.log(r_email, campo_email)
-        campo_email.forEach( email => {
-          if (r_email == email){
-            console.log(r_email, campo_email)
-            setSnackbarOpen(true)
-            setOpen('warning')
-            console.log('Entrei no if email existe....')
-          }else{
-            saveEmailSubscription(r_email).then(() => {
-              setSnackbarOpen(true)
-              setOpen('success')
-              console.log('salvando email no bd')})
-          }
-        })  
+    getEmail.forEach( email => {
+      if (r_email == email){
+        console.log(r_email, getEmail)
+        setSnackbarOpen(true)
+        setOpen('warning')
+        console.log('Entrei no if email existe....')
+      }else{
+        saveEmailSubscription(r_email).then(() => {
+          setSnackbarOpen(true)
+          setOpen('success')
+          console.log('salvando email no bd')})
       }
-    )
+    })
   }
 
   const handleCloseSnackbar = (event, reason) => {
