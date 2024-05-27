@@ -1,8 +1,8 @@
 import { api } from './Api'
 
 export const getEmailDb = () => {
-  return api.get(`${window.location.origin}/api/subscription/`).then((res) => res.data.results)
-  //return api.get(`/occultations/highlights_unique_asteroids/`).then((res) => res.data)
+  return api.get('/subscription/').then((res) => res.data.results)
+  //return api.get(`${window.location.origin}/api/subscription/`).then((res) => res.data.results)
 }
 
 export const saveEmailSubscription = (email) => {
