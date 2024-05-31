@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
       //marginLeft: theme.spacing(-3)
       width: '330px',
       //marginLeft: '12px',
-      marginLeft: '30px',             // secondary
+      marginLeft: '30px'             // secondary
       //flex: '0 2'
       //[theme.spacing(14)]
     },
