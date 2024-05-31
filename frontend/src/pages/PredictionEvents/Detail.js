@@ -10,7 +10,7 @@ import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
-
+import useStyles from './styles'
 import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
@@ -25,6 +25,7 @@ function PredictionEventDetail() {
   const [circumstances, setCircumstances] = useState([])
   const [star, setStar] = useState([])
   const [object, setObject] = useState([])
+  const classes = useStyles()
 
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
@@ -53,12 +54,7 @@ function PredictionEventDetail() {
       {
         title: 'Star position (ICRF)',
         // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `RA ${occultation.ra_star_candidate}`
-      },
-      {
-        title: 'Star position (ICRF)',
-        // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `Dec ${occultation.dec_star_candidate}`
+        value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`
       },
       {
         title: 'Closest approach',
@@ -124,11 +120,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}`
-      },
-      {
-        title: 'Star astrometric position in catalogue (ICRF)',
-        value: `Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`
+        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}, Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
@@ -187,11 +179,7 @@ function PredictionEventDetail() {
       },
       {
         title: "Object's astrometric position (ICRF)",
-        value: `RA ${occultation.ra_target}`
-      },
-      {
-        title: "Object's astrometric position (ICRF)",
-        value: `Dec ${occultation.dec_target}`
+        value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
       },
       // {
       //   title: "Object's Apparent Position (date)",
@@ -280,8 +268,8 @@ function PredictionEventDetail() {
                 </>
               }
             />
-            <CardContent>
-              <List data={circumstances} />
+            <CardContent className={classes.listDetailCircunstances}>
+              <List data={circumstances}/>
             </CardContent>
           </Card>
         </Grid>
@@ -293,7 +281,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Occulted Star' />
-            <CardContent>
+            <CardContent className={classes.listDetail}>
               <List data={star} />
             </CardContent>
           </Card>
@@ -301,7 +289,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Object' />
-            <CardContent>
+            <CardContent className={classes.listDetailObject} >
               <List data={object} />
               <Box sx={{ marginLeft: 2 }}>
                 {occultation.name && (
