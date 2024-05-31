@@ -9,19 +9,28 @@ const useStyles = makeStyles((theme) => ({
     }
   },
 
+  listDetailStar: {
+    [theme.breakpoints.between(900, 1100)]: {
+      width: '372px',
+      margin: 'auto'
+    },
+    [theme.breakpoints.up(1100)]: {
+      width: '380px',
+      margin: 'auto',
+      padding: theme.spacing(18)
+    }
+  },
+
   listDetailObject: {
     [theme.breakpoints.between(900, 945)]: {
-      //color: 'blue',
       width: '330px',
       marginLeft: '30px' 
     },
     [theme.breakpoints.between(945, 1100)]: {
-      //color: 'pink',
       width: '333px',
       margin: 'auto'
     },
     [theme.breakpoints.between(1100, 1175)]: {
-      //color: 'pink',
       width: '530px',
       marginLeft: '-18px'
     }

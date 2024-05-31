@@ -281,7 +281,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Occulted Star' />
-            <CardContent className={classes.listDetail}>
+            <CardContent className={classes.listDetailStar} >
               <List data={star} />
             </CardContent>
           </Card>
