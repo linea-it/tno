@@ -54,7 +54,7 @@ function PredictionEventDetail() {
       {
         title: 'Star position (ICRF)',
         // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `RA ${occultation.ra_star_candidate},Dec ${occultation.dec_star_candidate}`,
+        value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`,
         breakline: true
       },
       {
@@ -121,15 +121,18 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}, Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`
+        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}, Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`,
+        breakline: true
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
-        value: `RA ${occultation.ra_star_with_pm}, Dec ${occultation.dec_star_with_pm}`
+        value: `RA ${occultation.ra_star_with_pm}, Dec ${occultation.dec_star_with_pm}`,
+        breakline: true
       },
       {
         title: 'Star apparent position (date)',
-        value: `RA ${occultation.ra_star_to_date}, Dec ${occultation.dec_star_to_date}`
+        value: `RA ${occultation.ra_star_to_date}, Dec ${occultation.dec_star_to_date}`,
+        breakline: true
       },
       {
         title: 'Proper motion',
@@ -145,7 +148,8 @@ function PredictionEventDetail() {
         title: 'Uncertainty in the star position',
         value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null}, Dec ${
           starObj.dec_error ? starObj.dec_error.toFixed(1) : null
-        } (mas)`
+        } (mas)`,
+        breakline: true
       },
       {
         title: 'G magnitude (source: Gaia DR3)',
@@ -180,7 +184,8 @@ function PredictionEventDetail() {
       },
       {
         title: "Object's astrometric position (ICRF)",
-        value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
+        value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`,
+        breakline: true
       },
       // {
       //   title: "Object's Apparent Position (date)",
@@ -211,7 +216,8 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in position',
-        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`
+        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`,
+        breakline: true
       },
       {
         title: 'Ephemeris',
@@ -269,7 +275,7 @@ function PredictionEventDetail() {
                 </>
               }
             />
-            <CardContent className={classes.listDetailCircunstances}>
+            <CardContent >
               <List data={circumstances} />
             </CardContent>
           </Card>
@@ -282,7 +288,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Occulted Star' />
-            <CardContent className={classes.listDetailStar}>
+            <CardContent >
               <List data={star} />
             </CardContent>
           </Card>
@@ -290,7 +296,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Object' />
-            <CardContent className={classes.listDetailObject}>
+            <CardContent >
               <List data={object} />
               <Box sx={{ marginLeft: 2 }}>
                 {occultation.name && (
