@@ -54,7 +54,8 @@ function PredictionEventDetail() {
       {
         title: 'Star position (ICRF)',
         // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`
+        value: `RA ${occultation.ra_star_candidate},Dec ${occultation.dec_star_candidate}`,
+        breakline: true
       },
       {
         title: 'Closest approach',
@@ -269,7 +270,7 @@ function PredictionEventDetail() {
               }
             />
             <CardContent className={classes.listDetailCircunstances}>
-              <List data={circumstances}/>
+              <List data={circumstances} />
             </CardContent>
           </Card>
         </Grid>
@@ -281,7 +282,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Occulted Star' />
-            <CardContent className={classes.listDetailStar} >
+            <CardContent className={classes.listDetailStar}>
               <List data={star} />
             </CardContent>
           </Card>
@@ -289,7 +290,7 @@ function PredictionEventDetail() {
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Object' />
-            <CardContent className={classes.listDetailObject} >
+            <CardContent className={classes.listDetailObject}>
               <List data={object} />
               <Box sx={{ marginLeft: 2 }}>
                 {occultation.name && (
