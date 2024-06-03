@@ -197,7 +197,7 @@ def assync_visibility_from_coeff(event_id, result_file, **kwargs):
     return event_id, bool(is_visible)
 
 
-@shared_task
+@shared_task(soft_time_limit=60)
 def update_asteroid_table():
     """Updates the asteroid table data using data downloaded from MPC."""
     from tno.asteroid_table.asteroid_table_manager import AsteroidTableManager
