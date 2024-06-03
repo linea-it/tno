@@ -35,16 +35,25 @@ function List({ data, height, width, align }) {
               className={classes.itemText}
             />
             {/* TODO: Adicionar um if para verificar se item.breakline for true */}
-            <Stack spacing={1}>
-              <ListItemText
-                className={`${classes.itemText} ${classes.itemValueText}`}
-                secondary={typeof item.value === 'function' ? item.value() : item.value}
-              />
-              <ListItemText
-                className={`${classes.itemText} ${classes.itemValueText}`}
-                secondary={typeof item.value === 'function' ? item.value() : item.value}
-              />
-            </Stack>
+            {item.breakline === true ?
+              <Stack spacing={1}>
+                <ListItemText
+                  className={`${classes.itemText} ${classes.itemValueText}`}
+                  secondary={typeof item.value === 'function' ? item.value() : item.value.split(',')[0]}
+                />
+                <ListItemText
+                  className={`${classes.itemText} ${classes.itemValueText}`}
+                  secondary={typeof item.value === 'function' ? item.value() : item.value.split(',')[1]}
+                />
+              </Stack>
+            :
+              <Stack spacing={1}>
+                <ListItemText
+                  className={`${classes.itemText} ${classes.itemValueText}`}
+                  secondary={typeof item.value === 'function' ? item.value() : item.value}
+                />
+              </Stack>
+            }
           </ListItem>
         )
       })}
