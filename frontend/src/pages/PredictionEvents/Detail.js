@@ -10,7 +10,7 @@ import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
-import useStyles from './styles'
+//import useStyles from './styles'
 import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
@@ -25,7 +25,7 @@ function PredictionEventDetail() {
   const [circumstances, setCircumstances] = useState([])
   const [star, setStar] = useState([])
   const [object, setObject] = useState([])
-  const classes = useStyles()
+  //const classes = useStyles()
 
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
