@@ -7,6 +7,13 @@ export function loggedUser() {
   })
 }
 
+export function acessTnoDev() {
+  return api.get('/tno_dev').then((res) => {
+    const result = res.data
+    return result
+  })
+}
+
 export const urlLogin = `${url}/auth/login/?next=/dashboard`
 
 export const urlLogout = `${url}/auth/logout/?next=/dashboard`
