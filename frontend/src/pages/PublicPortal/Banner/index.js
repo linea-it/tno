@@ -2,6 +2,7 @@ import React from 'react'
 import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
+import { Alert } from '../../../../node_modules/@mui/lab/index'
 
 function PublicBanner() {
   const classes = styles()
@@ -9,6 +10,11 @@ function PublicBanner() {
   return (
     <Box className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
+        <Grid item xs={12}>
+          <Alert severity='warning'> 
+            YOU ARE VISITING A DEVELOPMENT PAGE.
+          </Alert>
+        </Grid>
         <img src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`} alt='Data Release Interface' className={classes.logo} />
         <Grid item xs={12} className={classes.titleWrapper}>
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
