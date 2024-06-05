@@ -7,7 +7,7 @@ export function loggedUser() {
   })
 }
 
-export function acessTnoDev() {
+export function pageTnoDev() {
   return api.get('/tno_dev').then((res) => {
     const result = res.data
     return result
