@@ -21,12 +21,12 @@ function PublicBanner() {
       })
   }, [])
   const verifyPage = resultsDev[0]
-  console.log(verifyPage)
+  //console.log(verifyPage.toLowerCase())
 
   return (
     <Box className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
-        {verifyPage === 'Development' ? 
+        {verifyPage.toLowerCase() === 'development' ? 
         <Grid item xs={12}>
           <Alert severity='warning'> 
             YOU ARE VISITING A DEVELOPMENT PAGE. <a href="https://linea.org.br/" target='blank' rel="noopener noreferrer">
