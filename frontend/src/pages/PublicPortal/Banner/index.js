@@ -33,8 +33,10 @@ function PublicBanner() {
         <Grid item xs={12}>
           <Alert severity='warning'> 
             {/*{verifyPage?.toLowerCase()}*/}
-            YOU ARE VISITING A DEVELOPMENT PAGE. <a href="https://linea.org.br/" target='blank' rel="noopener noreferrer">
-              PLEASE VISIT OUR OFFICIAL PAGE.
+            This is a development and testing version of this platform. Do not use its data or reference it in any way. 
+            <br></br>For the official product, visit the link &nbsp;
+            <a href="https://solarsystem.linea.org.br" target='blank' rel="noopener noreferrer">
+              https://solarsystem.linea.org.br.
             </a>
           </Alert>
         </Grid>
