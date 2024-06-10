@@ -4,12 +4,12 @@ import styles from './styles'
 import Box from '@mui/material/Box'
 import { Alert } from '../../../../node_modules/@mui/lab/index'
 import { pageTnoDev } from '../../../services/api/Auth' 
-import { Typography } from '../../../../node_modules/@mui/material/index'
+//import { Typography } from '../../../../node_modules/@mui/material/index'
 
 function PublicBanner() {
   const classes = styles()
   const [resultsDev, setResultsDev] = useState([])
-
+  
   useEffect(() => {
     // Get results by year
     pageTnoDev()
@@ -20,15 +20,19 @@ function PublicBanner() {
         setResultsDev([])
       })
   }, [])
-  const verifyPage = resultsDev[0]
-  //console.log(verifyPage.toLowerCase())
 
+  
+  const verifyPage = resultsDev[0]
+  //const verifyPageM = verifyPage.toLowerCase()
+  //console.log(verifyPageM)
+  
   return (
     <Box className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
-        {verifyPage.toLowerCase() === 'development' ? 
+        {verifyPage?.toLowerCase() === 'development' ? 
         <Grid item xs={12}>
           <Alert severity='warning'> 
+            {/*{verifyPage?.toLowerCase()}*/}
             YOU ARE VISITING A DEVELOPMENT PAGE. <a href="https://linea.org.br/" target='blank' rel="noopener noreferrer">
               PLEASE VISIT OUR OFFICIAL PAGE.
             </a>
@@ -37,7 +41,6 @@ function PublicBanner() {
         :
         ' '
         }
-        
         <img src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`} alt='Data Release Interface' className={classes.logo} />
         <Grid item xs={12} className={classes.titleWrapper}>
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
