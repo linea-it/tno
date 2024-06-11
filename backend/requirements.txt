@@ -86,7 +86,7 @@ spiceypy==5.1.2
 SQLAlchemy==1.4.44
 sqlparse==0.4.3
 tenacity==8.2.2
-tornado==6.3.3
+tornado==6.4.1
 tqdm==4.66.1
 tzdata==2022.6
 tzlocal==4.2
