@@ -7,8 +7,8 @@ export function loggedUser() {
   })
 }
 
-export function pageTnoDev() {
-  return api.get('/tno_dev').then((res) => {
+export function whichEnvironment() {
+  return api.get('/which_environment').then((res) => {
     const result = res.data
     return result
   })

@@ -66,7 +66,7 @@ def test_background_task(request):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
-def tno_dev(request):
+def which_environment(request):
     if request.method == "GET":
         result={settings.ENVIRONMENT_NAME}
         return Response(result)

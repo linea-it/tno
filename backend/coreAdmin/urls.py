@@ -105,7 +105,7 @@ urlpatterns = [
     # re_path(r"^api/read_csv", common_views.read_csv),
     # re_path(r"^api/teste", common_views.teste),
     # re_path(r"^api/test_background_task", common_views.test_background_task),
-    re_path(r"^api/tno_dev", common_views.tno_dev),
+    re_path(r"^api/which_environment", common_views.which_environment),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",
