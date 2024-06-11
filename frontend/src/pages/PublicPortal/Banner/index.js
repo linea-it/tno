@@ -3,7 +3,7 @@ import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
 import { Alert } from '../../../../node_modules/@mui/lab/index'
-import { pageTnoDev } from '../../../services/api/Auth' 
+import { whichEnvironment } from '../../../services/api/Auth' 
 //import { Typography } from '../../../../node_modules/@mui/material/index'
 
 function PublicBanner() {
@@ -12,7 +12,7 @@ function PublicBanner() {
   
   useEffect(() => {
     // Get results by year
-    pageTnoDev()
+    whichEnvironment()
       .then((res) => {
         setResultsDev(res)
       })
