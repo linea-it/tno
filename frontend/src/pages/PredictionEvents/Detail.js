@@ -17,6 +17,8 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
+import AlertEnvironment from '../../components/AlertEnvironment/index'
+import { whichEnvironment } from '../../services/api/Auth'
 
 function PredictionEventDetail() {
   const { id } = useParams()
@@ -25,6 +27,7 @@ function PredictionEventDetail() {
   const [circumstances, setCircumstances] = useState([])
   const [star, setStar] = useState([])
   const [object, setObject] = useState([])
+  const [isDev, setIsDev] = useState(false)
 
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
@@ -37,6 +40,13 @@ function PredictionEventDetail() {
         ...res
       })
     })
+    whichEnvironment()
+      .then((res) => {
+        setIsDev(res.is_dev)
+      })
+      .catch(() => {
+        // TODO: Aviso de erro
+      })
   }, [id])
 
   useEffect(() => {
@@ -248,6 +258,7 @@ function PredictionEventDetail() {
 
   return (
     <Container maxWidth='lg'>
+      {isDev && <AlertEnvironment />}
       <Typography variant='h4' align='center' sx={{ marginTop: 3 }}>
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>

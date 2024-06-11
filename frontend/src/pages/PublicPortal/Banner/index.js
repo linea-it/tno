@@ -1,48 +1,14 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
-import { Alert } from '../../../../node_modules/@mui/lab/index'
-import { whichEnvironment } from '../../../services/api/Auth' 
-//import { Typography } from '../../../../node_modules/@mui/material/index'
 
 function PublicBanner() {
   const classes = styles()
-  const [resultsDev, setResultsDev] = useState([])
-  
-  useEffect(() => {
-    // Get results by year
-    whichEnvironment()
-      .then((res) => {
-        setResultsDev(res)
-      })
-      .catch(() => {
-        setResultsDev([])
-      })
-  }, [])
 
-  
-  const verifyPage = resultsDev[0]
-  //const verifyPageM = verifyPage.toLowerCase()
-  //console.log(verifyPageM)
-  
   return (
     <Box className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
-        {verifyPage?.toLowerCase() === 'development' ? 
-        <Grid item xs={12}>
-          <Alert severity='warning'> 
-            {/*{verifyPage?.toLowerCase()}*/}
-            This is a development and testing version of this platform. Do not use its data or reference it in any way. 
-            <br></br>For the official product, visit the link &nbsp;
-            <a href="https://solarsystem.linea.org.br" target='blank' rel="noopener noreferrer">
-              https://solarsystem.linea.org.br.
-            </a>
-          </Alert>
-        </Grid>
-        :
-        ' '
-        }
         <img src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`} alt='Data Release Interface' className={classes.logo} />
         <Grid item xs={12} className={classes.titleWrapper}>
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
