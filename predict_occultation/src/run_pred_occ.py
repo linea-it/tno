@@ -28,7 +28,7 @@ try:
     from predict_occultation.app import run_pipeline
 except Exception as error:
     print("Error: %s" % str(error))
-    raise ("Predict Occultation pipeline not installed!")
+    raise Exception("Predict Occultation pipeline not installed!")
 
 import parsl
 
@@ -243,7 +243,7 @@ def retrieve_asteroids(type, values):
     asteroids = []
 
     if type == "name":
-        asteroids = dao.get_asteroids_by_names(names=values.split(";"))
+        asteroids = dao.get_asteroids_by_names(names=values.split(","))
     elif type == "dynclass":
         asteroids = dao.get_asteroids_by_dynclass(dynclass=values)
     elif type == "base_dynclass":
@@ -701,7 +701,7 @@ def submit_tasks(jobid: int):
         update_job(job)
 
         if job["count_asteroids"] == 0:
-            raise (
+            raise Exception(
                 "No asteroid satisfying the criteria %s and %s. There is nothing to run."
                 % (job["filter_type"], job["filter_value"])
             )
