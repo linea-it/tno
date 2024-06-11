@@ -34,7 +34,7 @@ function List({ data, height, width, align }) {
               }
               className={classes.itemText}
             />
-            {item.breakline === true ?
+            {item.breakline === true ? (
               <Stack spacing={1}>
                 <ListItemText
                   className={`${classes.itemText} ${classes.itemValueText}`}
@@ -45,14 +45,14 @@ function List({ data, height, width, align }) {
                   secondary={typeof item.value === 'function' ? item.value() : item.value.split(',')[1]}
                 />
               </Stack>
-            :
+            ) : (
               <Stack spacing={1}>
                 <ListItemText
                   className={`${classes.itemText} ${classes.itemValueText}`}
                   secondary={typeof item.value === 'function' ? item.value() : item.value}
                 />
               </Stack>
-            }
+            )}
           </ListItem>
         )
       })}
