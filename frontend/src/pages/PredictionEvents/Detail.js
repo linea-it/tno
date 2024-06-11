@@ -10,7 +10,6 @@ import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
-//import useStyles from './styles'
 import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
@@ -25,7 +24,6 @@ function PredictionEventDetail() {
   const [circumstances, setCircumstances] = useState([])
   const [star, setStar] = useState([])
   const [object, setObject] = useState([])
-  //const classes = useStyles()
 
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
@@ -53,23 +51,19 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star position (ICRF)',
-        // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
         value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`,
         breakline: true
       },
       {
         title: 'Closest approach',
-        // tooltip: 'Geocentric closest approach',
         value: `${occultation.closest_approach} (arcsec)`
       },
       {
         title: 'Position angle',
-        // tooltip: "Planet's position angle with respect to the star at closest approach",
         value: `${occultation.position_angle} (deg)`
       },
       {
         title: 'Velocity',
-        // tooltip: 'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
         value: `${occultation.velocity} (km/s)`
       },
       {
@@ -82,12 +76,10 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star magnitude (Gaia)',
-        // tooltip: 'Gaia magnitude',
         value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`
       },
       {
         title: 'H mag (2MASS)',
-        // tooltip: '2MASS H magnitude',
         value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
@@ -110,11 +102,6 @@ function PredictionEventDetail() {
     ])
 
     setStar([
-      // {
-      //   title: 'Star source ID',
-      //   tooltip: 'Unique source identifier',
-      //   value: `${starObj.source_id}`
-      // },
       {
         title: 'Stellar catalogue',
         value: 'Gaia DR3'
@@ -187,11 +174,6 @@ function PredictionEventDetail() {
         value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`,
         breakline: true
       },
-      // {
-      //   title: "Object's Apparent Position (date)",
-      //   tooltip: "Relative to the Earth's center",
-      //   value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
-      // },
       {
         title: 'Absolute magnitude',
         value: `${occultation.h ? occultation.h.toFixed(3) : null}`
@@ -227,10 +209,6 @@ function PredictionEventDetail() {
         title: 'Dynamic class (Skybot)',
         value: `${occultation.dynclass}`
       },
-      // {
-      //   title: 'Dynamic class (Lowell Observatory)',
-      //   value: `${occultation.astorb_dynbaseclass ? occultation.astorb_dynbaseclass : null}`
-      // },
       {
         title: 'Semi-major axis',
         value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`

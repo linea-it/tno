@@ -34,7 +34,6 @@ function List({ data, height, width, align }) {
               }
               className={classes.itemText}
             />
-            {/* TODO: Adicionar um if para verificar se item.breakline for true */}
             {item.breakline === true ?
               <Stack spacing={1}>
                 <ListItemText
