@@ -6,6 +6,11 @@ FREQUENCY_CHOICES = [
     (2, "Weekly"),
 ]
 
+FILTER_TYPE_CHOICES = [
+    ("name", "Object name"),
+    ("dynclass", "Dynamic class (with subclasses)"),
+    ("base_dynclass", "Dynamic class"),
+]
 
 class EventFilter(models.Model):
 
@@ -37,10 +42,10 @@ class EventFilter(models.Model):
 
     filter_type = models.CharField(
         verbose_name="Filter Type",
-        max_length=50,
         help_text="Filtro que permite escolher entre objeto, classe ou subclasse.",
-        null=True,
-        blank=True,
+        max_length=15,
+        choices=FILTER_TYPE_CHOICES,
+        default="name",
     )
 
     filter_value = models.TextField(
