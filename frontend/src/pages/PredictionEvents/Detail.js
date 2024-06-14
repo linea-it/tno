@@ -133,7 +133,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Proper motion',
-        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec ${
+        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}(mas/yr), Dec ${
           starObj.pmdec ? starObj.pmdec.toFixed(1) : null
         } ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`,
         breakline: true
@@ -144,7 +144,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in the star position',
-        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null}, Dec ${
+        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null}(mas), Dec ${
           starObj.dec_error ? starObj.dec_error.toFixed(1) : null
         } (mas)`,
         breakline: true
