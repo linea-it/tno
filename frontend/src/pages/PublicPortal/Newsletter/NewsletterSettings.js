@@ -14,6 +14,7 @@ import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
 import EventFiltersSettings from './EventFiltersSettings'
+import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
 import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
 
 function NewsletterSettings() {
@@ -83,8 +84,18 @@ function NewsletterSettings() {
               title='Filtros e Configurações'
               subheader='Gerencie suas preferencias de filtro e frequencia dos emails.'
             ></CardHeader>
-            <CardContent></CardContent>
+            <CardContent>
+              
+            </CardContent>
           </Card>
+        </Grid>
+        <Grid item xs={12} mt={2} >
+          <Card >
+            <CardContent >
+            <NewsletterEventFiltersSettings subscriptionId={info.id} />
+          </CardContent>
+          </Card>
+          
         </Grid>
         <Grid item xs={12} mt={2}>
           <EventFiltersSettings subscriptionId={info.id}></EventFiltersSettings>
