@@ -2,6 +2,8 @@ import React from 'react'
 import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
+import Subscribe from '../../../components/Subscription/index'
+import { AlignHorizontalCenter } from '../../../../node_modules/@mui/icons-material/index'
 
 function PublicBanner() {
   const classes = styles()
@@ -16,7 +18,7 @@ function PublicBanner() {
         <Grid item xs={12} container className={classes.bannerWrapper}>
           <Box
             className='container textBanner'
-            sx={{ borderRadius: '6px', width: '45vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' }}
+            sx={{ borderRadius: '6px', width: '45vw', textAlign: 'center' }}
           >
             <Grid item xs={12} className={classes.textOcultatiom}>
               <label>
@@ -25,7 +27,11 @@ function PublicBanner() {
                 These predictions are regularly updated. Use our advanced filters to refine your search and find more suitable events.
               </label>
             </Grid>
+            
           </Box>
+        </Grid>
+        <Grid item xs={11.6}>
+              <Subscribe></Subscribe>
         </Grid>
       </Grid>
     </Box>

@@ -147,6 +147,7 @@ Build backend container
 ```bash
 docker compose build backend
 ```
+
 Na primeira vez é necessário ligar o backend para que seja aplicado as migrações e criação das tabelas.
 
 Run Backend container
@@ -313,6 +314,8 @@ Django Rest: <http://localhost/api/>
 Celery Flower: <http://localhost/flower/>
 
 Rabbitmq: <http://localhost/rabbitmq/>
+
+Mailhog: <http://localhost/mailhog/>
 
 <!-- TOC --><a name="public_page_documentation"></a>
 

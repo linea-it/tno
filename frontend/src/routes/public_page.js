@@ -7,6 +7,7 @@ import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
+import NewsletterSettings from '../pages/PublicPortal/Newsletter/NewsletterSettings'
 
 const PublicPortalPage = ({ children }) => {
   return (
@@ -41,7 +42,6 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
-
       <Route
         isHomePage
         exact
@@ -62,6 +62,17 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
+      <Route
+        isHomePage
+        exact
+        path='/newsletter_settings/:id'
+        element={
+          <PublicPortalPage>
+            <NewsletterSettings />
+          </PublicPortalPage>
+        }
+      />
+
       {/* <Route isHomePage exact path='/documentation' element={<Navigate to='/docs/' />} /> */}
     </>
   )
