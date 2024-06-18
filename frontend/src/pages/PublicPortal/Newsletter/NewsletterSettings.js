@@ -93,9 +93,8 @@ function NewsletterSettings() {
           <Card >
             <CardContent >
             <NewsletterEventFiltersSettings subscriptionId={info.id} />
-          </CardContent>
+            </CardContent>
           </Card>
-          
         </Grid>
         <Grid item xs={12} mt={2}>
           <EventFiltersSettings subscriptionId={info.id}></EventFiltersSettings>

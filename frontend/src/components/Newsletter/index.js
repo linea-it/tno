@@ -70,8 +70,10 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
 
     return (
         <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate>
+            <Box>
             <Grid container spacing={2} alignItems='center' >
                 <Grid item xs={12} >
+                    <CardContent>
                     <TextField sx={{ padding: '20px' }}
                         margin="normal"
                         required
@@ -85,10 +87,12 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                         onChange={nameChangeHandler}
                         InputLabelProps={{ sx: { color: 'gray' } }}
                     />
+                    </CardContent>
                     <Grid item xs={12}>
                         <Divider />
                     </Grid>
-                    <Grid item xs={12} sx={{ padding: '20px' }}>
+                    <CardContent>
+                    <Grid item xs={12} >
                         <FrequencySelect
                             source={'period'}
                             value={{
@@ -108,9 +112,11 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             }}
                         />
                     </Grid>
+                    </CardContent>
                     <Grid item xs={12}>
                         <Divider />
                     </Grid>
+                    <CardContent>
                     <Grid item xs={12} sm={2} md={4}>
                         <MaginitudeSelect
                         value={queryOptions.filters.maginitudeMax}
@@ -127,7 +133,9 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                         }}
                         />
                     </Grid>
-                        <Grid item xs={12} sx={{ padding: '20px' }}>
+                    </CardContent>
+                    <CardContent>
+                        <Grid item xs={12} >
                             <AsteroidSelect
                                 source={'prediction'}
                                 value={{
@@ -147,9 +155,11 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                 }}
                             />
                         </Grid>
+                        </CardContent>
                         <Grid item xs={12}>
                             <Divider />
                         </Grid>
+                        <CardContent>
                         <Grid item xs={12}>
                             <SolarTimeFilter
                             value={{
@@ -169,11 +179,14 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                 })
                             }}
                             ></SolarTimeFilter>
-                            <Grid item xs={12} sx={{ padding: '10px' }}>
+                            </Grid>
+                            </CardContent>
+                            <Grid item xs={12}>
                                 <Divider />
                             </Grid>
+                            <CardContent>
                             <Grid item xs={12} container>
-                            <Grid item xs={3} sx={{ padding: '10px' }} container>
+                            <Grid item xs={3} container sx={{ padding: '8px' }}>
                                 <MaginitudeDropSelect
                                 value={queryOptions.filters.maginitudeDropMin}
                                 onChange={(newValue) => {
@@ -189,46 +202,47 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                 }}
                                 />
                             </Grid>
-                        <Grid item xs={3} container>
-                            <EventDurationField
-                            value={queryOptions.filters.eventDurationMin}
-                            onChange={(value) => {
-                                setQueryOptions((prev) => {
-                                    return {
-                                        ...prev,
-                                        filters: {
-                                            ...prev.filters,
-                                            eventDurationMin: value
+                            <Grid item xs={3} container sx={{ padding: '8px' }}>
+                                <EventDurationField
+                                value={queryOptions.filters.eventDurationMin}
+                                onChange={(value) => {
+                                    setQueryOptions((prev) => {
+                                        return {
+                                            ...prev,
+                                            filters: {
+                                                ...prev.filters,
+                                                eventDurationMin: value
+                                            }
                                         }
-                                    }
-                                })
-                            }}
-                            />
-                        </Grid>
-                        <Grid item xs={6} container>
-                            <ObjectDiameterFilter
-                            value={{
-                                diameterMin: queryOptions.filters.diameterMin,
-                                diameterMax: queryOptions.filters.diameterMax
-                            }}
-                            onChange={(value) => {
-                                setQueryOptions((prev) => {
-                                    return {
-                                        ...prev,
-                                        filters: {
-                                            ...prev.filters,
-                                            ...value
-                                        }
-                                    }
-                                })
-                            }}
-                            />
+                                    })
+                                }}
+                                />
                             </Grid>
-                            <Grid item xs={12} sx={{ padding: '10px' }}>
-                            <Divider />
-                        </Grid>
-                        </Grid>
-                        </Grid>
+                            <Grid item xs={6} container sx={{ padding: '8px' }}>
+                                <ObjectDiameterFilter
+                                value={{
+                                    diameterMin: queryOptions.filters.diameterMin,
+                                    diameterMax: queryOptions.filters.diameterMax
+                                }}
+                                onChange={(value) => {
+                                    setQueryOptions((prev) => {
+                                        return {
+                                            ...prev,
+                                            filters: {
+                                                ...prev.filters,
+                                                ...value
+                                            }
+                                        }
+                                    })
+                                }}
+                                />
+                            </Grid>
+                            </Grid>
+                            </CardContent>
+                            <Grid item xs={12}>
+                                <Divider />
+                            </Grid>
+                        <CardContent>
                         <Grid item xs={12}>
                             <GeoFilter
                             value={{
@@ -250,9 +264,11 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             }}
                             />
                         </Grid>
+                        </CardContent>
                         <Grid item xs={12} sx={{ padding: '10px' }}>
                             <Divider />
                         </Grid>
+                       <CardContent>
                     <Button
                     type="submit"
                     fullWidth 
@@ -261,8 +277,10 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                     >
                     Save
                     </Button>
+                    </CardContent>
                 </Grid>
             </Grid>
+            </Box>
         </Box>
     )
 }
