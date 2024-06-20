@@ -21,16 +21,38 @@ export const listPreferenceEventFilters = ({ queryKey }) => {
 export const saveListPreferenceEventFilters = ({ 
   subscriptionId, 
   filter_name,
-  frequency, 
+  frequency,
+  magnitude, 
   filter_type, 
-  filter_value 
+  filter_value,
+  local_solar_time_after,
+  local_solar_time_before,
+  magnitude_drop,
+  event_duration,
+  diameter,
+  geo_location,
+  latitude,
+  longitude,
+  altitude,
+  location_radius 
 }) => {
   const params = { 
     subscription_id: subscriptionId, 
     filter_name: filter_name,
-    frequency: frequency, 
+    frequency: frequency,
+    magnitude: magnitude, 
     filter_type: filter_type,
-    filter_value: filter_value
+    filter_value: filter_value,
+    local_solar_time_after: local_solar_time_after,
+    local_solar_time_before: local_solar_time_before,
+    magnitude_drop: magnitude_drop,
+    event_duration: event_duration,
+    diameter: diameter,
+    geo_location: geo_location,
+    latitude: latitude,
+    longitude: longitude,
+    altitude: altitude,
+    location_radius: location_radius  
  }
   
   console.log("passando pela api saveListPreferenceEventFilters")
