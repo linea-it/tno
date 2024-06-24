@@ -87,7 +87,14 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    diameter = models.IntegerField(
+    diameter_min = models.IntegerField(
+        verbose_name="Diameter",
+        help_text="Diametro do objeto.",
+        null=True,
+        blank=True,
+        default=None,
+    )
+    diameter_max = models.IntegerField(
         verbose_name="Diameter",
         help_text="Diametro do objeto.",
         null=True,
@@ -125,7 +132,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    location_radius = models.FloatField(
+    location_radius = models.IntegerField(
         verbose_name="Radius",
         help_text="Raio em kilometro.",
         null=True,
