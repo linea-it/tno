@@ -133,9 +133,11 @@ function PredictionEventDetail() {
       },
       {
         title: 'Proper motion',
-        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null} (mas/yr), Dec ${
-          starObj.pmdec ? starObj.pmdec.toFixed(1) : null
-        } ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`,
+        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${
+          starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null
+        } (mas/yr), Dec ${starObj.pmdec ? starObj.pmdec.toFixed(1) : null} ±${
+          starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null
+        } (mas/yr)`,
         breakline: true
       },
       {
