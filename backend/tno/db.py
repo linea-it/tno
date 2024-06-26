@@ -27,7 +27,11 @@ from sqlalchemy.sql.expression import ClauseElement, Executable, between, litera
 
 
 class DBBase:
-    def __init__(self, pool=False):
+
+    def __init__(self, db_name: str = "default", pool=False):
+
+        self.db_name = db_name
+
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", category=sa_exc.SAWarning)
             if pool is False:
@@ -45,7 +49,8 @@ class DBBase:
 
     def get_db_uri(self):
 
-        db_admin = settings.DATABASES["default"]
+        db_admin = settings.DATABASES[self.db_name]
+
         # postgresql+psycopg2
         db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
             db_admin["USER"],
@@ -60,8 +65,8 @@ class DBBase:
         return db_uri
 
     def get_database(self):
-        if "NAME" in settings.DATABASES["default"]:
-            return settings.DATABASES["default"]["NAME"]
+        if "NAME" in settings.DATABASES[self.db_name]:
+            return settings.DATABASES[self.db_name]["NAME"]
         else:
             return None
 
@@ -69,8 +74,8 @@ class DBBase:
         schema = None
         # Considerando esse parametro em Settings DATABASES
         # "OPTIONS": {"options": "-c search_path=<DB_SCHEMA>,public"},
-        if "options" in settings.DATABASES["default"]["OPTIONS"]:
-            options = settings.DATABASES["default"]["OPTIONS"]["options"]
+        if "options" in settings.DATABASES[self.db_name]["OPTIONS"]:
+            options = settings.DATABASES[self.db_name]["OPTIONS"]["options"]
             schema = options[options.find("=") + 1 : options.rfind(",")]
 
         return schema

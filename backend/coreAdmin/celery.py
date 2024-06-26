@@ -32,29 +32,16 @@ app.conf.beat_schedule = {
         "task": "tno.tasks.update_asteroid_table",
         "schedule": crontab(hour=2, minute=0, day_of_week=1),
     },
-    # Calculo Occultation Path foi adicionado ao pipeline nao sendo mais necessario
-    # Ser executado pelo portal.
-    # 'occultation-path-coeff-every-10-minutes': {
-    #     'task': 'tno.tasks.create_occultation_path_coeff',
-    #     'schedule': crontab(minute='*/10')
-    # },
-    # 'add-every-30-seconds': {
-    #     'task': 'tno.tasks.add',
-    #     'schedule': 30.0,
-    #     'args': (16, 16)
-    # },
-    # 'test-periodic-every-30-seconds': {
-    #     'task': 'tno.tasks.teste_periodic_task',
-    #     'schedule': 30.0,
-    # },
-    # 'genmap-every-day-at-23': {
-    #     'task': 'tno.tasks.generate_maps',
-    #     'schedule': crontab(hour='23', minute='0')
-    # },
-    # 'cleanmap-every-day-at-3': {
-    #     'task': 'tno.tasks.cleanup_maps',
-    #     'schedule': crontab(hour='3', minute='0')
-    # }
+    # Executes every Day at 10:00 a.m.
+    "predict_job_for_upper_end_update": {
+        "task": "tno.tasks.predict_jobs_for_upper_end_update",
+        "schedule": crontab(hour=10, minute=0),
+    },
+    # Executes every Day at 5:00 a.m.
+    "predict_job_for_updated_asteroids": {
+        "task": "tno.tasks.predict_jobs_by_updated_asteroids",
+        "schedule": crontab(hour=5, minute=0),
+    },
 }
 app.conf.timezone = "UTC"
 

@@ -90,6 +90,14 @@ DATABASES = {
         "HOST": env("DATABASE_CATALOG_HOST", default="database"),
         "PORT": env("DATABASE_CATALOG_PORT", default=5432),
     },
+    "mpc": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": env("DATABASE_MPC_DB", default="mpc_sbn"),
+        "USER": env("DATABASE_MPC_USER", default="postgres"),
+        "PASSWORD": env("DATABASE_MPC_PASSWORD", default="postgres"),
+        "HOST": env("DATABASE_MPC_HOST", default="database"),
+        "PORT": env("DATABASE_MPC_PORT", default=5432),
+    },
 }
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # IF Database need a Schema use this
@@ -396,6 +404,15 @@ if SHIBBOLETH_ENABLED is True:
     AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
 
     SHIBBOLETH_ENABLED = True
+
+
+# Prediction Jobs for Updated Asteroids Automatic
+PREDICTION_JOB_AUTO_UPDATE = env.bool("PREDICTION_JOB_AUTO_UPDATE", False)
+PORTAL_INTERNAL_USER = "autobot"
+# Quantidade maxima de asteroids por job criado automaticamente.
+PREDICTION_JOB_CHUNK_SIZE = 2000
+# Limita os jobs de predição para executarem apenas para estas classes.
+PREDICTION_JOB_BASE_DYNCLASS = ["Trojan", "Centaur", "Kuiper Belt Object"]
 
 
 LOGGING = {

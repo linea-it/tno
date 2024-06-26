@@ -43,6 +43,19 @@ DATABASE_CATALOG_HOST=localhost
 DATABASE_CATALOG_PORT=3307
 DATABASE_CATALOG_DB=prod_gavo
 
+# DATABASE MPC used in Django
+DATABASE_MPC_DB=mpc_sbn
+DATABASE_MPC_USER=
+DATABASE_MPC_PASSWORD=
+DATABASE_MPC_HOST=host.docker.internal
+# DATABASE_MPC_HOST=host.docker.internal
+DATABASE_MPC_PORT=3307
+
+# Predicition Jobs Auto Update
+# --------------------------------------
+PREDICTION_JOB_AUTO_UPDATE=False
+
+
 # Predict Occultation Pipeline
 # -------------------------------------
 PARSL_ENV=local
