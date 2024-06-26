@@ -4,6 +4,7 @@ from typing import Optional
 import humanize
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
 from tno.asteroid_mpc_orbits.functions import (
     get_asteroids_by_base_dynclass,
     get_asteroids_with_updated_orbits,
@@ -24,6 +25,7 @@ def submit_predict_job(
     planetary_ephemeris: Optional[str] = None,
     leap_second: Optional[str] = None,
     debug: bool = False,
+    count_asteroids: int = 0,
 ):
 
     owner, created = get_user_model().objects.get_or_create(
@@ -60,6 +62,7 @@ def submit_predict_job(
         predict_end_date=predict_end_date,
         predict_interval=predict_interval,
         predict_step=predict_step,
+        count_asteroids=count_asteroids,
         debug=debug,
     )
 
@@ -98,6 +101,7 @@ def run_prediction_for_updated_asteroids(debug: bool = False):
             filter_value=",".join(map(str, chunk)),
             predict_start_date=start_prediction_date,
             predict_end_date=end_prediction_date,
+            count_asteroids=len(chunk),
             debug=debug,
         )
 
@@ -135,6 +139,7 @@ def run_predicition_for_upper_end_update(debug: bool = False):
                 filter_value=",".join(map(str, chunk)),
                 predict_start_date=start_prediction_date,
                 predict_end_date=end_prediction_date,
+                count_asteroids=len(chunk),
                 debug=debug,
             )
 
