@@ -8,7 +8,12 @@ function FrequencyTypeSelect({ value, onChange }) {
   return (
     <FormControl size='normal' fullWidth>
       <InputLabel id='frequency-type-select-label'>Frequency</InputLabel>
-      <Select labelId='frequency-type-select-label' id='frequency-type-select' value={value} label='Frequency' onChange={onChange}>
+      <Select 
+        //label='frequency-type-select-label' 
+        id='frequency-type-select' value={value} 
+        label='Frequency' 
+        onChange={onChange}
+      >
         <MenuItem value={1}>Monthly</MenuItem>
         <MenuItem value={2}>Weekly</MenuItem>
       </Select>

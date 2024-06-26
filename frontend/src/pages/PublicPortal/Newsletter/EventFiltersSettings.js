@@ -1,20 +1,32 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { useQuery } from 'react-query'
 import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
+import Button from '@mui/material/Button'
 import { listPreferenceEventFilters } from '../../../services/api/Newsletter'
 import { CardHeader } from '@mui/material'
 import PropTypes from 'prop-types'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Switch from '@mui/material/Switch'
 import Divider from '@mui/material/Divider'
-import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect'
+//import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect'
+import FilterTypeSelect from './FilterTypeSelect'
+import MagnitudeSelect from './MagnitudeSelect'
+import MagnitudeDropSelect from './MagnitudeDropSelect'
+//import MagnitudeSelect from '../../../components/Newsletter/MagnitudeSelect/index'
+import EventDurationField from './EventDurationField'
+import FrequencyTypeSelect from './FrequencyTypeSelect'
 import SolarTimeFilter from '../../../components/SolarTimeFilter/index'
-import GeoFilter from '../../../components/GeoFilter/index'
+//import GeoFilter from '../../../components/GeoFilter/index'
+import GeoFilter from './GeoFilter'
+import ObjectDiameterFilter from './ObjectDiameterFilter'
+//import MaginitudeSelect from '../../../components/MaginitudeSelect/index'
+import { PredictionEventsContext } from '../../../contexts/PredictionContext'
+
 function EventFiltersSettings({ subscriptionId }) {
-  // const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
+  //const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
 
   const { data, isLoading } = useQuery({
     queryKey: ['preferenceEventFilters', { subscriptionId: subscriptionId }],
@@ -33,18 +45,36 @@ function EventFiltersSettings({ subscriptionId }) {
   }
 
   const generate_filter_form = (filter) => {
-    console.log(filter)
+    //console.log(filter)
     return (
       <Box component='form' noValidate autoComplete='off'>
         <Grid container spacing={2} alignItems='center'>
+          <Grid item xs={12} sx={{ display: 'inlineFlex' }}>
+            <FrequencyTypeSelect
+              value={{
+                frequency: filter.frequency
+              }}
+            />
+          </Grid>
           <Grid item xs={12}>
-            <AsteroidSelect
-              source={'prediction'}
+            <Divider />
+          </Grid>
+          <Grid item xs={12}>
+            <MagnitudeSelect
+                  value={{
+                    magnitude: filter.magnitude
+                  }}
+              />
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid item xs={12} sx={{ display: 'inlineFlex' }}>
+            <FilterTypeSelect
               value={{
                 filterType: filter.filter_type,
                 filterValue: filter.filter_value
               }}
-              onChange={(value) => {}}
             />
           </Grid>
           <Grid item xs={12}>
@@ -63,16 +93,72 @@ function EventFiltersSettings({ subscriptionId }) {
           <Grid item xs={12}>
             <Divider />
           </Grid>
+          <Grid container item xs={12}>
+            <Grid item xs={12}>
+              <MagnitudeDropSelect
+                    value={{
+                      magnitude_drop: filter.magnitude_drop
+                    }}
+              />
+          </Grid>
+            <Grid item xs={12}>
+              <EventDurationField
+                    value={{
+                      event_duration: filter.event_duration
+                    }}
+              />
+          </Grid>
+          <Grid item xs={12}>
+            <ObjectDiameterFilter
+                  value={{
+                    diameter_min: filter.diameter_min,
+                    diameter_max: filter.diameter_max
+                  }}
+              />
+          </Grid>
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
           <Grid item xs={12}>
             <GeoFilter
               value={{
-                geo: filter.geo_location,
+                //geo_location: filter.geo_location,
                 latitude: filter.latitude,
                 longitude: filter.longitude,
                 radius: filter.location_radius
               }}
-              onChange={(value) => {}}
+              onChange={(value) => {
+                return {
+                    ...value
+                  }
+              }}
             />
+          </Grid>
+          <Grid item xs={12}>
+            <Divider />
+          </Grid>
+          <Grid container item xs={12} >
+          <CardContent>
+              <Button
+                  type="submit"
+                  fullWidth 
+                  variant="contained"
+                  sx={{ width: '20vw', height:'34px'}}
+                  >
+                  Editar
+              </Button>
+              </CardContent>
+              <CardContent>
+              <Button
+                  type="submit"
+                  fullWidth 
+                  variant="contained"
+                  sx={{ width: '20vw', height:'34px'}}
+                  >
+                  Excluir
+              </Button>
+          </CardContent>
           </Grid>
         </Grid>
       </Box>

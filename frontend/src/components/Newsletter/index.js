@@ -19,7 +19,7 @@ import { listPreferenceEventFilters, saveListPreferenceEventFilters} from '../..
 import AsteroidSelect from '../AsteroidSelect/AsteroidSelect'
 import MaginitudeSelect from '../MaginitudeSelect/index'
 import MaginitudeDropSelect from '../MaginitudeDropSelect/index'
-import SolarTimeFilter from '../SolarTimeFilter'
+import SolarTimeFilter from '../SolarTimeFilter/index'
 import GeoFilter from '../GeoFilter/index'
 import ObjectDiameterFilter from '../ObjectDiameterFilter/index'
 import EventDurationField from '../EventDurationField/index'
@@ -69,7 +69,8 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
             local_solar_time_before: queryOptions.filters.local_solar_time_before,
             magnitude_drop: queryOptions.filters.magnitude_drop,
             event_duration:  queryOptions.filters.event_duration,
-            diameter: queryOptions.filters.diameter,
+            diameter_min: queryOptions.filters.diameter_min,
+            diameter_max: queryOptions.filters.diameter_max,
             geo_location: queryOptions.filters.geo_location,
             latitude: queryOptions.filters.latitude,
             longitude: queryOptions.filters.longitude,
@@ -79,7 +80,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
         console.log('salvando nome do filtro no bd')})
         //console.log(queryOptions.filters.frequency)
         //console.log(queryOptions.filters.filter_name)
-        console.log(queryOptions.filters.geo_location)
+        //console.log(queryOptions.filters.geo_location)
     }
 
     return (
@@ -89,21 +90,16 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                 <Grid container spacing={2} alignItems='center' >
                     <Grid item xs={12} >
                         <CardContent>
-                            <TextField sx={{ padding: '20px' }}
+                            <TextField
                                 margin="normal"
                                 required
-                                fullWidth
+                                name='filter_name'
                                 id="filter_name"
                                 label="Filter Name"
-                                name="filter_name"
-                                autoComplete="filter_name"
-                                autoFocus sx={{ input: { 
-                                    borderRadius: '6px', 
-                                    height:'8px', 
-                                    color: 'gray' }}}
+                                variant='outlined'
                                 value={filterName}
                                 onChange={nameChangeHandler}
-                                InputLabelProps={{ sx: { color: 'gray' } }}
+                                fullWidth
                             />
                         </CardContent>
                         <Grid item xs={12}>
@@ -183,16 +179,23 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                 <SolarTimeFilter
                                     value={{
                                         solar_time_enabled: queryOptions.filters.solar_time_enabled,
-                                        local_solar_time_after: queryOptions.filters.local_solar_time_after,
-                                        local_solar_time_before: queryOptions.filters.local_solar_time_before
+                                        solar_time_after: queryOptions.filters.solar_time_after,
+                                        solar_time_before: queryOptions.filters.solar_time_before
                                     }}
                                     onChange={(value) => {
                                         setQueryOptions((prev) => {
+                                            //console.log(Object.getOwnPropertyDescriptor(value, "$d" ).value)
                                         return {
                                             ...prev,
                                             filters: {
                                             ...prev.filters,
-                                            ...value
+                                            ...value, 
+                                            /*"$D": 25 "$H": 18 "$L": "en" "$M": 5 "$W": 2 
+                                                "$d": Date Tue Jun 25 2024 18:00:00 GMT-0300 (Horário Padrão de Brasília) 
+                                                "$m": 0 "$ms": 0 "$s": 0 "$u": undefined "$x": Object {  } "$y": 2024*/
+                                                
+                                            local_solar_time_after: Object.getOwnPropertyDescriptor(value, "solar_time_after").value,
+                                            local_solar_time_before: Object.getOwnPropertyDescriptor(value, "solar_time_before").value,
                                             }
                                         }
                                         })
@@ -216,7 +219,6 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                                 filters: {
                                                 ...prev.filters,
                                                 magnitude_drop: newValue
-                                                //...value
                                                 }
                                             }
                                             })
@@ -246,12 +248,15 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                             diameterMax: queryOptions.filters.diameterMax
                                         }}
                                         onChange={(value) => {
+                                            //console.log(Object.getOwnPropertyDescriptor(value, "diameterMin").value) 
                                             setQueryOptions((prev) => {
                                                 return {
                                                     ...prev,
                                                     filters: {
                                                         ...prev.filters,
-                                                        ...value
+                                                        ...value,
+                                                        diameter_min: Object.getOwnPropertyDescriptor(value, "diameterMin").value,
+                                                        diameter_max: Object.getOwnPropertyDescriptor(value, "diameterMax").value,
                                                     }
                                                 }
                                             })
@@ -267,19 +272,21 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             <Grid item xs={12}>
                                 <GeoFilter
                                 value={{
-                                    geo_location: queryOptions.filters.geo_location,
+                                    geo: queryOptions.filters.geo,
                                     latitude: queryOptions.filters.latitude,
                                     longitude: queryOptions.filters.longitude,
-                                    //location_radius: queryOptions.filters.location_radius
+                                    radius: queryOptions.filters.radius
                                 }}
                                     onChange={(value) => {
+                                        console.log(Object.getOwnPropertyDescriptor(value, "radius").value)
                                         setQueryOptions((prev) => {
                                         return {
                                             ...prev,
                                             filters: {
                                             ...prev.filters,
                                             ...value,
-                                            geo_location: value
+                                            location_radius: Object.getOwnPropertyDescriptor(value, "radius").value,
+                                            geo_location: Object.getOwnPropertyDescriptor(value, "geo").value,
                                             }
                                         }
                                         })
