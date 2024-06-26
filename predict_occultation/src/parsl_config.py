@@ -53,7 +53,7 @@ def get_config(key, jobpath):
                     nodes_per_block=1,  # number of nodes
                     cmd_timeout=240,  # duration for which the provider will wait for a command to be invoked on a remote system
                     launcher=SrunLauncher(debug=True, overrides=""),
-                    init_blocks=10,
+                    init_blocks=3,
                     parallelism=1,
                     walltime="240:00:00",
                     worker_init=f"source {cluster_env_sh}\n",

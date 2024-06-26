@@ -157,10 +157,10 @@ def crossmatch_with_jpl_soln_date(tno_names):
     Returns:
     list: A list of JPL solution dates corresponding to the TNO names.
     """
-    with Pool(2) as p:
-        jpl_solutions = list(
-            tqdm(p.imap(get_jpl_sbdb_soln_date, tno_names), total=len(tno_names))
-        )
+    jpl_solutions = []
+    for tno_name in tqdm(tno_names, total=len(tno_names)):
+        jpl_solutions.append(get_jpl_sbdb_soln_date(tno_name))
+
     return jpl_solutions
 
 
