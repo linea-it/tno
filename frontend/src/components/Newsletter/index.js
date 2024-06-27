@@ -33,6 +33,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
     const [frequency, setFrequency] = React.useState('Monthly')
 
     //console.log(queryOptions.filters.filterType)
+    
     const { data, isLoading } = useQuery({
       queryKey: ['preferenceEventFilters', { subscriptionId: subscriptionId }],
       queryFn: listPreferenceEventFilters,
@@ -52,37 +53,38 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
         setFilterName(event.target.value)
         //setFrequency(event.target.value)
     }
-
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const nameFilterList = data.get('filter_name')
-        console.log(nameFilterList)
-        saveListPreferenceEventFilters( {
-            subscriptionId: subscriptionId, 
-            filter_name: nameFilterList,
-            frequency: queryOptions.filters.frequency,
-            magnitude: queryOptions.filters.magnitude, 
-            filter_type: queryOptions.filters.filterType, 
-            filter_value: queryOptions.filters.filterValue,
-            local_solar_time_after: queryOptions.filters.local_solar_time_after,
-            local_solar_time_before: queryOptions.filters.local_solar_time_before,
-            magnitude_drop: queryOptions.filters.magnitude_drop,
-            event_duration:  queryOptions.filters.event_duration,
-            diameter_min: queryOptions.filters.diameter_min,
-            diameter_max: queryOptions.filters.diameter_max,
-            geo_location: queryOptions.filters.geo_location,
-            latitude: queryOptions.filters.latitude,
-            longitude: queryOptions.filters.longitude,
-            altitude: queryOptions.filters.altitude,
-            location_radius: queryOptions.filters.location_radius 
-        } ).then(() => {
-        console.log('salvando nome do filtro no bd')})
-        //console.log(queryOptions.filters.frequency)
-        //console.log(queryOptions.filters.filter_name)
-        //console.log(queryOptions.filters.geo_location)
-    }
-
+      
+      const handleSubmit = (event) => {
+          event.preventDefault();
+          const data = new FormData(event.currentTarget);
+          const nameFilterList = data.get('filter_name')
+          console.log(nameFilterList)
+          
+          saveListPreferenceEventFilters( {
+              subscriptionId: subscriptionId, 
+              filter_name: nameFilterList,
+              frequency: queryOptions.filters.frequency,
+              magnitude: queryOptions.filters.magnitude, 
+              filter_type: queryOptions.filters.filterType, 
+              filter_value: queryOptions.filters.filterValue,
+              local_solar_time_after: queryOptions.filters.local_solar_time_after,
+              local_solar_time_before: queryOptions.filters.local_solar_time_before,
+              magnitude_drop: queryOptions.filters.magnitude_drop,
+              event_duration:  queryOptions.filters.event_duration,
+              diameter_min: queryOptions.filters.diameter_min,
+              diameter_max: queryOptions.filters.diameter_max,
+              geo_location: queryOptions.filters.geo_location,
+              latitude: queryOptions.filters.latitude,
+              longitude: queryOptions.filters.longitude,
+              altitude: queryOptions.filters.altitude,
+              location_radius: queryOptions.filters.location_radius 
+            } ).then(() => {
+                console.log('salvando nome do filtro no bd')})
+                //console.log(queryOptions.filters.frequency)
+                //console.log(queryOptions.filters.filter_name)
+                //console.log(queryOptions.filters.geo_location)
+            }
+            
     return (
         <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -163,7 +165,9 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                                 ...prev,
                                                 filters: {
                                                 ...prev.filters,
-                                                ...value
+                                                ...value,
+                                                filter_type:queryOptions.filters.filterType, //Object.getOwnPropertyDescriptor(value, "name"),
+                                                filter_value: queryOptions.filters.filterValue //Object.getOwnPropertyDescriptor(value, "name")
                                                 }
                                             }
                                         })
@@ -184,18 +188,18 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                     }}
                                     onChange={(value) => {
                                         setQueryOptions((prev) => {
-                                            //console.log(Object.getOwnPropertyDescriptor(value, "$d" ).value)
+                                            console.log(queryOptions.filters.solar_time_after)
                                         return {
                                             ...prev,
                                             filters: {
                                             ...prev.filters,
-                                            ...value, 
-                                            /*"$D": 25 "$H": 18 "$L": "en" "$M": 5 "$W": 2 
-                                                "$d": Date Tue Jun 25 2024 18:00:00 GMT-0300 (Horário Padrão de Brasília) 
-                                                "$m": 0 "$ms": 0 "$s": 0 "$u": undefined "$x": Object {  } "$y": 2024*/
-                                                
-                                            local_solar_time_after: Object.getOwnPropertyDescriptor(value, "solar_time_after").value,
-                                            local_solar_time_before: Object.getOwnPropertyDescriptor(value, "solar_time_before").value,
+                                            //...value,
+                                            
+                                            //local_solar_time_after: Object.getOwnPropertyDescriptor(value, "solar_time_after").value,
+                                            //local_solar_time_before: Object.getOwnPropertyDescriptor(value, "solar_time_before").value,
+                                            solar_time_enabled: queryOptions.filters.solar_time_enabled,
+                                            local_solar_time_after: queryOptions.filters.solar_time_after,
+                                            local_solar_time_before: queryOptions.filters.solar_time_before
                                             }
                                         }
                                         })
@@ -257,6 +261,8 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                                         ...value,
                                                         diameter_min: Object.getOwnPropertyDescriptor(value, "diameterMin").value,
                                                         diameter_max: Object.getOwnPropertyDescriptor(value, "diameterMax").value,
+                                                        //diameter_min: diameterMin,
+                                                        //diameter_max: diameterMax
                                                     }
                                                 }
                                             })
@@ -278,7 +284,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                     radius: queryOptions.filters.radius
                                 }}
                                     onChange={(value) => {
-                                        console.log(Object.getOwnPropertyDescriptor(value, "radius").value)
+                                        //console.log(Object.getOwnPropertyDescriptor(value, "radius").value)
                                         setQueryOptions((prev) => {
                                         return {
                                             ...prev,
