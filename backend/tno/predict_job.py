@@ -52,7 +52,7 @@ def submit_predict_job(
 
     job = PredictionJob.objects.create(
         owner=owner,
-        status=5,  # TODO: Change to 1
+        status=1,
         catalog=catalog,
         planetary_ephemeris=planetary_ephemeris,
         leap_second=leap_second,
