@@ -4,7 +4,6 @@ from typing import Optional
 import humanize
 from django.conf import settings
 from django.contrib.auth import get_user_model
-
 from tno.asteroid_mpc_orbits.functions import (
     get_asteroids_by_base_dynclass,
     get_asteroids_with_updated_orbits,
