@@ -32,10 +32,10 @@ app.conf.beat_schedule = {
         "task": "tno.tasks.update_asteroid_table",
         "schedule": crontab(hour=2, minute=0, day_of_week=1),
     },
-    # Executes every Day at 10:00 a.m.
+    # Executes every 10th and 25th day of every month.
     "predict_job_for_upper_end_update": {
         "task": "tno.tasks.predict_jobs_for_upper_end_update",
-        "schedule": crontab(hour=10, minute=0),
+        "schedule": crontab(hour=15, minute=0, day_of_month="10,25"),
     },
     # Executes every Day at 5:00 a.m.
     "predict_job_for_updated_asteroids": {
