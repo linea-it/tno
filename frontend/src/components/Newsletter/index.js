@@ -64,12 +64,14 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
               subscriptionId: subscriptionId, 
               filter_name: nameFilterList,
               frequency: queryOptions.filters.frequency,
-              magnitude: queryOptions.filters.magnitude, 
+              magnitude_min: queryOptions.filters.magnitude_min, 
+              magnitude_max: queryOptions.filters.magnitude_max, 
               filter_type: queryOptions.filters.filterType, 
               filter_value: queryOptions.filters.filterValue,
               local_solar_time_after: queryOptions.filters.local_solar_time_after,
               local_solar_time_before: queryOptions.filters.local_solar_time_before,
-              magnitude_drop: queryOptions.filters.magnitude_drop,
+              magnitude_drop_min: queryOptions.filters.magnitude_drop_min,
+              magnitude_drop_max: queryOptions.filters.magnitude_drop_max,
               event_duration:  queryOptions.filters.event_duration,
               diameter_min: queryOptions.filters.diameter_min,
               diameter_max: queryOptions.filters.diameter_max,
@@ -135,14 +137,31 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                         <CardContent>
                             <Grid item xs={12} sm={2} md={4}>
                                 <MaginitudeSelect
-                                    value={queryOptions.filters.magnitude}
+                                    value={queryOptions.filters.magnitude_min}
                                     onChange={(event) => {
                                         setQueryOptions((prev) => {
                                         return {
                                             ...prev,
                                             filters: {
                                             ...prev.filters,
-                                            magnitude: event.target.value
+                                            magnitude_min: event.target.value
+                                            //...value
+                                            }
+                                        }
+                                        })
+                                    }}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={2} md={4}>
+                                <MaginitudeSelect
+                                    value={queryOptions.filters.magnitude_max}
+                                    onChange={(event) => {
+                                        setQueryOptions((prev) => {
+                                        return {
+                                            ...prev,
+                                            filters: {
+                                            ...prev.filters,
+                                            magnitude_max: event.target.value
                                             //...value
                                             }
                                         }
@@ -215,14 +234,30 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             <Grid item xs={12} container>
                                 <Grid item xs={3} container sx={{ padding: '8px' }}>
                                     <MaginitudeDropSelect
-                                        value={queryOptions.filters.magnitude_drop}
+                                        value={queryOptions.filters.magnitude_drop_min}
                                         onChange={(newValue) => {
                                             setQueryOptions((prev) => {
                                             return {
                                                 ...prev,
                                                 filters: {
                                                 ...prev.filters,
-                                                magnitude_drop: newValue
+                                                magnitude_drop_min: newValue
+                                                }
+                                            }
+                                            })
+                                        }}
+                                    />
+                                </Grid>
+                                <Grid item xs={3} container sx={{ padding: '8px' }}>
+                                    <MaginitudeDropSelect
+                                        value={queryOptions.filters.magnitude_drop_max}
+                                        onChange={(newValue) => {
+                                            setQueryOptions((prev) => {
+                                            return {
+                                                ...prev,
+                                                filters: {
+                                                ...prev.filters,
+                                                magnitude_drop_max: newValue
                                                 }
                                             }
                                             })
