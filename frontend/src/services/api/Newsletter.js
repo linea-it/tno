@@ -180,7 +180,10 @@ const parsePredictEventsFilters = (params1) => {
   newFilters.subscription_id= filters.subscription_id
   newFilters.filter_name = filters.filter_name
   newFilters.filter_type = filters.filter_type
-  newFilters.magnitude_drop = filters.magnitude_drop
+  newFilters.magnitude_min = filters.magnitude_min
+  newFilters.magnitude_max = filters.magnitude_max
+  newFilters.magnitude_drop_min = filters.magnitude_drop_min
+  newFilters.magnitude_drop_max = filters.magnitude_drop_max
   newFilters.event_duration = filters.event_duration
   newFilters.diameter_min = filters.diameter_min
   newFilters.diameter_max = filters.diameter_max
@@ -199,12 +202,14 @@ export const saveListPreferenceEventFilters = ({
   subscriptionId, 
   filter_name,
   frequency,
-  magnitude, 
+  magnitude_min, 
+  magnitude_max, 
   filter_type, 
   filter_value,
   local_solar_time_after,
   local_solar_time_before,
-  magnitude_drop,
+  magnitude_drop_min,
+  magnitude_drop_max,
   event_duration,
   diameter_min,
   diameter_max,
@@ -218,12 +223,14 @@ export const saveListPreferenceEventFilters = ({
     subscription_id: subscriptionId, 
     filter_name: filter_name,
     frequency: frequency,
-    magnitude: magnitude, 
+    magnitude_min: magnitude_min, 
+    magnitude_max: magnitude_max, 
     filter_type: filter_type,
     filter_value: filter_value,
     local_solar_time_after: local_solar_time_after,
     local_solar_time_before: local_solar_time_before,
-    magnitude_drop: magnitude_drop,
+    magnitude_drop_min: magnitude_drop_min,
+    magnitude_drop_max: magnitude_drop_max,
     event_duration: event_duration,
     diameter_min: diameter_min,
     diameter_max: diameter_max,
