@@ -2,9 +2,15 @@ import { api } from './Api'
 
 export const getSubscriptionInfo = (id) => api.post(`/subscription/info/`, { c: id })
 
+
 export const unsubscribe = (id) => api.post(`/subscription/unsubscribe/`, { c: id })
 
 export const reactivateSubscription = (id) => api.post(`/subscription/reactivate/`, { c: id })
+
+export const delSubscriptionInfo = (id) => {
+  console.log(id)
+  return api.delete(`/newsletter/preferences/${id}`).then((res) => res.data)
+}
 
 export const listPreferenceEventFilters = ({ queryKey }) => {
   const params = queryKey[1]
@@ -150,9 +156,6 @@ const parsePredictEventsFilters = (params1) => {
   const newFilters = {}
   console.log(params1)
 
-  //newFilters.filter_value = Object.getOwnPropertyDescriptor(newFilters, "name")
-  
-  //console.log(newFilters.filter_value)
   // Filtro por Nome, Dynclass e Base Dynclass
   if (filters.filter_value !== undefined && filters.filter_value !== '') {
     if (filters.filter_type === 'name') {
@@ -191,7 +194,6 @@ const parsePredictEventsFilters = (params1) => {
 
   return newFilters 
 }
-//console.log(parsePredictEventsFilters2)
 
 export const saveListPreferenceEventFilters = ({ 
   subscriptionId, 
@@ -238,10 +240,3 @@ export const saveListPreferenceEventFilters = ({
   //return api.post(`newsletter/preferences/`, params )//.then((res) => res.data.results)
   return api.post(`newsletter/preferences/`, paramsOut )//.then((res) => res.data.results)
 }
-/*
-export const saveListPreferenceEventFilters = ({ queryKey }) => {
-  const params = parsePredictEventsFilters(paramsIn)
-  console.log("passando pela api saveListPreferenceEventFilters")
-  console.log(params)
-  return api.post(`newsletter/preferences/`, params ).then((res) => res.data)
-}*/
