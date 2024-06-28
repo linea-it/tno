@@ -5,6 +5,7 @@ import Box from '@mui/material/Box'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
+import DeleteIcon from '@mui/icons-material/Delete'
 import { listPreferenceEventFilters } from '../../../services/api/Newsletter'
 import { CardHeader } from '@mui/material'
 import PropTypes from 'prop-types'
@@ -24,6 +25,9 @@ import GeoFilter from './GeoFilter'
 import ObjectDiameterFilter from './ObjectDiameterFilter'
 //import MaginitudeSelect from '../../../components/MaginitudeSelect/index'
 import { PredictionEventsContext } from '../../../contexts/PredictionContext'
+import PredictionEventsDataGrid from '../../../components/PredictionEventsDataGrid/index'
+//import handleRemove from '../../../components/Newsletter/index'
+import RemoveFilters from './RemoveFilters'
 
 function EventFiltersSettings({ subscriptionId }) {
   //const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
@@ -149,16 +153,6 @@ function EventFiltersSettings({ subscriptionId }) {
                   Editar
               </Button>
               </CardContent>
-              <CardContent>
-              <Button
-                  type="submit"
-                  fullWidth 
-                  variant="contained"
-                  sx={{ width: '20vw', height:'34px'}}
-                  >
-                  Excluir
-              </Button>
-          </CardContent>
           </Grid>
         </Grid>
       </Box>
@@ -172,6 +166,14 @@ function EventFiltersSettings({ subscriptionId }) {
           <Card key={`filter_setting_${row.id}`} sx={{ mb: 2 }}>
             <CardHeader title={row.filter_name}>{/* <PredictionEventsFilter /> */}</CardHeader>
             <CardContent>{generate_filter_form(row)}</CardContent>
+            {/*
+              <Grid item xs={12}>
+                <PredictionEventsDataGrid />
+              </Grid>
+            */}
+              <Grid item xs={12}>
+                <RemoveFilters subscriptionId={row.id} />
+              </Grid>
           </Card>
         )
       })}
