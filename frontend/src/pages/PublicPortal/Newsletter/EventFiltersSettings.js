@@ -66,7 +66,14 @@ function EventFiltersSettings({ subscriptionId }) {
           <Grid item xs={12}>
             <MagnitudeSelect
                   value={{
-                    magnitude: filter.magnitude
+                    magnitude_min: filter.magnitude_min
+                  }}
+              />
+          </Grid>
+          <Grid item xs={12}>
+            <MagnitudeSelect
+                  value={{
+                    magnitude_max: filter.magnitude_max
                   }}
               />
           </Grid>
@@ -101,7 +108,14 @@ function EventFiltersSettings({ subscriptionId }) {
             <Grid item xs={12}>
               <MagnitudeDropSelect
                     value={{
-                      magnitude_drop: filter.magnitude_drop
+                      magnitude_drop_min: filter.magnitude_drop_min
+                    }}
+              />
+          </Grid>
+            <Grid item xs={12}>
+              <MagnitudeDropSelect
+                    value={{
+                      magnitude_drop_max: filter.magnitude_drop_max
                     }}
               />
           </Grid>
