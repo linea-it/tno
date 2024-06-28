@@ -32,8 +32,15 @@ class EventFilter(models.Model):
         help_text="Frequencia de recebimento do periodico 1-semanal, 2-mensal.",
     )
 
-    magnitude = models.IntegerField(
-        verbose_name="Magnitude",
+    magnitude_min = models.IntegerField(
+        verbose_name="Magnitude min",
+        default=15,
+        help_text="Magnitude do objeto.",
+        null=True,
+        blank=True,
+    )
+    magnitude_max = models.IntegerField(
+        verbose_name="Magnitude max",
         default=15,
         help_text="Magnitude do objeto.",
         null=True,
@@ -71,9 +78,16 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    magnitude_drop = models.IntegerField(
-        verbose_name="Magnitude Drop",
-        help_text="Magnitude Drop.",
+    magnitude_drop_min = models.IntegerField(
+        verbose_name="Magnitude Drop min",
+        help_text="Magnitude Drop min.",
+        null=True,
+        blank=True,
+        default=None,
+    )
+    magnitude_drop_max = models.IntegerField(
+        verbose_name="Magnitude Drop max",
+        help_text="Magnitude Drop max.",
         null=True,
         blank=True,
         default=None,
