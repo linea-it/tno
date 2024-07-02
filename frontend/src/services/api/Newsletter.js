@@ -156,6 +156,20 @@ const parsePredictEventsFilters = (params1) => {
   const newFilters = {}
   console.log(params1)
 
+  //Filtro por frequencia
+  /*if (filters.frequency === '1') {
+    newFilters.frequency = 'Monthly'
+  } else {
+    newFilters.frequency = 'Weekly'
+  }*/
+
+  newFilters.subscription_id= filters.subscription_id
+  newFilters.filter_name = filters.filter_name
+  newFilters.frequency = filters.frequency
+  newFilters.filter_type = filters.filter_type
+  newFilters.magnitude_min = filters.magnitude_min
+  newFilters.magnitude_max = filters.magnitude_max
+  
   // Filtro por Nome, Dynclass e Base Dynclass
   if (filters.filter_value !== undefined && filters.filter_value !== '') {
     if (filters.filter_type === 'name') {
@@ -177,17 +191,12 @@ const parsePredictEventsFilters = (params1) => {
     }
   //}
 
-  newFilters.subscription_id= filters.subscription_id
-  newFilters.filter_name = filters.filter_name
-  newFilters.filter_type = filters.filter_type
-  newFilters.magnitude_min = filters.magnitude_min
-  newFilters.magnitude_max = filters.magnitude_max
   newFilters.magnitude_drop_min = filters.magnitude_drop_min
   newFilters.magnitude_drop_max = filters.magnitude_drop_max
   newFilters.event_duration = filters.event_duration
   newFilters.diameter_min = filters.diameter_min
   newFilters.diameter_max = filters.diameter_max
-  newFilters.geo_location = filters.geo_location
+  //newFilters.geo_location = filters.geo_location
   newFilters.latitude = filters.latitude
   newFilters.longitude = filters.longitude
   newFilters.location_radius = filters.location_radius
@@ -213,7 +222,7 @@ export const saveListPreferenceEventFilters = ({
   event_duration,
   diameter_min,
   diameter_max,
-  geo_location,
+  //geo_location,
   latitude,
   longitude,
   altitude,
@@ -234,7 +243,7 @@ export const saveListPreferenceEventFilters = ({
     event_duration: event_duration,
     diameter_min: diameter_min,
     diameter_max: diameter_max,
-    geo_location: geo_location,
+    //geo_location: geo_location,
     latitude: latitude,
     longitude: longitude,
     altitude: altitude,
