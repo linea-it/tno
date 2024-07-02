@@ -75,14 +75,14 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
               event_duration:  queryOptions.filters.event_duration,
               diameter_min: queryOptions.filters.diameter_min,
               diameter_max: queryOptions.filters.diameter_max,
-              geo_location: queryOptions.filters.geo_location,
+              //geo_location: queryOptions.filters.geo_location,
               latitude: queryOptions.filters.latitude,
               longitude: queryOptions.filters.longitude,
               altitude: queryOptions.filters.altitude,
               location_radius: queryOptions.filters.location_radius 
             } ).then(() => {
                 console.log('salvando nome do filtro no bd')})
-                //console.log(queryOptions.filters.frequency)
+                console.log(queryOptions.filters.frequency)
                 //console.log(queryOptions.filters.filter_name)
                 //console.log(queryOptions.filters.geo_location)
             }
@@ -135,42 +135,6 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             <Divider />
                         </Grid>
                         <CardContent>
-                            <Grid item xs={12} sm={2} md={4}>
-                                <MaginitudeSelect
-                                    value={queryOptions.filters.magnitude_min}
-                                    onChange={(event) => {
-                                        setQueryOptions((prev) => {
-                                        return {
-                                            ...prev,
-                                            filters: {
-                                            ...prev.filters,
-                                            magnitude_min: event.target.value
-                                            //...value
-                                            }
-                                        }
-                                        })
-                                    }}
-                                />
-                            </Grid>
-                            <Grid item xs={12} sm={2} md={4}>
-                                <MaginitudeSelect
-                                    value={queryOptions.filters.magnitude_max}
-                                    onChange={(event) => {
-                                        setQueryOptions((prev) => {
-                                        return {
-                                            ...prev,
-                                            filters: {
-                                            ...prev.filters,
-                                            magnitude_max: event.target.value
-                                            //...value
-                                            }
-                                        }
-                                        })
-                                    }}
-                                />
-                            </Grid>
-                        </CardContent>
-                        <CardContent>
                             <Grid item xs={12} >
                                 <AsteroidSelect
                                     source={'prediction'}
@@ -194,6 +158,48 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                 />
                             </Grid>
                         </CardContent>
+                        <Grid item xs={12}>
+                            <Divider />
+                        </Grid>
+                        <CardContent>
+                            <Grid item xs={12} alignItems='center' sx={{ display: 'flex', flexDirection: 'rown' }}> 
+                                <Grid item xs={12} sx={{ paddingRight: '8px' }}>
+                                <MaginitudeSelect
+                                    value={queryOptions.filters.magnitude_min}
+                                    onChange={(event) => {
+                                        setQueryOptions((prev) => {
+                                        return {
+                                            ...prev,
+                                            filters: {
+                                            ...prev.filters,
+                                            magnitude_min: event.target.value
+                                            //...value
+                                            }
+                                        }
+                                        })
+                                    }}
+                                />
+                                </Grid>
+                                <Grid item xs={12}>
+                                <MaginitudeSelect
+                                    value={queryOptions.filters.magnitude_max}
+                                    onChange={(event) => {
+                                        setQueryOptions((prev) => {
+                                        return {
+                                            ...prev,
+                                            filters: {
+                                            ...prev.filters,
+                                            magnitude_max: event.target.value
+                                            //...value
+                                            }
+                                        }
+                                        })
+                                    }}
+                                />
+                                </Grid>
+                            </Grid>
+                        </CardContent>
+                       
                         <Grid item xs={12}>
                             <Divider />
                         </Grid>
@@ -313,7 +319,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             <Grid item xs={12}>
                                 <GeoFilter
                                 value={{
-                                    geo: queryOptions.filters.geo,
+                                    //geo: queryOptions.filters.geo,
                                     latitude: queryOptions.filters.latitude,
                                     longitude: queryOptions.filters.longitude,
                                     radius: queryOptions.filters.radius
@@ -327,7 +333,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                             ...prev.filters,
                                             ...value,
                                             location_radius: Object.getOwnPropertyDescriptor(value, "radius").value,
-                                            geo_location: Object.getOwnPropertyDescriptor(value, "geo").value,
+                                            //geo_location: Object.getOwnPropertyDescriptor(value, "geo").value,
                                             }
                                         }
                                         })
