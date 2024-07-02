@@ -185,6 +185,12 @@ function descendingComparator(a, b, orderBy) {
       label: 'Geo Location',
     },*/
     {
+      id: 'altitude',
+      numeric: true,
+      disablePadding: false,
+      label: 'Altitude',
+    },
+    {
       id: 'latitude',
       numeric: true,
       disablePadding: false,
@@ -195,12 +201,6 @@ function descendingComparator(a, b, orderBy) {
       numeric: true,
       disablePadding: false,
       label: 'Longitude',
-    },
-    {
-      id: 'altitude',
-      numeric: true,
-      disablePadding: false,
-      label: 'Altitude',
     },
     {
       id: 'location_radius',
@@ -486,9 +486,9 @@ function descendingComparator(a, b, orderBy) {
                         <TableCell align="right">{row.diameter_min}</TableCell>
                         <TableCell align="right">{row.diameter_max}</TableCell>
                         {/*<TableCell align="right">{row.geo_location}</TableCell>*/}
+                        <TableCell align="right">{row.altitude}</TableCell>
                         <TableCell align="right">{row.latitude}</TableCell>
                         <TableCell align="right">{row.longitude}</TableCell>
-                        <TableCell align="right">{row.altitude}</TableCell>
                         <TableCell align="right">{row.location_radius}</TableCell>
                       </TableRow>
                     );
