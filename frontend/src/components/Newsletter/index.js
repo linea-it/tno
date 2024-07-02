@@ -20,11 +20,12 @@ import AsteroidSelect from '../AsteroidSelect/AsteroidSelect'
 import MaginitudeSelect from '../MaginitudeSelect/index'
 import MaginitudeDropSelect from '../MaginitudeDropSelect/index'
 import SolarTimeFilter from '../SolarTimeFilter/index'
-import GeoFilter from '../GeoFilter/index'
+import GeoFilter from './GeoFilter/index'
 import ObjectDiameterFilter from '../ObjectDiameterFilter/index'
 import EventDurationField from '../EventDurationField/index'
 import { PredictionEventsContext } from '../../contexts/PredictionContext'
-import FrequencySelect from './FrequencySelect';
+import FrequencySelect from './Frequency/FrequencySelect'
+import AltitudeField from './AltitudeField/index';
 
 export default function NewsletterEventFiltersSettings({ subscriptionId }) {
     const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
@@ -76,9 +77,9 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
               diameter_min: queryOptions.filters.diameter_min,
               diameter_max: queryOptions.filters.diameter_max,
               //geo_location: queryOptions.filters.geo_location,
+              altitude: queryOptions.filters.altitude,
               latitude: queryOptions.filters.latitude,
               longitude: queryOptions.filters.longitude,
-              altitude: queryOptions.filters.altitude,
               location_radius: queryOptions.filters.location_radius 
             } ).then(() => {
                 console.log('salvando nome do filtro no bd')})
@@ -286,6 +287,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                         }}
                                     />
                                 </Grid>
+                                
                                 <Grid item xs={6} container sx={{ padding: '8px' }}>
                                     <ObjectDiameterFilter
                                         value={{
@@ -317,6 +319,22 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                         </Grid>
                         <CardContent>
                             <Grid item xs={12}>
+                            <Grid item xs={3} container sx={{ padding: '8px' }}>
+                                    <AltitudeField
+                                        value={queryOptions.filters.altitude}
+                                        onChange={(value) => {
+                                            setQueryOptions((prev) => {
+                                                return {
+                                                    ...prev,
+                                                    filters: {
+                                                        ...prev.filters,
+                                                        altitude: value
+                                                    }
+                                                }
+                                            })
+                                        }}
+                                    />
+                                </Grid>
                                 <GeoFilter
                                 value={{
                                     //geo: queryOptions.filters.geo,
