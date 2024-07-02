@@ -13,7 +13,7 @@ import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import EventFiltersSettings from './EventFiltersSettings'
+import EventFiltersResults from './EventFiltersResults'
 import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
 import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
 
@@ -85,7 +85,6 @@ function NewsletterSettings() {
               subheader='Gerencie suas preferencias de filtro e frequencia dos emails.'
             ></CardHeader>
             <CardContent>
-              
             </CardContent>
           </Card>
         </Grid>
@@ -97,7 +96,7 @@ function NewsletterSettings() {
           </Card>
         </Grid>
         <Grid item xs={12} mt={2}>
-          <EventFiltersSettings subscriptionId={info.id}></EventFiltersSettings>
+          <EventFiltersResults subscriptionId={info.id}></EventFiltersResults>
         </Grid>
         <Grid item xs={12} mt={2}>
           <Card>
