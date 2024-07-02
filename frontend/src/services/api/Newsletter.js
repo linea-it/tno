@@ -197,10 +197,10 @@ const parsePredictEventsFilters = (params1) => {
   newFilters.diameter_min = filters.diameter_min
   newFilters.diameter_max = filters.diameter_max
   //newFilters.geo_location = filters.geo_location
+  newFilters.altitude = filters.altitude
   newFilters.latitude = filters.latitude
   newFilters.longitude = filters.longitude
   newFilters.location_radius = filters.location_radius
-  //newFilters.latitude = filters.latitude
   
   console.log(newFilters)
 
@@ -223,9 +223,9 @@ export const saveListPreferenceEventFilters = ({
   diameter_min,
   diameter_max,
   //geo_location,
+  altitude,
   latitude,
   longitude,
-  altitude,
   location_radius 
 }) => {
   const params = { 
@@ -244,9 +244,9 @@ export const saveListPreferenceEventFilters = ({
     diameter_min: diameter_min,
     diameter_max: diameter_max,
     //geo_location: geo_location,
+    altitude: altitude,
     latitude: latitude,
     longitude: longitude,
-    altitude: altitude,
     location_radius: location_radius  
  }
   console.log(params)
