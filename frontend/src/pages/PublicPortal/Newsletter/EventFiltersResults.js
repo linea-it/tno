@@ -125,16 +125,10 @@ function descendingComparator(a, b, orderBy) {
       label: 'Filter Value',
     },
     {
-      id: 'magnitude_min',
+      id: 'magnitude_min magnitude_max',
       numeric: true,
       disablePadding: false,
-      label: 'Magnitude Min',
-    },
-    {
-      id: 'magnitude_max',
-      numeric: true,
-      disablePadding: false,
-      label: 'Magnitude Max',
+      label: 'Magnitude Min Max',
     },
     {
       id: 'solar_time_after',
@@ -149,16 +143,10 @@ function descendingComparator(a, b, orderBy) {
       label: 'Solar Time Before',
     },
     {
-      id: 'magnitude_drop_min',
+      id: 'magnitude_drop_min magnitude_drop_max',
       numeric: true,
       disablePadding: false,
-      label: 'Magnitude Drop Min',
-    },
-    {
-      id: 'magnitude_drop_max',
-      numeric: true,
-      disablePadding: false,
-      label: 'Magnitude Drop Max',
+      label: 'Magnitude Drop Min Max',
     },
     {
       id: 'event_duration',
@@ -167,16 +155,10 @@ function descendingComparator(a, b, orderBy) {
       label: 'Event Duration',
     },
     {
-      id: 'diameter_min',
+      id: 'diameter_min iameter_max',
       numeric: true,
       disablePadding: false,
-      label: 'Diameter Min',
-    },
-    {
-      id: 'diameter_max',
-      numeric: true,
-      disablePadding: false,
-      label: 'Diameter Max',
+      label: 'Diameter Min Max',
     },
     /*{
       id: 'geo_location',
@@ -235,7 +217,7 @@ function descendingComparator(a, b, orderBy) {
           {headCells.map((headCell) => (
             <TableCell
               key={headCell.id}
-              align={headCell.numeric ? 'right' : 'left'}
+              align= 'center' //{headCell.numeric ? 'right' : 'left'}
               padding={headCell.disablePadding ? 'none' : 'normal'}
               sortDirection={orderBy === headCell.id ? order : false}
             >
@@ -472,24 +454,24 @@ function descendingComparator(a, b, orderBy) {
                         >
                           {row.filter_name}
                         </TableCell>
-                        <TableCell align="right">{row.id}</TableCell>
-                        <TableCell align="right">{row.frequency === 1 ? 'Monthly' : 'Weekly'}</TableCell>
-                        <TableCell align="right">{row.filter_type}</TableCell>
-                        <TableCell align="right">{row.filter_value}</TableCell>
-                        <TableCell align="right">{row.magnitude_min}</TableCell>
-                        <TableCell align="right">{row.magnitude_max}</TableCell>
-                        <TableCell align="right">{row.local_solar_time_after}</TableCell>
-                        <TableCell align="right">{row.local_solar_time_before}</TableCell>
-                        <TableCell align="right">{row.magnitude_drop_min}</TableCell>
-                        <TableCell align="right">{row.magnitude_drop_max}</TableCell>
-                        <TableCell align="right">{row.event_duration}</TableCell>
-                        <TableCell align="right">{row.diameter_min}</TableCell>
-                        <TableCell align="right">{row.diameter_max}</TableCell>
+                        <TableCell align="center">{row.id}</TableCell>
+                        <TableCell align="center">{row.frequency === 1 ? 'Monthly' : 'Weekly'}</TableCell>
+                        <TableCell align="center">{row.filter_type}</TableCell>
+                        <TableCell align="center" >{row.filter_value}</TableCell>
+                        <TableCell  align="center">{row.magnitude_min} {row.magnitude_max}</TableCell>
+                        {/*<TableCell align="right">{row.magnitude_max}</TableCell>*/}
+                        <TableCell align="center">{row.local_solar_time_after}</TableCell>
+                        <TableCell align="center">{row.local_solar_time_before}</TableCell>
+                        <TableCell align="center">{row.magnitude_drop_min} {row.magnitude_drop_max}</TableCell>
+                        {/*<TableCell align="right">{row.magnitude_drop_max}</TableCell>*/}
+                        <TableCell align="center">{row.event_duration}</TableCell>
+                        <TableCell align="center">{row.diameter_min} {row.diameter_max}</TableCell>
+                        {/*<TableCell align="right">{row.diameter_max}</TableCell>*/}
                         {/*<TableCell align="right">{row.geo_location}</TableCell>*/}
-                        <TableCell align="right">{row.altitude}</TableCell>
-                        <TableCell align="right">{row.latitude}</TableCell>
-                        <TableCell align="right">{row.longitude}</TableCell>
-                        <TableCell align="right">{row.location_radius}</TableCell>
+                        <TableCell align="center">{row.altitude}</TableCell>
+                        <TableCell align="center">{row.latitude}</TableCell>
+                        <TableCell align="center">{row.longitude}</TableCell>
+                        <TableCell align="center">{row.location_radius}</TableCell>
                       </TableRow>
                     );
                   })}
