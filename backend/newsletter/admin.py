@@ -33,7 +33,6 @@ class EventFilterAdmin(admin.ModelAdmin):
         "event_duration",
         "diameter_min",
         "diameter_max",
-        "geo_location",
         "latitude",
         "longitude",
         "altitude",

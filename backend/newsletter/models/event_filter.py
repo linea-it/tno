@@ -116,12 +116,6 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    geo_location = models.BooleanField(
-        verbose_name="Geo Location",
-        help_text="Filtro de geolocalizaçao.",
-        default=False,
-    )
-
     latitude = models.FloatField(
         verbose_name="Latitude",
         help_text="Latitude em graus.",
