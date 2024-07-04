@@ -48,11 +48,11 @@ export default function Subscribe() {
     const data = new FormData(event.currentTarget);
     const r_email = data.get('email')
     
-    const  tamanhon = resultsEmail.length
-    console.log(tamanhon)
+    const  email_length = resultsEmail.length
+    console.log(email_length)
     const getEmail = [ ]
     
-    for(let i = 0; i < tamanhon; i = i + 1 ) {
+    for(let i = 0; i < email_length; i = i + 1 ) {
       getEmail[i] = Object.getOwnPropertyDescriptor(resultsEmail[i], "email").value
       //console.log(getEmail)
     }
