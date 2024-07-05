@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Link from '@mui/material/Link'
 import Switch from '@mui/material/Switch'
+import Divider from '@mui/material/Divider'
 import FormControlLabel from '@mui/material/FormControlLabel'
 import Stack from '@mui/material/Stack'
 import Alert from '@mui/material/Alert'
@@ -16,6 +17,9 @@ import Snackbar from '@mui/material/Snackbar'
 import EventFiltersResults from './EventFiltersResults'
 import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
 import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
+import Subscribe from '../../../components/Subscription/index'
+import FormDialog from '../../../components/Newsletter/openFormDialogNew'
+import UpdateEmail from '../../../components/Newsletter/UpdateEmail'
 
 function NewsletterSettings() {
   const { id } = useParams()
@@ -126,6 +130,11 @@ function NewsletterSettings() {
                   </Alert>
                 )}
               </Stack>
+            </CardContent>
+            <CardContent>
+            <Grid item xs={11.6}>
+              <UpdateEmail subscriptionId={info.id}/>
+            </Grid>
             </CardContent>
           </Card>
         </Grid>
