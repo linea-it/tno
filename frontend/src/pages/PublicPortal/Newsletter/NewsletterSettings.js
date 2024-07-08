@@ -17,8 +17,6 @@ import Snackbar from '@mui/material/Snackbar'
 import EventFiltersResults from './EventFiltersResults'
 import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
 import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
-import Subscribe from '../../../components/Subscription/index'
-import FormDialog from '../../../components/Newsletter/openFormDialogNew'
 import UpdateEmail from '../../../components/Newsletter/UpdateEmail'
 
 function NewsletterSettings() {
@@ -101,6 +99,7 @@ function NewsletterSettings() {
         </Grid>
         <Grid item xs={12} mt={2}>
           <EventFiltersResults subscriptionId={info.id}></EventFiltersResults>
+          {console.log(info.id)}
         </Grid>
         <Grid item xs={12} mt={2}>
           <Card>
