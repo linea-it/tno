@@ -43,15 +43,15 @@ const parsePredictEventsFilters = (params1) => {
   const filters = params1
   const newFilters = {}
   console.log(params1)
-
+  console.log(newFilters)
   //Filtro por frequencia
   /*if (filters.frequency === '1') {
     newFilters.frequency = 'Monthly'
   } else {
     newFilters.frequency = 'Weekly'
   }*/
-
-  newFilters.subscription_id= filters.subscription_id
+   //console.log(params1.subscripition_id)
+  newFilters.subscription_id = params1.subscription_id
   newFilters.filter_name = filters.filter_name
   newFilters.frequency = filters.frequency
   newFilters.filter_type = filters.filter_type
@@ -157,6 +157,59 @@ export const updateEmailSubscription = (subscriptionId, email) => {
   }
   //    params = { email: "antonio@gmail.com"}
   //console.log(subscriptionId, email)
-  console.log("passando pela api ... alterando dados")
+  console.log("passando pela api ... alterando email")
   return api.put(`/subscription/${subscriptionId}/`, params )//.then((res) => res.data.results)
+}
+
+export const saveSetEventFiltersResults = ( id ,
+  {
+  subscriptionId,
+  filter_name,
+  frequency,
+  magnitude_min, 
+  magnitude_max, 
+  filter_type, 
+  filter_value,
+  local_solar_time_after,
+  local_solar_time_before,
+  magnitude_drop_min,
+  magnitude_drop_max,
+  event_duration,
+  diameter_min,
+  diameter_max,
+  altitude,
+  latitude,
+  longitude,
+  location_radius
+}
+) => {
+  const params = { 
+    subscription_id: subscriptionId, 
+    filter_name: filter_name,
+    frequency: frequency,
+    magnitude_min: magnitude_min, 
+    magnitude_max: magnitude_max, 
+    filter_type: filter_type,
+    filter_value: filter_value,
+    local_solar_time_after: local_solar_time_after,
+    local_solar_time_before: local_solar_time_before,
+    magnitude_drop_min: magnitude_drop_min,
+    magnitude_drop_max: magnitude_drop_max,
+    event_duration: event_duration,
+    diameter_min: diameter_min,
+    diameter_max: diameter_max,
+    altitude: altitude,
+    latitude: latitude,
+    longitude: longitude,
+    location_radius: location_radius
+  }
+
+  console.log(params)
+  const paramsIn = parsePredictEventsFilters(params)
+  console.log(paramsIn)
+  console.log("passando pela api saveListPreferenceEventFilters")
+
+  //console.log(subscriptionId, email)
+  console.log("passando pela api ... alterando dados")
+  return api.put(`/newsletter/preferences/${id}/`, paramsIn )//.then((res) => res.data.results)
 }
