@@ -31,10 +31,13 @@ import Tooltip from '@mui/material/Tooltip';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 //import handleRemove from './RemoveFilters'
 //import RemoveFilters from './RemoveFilters'
+import SetEventFiltersResults from '../../../components/Newsletter/SetEventFiltersResults'
+import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
 
 function EventFiltersResults({ subscriptionId }) {
 
@@ -53,15 +56,16 @@ function EventFiltersResults({ subscriptionId }) {
   }
 
   const input = data.results
-  console.log(input.frequency)
+  //console.log(input.frequency)
   
   //console.log(input)
 
 const inputData  = input.map((data) => (
     data.id
+    //Object.getOwnPropertyDescriptor(subscriptionId, "subscriptionId").value
 ))
-//console.log(inputData)
-
+console.log(subscriptionId)
+const id = subscriptionId
 /************************************** */
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -94,7 +98,13 @@ function descendingComparator(a, b, orderBy) {
   }
   
   const headCells = [ 
-      {
+    {
+        id: 'icons',
+        numeric: false,
+        disablePadding: true,
+        label: '',
+    },
+    {
         id: 'name',
         numeric: false,
         disablePadding: true,
@@ -426,25 +436,26 @@ function descendingComparator(a, b, orderBy) {
                         key={row.id}
                         selected={isItemSelected}
                          
-                      > {/*<Tooltip title="Delete">
-                            <IconButton>
-                              <DeleteIcon onClick={() => handleRemove(row.id) }/>
-                            </IconButton>
-                        </Tooltip>*/}
+                      >
                         <TableCell padding="checkbox">
                         <Tooltip title="Delete">
                             <IconButton>
                               <DeleteIcon onClick={() => handleRemove(row.id) }/>
                             </IconButton>
                         </Tooltip>
-                          {/*<Checkbox
-                            color="primary"
-                            checked={isItemSelected}
-                            inputProps={{
-                              'aria-labelledby': labelId,
-                            }}
-                          />*/}
+                        </TableCell>
+                        <TableCell>
                           
+                          <Tooltip title="Editar">
+                          <Button >
+                              {/*<EditIcon onClick={<SetEventFiltersResults/>}/>*/}
+                              <SetEventFiltersResults id={row.id} subscriptionId={subscriptionId}/>
+                              {/*{console.log(subscriptionId=row.id)}*/}
+                            </Button>
+                        {/*
+                        <SetEventFiltersResults />
+                            */}
+                        </Tooltip>
                         </TableCell>
                         <TableCell
                           component="th"
@@ -513,6 +524,7 @@ function descendingComparator(a, b, orderBy) {
       <Box component='form' noValidate autoComplete='off'>
           <Grid item xs={12} sx={{ display: 'inlineFlex' }}>
                 <EnhancedTable/>
+                
         </Grid>
       </Box>
     )
@@ -522,6 +534,7 @@ function descendingComparator(a, b, orderBy) {
     <Box>
           <Card  sx={{ mb: 2 }}>
             <CardContent>{generate_filter_form()}</CardContent>
+            
           </Card>
     </Box>
   )
