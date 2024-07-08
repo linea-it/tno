@@ -102,14 +102,14 @@ export default function UpdateEmail(subscriptionId) {
   return (
     <Box  autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
         <Button variant="outlined" onClick={handleClickOpen}>
-            Alterar email
+            Update email
         </Button>
         <Dialog component="form" onSubmit={handleSubmit}
         open={openDialog}
         onClose={handleClose}
         >
             <Stack sx={{ display: "inlineflex" }}>
-                <DialogTitle sx={{ paddingRight: '270px' }} >Alterar Email </DialogTitle>
+                <DialogTitle sx={{ paddingRight: '270px' }} >Update email </DialogTitle>
                 <Button variant="outlined" sx={{ width: '10vw', height:'34px', margin: '15px' }} onClick={ handleClose }>
                     <CloseIcon  color='primary'/>
                 </Button>
