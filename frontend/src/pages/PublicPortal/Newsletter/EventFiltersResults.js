@@ -64,8 +64,9 @@ const inputData  = input.map((data) => (
     data.id
     //Object.getOwnPropertyDescriptor(subscriptionId, "subscriptionId").value
 ))
-console.log(subscriptionId)
+//console.log(subscriptionId)
 const id = subscriptionId
+
 /************************************** */
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -418,8 +419,6 @@ function descendingComparator(a, b, orderBy) {
                 rowCount={input.length}
               />
               <TableBody>
-                {/* if you don't need to support IE11, you can replace the `stableSort` call with:
-                   rows.slice().sort(getComparator(order, orderBy)) */}
                 {stableSort(input, getComparator(order, orderBy))
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map((row, index) => {
@@ -448,13 +447,10 @@ function descendingComparator(a, b, orderBy) {
                           
                           <Tooltip title="Editar">
                           <Button >
-                              {/*<EditIcon onClick={<SetEventFiltersResults/>}/>*/}
+                             {/*<EditIcon />*/}
                               <SetEventFiltersResults id={row.id} subscriptionId={subscriptionId}/>
                               {/*{console.log(subscriptionId=row.id)}*/}
                             </Button>
-                        {/*
-                        <SetEventFiltersResults />
-                            */}
                         </Tooltip>
                         </TableCell>
                         <TableCell

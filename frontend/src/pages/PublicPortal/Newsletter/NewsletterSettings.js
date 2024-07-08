@@ -99,7 +99,7 @@ function NewsletterSettings() {
         </Grid>
         <Grid item xs={12} mt={2}>
           <EventFiltersResults subscriptionId={info.id}></EventFiltersResults>
-          {console.log(info.id)}
+          {/*console.log(info.id)*/}
         </Grid>
         <Grid item xs={12} mt={2}>
           <Card>

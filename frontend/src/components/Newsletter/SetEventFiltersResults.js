@@ -55,14 +55,6 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
       refetchOnmount: false,
       refetchOnReconnect: false
     })
-  
-    /*
-    useEffect(() => {
-      getSubscriptionInfo(id).then((res) => {
-        setInfo(res.data)
-        //console.log(setInfo)
-      })
-    }, [id])*/
 
     if (isLoading) {
       return <Box>Loading...</Box>
@@ -146,23 +138,18 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
             onClose={handleClose}
             >
                 <Stack sx={{ display: "inlineflex" }}>
-                    <DialogTitle sx={{ paddingRight: '270px' }} >Edt </DialogTitle>
+                    <DialogTitle sx={{ paddingRight: '430px' }} >Edit </DialogTitle>
                     <Button variant="outlined" sx={{ width: '10vw', height:'34px', margin: '15px' }} onClick={ handleClose }>
                         <CloseIcon  color='primary'/>
                     </Button>
                 </Stack>
             <DialogContent>
               <DialogContentText>
-                Please enter your new email address here.
+                Please enter your new  filters options here.
               </DialogContentText>
                   <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <Box>
                       <Grid container spacing={2} alignItems='center' >
-                          <Grid item xs={12} >
-                            <Typography>
-                              {Id}
-                            </Typography>
-                          </Grid>
                           <Grid item xs={12} >
                               <CardContent>
                                   <TextField
@@ -423,16 +410,6 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
                               <Grid item xs={12} sx={{ padding: '10px' }}>
                                   <Divider />
                               </Grid>
-                              {/*<CardContent>
-                                  <Button
-                                      type="submit"
-                                      fullWidth 
-                                      variant="contained"
-                                      sx={{ width: '20vw', height:'34px'}}
-                                      >
-                                      Save
-                                  </Button>
-                              </CardContent>*/}
                           </Grid>
                       </Grid>
                   </Box>
@@ -442,7 +419,8 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
               <Button onClick={handleClose}>Cancel</Button>
                 <Button
                   type="submit"
-                  //inputValue = ''
+                  inputValue = ''
+                  onClose={handleClose}
                 >
                   Save
                 </Button>
