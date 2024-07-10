@@ -52,6 +52,8 @@ Este miniconda é usado pelo pipeline predict_occultation e é especifico para e
 **IMPORTANTE** No momento a instalação do miniconda está falhando quando executada direto da srvnode06. O workaround é executar os proximos comandos a partir da maquina srvnode04. mas usando o mesmo usuario app.tno e o mesmo diretório.
 Pode ser necessário alterar o path onde o miniconda sera instalado. basta editar o script e fazer a alteração de acordo com o path.
 
+**IMPORTANTE II** A instalação DEVE ser feita em algum node do cluster ou node de submissão.
+
 ```sh
 miniconda_path="/lustre/t1/scratch/users/app.tno/<PROJ_DIR>/miniconda"
 ```
