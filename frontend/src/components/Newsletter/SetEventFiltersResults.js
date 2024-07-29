@@ -111,9 +111,6 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
 
       saveSetEventFiltersResults(
         id, dataOut
-      
-        /* */
-    //  }
      ).then(() => {
         console.log('salvando nome do filtro no bd')})
         //console.log(queryOptions.filters.frequency)
