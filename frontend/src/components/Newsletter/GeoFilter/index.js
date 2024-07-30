@@ -69,14 +69,11 @@ function GeoFilter({ value, onChange }) {
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Stack direction='row' spacing={2} alignItems='stretch'>
-          <FormControlLabel control={<Switch checked={enabled} onChange={handleEnabled} />}  />
-          {navigator.geolocation && value.latitude === undefined && value.longitude === undefined && (
-            <Button variant='text' startIcon={<LocationOnIcon />} disabled={!enabled} onClick={setUserLocation}>
+            <Button variant='text' startIcon={<LocationOnIcon />} disabled={enabled} onClick={setUserLocation}>
               My location
             </Button>
-          )}
           {value.latitude !== undefined && value.longitude !== undefined && (
-            <Button variant='text' startIcon={<LocationOffIcon />} onClick={handleClearLocation} disabled={!enabled}>
+            <Button variant='text' startIcon={<LocationOffIcon />} onClick={handleClearLocation} disabled={enabled}>
               Clear location
             </Button>
           )}
