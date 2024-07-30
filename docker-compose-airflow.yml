@@ -1,0 +1,401 @@
+volumes:
+  rabbitmq-data:
+  postgres-data:
+
+# Basic Airflow cluster configuration for CeleryExecutor with Redis and PostgreSQL.
+x-airflow-common:
+  &airflow-common
+  # In order to add custom dependencies or upgrade provider packages you can use your extended image.
+  # Comment the image line, place your Dockerfile in the directory where you placed the docker-compose.yaml
+  # and uncomment the "build" line below, Then run `docker-compose build` to build the images.
+  # image: ${AIRFLOW_IMAGE_NAME:-apache/airflow:2.8.0}
+  build: 
+    context: .
+    dockerfile: ./compose/local/airflow/Dockerfile
+  environment:
+    &airflow-common-env
+    AIRFLOW__CORE__EXECUTOR: CeleryExecutor
+    AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database/${AIRFLOW_DB}
+    AIRFLOW__CELERY__RESULT_BACKEND: db+postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@database/${AIRFLOW_DB}
+    AIRFLOW__CELERY__BROKER_URL: redis://:@redis:6379/0
+    AIRFLOW__CORE__FERNET_KEY: ''
+    AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: 'true'
+    AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+    AIRFLOW__API__AUTH_BACKENDS: 'airflow.api.auth.backend.basic_auth,airflow.api.auth.backend.session'
+    # yamllint disable rule:line-length
+    # Use simple http server on scheduler for health checks
+    # See https://airflow.apache.org/docs/apache-airflow/stable/administration-and-deployment/logging-monitoring/check-health.html#scheduler-health-check-server
+    # yamllint enable rule:line-length
+    AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
+    # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
+    # for other purpose (development, test and especially production usage) build/extend Airflow image.
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
+  volumes:
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/src/dags:/opt/airflow/dags
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/src/config:/opt/airflow/config
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/src/plugins:/opt/airflow/plugins
+    - ${AIRFLOW_PROJ_DIR:-./airflow}/src/include:/opt/airflow/include
+    - ./data:/opt/airflow/datalake
+    - ./logs:/opt/airflow/logs
+    - ..:/home/airflow/workspaces
+  user: "${AIRFLOW_UID:-1000}:0"
+  group_add:
+    - "1000"
+    - "15007"
+    - "15010"
+ 
+  depends_on:
+    &airflow-common-depends-on
+    redis:
+      condition: service_healthy
+    database:
+      condition: service_healthy
+
+services:
+  # Backend Django
+  backend: &backend
+    build: ${TNO_PROJ_DIR:-.}/backend
+    user: ${TNO_UID:-31670}:${TNO_GID:-15010}
+    group_add:
+      - "15007"
+      - "15010"
+    volumes:
+      # Diretório de Código fonte da aplicação
+      - ${TNO_PROJ_DIR:-.}/backend:/usr/src/app
+      # Arquivo de Variaveis de configuração do Django
+      - ${TNO_PROJ_DIR:-.}/local_settings.py:/usr/src/app/coreAdmin/local_settings.py
+      # Diretório de Logs
+      - ${TNO_PROJ_DIR:-.}/logs:/logs
+      # Diretório de Dados
+      - ${TNO_PROJ_DIR:-.}/data:/archive
+    env_file:
+      - .env
+    command: /start.sh
+    depends_on:
+      database:
+        condition: service_healthy
+      # - rabbit
+
+  # Frontend React
+  frontend:
+    image: node:18.12.1
+    working_dir: /app
+    volumes:
+      - ${TNO_PROJ_DIR:-.}/frontend:/app
+      - ${TNO_PROJ_DIR:-.}/frontend/node_modules:/app/node_modules
+    stdin_open: true
+    environment:
+      # Fixes bug where websocket connection is fixed to default port 3000
+      - WDS_SOCKET_PORT=0
+    command: yarn start
+
+  predict_occultation:
+    build: ${TNO_PROJ_DIR:-.}/predict_occultation
+    group_add:
+      - "15007"
+      - "15010"
+      - "900"
+    # Para executar os pipelines
+    # Utilizar daemon.sh Para Executar automaticamente conforme sao criados no portal
+    # command: /app/src/daemon.sh
+    # Utilizar sleep infinite Para Executar manualmente
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    network_mode: "host"
+    volumes:
+      - ${TNO_PROJ_DIR:-.}/predict_occultation:/app
+      - ${TNO_PROJ_DIR:-.}/data/predict_occultations:/app/outputs/predict_occultations
+    env_file:
+      - .env
+
+  # Servidor Web NGINX
+  nginx:
+    image: nginx:latest
+    # image: linea/tno:frontend_teste
+    ports:
+      - ${TNO_PORT:-80}:8080
+    volumes:
+      # Arquivo de configuração do Ngnix para este ambiente.
+      - ${TNO_PROJ_DIR:-.}/nginx-proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      # Diretório onde o backend manipula arquivos, e que deve ficar acessivel ao servidor web.
+      - ${TNO_PROJ_DIR:-.}/data:/var/www/data
+    depends_on:
+      - backend
+      - frontend
+      - celery_flower
+      - rabbit
+
+  # Copia do serviço backend, mas executando outro comando
+  celery_worker: &celery_worker
+    <<: *backend
+    command: /start_worker.sh
+    depends_on:
+      - backend
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 200M
+        reservations:
+          cpus: "0.5"
+          memory: 20M
+
+  # Copia do serviço backend, mas executando outro comando
+  celery_beat: &celery_beat
+    <<: *backend
+    command: /start_beat.sh
+
+  # Handling Periodic Tasks in Django with Celery and Docker
+  # https://testdriven.io/blog/django-celery-periodic-tasks/
+  # https://testdriven.io/courses/django-celery/docker/
+  celery_flower: &celery_flower
+    <<: *backend
+    command: /start_flower.sh
+    ports: 
+      - 5555:5555
+    depends_on:
+      - backend
+
+  mkdocs:
+    build: ${TNO_PROJ_DIR:-.}/frontend/user_docs
+    volumes:
+      - ${TNO_PROJ_DIR:-.}/frontend/user_docs:/mkdocs
+    ports:
+      - "8000:8000"
+    environment:
+      LIVE_RELOAD_SUPPORT: 'true'
+      ADD_MODULES: 'fontawesome-markdown mkdocs-git-revision-date-localized-plugin mkdocs-material'
+      FAST_MODE: 'true'
+      DOCS_DIRECTORY: '/mkdocs'
+      GIT_REPO: 'git@github.com/linea-it/tno.git'
+      UPDATE_INTERVAL: 15
+      AUTO_UPDATE: 'true'
+
+  mailhog:
+    image: mailhog/mailhog:v1.0.0
+
+  # Message-Broker Software RabbitMQ
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    env_file:
+      - .env
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq/
+
+  # Database
+  database:
+    # image: linea/postgresql_q3c:latest
+    image: postgres:14.3
+    env_file:
+      - .env
+    ports:
+      # Deixar a porta exposta para desenvolvimento isto permite:
+      #  - Outros apps como Dbeaver acessar o banco de dados
+      #  - Container pipelines acessar o banco administrativo.
+      - 5432:5432
+    volumes:
+      # Init Database Script
+      - ./compose/local/postgres/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+    restart: unless-stopped
+
+  redis:
+    image: redis:latest
+    expose:
+      - 6379
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 30s
+      retries: 50
+      start_period: 30s
+    restart: unless-stopped
+
+  # Apache Airflow Services
+  airflow-webserver:
+    <<: *airflow-common
+    command: webserver
+    ports:
+      - "81:8080"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:81/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-scheduler:
+    <<: *airflow-common
+    command: scheduler
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:8974/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s     
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-worker:
+    <<: *airflow-common
+    command: celery worker
+    healthcheck:
+      # yamllint disable rule:line-length
+      test:
+        - "CMD-SHELL"
+        - 'celery --app airflow.providers.celery.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}" || celery --app airflow.executors.celery_executor.app inspect ping -d "celery@$${HOSTNAME}"'
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    environment:
+      <<: *airflow-common-env
+      # Required to handle warm shutdown of the celery workers properly
+      # See https://airflow.apache.org/docs/docker-stack/entrypoint.html#signal-propagation
+      DUMB_INIT_SETSID: "0"
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully 
+
+  airflow-triggerer:
+    <<: *airflow-common
+    command: triggerer
+    healthcheck:
+      test: ["CMD-SHELL", 'airflow jobs check --job-type TriggererJob --hostname "$${HOSTNAME}"']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    depends_on:
+      <<: *airflow-common-depends-on
+      airflow-init:
+        condition: service_completed_successfully
+
+  airflow-init:
+    <<: *airflow-common
+    entrypoint: /bin/bash
+    # yamllint disable rule:line-length
+    command:
+      - -c
+      - |
+        if [[ -z "${AIRFLOW_UID}" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: AIRFLOW_UID not set!\e[0m"
+          echo "If you are on Linux, you SHOULD follow the instructions below to set "
+          echo "AIRFLOW_UID environment variable, otherwise files will be owned by root."
+          echo "For other operating systems you can get rid of the warning with manually created .env file:"
+          echo "    See: https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#setting-the-right-airflow-user"
+          echo
+        fi
+        one_meg=1048576
+        mem_available=$$(($$(getconf _PHYS_PAGES) * $$(getconf PAGE_SIZE) / one_meg))
+        cpus_available=$$(grep -cE 'cpu[0-9]+' /proc/stat)
+        disk_available=$$(df / | tail -1 | awk '{print $$4}')
+        warning_resources="false"
+        if (( mem_available < 4000 )) ; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough memory available for Docker.\e[0m"
+          echo "At least 4GB of memory required. You have $$(numfmt --to iec $$((mem_available * one_meg)))"
+          echo
+          warning_resources="true"
+        fi
+        if (( cpus_available < 2 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough CPUS available for Docker.\e[0m"
+          echo "At least 2 CPUs recommended. You have $${cpus_available}"
+          echo
+          warning_resources="true"
+        fi
+        if (( disk_available < one_meg * 10 )); then
+          echo
+          echo -e "\033[1;33mWARNING!!!: Not enough Disk space available for Docker.\e[0m"
+          echo "At least 10 GBs recommended. You have $$(numfmt --to iec $$((disk_available * 1024 )))"
+          echo
+          warning_resources="true"
+        fi
+        if [[ $${warning_resources} == "true" ]]; then
+          echo
+          echo -e "\033[1;33mWARNING!!!: You have not enough resources to run Airflow (see above)!\e[0m"
+          echo "Please follow the instructions to increase amount of resources available:"
+          echo "   https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html#before-you-begin"
+          echo
+        fi
+        mkdir -p /sources/logs /sources/dags /sources/plugins
+        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        exec /entrypoint airflow version
+    # yamllint enable rule:line-length
+    environment:
+      <<: *airflow-common-env
+      _AIRFLOW_DB_MIGRATE: 'true'
+      _AIRFLOW_WWW_USER_CREATE: 'true'
+      _AIRFLOW_WWW_USER_USERNAME: ${_AIRFLOW_WWW_USER_USERNAME:-airflow}
+      _AIRFLOW_WWW_USER_PASSWORD: ${_AIRFLOW_WWW_USER_PASSWORD:-airflow}
+      _PIP_ADDITIONAL_REQUIREMENTS: ''
+    user: "0:0"
+    volumes:
+      - ${AIRFLOW_PROJ_DIR:-./airflow}/src:/sources    
+
+  airflow-cli:
+    <<: *airflow-common
+    profiles:
+      - debug
+    environment:
+      <<: *airflow-common-env
+      CONNECTION_CHECK_MAX_COUNT: "0"
+    # Workaround for entrypoint issue. See: https://github.com/apache/airflow/issues/16252
+    command:
+      - bash
+      - -c
+      - airflow      
+
+  # https://medium.com/testing-with-cypress/running-cypress-tests-in-docker-containers-using-different-docker-images-2dee3450881e
+  # cypress:
+  #   image: cypress/included:3.4.0
+  #   entrypoint: cypress run
+  #   # image: node:18.12.1
+  #   # user: 1000:1000
+  #   environment:
+  #     - CYPRESS_baseUrl=http://nginx:8080/
+  #   volumes:
+  #     - ./cypress/:/e2e
+  #   working_dir: /e2e
+  #   depends_on:
+  #     - backend
+  #     - frontend
+  #   ports:
+  #     - 8080:
+  # cypress:
+  #   image: cypress/included:13.6.6
+  #   working_dir: /e2e
+  #   entrypoint: cypress open --project /e2e -b chrome
+  #   network_mode: host
+  #   # image: node:18.12.1
+  #   user: 1000:1000
+  #   environment:
+  #     CYPRESS_VIDEO: 'false'
+  #     CYPRESS_BASE_URL: 'http://localhost'
+  #     DISPLAY: $DISPLAY
+  #     WAYLAND_DISPLAY: $WAYLAND_DISPLAY
+  #     XDG_RUNTIME_DIR: $XDG_RUNTIME_DIR
+  #     PULSE_SERVER: $PULSE_SERVER
+  #   volumes:
+  #     - ./cypress/:/e2e
+  #     - ~/.Xauthority:/root/.Xauthority:rw
+  #     - /tmp/.X11-unix:/tmp/.X11-unix
+  #     - /mnt/wslg:/mnt/wslg
