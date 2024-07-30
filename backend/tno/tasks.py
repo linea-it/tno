@@ -7,8 +7,13 @@ from time import sleep
 from typing import Optional
 
 from celery import group, shared_task
+from django.conf import settings
 from tno.models import Occultation
 from tno.occviz import occultation_path_coeff2, visibility_from_coeff
+from tno.predict_job import (
+    run_predicition_for_upper_end_update,
+    run_prediction_for_updated_asteroids,
+)
 from tno.prediction_map import (
     garbage_collector_maps,
     sora_occultation_map,
@@ -49,6 +54,18 @@ def garbage_collector():
     """
     # Remove expired Predict Maps
     garbage_collector_maps()
+
+
+@shared_task
+def predict_jobs_by_updated_asteroids(**kwargs):
+    if settings.PREDICTION_JOB_AUTO_UPDATE == True:
+        run_prediction_for_updated_asteroids(debug=False)
+
+
+@shared_task
+def predict_jobs_for_upper_end_update(**kwargs):
+    if settings.PREDICTION_JOB_AUTO_UPDATE == True:
+        run_predicition_for_upper_end_update(debug=False)
 
 
 @shared_task
@@ -197,7 +214,7 @@ def assync_visibility_from_coeff(event_id, result_file, **kwargs):
     return event_id, bool(is_visible)
 
 
-@shared_task
+@shared_task(soft_time_limit=7200, time_limit=10800)
 def update_asteroid_table():
     """Updates the asteroid table data using data downloaded from MPC."""
     from tno.asteroid_table.asteroid_table_manager import AsteroidTableManager

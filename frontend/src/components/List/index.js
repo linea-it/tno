@@ -3,6 +3,7 @@ import ListItem from '@mui/material/ListItem'
 import ListItemText from '@mui/material/ListItemText'
 import Icon from '@mui/material/Icon'
 import { List as MuiList } from '@mui/material'
+import Stack from '@mui/material/Stack'
 
 import PropTypes from 'prop-types'
 import useStyles from './styles'
@@ -33,10 +34,25 @@ function List({ data, height, width, align }) {
               }
               className={classes.itemText}
             />
-            <ListItemText
-              className={`${classes.itemText} ${classes.itemValueText}`}
-              secondary={typeof item.value === 'function' ? item.value() : item.value}
-            />
+            {item.breakline === true ? (
+              <Stack spacing={1}>
+                <ListItemText
+                  className={`${classes.itemText} ${classes.itemValueText}`}
+                  secondary={typeof item.value === 'function' ? item.value() : item.value.split(',')[0]}
+                />
+                <ListItemText
+                  className={`${classes.itemText} ${classes.itemValueText}`}
+                  secondary={typeof item.value === 'function' ? item.value() : item.value.split(',')[1]}
+                />
+              </Stack>
+            ) : (
+              <Stack spacing={1}>
+                <ListItemText
+                  className={`${classes.itemText} ${classes.itemValueText}`}
+                  secondary={typeof item.value === 'function' ? item.value() : item.value}
+                />
+              </Stack>
+            )}
           </ListItem>
         )
       })}

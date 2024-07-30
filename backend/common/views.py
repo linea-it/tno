@@ -6,7 +6,8 @@ from django.conf import settings
 from django.contrib.auth import logout
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 
@@ -62,6 +63,19 @@ def test_background_task(request):
                 "success": True,
             }
         )
+        return Response(result)
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def which_environment(request):
+
+    if request.method == "GET":
+        env_name = settings.ENVIRONMENT_NAME
+
+        dev_env = ["Development", "development", "dev", "Staging", "Homolog"]
+        is_dev = True if env_name in dev_env else False
+        result = {"enviroment_name": settings.ENVIRONMENT_NAME, "is_dev": is_dev}
         return Response(result)
 
 

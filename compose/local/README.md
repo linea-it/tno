@@ -220,6 +220,10 @@ Frontend uses a Node image. before up this container run yarn for install depend
 docker compose run frontend yarn
 ```
 
+```bash
+docker compose build mkdocs
+```
+
 <!-- TOC --><a name="setup-pipeline-predict-occultation"></a>
 
 ## Setup Pipeline Predict Occultation

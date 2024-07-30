@@ -10,13 +10,14 @@ import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
-
 import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
+import AlertEnvironment from '../../components/AlertEnvironment/index'
+import { whichEnvironment } from '../../services/api/Auth'
 
 function PredictionEventDetail() {
   const { id } = useParams()
@@ -25,6 +26,7 @@ function PredictionEventDetail() {
   const [circumstances, setCircumstances] = useState([])
   const [star, setStar] = useState([])
   const [object, setObject] = useState([])
+  const [isDev, setIsDev] = useState(false)
 
   useEffect(() => {
     getOccultationById({ id }).then((res) => {
@@ -37,6 +39,13 @@ function PredictionEventDetail() {
         ...res
       })
     })
+    whichEnvironment()
+      .then((res) => {
+        setIsDev(res.is_dev)
+      })
+      .catch(() => {
+        // TODO: Aviso de erro
+      })
   }, [id])
 
   useEffect(() => {
@@ -52,22 +61,19 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star position (ICRF)',
-        // tooltip: 'Right Ascension and Declination with assumed proper motion in ICRF/J2000',
-        value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`
+        value: `RA ${occultation.ra_star_candidate}, Dec ${occultation.dec_star_candidate}`,
+        breakline: true
       },
       {
         title: 'Closest approach',
-        // tooltip: 'Geocentric closest approach',
         value: `${occultation.closest_approach} (arcsec)`
       },
       {
         title: 'Position angle',
-        // tooltip: "Planet's position angle with respect to the star at closest approach",
         value: `${occultation.position_angle} (deg)`
       },
       {
         title: 'Velocity',
-        // tooltip: 'Velocity on the plane of the sky. Positive is prograde, negative is retrograde',
         value: `${occultation.velocity} (km/s)`
       },
       {
@@ -80,12 +86,10 @@ function PredictionEventDetail() {
       },
       {
         title: 'Star magnitude (Gaia)',
-        // tooltip: 'Gaia magnitude',
         value: `${occultation.g_star ? occultation.g_star.toFixed(3) : null}`
       },
       {
         title: 'H mag (2MASS)',
-        // tooltip: '2MASS H magnitude',
         value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
@@ -108,32 +112,33 @@ function PredictionEventDetail() {
     ])
 
     setStar([
-      // {
-      //   title: 'Star source ID',
-      //   tooltip: 'Unique source identifier',
-      //   value: `${starObj.source_id}`
-      // },
       {
         title: 'Stellar catalogue',
         value: 'Gaia DR3'
       },
       {
         title: 'Star astrometric position in catalogue (ICRF)',
-        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}, Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`
+        value: `RA ${starObj.ra ? starObj.ra.toFixed(8) : null}, Dec ${starObj.dec ? starObj.dec.toFixed(7) : null}`,
+        breakline: true
       },
       {
         title: 'Star astrometric position with proper motion (ICRF)',
-        value: `RA ${occultation.ra_star_with_pm}, Dec ${occultation.dec_star_with_pm}`
+        value: `RA ${occultation.ra_star_with_pm}, Dec ${occultation.dec_star_with_pm}`,
+        breakline: true
       },
       {
         title: 'Star apparent position (date)',
-        value: `RA ${occultation.ra_star_to_date}, Dec ${occultation.dec_star_to_date}`
+        value: `RA ${occultation.ra_star_to_date}, Dec ${occultation.dec_star_to_date}`,
+        breakline: true
       },
       {
         title: 'Proper motion',
-        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null}, Dec ${
-          starObj.pmdec ? starObj.pmdec.toFixed(1) : null
-        } ±${starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null} (mas/yr)`
+        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${
+          starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null
+        } (mas/yr), Dec ${starObj.pmdec ? starObj.pmdec.toFixed(1) : null} ±${
+          starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null
+        } (mas/yr)`,
+        breakline: true
       },
       {
         title: 'Source of proper motion',
@@ -141,9 +146,10 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in the star position',
-        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null}, Dec ${
+        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null} (mas), Dec ${
           starObj.dec_error ? starObj.dec_error.toFixed(1) : null
-        } (mas)`
+        } (mas)`,
+        breakline: true
       },
       {
         title: 'G magnitude (source: Gaia DR3)',
@@ -178,13 +184,9 @@ function PredictionEventDetail() {
       },
       {
         title: "Object's astrometric position (ICRF)",
-        value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`
+        value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`,
+        breakline: true
       },
-      // {
-      //   title: "Object's Apparent Position (date)",
-      //   tooltip: "Relative to the Earth's center",
-      //   value: `RA ${occultation.ra_target_apparent}, Dec ${occultation.dec_target_apparent}`
-      // },
       {
         title: 'Absolute magnitude',
         value: `${occultation.h ? occultation.h.toFixed(3) : null}`
@@ -209,7 +211,8 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in position',
-        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`
+        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`,
+        breakline: true
       },
       {
         title: 'Ephemeris',
@@ -219,10 +222,6 @@ function PredictionEventDetail() {
         title: 'Dynamic class (Skybot)',
         value: `${occultation.dynclass}`
       },
-      // {
-      //   title: 'Dynamic class (Lowell Observatory)',
-      //   value: `${occultation.astorb_dynbaseclass ? occultation.astorb_dynbaseclass : null}`
-      // },
       {
         title: 'Semi-major axis',
         value: `${occultation.semimajor_axis ? occultation.semimajor_axis.toFixed(4) : null} (AU)`
@@ -248,6 +247,7 @@ function PredictionEventDetail() {
 
   return (
     <Container maxWidth='lg'>
+      {isDev && <AlertEnvironment />}
       <Typography variant='h4' align='center' sx={{ marginTop: 3 }}>
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
