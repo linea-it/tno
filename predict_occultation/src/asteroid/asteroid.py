@@ -11,7 +11,7 @@ from typing import Optional
 
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
-from asteroid.jpl import findSPKID, get_bsp_from_jpl
+from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
@@ -57,6 +57,7 @@ class Asteroid:
     name: str
     number: str
     alias: str
+    provisional_designation: str
     spkid: Optional[str]
     base_dynclass: str
     dynclass: str
@@ -110,6 +111,7 @@ class Asteroid:
         self.name = ast_data["name"]
         self.number = str(ast_data["number"])
         self.alias = ast_data["alias"]
+        self.provisional_designation = ast_data["principal_designation"]
         self.spkid = None
         self.base_dynclass = ast_data["base_dynclass"]
         self.dynclass = ast_data["dynclass"]
@@ -315,7 +317,19 @@ class Asteroid:
 
         try:
             bsp_path = get_bsp_from_jpl(
-                self.name, start_period, end_period, self.path, bsp_filename
+                self.provisional_designation,
+                start_period,
+                end_period,
+                self.path,
+                bsp_filename,
+            )
+            uncertainties_path = get_asteroid_uncertainty_from_jpl(
+                self.provisional_designation,
+                start_period,
+                end_period,
+                self.path,
+                "uncertainties.json",
+                step=12,
             )
             t1 = dt.now(tz=timezone.utc)
             tdelta = t1 - t0
@@ -331,6 +345,7 @@ class Asteroid:
                     "dw_finish": t1.isoformat(),
                     "dw_time": tdelta.total_seconds(),
                     "downloaded_in_this_run": True,
+                    "uncertainties_file": uncertainties_path.name,
                 }
             )
 
