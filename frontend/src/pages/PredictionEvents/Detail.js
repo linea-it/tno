@@ -101,8 +101,8 @@ function PredictionEventDetail() {
         value: `${occultation.sun_elongation ? occultation.sun_elongation.toFixed(1) : null} (deg)`
       },
       {
-        title: 'Uncertainty in Time',
-        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null}`
+        title: 'Uncertainty in time (1σ)',
+        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
       },
       {
         title: 'Creation date',
@@ -179,12 +179,27 @@ function PredictionEventDetail() {
 
     setObject([
       {
-        title: 'Object',
-        value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
+        title: 'Identification',
+        value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}, ${occultation.principal_designation}`
       },
       {
-        title: "Object's astrometric position (ICRF)",
+        title: 'Dynamic class (Skybot)',
+        value: `${occultation.dynclass}`
+      },
+      {
+        title: 'Astrometric position (ICRF)',
         value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`,
+        breakline: true
+      },
+      {
+        title: 'Uncertainty in position (1σ)',
+        value: `${
+          occultation.e_ra_target
+            ? occultation.e_ra_target < 0.1 && occultation.e_dec_target < 0.1
+              ? 'RA ' + (occultation.e_ra_target * 1e3).toFixed(0) + ' (mas), Dec ' + (occultation.e_dec_target * 1e3).toFixed(0) + ' (mas)'
+              : 'RA ' + occultation.e_ra_target.toFixed(1) + ' (arcsec), Dec ' + occultation.e_dec_target.toFixed(1) + ' (arcsec)'
+            : null
+        }`,
         breakline: true
       },
       {
@@ -210,17 +225,8 @@ function PredictionEventDetail() {
         value: `${occultation.apparent_diameter ? occultation.apparent_diameter.toFixed(4) : null} (mas)`
       },
       {
-        title: 'Uncertainty in position',
-        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`,
-        breakline: true
-      },
-      {
         title: 'Ephemeris',
         value: `${occultation.ephemeris_version ? occultation.ephemeris_version : null}`
-      },
-      {
-        title: 'Dynamic class (Skybot)',
-        value: `${occultation.dynclass}`
       },
       {
         title: 'Semi-major axis',
