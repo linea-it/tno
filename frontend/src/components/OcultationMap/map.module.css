@@ -1,0 +1,16 @@
+.map, .leaflet-container { 
+    height: 80vh;
+    width: 100%;
+    /*margin: auto;*/
+    border-radius: 15px;
+ }
+/*
+ .leaflet-container{
+    height: 400px;
+    width: 100%;
+    /*margin: auto;
+    width: 20%;
+    top: 30px;
+    
+    border-radius: 15px;
+ }*/
