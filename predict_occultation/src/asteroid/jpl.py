@@ -9,6 +9,69 @@ import requests
 import spiceypy as spice
 
 
+def get_asteroid_uncertainty_from_jpl(
+    identifier, initial_date, final_date, directory, filename, step=12
+):
+    url = "https://ssd.jpl.nasa.gov/api/horizons.api"
+    params = {
+        "format": "text",
+        "COMMAND": f"'DES={identifier}'",
+        "OBJ_DATA": "NO",
+        "MAKE_EPHEM": "YES",
+        "EPHEM_TYPE": "OBSERVER",
+        "CENTER": "500@399",
+        "START_TIME": f"{initial_date}",
+        "STOP_TIME": f"{final_date}",
+        "STEP_SIZE": f"{step}h",
+        "QUANTITIES": "36",
+        "CAL_FORMAT": "JD",
+    }
+
+    response = requests.get(url, params=params)
+    if response.status_code != 200:
+        raise Exception(
+            f"Error retrieving asteroid uncertainties from JPL {response.status_code} - {http.HTTPStatus(response.status_code).phrase}"
+        )
+
+    text = response.text
+    lines = text.splitlines()
+    start_idx = lines.index("$$SOE") + 1
+    end_idx = lines.index("$$EOE")
+    data = []
+
+    try:
+        for line in lines[start_idx:end_idx]:
+            columns = line.split()
+            data.append(
+                {
+                    "JDUT": float(columns[0]),
+                    "RA_3sigma": float(columns[1]),
+                    "DEC_3sigma": float(columns[2]),
+                }
+            )
+
+        uncertatinty_data = {
+            "jd": [item["JDUT"] for item in data],
+            "ra_3sigma": [item["RA_3sigma"] for item in data],
+            "dec_3sigma": [item["DEC_3sigma"] for item in data],
+        }
+    except:
+        raise Exception(
+            "Uncertainties unavailable. Error parsing asteroid uncertainties from JPL"
+        )
+
+    path = pathlib.Path(directory)
+    if not path.exists():
+        raise ValueError("The directory {} does not exist!".format(path))
+
+    output_file = path.joinpath(filename)
+
+    with open(output_file, "w") as f:
+        json.dump(uncertatinty_data, f)
+
+    return output_file
+
+
 def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     """Download bsp files from JPL database
 

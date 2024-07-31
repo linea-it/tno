@@ -210,6 +210,10 @@ if __name__ == "__main__":
             bsp_object_filename = "%s.bsp" % name
         bsp_object = check_bsp_object(bsp_object_filename)
 
+        # uncertainty file
+        uncertainties_path = Path(data_dir).joinpath(
+            obj_data["bsp_jpl"]["uncertainties_file"]
+        )
         praia_t0 = datetime.now()
 
         # Define o limite máximo para as magnitudes das estrelas ocultadas
@@ -286,7 +290,7 @@ if __name__ == "__main__":
         if os.path.exists(occultation_file):
             print("Calculating path coef")
             obj_data["calculate_path_coeff"] = run_occultation_path_coeff(
-                Path(occultation_file), obj_data
+                Path(occultation_file), obj_data, uncertainties_path
             )
 
         # Escreve os dados da execução no arquivo json do objeto.
