@@ -18,6 +18,7 @@ import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
 import AlertEnvironment from '../../components/AlertEnvironment/index'
 import { whichEnvironment } from '../../services/api/Auth'
+import OcultationMap from '../../components/OcultationMap/index'
 
 function PredictionEventDetail() {
   const { id } = useParams()
@@ -255,6 +256,11 @@ function PredictionEventDetail() {
         {moment(occultation.date_time).format('ll')}
       </Typography>
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
+        <Grid item xs={12}>
+        {/*<Card >*/}
+          <OcultationMap />
+        {/*</Card>*/}
+        </Grid>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader
@@ -272,11 +278,6 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
-        {occultation.id !== undefined && (
-          <Grid item xs={12} md={6}>
-            <PredictOccultationMap occultationId={occultation.id} />
-          </Grid>
-        )}
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Occulted Star' />
@@ -285,7 +286,7 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={12}>
           <Card sx={{ height: '100%' }}>
             <CardHeader title='Object' />
             <CardContent>
