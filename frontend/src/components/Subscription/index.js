@@ -1,152 +1,113 @@
-// eslint-disable-next-line no-unused-expressions 
-import React, { useEffect, useState } from 'react';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Box from '@mui/material/Box';
-import Container from '@mui/material/Container';
-import { Stack } from '../../../node_modules/@mui/material/index';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import React, { useState } from 'react'
+import Button from '@mui/material/Button'
+import { Stack } from '../../../node_modules/@mui/material/index'
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import AlertTitle from '@mui/material/AlertTitle'
-import {saveEmailSubscription} from '../../services/api/Subscription'
-import {getEmailDb} from '../../services/api/Subscription'
-
-const defaultTheme = createTheme();
+import { saveEmailSubscription } from '../../services/api/Subscription'
+import Paper from '@mui/material/Paper'
+import InputBase from '@mui/material/InputBase'
 
 export default function Subscribe() {
-  const [email, setEmail] = useState("")
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
-  const [validEmail, setValidEmail] = useState(true)
-  
-  const [open, setOpen] = React.useState('')
-  const [resultsEmail, setResultsEmail] = useState([])
+  const [email, setEmail] = useState('')
+  const [emailError, setEmailError] = useState(false)
+  const [errorAlertOpen, setErrorAlertOpen] = useState(false)
+  const [emailSuccess, setEmailSuccess] = useState(false)
 
-  useEffect(() => {
-    // Get results by year
-      getEmailDb()
-      .then((res) => {
-        setResultsEmail(res)
-      })
-      .catch(() => {
-        setResultsEmail([])
-      })
-  }, [])
-  //const getEmail = Object.getOwnPropertyDescriptor(resultsEmail[0], "email").value
-  //console.log(getEmail)
-
-  // this function for get our title value from the user.
-  function emailChangeHandler(event) {
-    setEmail(event.target.value);
-    const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(event.target.value)
-    setValidEmail(isValid)
+  const handleChange = (e) => {
+    setEmail(e.target.value)
+    if (e.target.validity.valid) {
+      setEmailError(false)
+    } else {
+      setEmailError(true)
+    }
   }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const r_email = data.get('email')
-    
-    const  email_length = resultsEmail.length
-    console.log(email_length)
-    const getEmail = [ ]
-    
-    for(let i = 0; i < email_length; i = i + 1 ) {
-      getEmail[i] = Object.getOwnPropertyDescriptor(resultsEmail[i], "email").value
-      //console.log(getEmail)
+  const handleSubmit = (e) => {
+    if (email !== '') {
+      saveEmailSubscription(email)
+        .then(() => {
+          setEmail('')
+          setEmailSuccess(true)
+        })
+        .catch(() => {
+          setEmail('')
+          setErrorAlertOpen(true)
+        })
     }
-
-    getEmail.forEach( email => {
-      if (r_email == email){
-        console.log(r_email, getEmail)
-        setSnackbarOpen(true)
-        setOpen('warning')
-        console.log('Entrei no if email existe....')
-      }else{
-        saveEmailSubscription(r_email).then(() => {
-          setSnackbarOpen(true)
-          setOpen('success')
-          console.log('salvando email no bd')})
-      }
-    })
-  }
-
-  const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
-      return
-    }
-    setSnackbarOpen(false)
-    setOpen('')
   }
 
   return (
-    <ThemeProvider theme={defaultTheme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box className='container textBanner'
+    <Stack direction='column' justifyContent='center' alignItems='center' spacing={2}>
+      <Paper
+        component='form'
+        sx={{
+          ml: 1,
+          mr: 1,
+          display: 'flex',
+          alignItems: 'center',
+          width: 600
+        }}
+      >
+        <InputBase
           sx={{
-            marginTop: 4,
-            mx: 'auto',
-            display: 'flex',
-            flexDirection: 'columns',
-            alignItems: 'center',
-            color: '#F4F4F4',
-            borderRadius: '6px', width: '60vw', textAlign: 'center' 
+            ml: 1,
+            mr: 1,
+            flex: 1
+          }}
+          placeholder='Email Address'
+          inputProps={{
+            'aria-label': 'Email Address'
+          }}
+          type='email'
+          value={email}
+          onChange={handleChange}
+          error={emailError}
+          autoComplete='email'
+        />
+        <Button
+          variant='contained'
+          sx={{
+            borderTopLeftRadius: '0px',
+            borderBottomLeftRadius: '0px'
+          }}
+          size='large'
+          disabled={emailError}
+          onClick={handleSubmit}
+        >
+          Subscribe
+        </Button>
+      </Paper>
+      <p>Receive reports in your email with the main star occultation predictions in your region.</p>
+      {emailSuccess && (
+        <Snackbar
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          open={true}
+          autoHideDuration={3500}
+          onClose={() => {
+            setEmailSuccess(false)
           }}
         >
-           <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
-          <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-          <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus sx={{ input: { borderRadius: '6px', height:'8px', color: 'white' }}}
-              value={email}
-              onChange={emailChangeHandler}
-              error={!validEmail}
-              helperText={!validEmail ? 'Please enter a valid email address' : ''}
-              InputLabelProps={{ sx: { color: 'white' } }}
-            />
-            <Button
-              type="submit"
-              fullWidth 
-              variant="contained"
-              sx={{ width: '20vw', height:'34px'}}
-            >
-              Subscribe
-            </Button>
-            </Stack>
-              <p>
-                Receive reports in your email with the main star occultation predictions in your region.
-              </p>
-              <Snackbar
-              anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-              open={open === 'success' || open === 'warning'}
-              autoHideDuration={3500}
-              onClose={handleCloseSnackbar}
-            >
-              <Alert
-                onClose={handleCloseSnackbar}
-                severity={open === 'success' ? 'success' : 'warning'}
-              >
-                <AlertTitle>
-                  {open === 'success' ? 'Success' : 'Warning'}
-                </AlertTitle>
-                <p>
-                  {open === 'success'
-                    ? 'Email successfully registered. Check your email inbox.'
-                    : 'Subscription with this Email already exists.'}
-                </p>
-              </Alert>
-            </Snackbar>
-          </Box>
-        </Box>
-        </Container>
-    </ThemeProvider>
+          <Alert
+            onClose={() => {
+              setEmailSuccess(false)
+            }}
+            severity='success'
+          >
+            Email successfully registered. Check your email inbox.
+          </Alert>
+        </Snackbar>
+      )}
+
+      {errorAlertOpen && (
+        <Alert
+          severity='error'
+          onClose={() => {
+            setErrorAlertOpen(false)
+          }}
+        >
+          An error occurred while sending the subscription email. Please try again later or contact support if the issue persists.
+        </Alert>
+      )}
+    </Stack>
   )
 }

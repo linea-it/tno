@@ -6,10 +6,7 @@ export const getEmailDb = () => {
 }
 
 export const saveEmailSubscription = (email) => {
-    const params = { email: email}
-    //    params = { email: "antonio@gmail.com"}
-    console.log("passando pela api")
-    return api.post('/subscription/', params )//.then((res) => res.data.results)
-  }
-
- 
+  const params = { email: email }
+  console.log('passando pela api')
+  return api.post('/subscription/', params) //.then((res) => res.data.results)
+}

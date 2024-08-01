@@ -1,5 +1,7 @@
 from datetime import datetime, tzinfo
 
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.http.response import JsonResponse
 from django.shortcuts import render
 from drf_spectacular.utils import extend_schema
@@ -25,10 +27,48 @@ class SubscriptionViewSet(
     filter_fields = ("email", "activation_code")
     serializer_class = SubscriptionSerializer
 
+    def get_permissions(self):
+        if self.request.method == "POST":
+            self.permission_classes = (AllowAny,)
+        return super().get_permissions()
+
+    # @action(detail=False, methods=["POST"], permission_classes=(AllowAny,))
+    # def subscribe(self, request):
+    def create(self, request):
+        params = self.request.data
+        email = params.get("email", None)
+
+        try:
+            validate_email(email)
+        except ValidationError as e:
+            pass
+            # TODO: Enviar mensagem de erro quando email não for valido
+
+        # Verifica se existe e se ainda não foi ativado.
+        # Exclui o registro e cria um novo, para que o email
+        # de ativação seja enviado novamente.
+        try:
+            obj = Subscription.objects.get(email=email)
+            if obj.activated == False:
+                # Existe, não está ativo e será apagado
+                obj.delete()
+            else:
+                # TODO: Existe foi ativo e o usuario tentou registrar de novo
+                # Retornar Mensagem de aviso.
+                pass
+        except Subscription.DoesNotExist:
+            # Ainda não exite basta criar o registro.
+            obj = Subscription.objects.create(email=email)
+
+        return Response({"success": True})
+
     @action(detail=False, methods=["get", "post"], permission_classes=(AllowAny,))
     def activate(self, request):
 
-        params = self.request.query_params
+        if request.method == "GET":
+            params = self.request.query_params
+        elif request.method == "POST":
+            params = self.request.data
 
         activation_code = params.get("c", None)
         if not activation_code:

@@ -16,10 +16,7 @@ function PublicBanner() {
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
         </Grid>
         <Grid item xs={12} container className={classes.bannerWrapper}>
-          <Box
-            className='container textBanner'
-            sx={{ borderRadius: '6px', width: '45vw', textAlign: 'center' }}
-          >
+          <Box className='container textBanner' sx={{ borderRadius: '6px', width: '45vw', textAlign: 'center' }}>
             <Grid item xs={12} className={classes.textOcultatiom}>
               <label>
                 This is a database of predictions for stellar occultations by small Solar System objects, calculated from the legacy
@@ -27,11 +24,10 @@ function PublicBanner() {
                 These predictions are regularly updated. Use our advanced filters to refine your search and find more suitable events.
               </label>
             </Grid>
-            
           </Box>
-        </Grid>
-        <Grid item xs={11.6}>
-              <Subscribe></Subscribe>
+          <Grid item xs={12}>
+            <Subscribe></Subscribe>
+          </Grid>
         </Grid>
       </Grid>
     </Box>
