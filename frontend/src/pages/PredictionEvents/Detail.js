@@ -280,14 +280,6 @@ function PredictionEventDetail() {
         </Grid>
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title='Occulted Star' />
-            <CardContent>
-              <List data={star} />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} md={12}>
-          <Card sx={{ height: '100%' }}>
             <CardHeader title='Object' />
             <CardContent>
               <List data={object} />
@@ -315,6 +307,14 @@ function PredictionEventDetail() {
                   </>
                 )}
               </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={12}>
+          <Card sx={{ height: '100%' }}>
+            <CardHeader title='Occulted Star' />
+            <CardContent>
+              <List data={star} />
             </CardContent>
           </Card>
         </Grid>
