@@ -8,6 +8,11 @@ from datetime import datetime as dt
 import requests
 import spiceypy as spice
 
+satellites_bsp = {
+    "PLUTO": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu060.bsp",
+    "1930 BM": "https://naif.jpl.nasa.gov/pub/naif/generic_kernels/spk/satellites/plu060.bsp",
+}
+
 
 def get_asteroid_uncertainty_from_jpl(
     identifier, initial_date, final_date, directory, filename, step=12
@@ -27,19 +32,21 @@ def get_asteroid_uncertainty_from_jpl(
         "CAL_FORMAT": "JD",
     }
 
+    uncertatinty_data = {}
+
     response = requests.get(url, params=params)
     if response.status_code != 200:
         raise Exception(
             f"Error retrieving asteroid uncertainties from JPL {response.status_code} - {http.HTTPStatus(response.status_code).phrase}"
         )
 
-    text = response.text
-    lines = text.splitlines()
-    start_idx = lines.index("$$SOE") + 1
-    end_idx = lines.index("$$EOE")
-    data = []
-
     try:
+        text = response.text
+        lines = text.splitlines()
+        start_idx = lines.index("$$SOE") + 1
+        end_idx = lines.index("$$EOE")
+        data = []
+
         for line in lines[start_idx:end_idx]:
             columns = line.split()
             data.append(
@@ -55,10 +62,13 @@ def get_asteroid_uncertainty_from_jpl(
             "ra_3sigma": [item["RA_3sigma"] for item in data],
             "dec_3sigma": [item["DEC_3sigma"] for item in data],
         }
+
+    # TODO: Não é possivel usar um raise exception pq quando a incerteza falha, falha ele simula falha de download de bsp pq esta sendo feito no mesmo try na classe asteroid
     except:
-        raise Exception(
-            "Uncertainties unavailable. Error parsing asteroid uncertainties from JPL"
-        )
+        pass
+        # raise Exception(
+        #     "Uncertainties unavailable. Error parsing asteroid uncertainties from JPL"
+        # )
 
     path = pathlib.Path(directory)
     if not path.exists():
@@ -66,44 +76,14 @@ def get_asteroid_uncertainty_from_jpl(
 
     output_file = path.joinpath(filename)
 
-    with open(output_file, "w") as f:
-        json.dump(uncertatinty_data, f)
+    if uncertatinty_data:
+        with open(output_file, "w") as f:
+            json.dump(uncertatinty_data, f)
 
     return output_file
 
 
 def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
-    """Download bsp files from JPL database
-
-        Bsp files, which have information to generate
-        the ephemeris of the objects, will be downloaded
-        The files will be named as (without spaces): [identifier].bsp
-
-        Important:
-            it is able to download bsp files of neither planets nor satellites
-
-    Args:
-        identifier (str): Identifier of the object.
-            It can be the name, number or SPK ID.
-            It can also be a list of objects.
-            Examples:
-                '2137295'
-                '1999 RB216'
-                '137295'
-                'Chariklo'
-        initial_date (str): Date the bsp file is to begin, within span [1900-2100].
-            Examples:
-                '2003-02-01'
-        final_date (str): Date the bsp file is to end, within span [1900-2100].
-            Must be more than 32 days later than [initial_date].
-            Examples:
-                '2006-01-12'
-        directory (str): Directory path to save the bsp files.
-
-    Returns:
-        Path: file path for .bsp file.
-    """
-
     date1 = dt.strptime(initial_date, "%Y-%m-%d")
     date2 = dt.strptime(final_date, "%Y-%m-%d")
     diff = date2 - date1
@@ -138,7 +118,6 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     }
 
     r = requests.get(urlJPL, params=parameters, stream=True)
-
     if r.status_code != 200:
         raise Exception(
             f"Code {r.status_code} - {http.HTTPStatus(r.status_code).phrase}"
@@ -148,13 +127,25 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     if "No matches found." in json.loads(r.text)["result"]:
         parameters["COMMAND"] = "'" + identifier + ";'"
         r = requests.get(urlJPL, params=parameters, stream=True)
-
     if (
         r.status_code == requests.codes.ok
         and r.headers["Content-Type"] == "application/json"
     ):
         try:
             data = json.loads(r.text)
+            # now we will check if it is in the satellites_bsp SPK creation is not available
+            if "SPK creation is not available" in data["error"]:
+                if identifier.upper() in satellites_bsp.keys():
+                    r = requests.get(satellites_bsp[identifier.upper()], stream=True)
+                    if r.status_code == 200:
+                        with open(spk_file, "wb") as f:
+                            f.write(r.content)
+                        return spk_file
+                    else:
+                        raise (
+                            "Failed to download the file. Status code:",
+                            r.status_code,
+                        )
 
             # If the SPK file was generated, decode it and write it to the output file:
             if "spk" in data:
@@ -162,17 +153,18 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
                     # Decode and write the binary SPK file content:
                     f.write(base64.b64decode(data["spk"]))
                     f.close()
-
                 return spk_file
             else:
                 # Otherwise, the SPK file was not generated so output an error:
                 raise Exception(f"SPK file not generated: {r.text}")
+
         except ValueError as e:
             raise Exception(f"Unable to decode JSON. {e}")
         except OSError as e:
             raise Exception(f"Unable to create file '{spk_file}': {e}")
         except Exception as e:
             raise (e)
+
     elif r.status_code == 400:
         raise Exception("Bad Request code 400 - {r.text}")
     else:
