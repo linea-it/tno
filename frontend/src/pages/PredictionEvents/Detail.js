@@ -93,6 +93,10 @@ function PredictionEventDetail() {
         value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
+        title: 'Magnitude drop',
+        value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(1) : null} (mag)`
+      },
+      {
         title: 'Moon separation',
         value: `${occultation.moon_separation ? occultation.moon_separation.toFixed(1) : null} (deg)`
       },
