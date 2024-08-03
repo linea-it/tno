@@ -28,11 +28,11 @@ def get_asteroid_uncertainty_from_jpl(
         "START_TIME": f"{initial_date}",
         "STOP_TIME": f"{final_date}",
         "STEP_SIZE": f"{step}h",
-        "QUANTITIES": "36",
+        "QUANTITIES": '"9,36"',
         "CAL_FORMAT": "JD",
     }
 
-    uncertatinty_data = {}
+    object_apmag_uncert_data = {}
 
     response = requests.get(url, params=params)
     if response.status_code != 200:
@@ -52,13 +52,21 @@ def get_asteroid_uncertainty_from_jpl(
             data.append(
                 {
                     "JDUT": float(columns[0]),
-                    "RA_3sigma": float(columns[1]),
-                    "DEC_3sigma": float(columns[2]),
+                    "APmag": (
+                        float(columns[1]) if columns[1] != "n.a." else float("nan")
+                    ),
+                    "RA_3sigma": (
+                        float(columns[3]) if columns[3] != "n.a." else float("nan")
+                    ),
+                    "DEC_3sigma": (
+                        float(columns[4]) if columns[4] != "n.a." else float("nan")
+                    ),
                 }
             )
 
-        uncertatinty_data = {
+        object_apmag_uncert_data = {
             "jd": [item["JDUT"] for item in data],
+            "apmag": [item["APmag"] for item in data],
             "ra_3sigma": [item["RA_3sigma"] for item in data],
             "dec_3sigma": [item["DEC_3sigma"] for item in data],
         }
@@ -76,9 +84,9 @@ def get_asteroid_uncertainty_from_jpl(
 
     output_file = path.joinpath(filename)
 
-    if uncertatinty_data:
+    if object_apmag_uncert_data:
         with open(output_file, "w") as f:
-            json.dump(uncertatinty_data, f)
+            json.dump(object_apmag_uncert_data, f)
 
     return output_file
 
@@ -134,7 +142,10 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         try:
             data = json.loads(r.text)
             # now we will check if it is in the satellites_bsp SPK creation is not available
-            if "SPK creation is not available" in data["error"]:
+            if (
+                "error" in data.keys()
+                and "SPK creation is not available" in data["error"]
+            ):
                 if identifier.upper() in satellites_bsp.keys():
                     r = requests.get(satellites_bsp[identifier.upper()], stream=True)
                     if r.status_code == 200:

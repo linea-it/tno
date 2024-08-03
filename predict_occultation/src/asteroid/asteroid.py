@@ -323,12 +323,12 @@ class Asteroid:
                 self.path,
                 bsp_filename,
             )
-            uncertainties_path = get_asteroid_uncertainty_from_jpl(
+            mag_and_uncert_path = get_asteroid_uncertainty_from_jpl(
                 self.provisional_designation,
                 start_period,
                 end_period,
                 self.path,
-                "uncertainties.json",
+                "apmag_and_uncertainties.json",
                 step=12,
             )
             t1 = dt.now(tz=timezone.utc)
@@ -345,7 +345,7 @@ class Asteroid:
                     "dw_finish": t1.isoformat(),
                     "dw_time": tdelta.total_seconds(),
                     "downloaded_in_this_run": True,
-                    "uncertainties_file": uncertainties_path.name,
+                    "mag_and_uncert_file": mag_and_uncert_path.name,
                 }
             )
 

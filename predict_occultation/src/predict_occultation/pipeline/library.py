@@ -508,26 +508,58 @@ def get_event_duration(diameter, velocity):
         return None
 
 
-def get_ra_dec_uncertainties_interpolator(jd, ra_3sigma, dec_3sigma):
+def create_interpolator(jd, values):
     """
-    Returns interpolators for right ascension (RA) and declination (Dec) uncertainties.
+    Create an interpolator function based on the given data points.
+
+    Parameters:
+        jd (array-like): Array of Julian dates.
+        values (array-like): Array of corresponding values.
+
+    Returns:
+        interp1d or None: Interpolator function if there are enough valid data points, otherwise None.
+
+    Notes:
+        - The function checks for NaN values in both `jd` and `values` arrays.
+        - If there are less than 2 valid data points, the function returns None.
+        - The interpolator function is created using the nearest neighbor method and supports extrapolation.
+    """
+    valid_indices = ~np.isnan(jd) & ~np.isnan(values)
+    if np.sum(valid_indices) < 2:
+        return None  # Not enough data points to create an interpolator
+    return interp1d(
+        jd[valid_indices],
+        values[valid_indices],
+        kind="nearest",
+        fill_value="extrapolate",
+    )
+
+
+def get_mag_ra_dec_uncertainties_interpolator(jd, apmag, ra_3sigma, dec_3sigma):
+    """
+    Returns interpolators for magnitudes, right ascension (RA), and declination (Dec) uncertainties.
 
     Parameters:
     jd (array-like): Array of Julian dates.
-    ra_err (array-like): Array of RA uncertainties corresponding to the Julian dates.
-    dec_err (array-like): Array of Dec uncertainties corresponding to the Julian dates.
+    apmag (array-like): Array of apparent magnitudes corresponding to the Julian dates.
+    ra_3sigma (array-like): Array of RA uncertainties corresponding to the Julian dates.
+    dec_3sigma (array-like): Array of Dec uncertainties corresponding to the Julian dates.
 
     Returns:
-    tuple: A tuple containing the interpolators for RA and Dec uncertainties.
-
+    tuple: A tuple containing the interpolators for magnitudes, RA, and Dec uncertainties.
+           If an interpolator cannot be created due to insufficient data, None is returned in its place.
     """
-    jd, ra_3sigma, dec_3sigma = np.array(jd), np.array(ra_3sigma), np.array(dec_3sigma)
-    rcs = interp1d(jd, ra_3sigma, kind="nearest")
-    dcs = interp1d(jd, dec_3sigma, kind="nearest")
-    return rcs, dcs
 
+    jd = np.array(jd)
+    apmag = np.array(apmag)
+    ra_3sigma = np.array(ra_3sigma)
+    dec_3sigma = np.array(dec_3sigma)
 
-import numpy as np
+    magcs = create_interpolator(jd, apmag)
+    rcs = create_interpolator(jd, ra_3sigma)
+    dcs = create_interpolator(jd, dec_3sigma)
+
+    return magcs, rcs, dcs
 
 
 def get_instant_uncertainty(

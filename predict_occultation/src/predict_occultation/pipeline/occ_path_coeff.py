@@ -15,15 +15,15 @@ from library import (
     get_apparent_diameter,
     get_event_duration,
     get_instant_uncertainty,
+    get_mag_ra_dec_uncertainties_interpolator,
     get_moon_and_sun_separation,
-    get_ra_dec_uncertainties_interpolator,
     ra_hms_to_deg,
 )
 from occviz import occultation_path_coeff
 
 
 def run_occultation_path_coeff(
-    predict_table_path: Path, obj_data: dict, uncertainties_path: Path
+    predict_table_path: Path, obj_data: dict, mag_and_uncert_path: Path
 ) -> dict:
 
     calculate_path_coeff = {}
@@ -38,16 +38,21 @@ def run_occultation_path_coeff(
 
         # Le o arquivo de incertezas
         has_uncertainties = False
-        if uncertainties_path.exists():
+        mag_cs, ra_cs, dec_cs = None, None, None
+        if mag_and_uncert_path.exists():
             # Arquivo com incertezas nao foi criado
-            with open(uncertainties_path, "r") as f:
-                uncertainties = json.load(f)
+            with open(mag_and_uncert_path, "r") as f:
+                mag_and_uncertainties = json.load(f)
             # Interpolador para as incertezas
-            ra_cs, dec_cs = get_ra_dec_uncertainties_interpolator(**uncertainties)
+            mag_cs, ra_cs, dec_cs = get_mag_ra_dec_uncertainties_interpolator(
+                **mag_and_uncertainties
+            )
+
+        if ra_cs and dec_cs:
             has_uncertainties = True
 
         else:
-            print(f"Uncertainties file does not exist. {str(uncertainties_path)}")
+            print(f"Uncertainties file does not exist. {str(mag_and_uncert_path)}")
 
         # Le o arquivo occultation table e cria um dataframe
 
@@ -184,18 +189,28 @@ def run_occultation_path_coeff(
             #         convém analisar esse comportamente no futuro.
             # ------------------------------------------------------------------------
             ast_vis_mag = None
-            if (
-                obj_data["h"] < 99
-            ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
-                ast_vis_mag = asteroid_visual_magnitude(
-                    obj_data["bsp_jpl"]["filename"],
-                    obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
-                    obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
-                    dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
-                    h=obj_data["h"],
-                    g=obj_data["g"],
-                    spice_global=True,
-                )
+            if mag_cs:
+                # usa intepolacao a partir de dados do JPL
+                # mais preciso em casos como plutao etc..
+                datetime_object = dt.fromisoformat(row["date_time"])
+                # Convert to Julian Date using astropy
+                time_obj = Time(datetime_object)
+                julian_date = time_obj.jd
+                ast_vis_mag = mag_cs(julian_date)  #
+            else:
+                # tenta calcular a partir de h e g do bsp e só funciona para asteroides em geral
+                if (
+                    obj_data["h"] < 99
+                ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
+                    ast_vis_mag = asteroid_visual_magnitude(
+                        obj_data["bsp_jpl"]["filename"],
+                        obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
+                        obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
+                        dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
+                        h=obj_data["h"],
+                        g=obj_data["g"],
+                        spice_global=True,
+                    )
 
             # Calcula a queda em magnitude durante a ocultacao
             magnitude_drop = compute_magnitude_drop(ast_vis_mag, gaia_g_mag)
