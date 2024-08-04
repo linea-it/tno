@@ -97,16 +97,30 @@ function PredictionEventDetail() {
         value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(1) : null} (mag)`
       },
       {
+        title: 'Uncertainty in time (1σ)',
+        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
+      },
+      {
+        title: 'Uncertainty in closest approach (1σ)',
+        value: `${
+          occultation.closest_approach_uncertainty
+            ? occultation.closest_approach_uncertainty < 0.1
+              ? (occultation.closest_approach_uncertainty * 1000).toFixed(0) + ' (mas)'
+              : occultation.closest_approach_uncertainty.toFixed(1) + ' (arcsec)'
+            : null
+        }`
+      },
+      {
         title: 'Moon separation',
         value: `${occultation.moon_separation ? occultation.moon_separation.toFixed(1) : null} (deg)`
       },
       {
-        title: 'Sun elongation',
-        value: `${occultation.sun_elongation ? occultation.sun_elongation.toFixed(1) : null} (deg)`
+        title: 'Moon illuminated fraction',
+        value: `${occultation.moon_illuminated_fraction ? (occultation.moon_illuminated_fraction * 100).toFixed(1) : null}%`
       },
       {
-        title: 'Uncertainty in time (1σ)',
-        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
+        title: 'Sun elongation',
+        value: `${occultation.sun_elongation ? occultation.sun_elongation.toFixed(1) : null} (deg)`
       },
       {
         title: 'Creation date',

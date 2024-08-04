@@ -978,6 +978,9 @@ class Asteroid:
                     "event_duration",
                     "moon_separation",
                     "sun_elongation",
+                    "closest_approach_uncertainty",
+                    "moon_illuminated_fraction",
+                    "probability_of_centrality",
                 ]
             )
 

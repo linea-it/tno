@@ -13,10 +13,12 @@ from library import (
     compute_magnitude_drop,
     dec_hms_to_deg,
     get_apparent_diameter,
+    get_closest_approach_uncertainty,
     get_event_duration,
     get_instant_uncertainty,
     get_mag_ra_dec_uncertainties_interpolator,
     get_moon_and_sun_separation,
+    get_moon_illuminated_fraction,
     ra_hms_to_deg,
 )
 from occviz import occultation_path_coeff
@@ -149,8 +151,10 @@ def run_occultation_path_coeff(
                 "apparent_diameter": None,
                 "event_duration": None,
                 "instant_uncertainty": None,
+                "closest_approach_uncertainty": None,
                 "moon_separation": None,
                 "sun_elongation": None,
+                "moon_illuminated_fraction": None,
                 "e_ra_target": None,
                 "e_dec_target": None,
                 "e_ra_star": None,
@@ -228,9 +232,13 @@ def run_occultation_path_coeff(
                 row["ra_target_deg"], row["dec_target_deg"], row["date_time"]
             )
 
+            # Calcula a fração ilumnada da lua
+            moon_illuminated_fraction = get_moon_illuminated_fraction(row["date_time"])
+
             # Obtem o valor da incerteza do objeto no instante da ocultação
             # e calcula a incerteza no instante central
             e_ra_target, e_dec_target = None, None
+            closest_approach_uncertainty = None
             instant_uncertainty = None
             if has_uncertainties:
                 datetime_object = dt.fromisoformat(row["date_time"])
@@ -247,8 +255,16 @@ def run_occultation_path_coeff(
                     row["velocity"],
                     e_ra_target,
                     e_dec_target,
-                    e_ra_star=0,
-                    e_dec_star=0,
+                    e_ra_star=df_gaia_csv["ra_error"][star_index] / 1000,
+                    e_dec_star=df_gaia_csv["dec_error"][star_index] / 1000,
+                )
+
+                closest_approach_uncertainty = get_closest_approach_uncertainty(
+                    row["position_angle"],
+                    e_ra_target,
+                    e_dec_target,
+                    e_ra_star=df_gaia_csv["ra_error"][star_index] / 1000,
+                    e_dec_star=df_gaia_csv["dec_error"][star_index] / 1000,
                 )
 
                 # instant_uncertainty = get_instant_uncertainty(row["position_angle"], row["delta"], row["velocity"],
@@ -261,8 +277,10 @@ def run_occultation_path_coeff(
                     "apparent_diameter": apparent_diameter,
                     "event_duration": event_duration,
                     "instant_uncertainty": instant_uncertainty,
+                    "closest_approach_uncertainty": closest_approach_uncertainty,
                     "moon_separation": moon_separation,
                     "sun_elongation": sun_elongation,
+                    "moon_illuminated_fraction": moon_illuminated_fraction,
                     "e_ra_target": e_ra_target,
                     "e_dec_target": e_dec_target,
                 }
@@ -328,8 +346,12 @@ def run_occultation_path_coeff(
             df["apparent_diameter"] = df_coeff["apparent_diameter"]
             df["event_duration"] = df_coeff["event_duration"]
             df["instant_uncertainty"] = df_coeff["instant_uncertainty"]
+            df["closest_approach_uncertainty"] = df_coeff[
+                "closest_approach_uncertainty"
+            ]
             df["moon_separation"] = df_coeff["moon_separation"]
             df["sun_elongation"] = df_coeff["sun_elongation"]
+            df["moon_illuminated_fraction"] = df_coeff["moon_illuminated_fraction"]
             df["e_ra_target"] = df_coeff["e_ra_target"]
             df["e_dec_target"] = df_coeff["e_dec_target"]
             df["e_ra"] = df_coeff["e_ra_star"]
@@ -352,8 +374,10 @@ def run_occultation_path_coeff(
             df["apparent_diameter"] = None
             df["event_duration"] = None
             df["instant_uncertainty"] = None
+            df["closest_approach_uncertainty"] = None
             df["moon_separation"] = None
             df["sun_elongation"] = None
+            df["moon_illuminated_fraction"] = None
             df["e_ra_target"] = None
             df["e_dec_target"] = None
             df["e_ra"] = None
@@ -439,16 +463,14 @@ def run_occultation_path_coeff(
             "g_mag_vel_corrected",
             "rp_mag_vel_corrected",
             "h_mag_vel_corrected",
-            # "instant_uncertainty",
             "ra_star_with_pm",
             "dec_star_with_pm",
             "ra_star_to_date",
             "dec_star_to_date",
             "ra_target_apparent",
             "dec_target_apparent",
-            # "e_ra_target",
-            # "e_dec_target",
             "ephemeris_version",
+            "probability_of_centrality",
         ]
         for column in columns_for_future:
             df[column] = None
@@ -562,12 +584,14 @@ def run_occultation_path_coeff(
                 "event_duration",
                 "moon_separation",
                 "sun_elongation",
+                "closest_approach_uncertainty",
+                "moon_illuminated_fraction",
+                "probability_of_centrality",
             ]
         )
 
         # ATENCAO! Sobrescreve o arquivo occultation_table.csv
         df.to_csv(predict_table_path, index=False, sep=";")
-
         del df
 
     except Exception as e:

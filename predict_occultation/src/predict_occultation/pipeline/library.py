@@ -6,7 +6,7 @@ import re
 import astropy.units as u
 import numpy as np
 import spiceypy as spice
-from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body
+from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body, get_sun
 from astropy.time import Time
 from scipy.interpolate import interp1d
 
@@ -712,3 +712,35 @@ def get_closest_approach_uncertainty(
     )
 
     return total_error_arcsec
+
+
+def get_moon_illuminated_fraction(time, ephemeris=None):
+    """
+    Calculate the fraction of the Moon's illumination.
+
+    Parameters:
+    - time (str, astropy.time.Time): The time at which to calculate the illumination.
+    - ephemeris (str, optional): The name of the ephemeris to use. Defaults to None equals geocenter.
+
+    Returns:
+    - illumination_fraction (float): The fraction of the Moon's illumination.
+    """
+    time = Time(time, scale="utc") if not isinstance(time, Time) else time
+
+    # Get the positions of the Sun and Moon
+    sun = get_sun(time)
+    moon = get_body("moon", time, ephemeris=ephemeris)
+
+    # Compute the elongation (angular separation) between the Moon and the Sun
+    elongation = sun.separation(moon)
+
+    # Compute the phase angle (the angle between the Moon, Earth, and Sun)
+    moon_phase_angle = np.arctan2(
+        sun.distance * np.sin(elongation),
+        moon.distance - sun.distance * np.cos(elongation),
+    )
+
+    # Compute the fraction of illumination
+    illumination_fraction = (1 + np.cos(moon_phase_angle)) / 2.0
+
+    return illumination_fraction
