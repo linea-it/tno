@@ -1,8 +1,6 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState, useRef} from 'react'
 import L, { polyline } from 'leaflet'
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, Circle } from 'react-leaflet'
-//import { MapContainer } from 'https://cdn.esm.sh/react-leaflet/MapContainer'
-import { Box } from '../../../node_modules/@mui/material/index'
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Polygon, Circle, useMap } from 'react-leaflet'
 import sun from './data/img/sun.png'
 import star from './data/img/estrela-pontiaguda.png'
 //import './leaflet.css'
@@ -14,6 +12,10 @@ import lat3 from './data/lat_lon3.js';
 import lat1_1 from './data/lat_lon1copy.js';
 import tracejada_1 from './data/tracejada1.js';
 import tracejada_2 from './data/tracejada2.js';
+import { Button } from '@mui/material';
+import { useReactToPrint } from 'react-to-print';
+import { Box, Card } from '../../../node_modules/@mui/material/index'
+import 'leaflet-easyprint'
 
 const OcultationMap = () => {
 
@@ -85,8 +87,51 @@ const OcultationMap = () => {
     const blackOptions = { color: 'black' }
     const purpleOptions = { color: 'purple' }
 
+    // print do mapa 
+    const contentToPrint = useRef(null);
+    const handlePrint = useReactToPrint({
+      documentTitle: "Print This Document",
+      onBeforePrint: () => console.log("before printing..."),
+      onAfterPrint: () => console.log("after printing..."),
+      removeAfterPrint: true,
+    });
+  //const print = () => window.print();
+    //
+      
+    const PrintControl = () => {
+      const map = useMap();
+    
+      useEffect(() => {
+        if (!map) return;
+    
+        const printPlugin =  L.easyPrint({
+          title: 'Imprimir Mapa',
+          position: 'topright',
+          exportOnly: true,
+          hideControlContainer: false
+        //}).addTo(map);
+        }).addTo(map);
+    
+        return () => {
+          map.removeControl(printPlugin);
+        };
+      }, [map]);
+    
+      return null;
+    }
+
+    //
+    //
+
   return (
-      <MapContainer className={styles.map} center={position} zoom={state.zoom}>
+    <Card>
+    <Box ref={contentToPrint}>
+      <MapContainer  className={styles.map} center={position} zoom={state.zoom}>
+        {/*<button className="printButton" onClick={print}>
+        Print doc
+       </button>*/}
+
+        {/*<Button onClick={() => window.print()}>PRINT</Button>*/}
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -126,8 +171,28 @@ const OcultationMap = () => {
           I am a sun
           </Popup>
         </Marker>
+        {/*<button key={'map'} onClick={handlePrint}>prinMap</button>
+        <Button onClick={handlePrint}>Print Map</Button>*/}
+        
         <Circle center={lat[5000]} pathOptions={circle1Options} radius={200000}  />
+        {/*<PrintControl ref={(ref) => { this.printControl = ref; }} position="topleft" sizeModes={['Current', 'A4Portrait', 'A4Landscape']} hideControlContainer={false} />*/}
+        {/*<PrintControl position="topleft" sizeModes={['Current', 'A4Portrait', 'A4Landscape']} hideControlContainer={false} title="Export as PNG" exportOnly />*/}
+        {/*<PrintMap position="topleft" sizeModes={['Current', 'A4Portrait', 'A4Landscape']} hideControlContainer={false} title="Print" />
+        <PrintMap position="topleft" sizeModes={['Current', 'A4Portrait', 'A4Landscape']} hideControlContainer={false} title="Export as PNG" exportOnly />*/}
+        {/*<ReactToPrint
+           trigger={() => <button>Print this out!</button>}
+           content={() => componentRef.current}
+        />*/}
+        <PrintControl />
+        {/*<BigImageControl />*/}
       </MapContainer>
+      <Button onClick={() => {
+            handlePrint(null, () => contentToPrint.current);
+          }}>
+            PRINTMAP
+        </Button>
+      </Box>
+      </Card>
   )
 }
 
