@@ -17,13 +17,15 @@ import EventFiltersResults from './EventFiltersResults'
 import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
 import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
 import UpdateEmail from '../../../components/Newsletter/UpdateEmail'
+import SubscriptionStatus from './SubscriptionStatus'
 
 function NewsletterSettings() {
-  const [info, setInfo] = useState({ id: undefined })
+  const [info, setInfo] = useState({ id: undefined, unsubscribe: false })
   const [unsubError, setUnsubError] = useState(false)
   const [activError, setActivError] = useState(false)
 
-  useEffect(() => {
+  const loadData = (e) => {
+    console.log('loadData')
     getSubscriptionInfo()
       .then((res) => {
         setInfo(res.data)
@@ -32,34 +34,38 @@ function NewsletterSettings() {
         if (res.response.status === 401) {
           window.location.replace('/login')
         }
-        // TODO: Tratar outros erros.
       })
+  }
+
+  useEffect(() => {
+    loadData()
   }, [])
 
-  const handleUnsubscribe = (e) => {
-    // TODO: Alterar o backend para desiscrever o usuario logado.
-    // unsubscribe(id)
-    //   .then((res) => {
-    //     // reload the current page
-    //     window.location.reload()
-    //   })
-    //   .catch(function (error) {
-    //     setUnsubError(true)
-    //   })
-  }
+  // const handleUnsubscribe = (e) => {
+  //   console.log('handleUnsubscribe')
+  //   // TODO: Alterar o backend para desiscrever o usuario logado.
+  //   unsubscribe()
+  //     .then((res) => {
+  //       console.log('res', res)
+  //       // reload the current page
+  //       // window.location.reload()
+  //       loadData()
+  //     })
+  //     .catch(function (error) {
+  //       setUnsubError(true)
+  //     })
+  // }
 
-  const handleReactivate = (e) => {
-    console.log('handleReactivate')
-    // TODO: Alterar o backend para desiscrever o usuario logado.
-    // reactivateSubscription(id)
-    //   .then((res) => {
-    //     // reload the current page
-    //     window.location.reload()
-    //   })
-    //   .catch(function (error) {
-    //     setActivError(true)
-    //   })
-  }
+  // const handleReactivate = (e) => {
+  //   console.log('handleReactivate')
+  //   reactivateSubscription()
+  //     .then((res) => {
+  //       loadData()
+  //     })
+  //     .catch(function (error) {
+  //       setActivError(true)
+  //     })
+  // }
 
   if (!('email' in info)) {
     return (
@@ -69,6 +75,7 @@ function NewsletterSettings() {
     )
   }
 
+  console.log('info', info)
   return (
     <Container maxWidth='lg' sx={{ minHeight: 500 }}>
       <Grid container direction='row' justifyContent='center' alignItems='center'>
@@ -108,59 +115,21 @@ function NewsletterSettings() {
           <Card>
             <CardHeader title='Assinatura' subheader='Ative ou desative o recebimento de emails.'></CardHeader>
             <CardContent>
-              <Stack spacing={2}>
-                <FormControlLabel
-                  required
-                  control={
-                    info?.activated ? (
-                      <Switch checked={true} onChange={handleUnsubscribe} />
-                    ) : (
-                      <Switch checked={false} onChange={handleReactivate} />
-                    )
-                  }
-                  label='Receber emails'
-                />
-                {info?.activated && (
-                  <Alert variant='outlined' severity='success'>
-                    Sua Assinatura está ativa e você recebera os emails conforme suas configurações de filtro.
-                  </Alert>
-                )}
-
-                {!info?.activated && (
-                  <Alert variant='outlined' severity='warning'>
-                    Sua Assinatura está inativa e você Não recebera nenhum email.
-                  </Alert>
-                )}
-              </Stack>
+              <SubscriptionStatus value={info?.unsubscribe} onChange={loadData} />
             </CardContent>
+          </Card>
+        </Grid>
+        {/* <Grid item xs={12} mt={2}>
+          <Card>
+            <CardHeader title='Assinatura' subheader='Ative ou desative o recebimento de emails.'></CardHeader>
             <CardContent>
-              <Grid item xs={11.6}>
+              <Grid item xs={12}>
                 <UpdateEmail subscriptionId={info.id} />
               </Grid>
             </CardContent>
           </Card>
-        </Grid>
+        </Grid> */}
       </Grid>
-      <Snackbar
-        open={unsubError}
-        autoHideDuration={5000}
-        onClose={() => setUnsubError(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity='error'>
-          Falhou ao cancelar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={activError}
-        autoHideDuration={5000}
-        onClose={() => setActivError(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity='error'>
-          Falhou ao Reativar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
-        </Alert>
-      </Snackbar>
     </Container>
   )
 }

@@ -20,29 +20,18 @@ from rest_framework.response import Response
 
 
 @extend_schema(exclude=True)
-class SubscriptionViewSet(
-    viewsets.ModelViewSet
-    # viewsets.mixins.ListModelMixin,
-    # viewsets.mixins.CreateModelMixin,
-    # viewsets.mixins.UpdateModelMixin,
-):
+class SubscriptionViewSet(viewsets.ModelViewSet):
 
     queryset = Subscription.objects.all()
-    # filter_fields = ("activation_code")
     serializer_class = SubscriptionSerializer
     permission_classes = (IsAuthenticated,)
 
     def get_permissions(self):
 
-        if self.action == "create":
-            self.permission_classes = (AllowAny,)
-        elif self.action == "activate":
+        if self.action in ["create", "activate", "email_unsubscribe"]:
             self.permission_classes = (AllowAny,)
         else:
             self.permission_classes = [IsAuthenticated]
-
-        # if self.request.method == "POST":
-        #     self.permission_classes = (AllowAny,)
 
         return super().get_permissions()
 
@@ -108,56 +97,21 @@ class SubscriptionViewSet(
         envio = NewsletterSendEmail()
         envio.send_welcome_mail(obj)
 
-        # return Response(status=status.HTTP_200_ok)
-        # TODO: Retornar uma página html com uma mensagem simples de confirmação
-        # https://www.django-rest-framework.org/api-guide/renderers/#templatehtmlrenderer
-
-        result = dict(
-            {
-                "success": True,
-            }
-        )
-        if format == "json" or format is None:
-            return JsonResponse(result, status=status.HTTP_200_OK)
-        else:
-            return render(request, "activation_confirm.html", {"context": result})
+        return render(request, "activation_confirm.html")
 
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def info(self, request):
-
-        user = request.user
 
         return Response(
             self.serializer_class(
                 request.user.subscription, context={"request": request}
             ).data
         )
-        # params = self.request.data
 
-        # activation_code = params.get("c", None)
-        # if not activation_code:
-        #     raise Exception("Parametro c obrigatório")
-
-        # obj = Subscription.objects.get(activation_code=activation_code)
-
-        # result = dict(
-        #     {"id": obj.id, "email": obj.email, "is_active": not obj.unsubscribe}
-        # )
-        # result = dict({"success": True})
-        # return Response(result)
-
-    @action(detail=False, methods=["get", "post"], permission_classes=(AllowAny,))
+    @action(detail=False, methods=["post"], permission_classes=(IsAuthenticated,))
     def unsubscribe(self, request):
-        if request.method == "GET":
-            params = self.request.query_params
-        elif request.method == "POST":
-            params = self.request.data
 
-        activation_code = params.get("c", None)
-        if not activation_code:
-            raise Exception("Parametro c obrigatório")
-
-        obj = Subscription.objects.get(activation_code=activation_code)
+        obj = request.user.subscription
 
         obj.unsubscribe_date = datetime.now()
         obj.unsubscribe = True
@@ -169,24 +123,30 @@ class SubscriptionViewSet(
             }
         )
 
-        if format == "json" or format is None:
-            return JsonResponse(
-                result,
-                status=status.HTTP_200_OK,
-            )
-        else:
-            return render(request, "unsubscription_confirm.html", {"context": result})
+        return JsonResponse(
+            result,
+            status=status.HTTP_200_OK,
+        )
 
-    @action(detail=False, methods=["post"], permission_classes=(AllowAny,))
-    def reactivate(self, request):
+    @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
+    def email_unsubscribe(self, request):
 
-        params = self.request.data
-
+        params = self.request.query_params
         activation_code = params.get("c", None)
         if not activation_code:
-            raise Exception("Parametro c obrigatório")
+            raise ParseError(detail="Activation code parameter is required")
 
         obj = Subscription.objects.get(activation_code=activation_code)
+        obj.unsubscribe_date = datetime.now()
+        obj.unsubscribe = True
+        obj.save()
+
+        return render(request, "unsubscription_confirm.html")
+
+    @action(detail=False, methods=["post"], permission_classes=(IsAuthenticated,))
+    def reactivate(self, request):
+
+        obj = request.user.subscription
 
         obj.unsubscribe_date = None
         obj.unsubscribe = False
@@ -197,7 +157,4 @@ class SubscriptionViewSet(
                 "success": True,
             }
         )
-        if format == "json" or format is None:
-            return JsonResponse(result, status=status.HTTP_200_OK)
-        else:
-            return render(request, "activation_confirm.html", {"context": result})
+        return JsonResponse(result, status=status.HTTP_200_OK)

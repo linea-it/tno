@@ -1,15 +1,20 @@
 import { api } from './Api'
 
-export const saveEmailSubscription = (email) => {
+// ----------------------------------------------------------
+// Newsletter Subscription API
+// ----------------------------------------------------------
+export const subscribe = (email) => {
   return api.post('/subscription/', { email: email })
 }
+export const unsubscribe = () => api.post(`/subscription/unsubscribe/`)
+
+export const reactivateSubscription = () => api.post(`/subscription/reactivate/`)
 
 export const getSubscriptionInfo = () => api.get(`/subscription/info/`)
 
-export const unsubscribe = (id) => api.post(`/subscription/unsubscribe/`, { c: id })
-
-export const reactivateSubscription = (id) => api.post(`/subscription/reactivate/`, { c: id })
-
+// ----------------------------------------------------------
+// Public User Preferences API
+// ----------------------------------------------------------
 export const listPreferenceEventFilters = ({ queryKey }) => {
   const params = queryKey[1]
 

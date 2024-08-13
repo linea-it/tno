@@ -18,6 +18,7 @@ def teste(request):
         from datetime import datetime, timezone
 
         import pandas as pd
+
         from tno.models import Occultation
         from tno.occviz import visibility_from_coeff
 
@@ -83,11 +84,7 @@ def which_environment(request):
 def logout_view(request):
     logout(request)
 
-    # Redireciona para a home
-    home = settings.HOST_URL
-    response = redirect(home)
-
-    return response
+    return Response({"success": True})
 
 
 # @action(detail=False, methods=["GET"])

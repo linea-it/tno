@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import { Stack } from '../../../node_modules/@mui/material/index'
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import { saveEmailSubscription } from '../../services/api/Newsletter'
+import { subscribe } from '../../services/api/Newsletter'
 import Paper from '@mui/material/Paper'
 import InputBase from '@mui/material/InputBase'
 
@@ -27,7 +27,7 @@ export default function Subscribe() {
 
   const handleSubmit = (e) => {
     if (email !== '') {
-      saveEmailSubscription(email)
+      subscribe(email)
         .then(() => {
           setEmail('')
           setEmailSuccess(true)

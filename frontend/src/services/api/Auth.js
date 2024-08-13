@@ -18,7 +18,7 @@ export function whichEnvironment() {
 export function logout() {
   destroyCookie(null, 'solarsystem.token')
   // destroyCookie(null, 'tno.csrftoken')
-  window.location.href = '/logout/'
+  window.location.href = `${url}/auth/logout/?next=/`
 }
 
 export const urlLogin = `${url}/auth/login/?next=/dashboard`

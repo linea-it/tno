@@ -73,18 +73,7 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
-      <Route
-        // isHomePage
-        exact
-        path='/login/'
-        element={
-          // <PublicPortalPage>
-          <PublicLogin />
-          // </PublicPortalPage>
-        }
-      />
-
-      {/* <Route isHomePage exact path='/documentation' element={<Navigate to='/docs/' />} /> */}
+      <Route exact path='/login/' element={<PublicLogin />} />
     </>
   )
 }
