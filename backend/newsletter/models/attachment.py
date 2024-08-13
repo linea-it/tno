@@ -1,9 +1,11 @@
 from django.db import models
 from newsletter.models.submission import Submission
 
+
 class Attachment(models.Model):
 
-    submission_id = models.ForeignKey(Submission,
+    submission_id = models.ForeignKey(
+        Submission,
         on_delete=models.CASCADE,
     )
 

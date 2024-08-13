@@ -34,7 +34,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
     const [frequency, setFrequency] = React.useState('Monthly')
 
     //console.log(queryOptions.filters.filterType)
-    
+
     const { data, isLoading } = useQuery({
       queryKey: ['preferenceEventFilters', { subscriptionId: subscriptionId }],
       queryFn: listPreferenceEventFilters,
@@ -44,7 +44,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
       refetchOnmount: false,
       refetchOnReconnect: false
     })
-  
+
     if (isLoading) {
       return <Box>Loading...</Box>
     }
@@ -54,20 +54,20 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
         setFilterName(event.target.value)
         //setFrequency(event.target.value)
     }
-      
+
       const handleSubmit = (event) => {
           event.preventDefault();
           const data = new FormData(event.currentTarget);
           const nameFilterList = data.get('filter_name')
           console.log(nameFilterList)
-          
+
           saveListPreferenceEventFilters( {
-              subscriptionId: subscriptionId, 
+              subscriptionId: subscriptionId,
               filter_name: nameFilterList,
               frequency: queryOptions.filters.frequency,
-              magnitude_min: queryOptions.filters.magnitude_min, 
-              magnitude_max: queryOptions.filters.magnitude_max, 
-              filter_type: queryOptions.filters.filterType, 
+              magnitude_min: queryOptions.filters.magnitude_min,
+              magnitude_max: queryOptions.filters.magnitude_max,
+              filter_type: queryOptions.filters.filterType,
               filter_value: queryOptions.filters.filterValue,
               local_solar_time_after: queryOptions.filters.local_solar_time_after,
               local_solar_time_before: queryOptions.filters.local_solar_time_before,
@@ -80,14 +80,14 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
               altitude: queryOptions.filters.altitude,
               latitude: queryOptions.filters.latitude,
               longitude: queryOptions.filters.longitude,
-              location_radius: queryOptions.filters.location_radius 
+              location_radius: queryOptions.filters.location_radius
             } ).then(() => {
                 console.log('salvando nome do filtro no bd')})
                 console.log(queryOptions.filters.frequency)
                 //console.log(queryOptions.filters.filter_name)
                 //console.log(queryOptions.filters.geo_location)
             }
-            
+
     return (
         <Box component="form" onSubmit={handleSubmit} autoComplete='off' noValidate>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -163,7 +163,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                             <Divider />
                         </Grid>
                         <CardContent>
-                            <Grid item xs={12} alignItems='center' sx={{ display: 'flex', flexDirection: 'rown' }}> 
+                            <Grid item xs={12} alignItems='center' sx={{ display: 'flex', flexDirection: 'rown' }}>
                                 <Grid item xs={12} sx={{ paddingRight: '8px' }}>
                                 <MaginitudeSelect
                                     value={queryOptions.filters.magnitude_min}
@@ -200,7 +200,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                 </Grid>
                             </Grid>
                         </CardContent>
-                       
+
                         <Grid item xs={12}>
                             <Divider />
                         </Grid>
@@ -220,7 +220,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                             filters: {
                                             ...prev.filters,
                                             //...value,
-                                            
+
                                             //local_solar_time_after: Object.getOwnPropertyDescriptor(value, "solar_time_after").value,
                                             //local_solar_time_before: Object.getOwnPropertyDescriptor(value, "solar_time_before").value,
                                             solar_time_enabled: queryOptions.filters.solar_time_enabled,
@@ -287,7 +287,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                         }}
                                     />
                                 </Grid>
-                                
+
                                 <Grid item xs={6} container sx={{ padding: '8px' }}>
                                     <ObjectDiameterFilter
                                         value={{
@@ -295,7 +295,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                                             diameterMax: queryOptions.filters.diameterMax
                                         }}
                                         onChange={(value) => {
-                                            //console.log(Object.getOwnPropertyDescriptor(value, "diameterMin").value) 
+                                            //console.log(Object.getOwnPropertyDescriptor(value, "diameterMin").value)
                                             setQueryOptions((prev) => {
                                                 return {
                                                     ...prev,
@@ -365,7 +365,7 @@ export default function NewsletterEventFiltersSettings({ subscriptionId }) {
                         <CardContent>
                             <Button
                                 type="submit"
-                                fullWidth 
+                                fullWidth
                                 variant="contained"
                                 sx={{ width: '20vw', height:'34px'}}
                                 >

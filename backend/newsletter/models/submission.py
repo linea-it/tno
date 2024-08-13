@@ -1,14 +1,17 @@
 from django.db import models
-from newsletter.models.subscription import Subscription
 from newsletter.models.event_filter import EventFilter
+from newsletter.models.subscription import Subscription
+
 
 class Submission(models.Model):
 
-    subscription_id = models.ForeignKey(Subscription,
+    subscription_id = models.ForeignKey(
+        Subscription,
         on_delete=models.CASCADE,
     )
-    
-    eventFilter_id = models.ForeignKey(EventFilter,
+
+    eventFilter_id = models.ForeignKey(
+        EventFilter,
         on_delete=models.CASCADE,
     )
 
@@ -31,7 +34,7 @@ class Submission(models.Model):
         verbose_name="Sending",
         help_text="Indica se a submissao está sendo enviada ou nao.",
     )
-    
+
     sent = models.BooleanField(
         verbose_name="Sent",
         help_text="Indica se a submissao foi enviada ou nao.",

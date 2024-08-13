@@ -1,5 +1,6 @@
-from ..models import EventFilter
 from rest_framework import serializers
+
+from ..models import EventFilter
 
 
 class EventFilterSerializer(serializers.ModelSerializer):

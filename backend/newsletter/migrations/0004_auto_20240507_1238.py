@@ -6,18 +6,24 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0003_auto_20240506_1256'),
+        ("newsletter", "0003_auto_20240506_1256"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='subscription',
-            name='activated',
-            field=models.BooleanField(default=False, help_text='Indica que o usuario ativou a sua inscricao.', verbose_name='Activate'),
+            model_name="subscription",
+            name="activated",
+            field=models.BooleanField(
+                default=False,
+                help_text="Indica que o usuario ativou a sua inscricao.",
+                verbose_name="Activate",
+            ),
         ),
         migrations.AddField(
-            model_name='subscription',
-            name='activated_date',
-            field=models.DateTimeField(blank=True, default=None, null=True, verbose_name='Activated Date'),
+            model_name="subscription",
+            name="activated_date",
+            field=models.DateTimeField(
+                blank=True, default=None, null=True, verbose_name="Activated Date"
+            ),
         ),
     ]

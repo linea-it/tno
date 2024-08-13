@@ -6,23 +6,35 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0010_alter_eventfilter_filter_type'),
+        ("newsletter", "0010_alter_eventfilter_filter_type"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='eventfilter',
-            old_name='diameter',
-            new_name='diameter_max',
+            model_name="eventfilter",
+            old_name="diameter",
+            new_name="diameter_max",
         ),
         migrations.AddField(
-            model_name='eventfilter',
-            name='diameter_min',
-            field=models.IntegerField(blank=True, default=None, help_text='Diametro do objeto.', null=True, verbose_name='Diameter'),
+            model_name="eventfilter",
+            name="diameter_min",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Diametro do objeto.",
+                null=True,
+                verbose_name="Diameter",
+            ),
         ),
         migrations.AlterField(
-            model_name='eventfilter',
-            name='location_radius',
-            field=models.IntegerField(blank=True, default=None, help_text='Raio em kilometro.', null=True, verbose_name='Radius'),
+            model_name="eventfilter",
+            name="location_radius",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Raio em kilometro.",
+                null=True,
+                verbose_name="Radius",
+            ),
         ),
     ]

@@ -187,7 +187,7 @@ function GeoFilter({ value, onChange }) {
           </Stack>
         )}
       </Grid>
-      
+
       {enabled === true && (
         <Grid item xs={12}>
           <Alert severity='info'>

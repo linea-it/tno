@@ -12,6 +12,7 @@ FILTER_TYPE_CHOICES = [
     ("base_dynclass", "Dynamic class"),
 ]
 
+
 class EventFilter(models.Model):
 
     subscription_id = models.ForeignKey(

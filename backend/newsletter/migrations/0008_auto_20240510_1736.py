@@ -6,18 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0007_alter_eventfilter_frequency'),
+        ("newsletter", "0007_alter_eventfilter_frequency"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='eventfilter',
-            name='filter_value',
-            field=models.TextField(blank=True, help_text='Valor que será utilizado no filtro.', null=True, verbose_name='Filter Value'),
+            model_name="eventfilter",
+            name="filter_value",
+            field=models.TextField(
+                blank=True,
+                help_text="Valor que será utilizado no filtro.",
+                null=True,
+                verbose_name="Filter Value",
+            ),
         ),
         migrations.AlterField(
-            model_name='eventfilter',
-            name='geo_location',
-            field=models.BooleanField(default=False, help_text='Filtro de geolocalizaçao.', verbose_name='Geo Location'),
+            model_name="eventfilter",
+            name="geo_location",
+            field=models.BooleanField(
+                default=False,
+                help_text="Filtro de geolocalizaçao.",
+                verbose_name="Geo Location",
+            ),
         ),
     ]

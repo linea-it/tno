@@ -42,7 +42,6 @@ from newsletter.views import EventFilterViewSet, SubscriptionViewSet
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from skybot.views import PositionViewSet
-
 from tno.views import (
     AsteroidJobViewSet,
     AsteroidViewSet,

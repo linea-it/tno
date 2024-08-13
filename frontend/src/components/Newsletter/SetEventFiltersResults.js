@@ -45,7 +45,7 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
     //console.log(queryOptions.filters.filterType)
     //const [info, setInfo] = useState({ id: undefined })
     //const { Id } = useParams()
-    
+
     const { data, isLoading } = useQuery({
       queryKey: ['preferenceEventFilters', { id, subscriptionId }],
       queryFn: listPreferenceEventFilters,
@@ -74,25 +74,25 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
     const handleClickOpen = () => {
       setOpenDialog(true);
     };
-  
+
     const handleClose = () => {
       setOpenDialog(false);
       //setEmail("")
     };
-      
+
     const handleSubmit = (event) => {
       event.preventDefault();
       const dataIn = new FormData(event.currentTarget);
       const nameFilterList = dataIn.get('filter_name')
       console.log(nameFilterList)
-          
+
       const dataOut = {
-        filter_name: nameFilterList, 
+        filter_name: nameFilterList,
         subscriptionId: subscriptionId,
         frequency: queryOptions.filters.frequency,
-        magnitude_min: queryOptions.filters.magnitude_min, 
-        magnitude_max: queryOptions.filters.magnitude_max, 
-        filter_type: queryOptions.filters.filterType, 
+        magnitude_min: queryOptions.filters.magnitude_min,
+        magnitude_max: queryOptions.filters.magnitude_max,
+        filter_type: queryOptions.filters.filterType,
         filter_value: queryOptions.filters.filterValue,
         local_solar_time_after: queryOptions.filters.local_solar_time_after,
         local_solar_time_before: queryOptions.filters.local_solar_time_before,
@@ -124,7 +124,7 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
       setSnackbarOpen(false)
       setOpen('')
     }
-            
+
     return (
         <Box  autoComplete='off' noValidate sx={{ mt: 1 , display: 'block'}}>
             <Button variant="outlined" onClick={handleClickOpen}>
@@ -216,7 +216,7 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
                                   <Divider />
                               </Grid>
                               <CardContent>
-                                  <Grid item xs={12} alignItems='center' sx={{ display: 'flex', flexDirection: 'rown' }}> 
+                                  <Grid item xs={12} alignItems='center' sx={{ display: 'flex', flexDirection: 'rown' }}>
                                       <Grid item xs={12} sx={{ paddingRight: '8px' }}>
                                       <MaginitudeSelect
                                           value={queryOptions.filters.magnitude_min}
@@ -344,7 +344,7 @@ export default function SetEventFiltersSettings({ id, subscriptionId }) {
                                                   diameterMax: queryOptions.filters.diameterMax
                                               }}
                                               onChange={(value) => {
-                                                  //console.log(Object.getOwnPropertyDescriptor(value, "diameterMin").value) 
+                                                  //console.log(Object.getOwnPropertyDescriptor(value, "diameterMin").value)
                                                   setQueryOptions((prev) => {
                                                       return {
                                                           ...prev,

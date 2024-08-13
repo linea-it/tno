@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0004_auto_20240417_1724'),
+        ("tno", "0004_auto_20240417_1724"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='profile',
-            name='dashboard',
+            model_name="profile",
+            name="dashboard",
             field=models.BooleanField(default=False),
         ),
     ]

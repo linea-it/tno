@@ -6,36 +6,60 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0011_auto_20240624_1345'),
+        ("newsletter", "0011_auto_20240624_1345"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='eventfilter',
-            name='magnitude',
+            model_name="eventfilter",
+            name="magnitude",
         ),
         migrations.RemoveField(
-            model_name='eventfilter',
-            name='magnitude_drop',
+            model_name="eventfilter",
+            name="magnitude_drop",
         ),
         migrations.AddField(
-            model_name='eventfilter',
-            name='magnitude_drop_max',
-            field=models.IntegerField(blank=True, default=None, help_text='Magnitude Drop max.', null=True, verbose_name='Magnitude Drop max'),
+            model_name="eventfilter",
+            name="magnitude_drop_max",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Magnitude Drop max.",
+                null=True,
+                verbose_name="Magnitude Drop max",
+            ),
         ),
         migrations.AddField(
-            model_name='eventfilter',
-            name='magnitude_drop_min',
-            field=models.IntegerField(blank=True, default=None, help_text='Magnitude Drop min.', null=True, verbose_name='Magnitude Drop min'),
+            model_name="eventfilter",
+            name="magnitude_drop_min",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Magnitude Drop min.",
+                null=True,
+                verbose_name="Magnitude Drop min",
+            ),
         ),
         migrations.AddField(
-            model_name='eventfilter',
-            name='magnitude_max',
-            field=models.IntegerField(blank=True, default=15, help_text='Magnitude do objeto.', null=True, verbose_name='Magnitude max'),
+            model_name="eventfilter",
+            name="magnitude_max",
+            field=models.IntegerField(
+                blank=True,
+                default=15,
+                help_text="Magnitude do objeto.",
+                null=True,
+                verbose_name="Magnitude max",
+            ),
         ),
         migrations.AddField(
-            model_name='eventfilter',
-            name='magnitude_min',
-            field=models.IntegerField(blank=True, default=15, help_text='Magnitude do objeto.', null=True, verbose_name='Magnitude min'),
+            model_name="eventfilter",
+            name="magnitude_min",
+            field=models.IntegerField(
+                blank=True,
+                default=15,
+                help_text="Magnitude do objeto.",
+                null=True,
+                verbose_name="Magnitude min",
+            ),
         ),
     ]

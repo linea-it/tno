@@ -3,7 +3,6 @@ import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
 import Subscribe from '../../../components/Subscription/index'
-import { AlignHorizontalCenter } from '../../../../node_modules/@mui/icons-material/index'
 
 function PublicBanner() {
   const classes = styles()

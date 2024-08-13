@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0006_auto_20240510_1718'),
+        ("newsletter", "0006_auto_20240510_1718"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='eventfilter',
-            name='frequency',
-            field=models.IntegerField(choices=[(1, 'Monthly'), (2, 'Weekly')], default=1, help_text='Frequencia de recebimento do periodico 1-semanal, 2-mensal.', verbose_name='Frequency'),
+            model_name="eventfilter",
+            name="frequency",
+            field=models.IntegerField(
+                choices=[(1, "Monthly"), (2, "Weekly")],
+                default=1,
+                help_text="Frequencia de recebimento do periodico 1-semanal, 2-mensal.",
+                verbose_name="Frequency",
+            ),
         ),
     ]
