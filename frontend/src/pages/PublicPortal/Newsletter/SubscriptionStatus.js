@@ -11,15 +11,9 @@ export default function SubscriptionStatus({ value, onChange }) {
   const [unsubError, setUnsubError] = useState(false)
   const [activError, setActivError] = useState(false)
 
-  // TODO: Tratar erro nas ações de unsubscribe e reactivate
-
   const handleUnsubscribe = (e) => {
-    console.log('handleUnsubscribe')
     unsubscribe()
       .then((res) => {
-        console.log('res', res)
-        // reload the current page
-        // window.location.reload()
         onChange()
       })
       .catch(function (error) {
@@ -28,7 +22,6 @@ export default function SubscriptionStatus({ value, onChange }) {
   }
 
   const handleReactivate = (e) => {
-    console.log('handleReactivate')
     reactivateSubscription()
       .then((res) => {
         onChange()
@@ -59,26 +52,31 @@ export default function SubscriptionStatus({ value, onChange }) {
         )}
       </Stack>
 
-      <Snackbar
-        open={unsubError}
-        autoHideDuration={5000}
-        onClose={() => setUnsubError(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity='error'>
-          Falhou ao cancelar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
-        </Alert>
-      </Snackbar>
-      <Snackbar
-        open={activError}
-        autoHideDuration={5000}
-        onClose={() => setActivError(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert severity='error'>
-          Falhou ao Reativar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
-        </Alert>
-      </Snackbar>
+      {unsubError && (
+        <Snackbar
+          open={true}
+          autoHideDuration={5000}
+          onClose={() => setUnsubError(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity='error'>
+            Falhou ao cancelar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
+          </Alert>
+        </Snackbar>
+      )}
+
+      {activError && (
+        <Snackbar
+          open={true}
+          autoHideDuration={5000}
+          onClose={() => setActivError(false)}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        >
+          <Alert severity='error'>
+            Falhou ao Reativar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
+          </Alert>
+        </Snackbar>
+      )}
     </>
   )
 }

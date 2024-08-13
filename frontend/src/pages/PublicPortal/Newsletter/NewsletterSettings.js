@@ -7,25 +7,13 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Link from '@mui/material/Link'
-import Switch from '@mui/material/Switch'
-import Divider from '@mui/material/Divider'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Stack from '@mui/material/Stack'
-import Alert from '@mui/material/Alert'
-import Snackbar from '@mui/material/Snackbar'
-import EventFiltersResults from './EventFiltersResults'
-import NewsletterEventFiltersSettings from '../../../components/Newsletter/index'
-import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenceEventFilters } from '../../../services/api/Newsletter'
-import UpdateEmail from '../../../components/Newsletter/UpdateEmail'
+import { getSubscriptionInfo } from '../../../services/api/Newsletter'
 import SubscriptionStatus from './SubscriptionStatus'
 
 function NewsletterSettings() {
   const [info, setInfo] = useState({ id: undefined, unsubscribe: false })
-  const [unsubError, setUnsubError] = useState(false)
-  const [activError, setActivError] = useState(false)
 
   const loadData = (e) => {
-    console.log('loadData')
     getSubscriptionInfo()
       .then((res) => {
         setInfo(res.data)
@@ -41,32 +29,6 @@ function NewsletterSettings() {
     loadData()
   }, [])
 
-  // const handleUnsubscribe = (e) => {
-  //   console.log('handleUnsubscribe')
-  //   // TODO: Alterar o backend para desiscrever o usuario logado.
-  //   unsubscribe()
-  //     .then((res) => {
-  //       console.log('res', res)
-  //       // reload the current page
-  //       // window.location.reload()
-  //       loadData()
-  //     })
-  //     .catch(function (error) {
-  //       setUnsubError(true)
-  //     })
-  // }
-
-  // const handleReactivate = (e) => {
-  //   console.log('handleReactivate')
-  //   reactivateSubscription()
-  //     .then((res) => {
-  //       loadData()
-  //     })
-  //     .catch(function (error) {
-  //       setActivError(true)
-  //     })
-  // }
-
   if (!('email' in info)) {
     return (
       <Container maxWidth='lg' sx={{ minHeight: 500 }}>
@@ -75,7 +37,6 @@ function NewsletterSettings() {
     )
   }
 
-  console.log('info', info)
   return (
     <Container maxWidth='lg' sx={{ minHeight: 500 }}>
       <Grid container direction='row' justifyContent='center' alignItems='center'>

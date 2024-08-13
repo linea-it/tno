@@ -117,14 +117,10 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         obj.unsubscribe = True
         obj.save()
 
-        result = dict(
+        return JsonResponse(
             {
                 "success": True,
-            }
-        )
-
-        return JsonResponse(
-            result,
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -152,9 +148,9 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         obj.unsubscribe = False
         obj.save()
 
-        result = dict(
+        return JsonResponse(
             {
                 "success": True,
-            }
+            },
+            status=status.HTTP_200_OK,
         )
-        return JsonResponse(result, status=status.HTTP_200_OK)
