@@ -26,6 +26,7 @@ export default function Subscribe() {
   }
 
   const handleSubmit = (e) => {
+    e.preventDefault()
     if (email !== '') {
       subscribe(email)
         .then(() => {
@@ -80,6 +81,7 @@ export default function Subscribe() {
           size='large'
           disabled={emailError}
           onClick={handleSubmit}
+          type='submit'
         >
           Subscribe
         </Button>

@@ -16,14 +16,17 @@ export function whichEnvironment() {
 }
 
 export function logout() {
-  destroyCookie(null, 'solarsystem.token')
-  // destroyCookie(null, 'tno.csrftoken')
+  destroyCookie({}, 'solarsystem.token')
   window.location.href = `${url}/auth/logout/?next=/`
 }
 
 export const urlLogin = `${url}/auth/login/?next=/dashboard`
 
 export const urlLogout = `${url}/auth/logout/?next=/dashboard`
+
+export const delete_account = (email) => {
+  return api.post('/users/delete_account/', { email: email })
+}
 
 // --------------------------------------------------
 // Public Authorization

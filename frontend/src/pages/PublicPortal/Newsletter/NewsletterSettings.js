@@ -9,6 +9,7 @@ import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Link from '@mui/material/Link'
 import { getSubscriptionInfo } from '../../../services/api/Newsletter'
 import SubscriptionStatus from './SubscriptionStatus'
+import DeleteAccount from './DeleteAccount'
 
 function NewsletterSettings() {
   const [info, setInfo] = useState({ id: undefined, unsubscribe: false })
@@ -79,6 +80,9 @@ function NewsletterSettings() {
               <SubscriptionStatus value={info?.unsubscribe} onChange={loadData} />
             </CardContent>
           </Card>
+        </Grid>
+        <Grid item xs={12} mt={2}>
+          <DeleteAccount />
         </Grid>
         {/* <Grid item xs={12} mt={2}>
           <Card>
