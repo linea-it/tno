@@ -103,6 +103,7 @@ urlpatterns = [
     # re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
     path("api/auth/", include("rest_framework.urls")),
     re_path(r"^api/logout/", common_views.logout_view),
+    path("", include("drfpasswordless.urls")),
     # re_path(
     #     r"^api/des/clear_des_data_preparation_tables",
     #     des_management_views.clear_des_data_preparation_tables,

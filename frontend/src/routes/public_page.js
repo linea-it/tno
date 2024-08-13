@@ -8,6 +8,7 @@ import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 import NewsletterSettings from '../pages/PublicPortal/Newsletter/NewsletterSettings'
+import PublicLogin from '../pages/PublicPortal/Login'
 
 const PublicPortalPage = ({ children }) => {
   return (
@@ -65,11 +66,21 @@ export function PublicPageRoutes() {
       <Route
         isHomePage
         exact
-        path='/newsletter_settings/:id'
+        path='/newsletter_settings'
         element={
           <PublicPortalPage>
             <NewsletterSettings />
           </PublicPortalPage>
+        }
+      />
+      <Route
+        // isHomePage
+        exact
+        path='/login/'
+        element={
+          // <PublicPortalPage>
+          <PublicLogin />
+          // </PublicPortalPage>
         }
       />
 

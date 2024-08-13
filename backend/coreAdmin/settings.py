@@ -195,6 +195,7 @@ INSTALLED_APPS = [
     # third-party apps
     "rest_framework",
     "rest_framework.authtoken",
+    "drfpasswordless",
     "django_filters",
     "url_filter",
     "corsheaders",
@@ -278,10 +279,11 @@ AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 CSRF_COOKIE_NAME = "tno.csrftoken"
 
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_REDIRECT_URL = "/"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "common.pagination.StandardResultsSetPagination",
@@ -418,6 +420,16 @@ PREDICTION_JOB_CHUNK_SIZE = 2000
 # Limita os jobs de predição para executarem apenas para estas classes.
 PREDICTION_JOB_BASE_DYNCLASS = ["Trojan", "Centaur", "Kuiper Belt Object"]
 
+PASSWORDLESS_AUTH = {
+    "PASSWORDLESS_AUTH_TYPES": [
+        "EMAIL",
+    ],
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
+    "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
+    "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
+    "PASSWORDLESS_REGISTER_NEW_USERS": False,
+}
+
 
 LOGGING = {
     "version": 1,
@@ -499,6 +511,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "predict_events.log"),
             "formatter": "standard",
         },
+        "subscription": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "subscription.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -543,6 +563,11 @@ LOGGING = {
         },
         "predict_events": {
             "handlers": ["predict_events"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "subscription": {
+            "handlers": ["subscription"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

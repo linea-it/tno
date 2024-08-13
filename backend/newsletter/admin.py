@@ -8,7 +8,7 @@ from .models import Attachment, EventFilter, Submission
 class SubscriptionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "email",
+        "user",
         "activation_code",
         "subscribe_date",
         "unsubscribe_date",

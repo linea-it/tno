@@ -3,7 +3,7 @@ import Button from '@mui/material/Button'
 import { Stack } from '../../../node_modules/@mui/material/index'
 import Alert from '@mui/material/Alert'
 import Snackbar from '@mui/material/Snackbar'
-import { saveEmailSubscription } from '../../services/api/Subscription'
+import { saveEmailSubscription } from '../../services/api/Newsletter'
 import Paper from '@mui/material/Paper'
 import InputBase from '@mui/material/InputBase'
 
@@ -12,6 +12,9 @@ export default function Subscribe() {
   const [emailError, setEmailError] = useState(false)
   const [errorAlertOpen, setErrorAlertOpen] = useState(false)
   const [emailSuccess, setEmailSuccess] = useState(false)
+  const [errorMsg, setErrorMsg] = useState(
+    'An error occurred while sending the subscription email. Please try again later or contact support if the issue persists.'
+  )
 
   const handleChange = (e) => {
     setEmail(e.target.value)
@@ -29,7 +32,11 @@ export default function Subscribe() {
           setEmail('')
           setEmailSuccess(true)
         })
-        .catch(() => {
+        .catch((res) => {
+          console.log(res)
+          if (res.response.data.detail) {
+            setErrorMsg(res.response.data.detail)
+          }
           setEmail('')
           setErrorAlertOpen(true)
         })
@@ -87,14 +94,7 @@ export default function Subscribe() {
             setEmailSuccess(false)
           }}
         >
-          <Alert
-            onClose={() => {
-              setEmailSuccess(false)
-            }}
-            severity='success'
-          >
-            Email successfully registered. Check your email inbox.
-          </Alert>
+          <Alert severity='success'>Email successfully registered. Check your email inbox.</Alert>
         </Snackbar>
       )}
 
@@ -105,7 +105,7 @@ export default function Subscribe() {
             setErrorAlertOpen(false)
           }}
         >
-          An error occurred while sending the subscription email. Please try again later or contact support if the issue persists.
+          {errorMsg}
         </Alert>
       )}
     </Stack>

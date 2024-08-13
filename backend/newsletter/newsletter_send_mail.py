@@ -1,4 +1,5 @@
 import datetime
+import logging
 import os
 import sys
 
@@ -24,20 +25,28 @@ from newsletter.models.subscription import Subscription
 
 class NewsletterSendEmail:
 
-    def send_activation_mail(self, user: Subscription):
+    def __init__(self):
+        self.log = logging.getLogger("subscription")
+
+    def send_activation_mail(self, subscription: Subscription):
         """Email enviado logo após o registro do usuario
         Contem o botão "Confirmar" que ao ser clicado atualiza o cadastro como ativo.
         """
+
+        self.log.info(f"Sending activation to: {subscription.user.email}")
+
         html_content = render_to_string(
             "activate_subscription.html",
             {
                 "host": settings.SITE_URL.rstrip("/"),
-                "activation_code": user.activation_code,
+                "activation_code": subscription.activation_code,
             },
         )
-        self.send_newsletter_email("Activation Subscription", html_content, user.email)
+        self.send_newsletter_email(
+            "Activation Subscription", html_content, subscription.user.email
+        )
 
-    def send_welcome_mail(self, user: Subscription):
+    def send_welcome_mail(self, subscription: Subscription):
         """Email enviado após a ativação por parte do usuário.
         Contem instruções informando o usuario como proceder para criar a lista customizada.
         """
@@ -45,12 +54,13 @@ class NewsletterSendEmail:
             "welcome.html",
             {
                 "host": settings.SITE_URL.rstrip("/"),
-                "activation_code": user.activation_code,
+                "activation_code": subscription.activation_code,
             },
         )
         self.send_newsletter_email(
-            "Welcome to Solar System Newsletter", html_content, user.email
+            "Welcome to Solar System Newsletter", html_content, subscription.user.email
         )
+
     """
     def renderHtmlUnsubscribe(request, unsubscribe, recipient_list):
         if unsubscribe == True:
@@ -63,14 +73,18 @@ class NewsletterSendEmail:
         body.content_subtype = "html and image"
         return body.send()
     """
-    
-    def send_newsletter_email(self, subject, body, recipient):
 
-        body = EmailMessage(
-            subject,
-            body,
-            settings.EMAIL_NEWSLETTER_NOREPLY,
-            [recipient],
-        )
-        body.content_subtype = "html and image"
-        return body.send()
+    def send_newsletter_email(self, subject, body, recipient):
+        try:
+            body = EmailMessage(
+                subject,
+                body,
+                settings.EMAIL_NEWSLETTER_NOREPLY,
+                [recipient],
+            )
+            body.content_subtype = "html and image"
+
+            body.send()
+            self.log.info(f"Email successfully sent")
+        except Exception as e:
+            self.log.error(e)

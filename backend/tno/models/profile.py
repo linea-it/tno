@@ -10,7 +10,7 @@ class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
-    dashboard = models.BooleanField(default=True)
+    dashboard = models.BooleanField(default=False)
 
     @receiver(post_save, sender=User)
     def create_or_update_user_profile(sender, instance, created, **kwargs):
@@ -22,4 +22,4 @@ class Profile(models.Model):
             created (bool): True se o evento for disparado pela criação de um novo usuario.
         """
         if created:
-            Profile.objects.get_or_create(user=instance, defaults={"dashboard": True})
+            Profile.objects.get_or_create(user=instance, defaults={"dashboard": False})

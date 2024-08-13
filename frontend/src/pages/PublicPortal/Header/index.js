@@ -1,16 +1,21 @@
-import React, { useState } from 'react'
-// import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
 import Button from '@mui/material/Button'
 import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
+import AccountCircle from '@mui/icons-material/AccountCircle'
+import MenuItem from '@mui/material/MenuItem'
+import Menu from '@mui/material/Menu'
+import SettingsIcon from '@mui/icons-material/Settings'
+import DashboardIcon from '@mui/icons-material/Dashboard'
+
+import Tooltip from '@mui/material/Tooltip'
+import { loggedUser, logout } from '../../../services/api/Auth'
 
 const PublicHeader = () => {
-  // const navigate = useNavigate()
-  const [drawerOpen, setDrawerOpen] = useState(false)
+  const navigate = useNavigate()
 
   const menus = [
     { description: 'Home', href: '/', target: '_self' },
@@ -19,11 +24,63 @@ const PublicHeader = () => {
     { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
-  // TODO: Revisar essa função os botões foram alterados para utilizar href ao inves de onClick.
-  // const handleCardClick = (pathname) => {
-  //   navigate(pathname)
-  //   setDrawerOpen(false)
-  // }
+  const [auth, setAuth] = React.useState(false)
+  const [user, setUser] = React.useState({ username: '', dashboard: false })
+  const [anchorEl, setAnchorEl] = React.useState(null)
+
+  useEffect(() => {
+    loggedUser()
+      .then((res) => {
+        setAuth(true)
+        setUser(res)
+      })
+      .catch((res) => {
+        setAuth(false)
+        console.log('Not logged')
+      })
+  }, [])
+
+  const handleLogin = () => {
+    navigate('/login/')
+  }
+
+  const handleAuthMenu = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseAuthMenu = () => {
+    setAnchorEl(null)
+  }
+
+  const handleSettings = () => {
+    navigate('/newsletter_settings/')
+  }
+
+  const handleDashboard = () => {
+    navigate('/dashboard/')
+  }
+
+  const renderAuthMenu = (
+    <Menu
+      id='menu-appbar'
+      anchorEl={anchorEl}
+      anchorOrigin={{
+        vertical: 'top',
+        horizontal: 'right'
+      }}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right'
+      }}
+      sx={{ mt: '45px' }}
+      open={Boolean(anchorEl)}
+      onClose={handleCloseAuthMenu}
+    >
+      <MenuItem onClick={handleSettings}>Preferences</MenuItem>
+      <MenuItem onClick={logout}>Logout</MenuItem>
+    </Menu>
+  )
 
   return (
     <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>
@@ -40,33 +97,45 @@ const PublicHeader = () => {
             ))}
           </Box>
         </Box>
-        <Box sx={{ display: { xs: 'block', sm: 'none' }, pr: 1 }}>
-          <IconButton size='large' edge='end' color='inherit' aria-label='menu' onClick={() => setDrawerOpen(true)}>
-            <MenuIcon />
-          </IconButton>
-        </Box>
-      </Toolbar>
-      <Drawer anchor='left' open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-        <Box
-          sx={{
-            width: 250,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            padding: 2
-          }}
-          role='presentation'
-          onClick={() => setDrawerOpen(false)}
-          onKeyDown={() => setDrawerOpen(false)}
-        >
-          {menus.map((menu) => (
-            <Button key={menu.description} color='inherit' href={menu.href} target={menu.target}>
-              {menu.description}
+        <Box sx={{ flexGrow: 1 }} />
+
+        {!auth && (
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Button color='inherit' onClick={handleLogin}>
+              Login
             </Button>
-          ))}
-        </Box>
-      </Drawer>
+          </Box>
+        )}
+
+        {auth && (
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Tooltip title='Open user preferences'>
+              <IconButton size='large' aria-label='preferences of current user' onClick={handleSettings} color='inherit'>
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
+            {user?.dashboard && (
+              <Tooltip title='Open dashboard'>
+                <IconButton size='large' aria-label='go to dashboard' onClick={handleDashboard} color='inherit'>
+                  <DashboardIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            <IconButton
+              size='large'
+              aria-label='account of current user'
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
+              onClick={handleAuthMenu}
+              color='inherit'
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
+        )}
+
+        {renderAuthMenu}
+      </Toolbar>
     </AppBar>
   )
 }

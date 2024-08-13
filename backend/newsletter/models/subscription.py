@@ -1,14 +1,25 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 
 
 class Subscription(models.Model):
 
-    email = models.EmailField(
-        verbose_name="Email",
-        unique=True,
-        db_index=True,
+    # email = models.EmailField(
+    #     verbose_name="Email",
+    #     unique=True,
+    #     db_index=True,
+    # )
+
+    # Usuario que solicitou a subscricao.
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        verbose_name="User",
+        related_name="subscription",
+        null=True,
+        default=None,
     )
 
     activation_code = models.CharField(
@@ -33,8 +44,7 @@ class Subscription(models.Model):
         help_text="Indica que o usuario desativou a sua inscricao.",
         default=False,
     )
-    
-    ####
+
     activated_date = models.DateTimeField(
         verbose_name="Activated Date", null=True, blank=True, default=None
     )

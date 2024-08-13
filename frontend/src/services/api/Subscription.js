@@ -1,12 +1,7 @@
 import { api } from './Api'
 
 export const getEmailDb = () => {
-  return api.get('/subscription/').then((res) => res.data.results)
+  console.log('getEmailDb')
+  // return api.get('/subscription/').then((res) => res.data.results)
   //return api.get(`${window.location.origin}/api/subscription/`).then((res) => res.data.results)
-}
-
-export const saveEmailSubscription = (email) => {
-  const params = { email: email }
-  console.log('passando pela api')
-  return api.post('/subscription/', params) //.then((res) => res.data.results)
 }

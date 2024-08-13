@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
 import Card from '@mui/material/Card'
@@ -20,40 +19,46 @@ import { getSubscriptionInfo, unsubscribe, reactivateSubscription, listPreferenc
 import UpdateEmail from '../../../components/Newsletter/UpdateEmail'
 
 function NewsletterSettings() {
-  const { id } = useParams()
-
   const [info, setInfo] = useState({ id: undefined })
   const [unsubError, setUnsubError] = useState(false)
   const [activError, setActivError] = useState(false)
 
   useEffect(() => {
-    getSubscriptionInfo(id).then((res) => {
-      setInfo(res.data)
-    })
-  }, [id])
+    getSubscriptionInfo()
+      .then((res) => {
+        setInfo(res.data)
+      })
+      .catch((res) => {
+        if (res.response.status === 401) {
+          window.location.replace('/login')
+        }
+        // TODO: Tratar outros erros.
+      })
+  }, [])
 
   const handleUnsubscribe = (e) => {
-    unsubscribe(id)
-      .then((res) => {
-        // reload the current page
-        window.location.reload()
-      })
-      .catch(function (error) {
-        setUnsubError(true)
-      })
+    // TODO: Alterar o backend para desiscrever o usuario logado.
+    // unsubscribe(id)
+    //   .then((res) => {
+    //     // reload the current page
+    //     window.location.reload()
+    //   })
+    //   .catch(function (error) {
+    //     setUnsubError(true)
+    //   })
   }
 
   const handleReactivate = (e) => {
     console.log('handleReactivate')
-
-    reactivateSubscription(id)
-      .then((res) => {
-        // reload the current page
-        window.location.reload()
-      })
-      .catch(function (error) {
-        setActivError(true)
-      })
+    // TODO: Alterar o backend para desiscrever o usuario logado.
+    // reactivateSubscription(id)
+    //   .then((res) => {
+    //     // reload the current page
+    //     window.location.reload()
+    //   })
+    //   .catch(function (error) {
+    //     setActivError(true)
+    //   })
   }
 
   if (!('email' in info)) {
@@ -86,21 +91,19 @@ function NewsletterSettings() {
               title='Filtros e Configurações'
               subheader='Gerencie suas preferencias de filtro e frequencia dos emails.'
             ></CardHeader>
-            <CardContent>
-            </CardContent>
+            <CardContent></CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} mt={2} >
-          <Card >
-            <CardContent >
-            <NewsletterEventFiltersSettings subscriptionId={info.id} />
+        {/* <Grid item xs={12} mt={2}>
+          <Card>
+            <CardContent>
+              <NewsletterEventFiltersSettings subscriptionId={info.id} />
             </CardContent>
           </Card>
         </Grid>
         <Grid item xs={12} mt={2}>
           <EventFiltersResults subscriptionId={info.id}></EventFiltersResults>
-          {/*console.log(info.id)*/}
-        </Grid>
+        </Grid> */}
         <Grid item xs={12} mt={2}>
           <Card>
             <CardHeader title='Assinatura' subheader='Ative ou desative o recebimento de emails.'></CardHeader>
@@ -109,7 +112,7 @@ function NewsletterSettings() {
                 <FormControlLabel
                   required
                   control={
-                    info?.is_active ? (
+                    info?.activated ? (
                       <Switch checked={true} onChange={handleUnsubscribe} />
                     ) : (
                       <Switch checked={false} onChange={handleReactivate} />
@@ -117,13 +120,13 @@ function NewsletterSettings() {
                   }
                   label='Receber emails'
                 />
-                {info?.is_active && (
+                {info?.activated && (
                   <Alert variant='outlined' severity='success'>
                     Sua Assinatura está ativa e você recebera os emails conforme suas configurações de filtro.
                   </Alert>
                 )}
 
-                {!info?.is_active && (
+                {!info?.activated && (
                   <Alert variant='outlined' severity='warning'>
                     Sua Assinatura está inativa e você Não recebera nenhum email.
                   </Alert>
@@ -131,9 +134,9 @@ function NewsletterSettings() {
               </Stack>
             </CardContent>
             <CardContent>
-            <Grid item xs={11.6}>
-              <UpdateEmail subscriptionId={info.id}/>
-            </Grid>
+              <Grid item xs={11.6}>
+                <UpdateEmail subscriptionId={info.id} />
+              </Grid>
             </CardContent>
           </Card>
         </Grid>

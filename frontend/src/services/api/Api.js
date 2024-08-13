@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { parseCookies } from 'nookies'
 
 export const url = process.env.REACT_APP_API
 
@@ -17,6 +18,26 @@ export function getAPIClient(ctx) {
   api.defaults.xsrfHeaderName = 'X-CSRFToken'
   api.defaults.withCredentials = true
 
+  // Add a request interceptor
+  api.interceptors.request.use(
+    function (config) {
+      // Do something before request is sent
+      if (!config.headers.Authorization) {
+        // Adiciona o Header Authorization
+        const { 'solarsystem.token': token } = parseCookies()
+        if (token) {
+          config.headers.Authorization = `Token ${token}`
+          api.defaults.headers.Authorization = `Token ${token}`
+        }
+      }
+      return config
+    },
+    function (error) {
+      // Do something with request error
+      return Promise.reject(error)
+    }
+  )
+
   // Add a response interceptor
   api.interceptors.response.use(
     (response) =>
@@ -34,6 +55,8 @@ export function getAPIClient(ctx) {
         }
         if (error.response.status === 403) {
           // Não está logado
+          //   // Caso usuario não esteja logado, remove o cookie de autenticação
+          //   destroyCookie(null, 'solarsystem.token')
         }
       } else if (error.request) {
         // The request was made but no response was received

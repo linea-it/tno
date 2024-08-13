@@ -22,7 +22,7 @@ def send_welcome_email(sender, instance, signal, created, **kwargs):
     """
     if created:
         envio = NewsletterSendEmail()
-        envio.send_activation_mail(user=instance)
+        envio.send_activation_mail(subscription=instance)
 
     else:
         # TODO: Revisar essa lógica do email de desiscrição

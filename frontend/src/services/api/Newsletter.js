@@ -1,7 +1,10 @@
 import { api } from './Api'
 
-export const getSubscriptionInfo = (id) => api.post(`/subscription/info/`, { c: id })
+export const saveEmailSubscription = (email) => {
+  return api.post('/subscription/', { email: email })
+}
 
+export const getSubscriptionInfo = () => api.get(`/subscription/info/`)
 
 export const unsubscribe = (id) => api.post(`/subscription/unsubscribe/`, { c: id })
 
@@ -9,7 +12,7 @@ export const reactivateSubscription = (id) => api.post(`/subscription/reactivate
 
 export const listPreferenceEventFilters = ({ queryKey }) => {
   const params = queryKey[1]
-  
+
   const { subscriptionId } = params
   if (!subscriptionId) {
     return
@@ -50,14 +53,14 @@ const parsePredictEventsFilters = (params1) => {
   } else {
     newFilters.frequency = 'Weekly'
   }*/
-   //console.log(params1.subscripition_id)
+  //console.log(params1.subscripition_id)
   newFilters.subscription_id = params1.subscription_id
   newFilters.filter_name = filters.filter_name
   newFilters.frequency = filters.frequency
   newFilters.filter_type = filters.filter_type
   newFilters.magnitude_min = filters.magnitude_min
   newFilters.magnitude_max = filters.magnitude_max
-  
+
   // Filtro por Nome, Dynclass e Base Dynclass
   if (filters.filter_value !== undefined && filters.filter_value !== '') {
     if (filters.filter_type === 'name') {
@@ -71,12 +74,12 @@ const parsePredictEventsFilters = (params1) => {
 
   // Filtro por Local Solar Time
   //if (filters.solar_time_enabled === true) {
-    if (filters.local_solar_time_after !== undefined && filters.local_solar_time_before !== '') {
-      if (filters.local_solar_time_after.isValid() && filters.local_solar_time_before.isValid()) {
-        newFilters.local_solar_time_after = filters.local_solar_time_after.format('HH:mm:ss')
-        newFilters.local_solar_time_before = filters.local_solar_time_before.format('HH:mm:ss')
-      }
+  if (filters.local_solar_time_after !== undefined && filters.local_solar_time_before !== '') {
+    if (filters.local_solar_time_after.isValid() && filters.local_solar_time_before.isValid()) {
+      newFilters.local_solar_time_after = filters.local_solar_time_after.format('HH:mm:ss')
+      newFilters.local_solar_time_before = filters.local_solar_time_before.format('HH:mm:ss')
     }
+  }
   //}
 
   newFilters.magnitude_drop_min = filters.magnitude_drop_min
@@ -89,19 +92,19 @@ const parsePredictEventsFilters = (params1) => {
   newFilters.latitude = filters.latitude
   newFilters.longitude = filters.longitude
   newFilters.location_radius = filters.location_radius
-  
+
   console.log(newFilters)
 
-  return newFilters 
+  return newFilters
 }
 
-export const saveListPreferenceEventFilters = ({ 
-  subscriptionId, 
+export const saveListPreferenceEventFilters = ({
+  subscriptionId,
   filter_name,
   frequency,
-  magnitude_min, 
-  magnitude_max, 
-  filter_type, 
+  magnitude_min,
+  magnitude_max,
+  filter_type,
   filter_value,
   local_solar_time_after,
   local_solar_time_before,
@@ -114,14 +117,14 @@ export const saveListPreferenceEventFilters = ({
   altitude,
   latitude,
   longitude,
-  location_radius 
+  location_radius
 }) => {
-  const params = { 
-    subscription_id: subscriptionId, 
+  const params = {
+    subscription_id: subscriptionId,
     filter_name: filter_name,
     frequency: frequency,
-    magnitude_min: magnitude_min, 
-    magnitude_max: magnitude_max, 
+    magnitude_min: magnitude_min,
+    magnitude_max: magnitude_max,
     filter_type: filter_type,
     filter_value: filter_value,
     local_solar_time_after: local_solar_time_after,
@@ -135,14 +138,14 @@ export const saveListPreferenceEventFilters = ({
     altitude: altitude,
     latitude: latitude,
     longitude: longitude,
-    location_radius: location_radius  
- }
+    location_radius: location_radius
+  }
   console.log(params)
   const paramsOut = parsePredictEventsFilters(params)
   //console.log(paramsOut)
-  console.log("passando pela api saveListPreferenceEventFilters")
+  console.log('passando pela api saveListPreferenceEventFilters')
   //return api.post(`newsletter/preferences/`, params )//.then((res) => res.data.results)
-  return api.post(`newsletter/preferences/`, paramsOut )//.then((res) => res.data.results)
+  return api.post(`newsletter/preferences/`, paramsOut) //.then((res) => res.data.results)
 }
 
 export const delSubscriptionInfo = (id) => {
@@ -151,44 +154,45 @@ export const delSubscriptionInfo = (id) => {
 }
 
 export const updateEmailSubscription = (subscriptionId, email) => {
-  const params = { 
+  const params = {
     //subscriptionId : subscriptionId,
     email: email
   }
   //    params = { email: "antonio@gmail.com"}
   //console.log(subscriptionId, email)
-  console.log("passando pela api ... alterando email")
-  return api.put(`/subscription/${subscriptionId}/`, params )//.then((res) => res.data.results)
+  console.log('passando pela api ... alterando email')
+  return api.put(`/subscription/${subscriptionId}/`, params) //.then((res) => res.data.results)
 }
 
-export const saveSetEventFiltersResults = ( id ,
+export const saveSetEventFiltersResults = (
+  id,
   {
-  subscriptionId,
-  filter_name,
-  frequency,
-  magnitude_min, 
-  magnitude_max, 
-  filter_type, 
-  filter_value,
-  local_solar_time_after,
-  local_solar_time_before,
-  magnitude_drop_min,
-  magnitude_drop_max,
-  event_duration,
-  diameter_min,
-  diameter_max,
-  altitude,
-  latitude,
-  longitude,
-  location_radius
-}
+    subscriptionId,
+    filter_name,
+    frequency,
+    magnitude_min,
+    magnitude_max,
+    filter_type,
+    filter_value,
+    local_solar_time_after,
+    local_solar_time_before,
+    magnitude_drop_min,
+    magnitude_drop_max,
+    event_duration,
+    diameter_min,
+    diameter_max,
+    altitude,
+    latitude,
+    longitude,
+    location_radius
+  }
 ) => {
-  const params = { 
-    subscription_id: subscriptionId, 
+  const params = {
+    subscription_id: subscriptionId,
     filter_name: filter_name,
     frequency: frequency,
-    magnitude_min: magnitude_min, 
-    magnitude_max: magnitude_max, 
+    magnitude_min: magnitude_min,
+    magnitude_max: magnitude_max,
     filter_type: filter_type,
     filter_value: filter_value,
     local_solar_time_after: local_solar_time_after,
@@ -207,9 +211,9 @@ export const saveSetEventFiltersResults = ( id ,
   console.log(params)
   const paramsIn = parsePredictEventsFilters(params)
   console.log(paramsIn)
-  console.log("passando pela api saveListPreferenceEventFilters")
+  console.log('passando pela api saveListPreferenceEventFilters')
 
   //console.log(subscriptionId, email)
-  console.log("passando pela api ... alterando dados")
-  return api.put(`/newsletter/preferences/${id}/`, paramsIn )//.then((res) => res.data.results)
+  console.log('passando pela api ... alterando dados')
+  return api.put(`/newsletter/preferences/${id}/`, paramsIn) //.then((res) => res.data.results)
 }
