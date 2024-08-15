@@ -278,6 +278,7 @@ AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 # https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-cookie-name
 CSRF_COOKIE_NAME = "tno.csrftoken"
 
+
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
 LOGIN_REDIRECT_URL = "/"
 
