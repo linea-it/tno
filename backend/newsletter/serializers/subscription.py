@@ -7,4 +7,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subscription
-        exclude = ("user",)
+        exclude = (
+            "user",
+            "activation_code",
+        )

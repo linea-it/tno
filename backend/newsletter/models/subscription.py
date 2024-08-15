@@ -6,12 +6,6 @@ from django.db import models
 
 class Subscription(models.Model):
 
-    # email = models.EmailField(
-    #     verbose_name="Email",
-    #     unique=True,
-    #     db_index=True,
-    # )
-
     # Usuario que solicitou a subscricao.
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,

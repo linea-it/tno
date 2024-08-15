@@ -93,7 +93,7 @@ router.register(r"prediction_job", PredictionJobViewSet)
 router.register(r"prediction_job_result", PredictionJobResultViewSet)
 
 router.register(r"subscription", SubscriptionViewSet)
-router.register(r"newsletter/preferences", EventFilterViewSet)
+router.register(r"event_filter", EventFilterViewSet, basename="event_filter")
 
 
 urlpatterns = [

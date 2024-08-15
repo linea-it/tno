@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from newsletter.models.subscription import Subscription
 
@@ -15,15 +16,24 @@ FILTER_TYPE_CHOICES = [
 
 class EventFilter(models.Model):
 
-    subscription_id = models.ForeignKey(
-        Subscription,
+    # Usuario que solicitou a subscricao.
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
+        verbose_name="User",
+        related_name="event_filter",
+        null=True,
+        default=None,
     )
 
     filter_name = models.CharField(
         verbose_name="Filter Name",
         max_length=100,
         help_text="Nome utilizado para identificar o filtro.",
+    )
+
+    description = models.TextField(
+        verbose_name="Description", null=True, blank=True, default=None
     )
 
     frequency = models.IntegerField(
@@ -151,3 +161,8 @@ class EventFilter(models.Model):
 
     def __str__(self):
         return str(self.id)
+
+    def can_delete(self, user) -> bool:
+        if self.user.id == user.id or user.is_superuser():
+            return True
+        return False

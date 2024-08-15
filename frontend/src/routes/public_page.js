@@ -8,6 +8,7 @@ import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
 import NewsletterSettings from '../pages/PublicPortal/Newsletter/NewsletterSettings'
+import EventFilterDetail from '../pages/PublicPortal/Newsletter/EventFilterDetail'
 import PublicLogin from '../pages/PublicPortal/Login'
 
 const PublicPortalPage = ({ children }) => {
@@ -73,6 +74,27 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
+      <Route
+        isHomePage
+        exact
+        path='/new_event_filter/'
+        element={
+          <PublicPortalPage>
+            <EventFilterDetail />
+          </PublicPortalPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/event_filter_detail/:id'
+        element={
+          <PublicPortalPage>
+            <EventFilterDetail />
+          </PublicPortalPage>
+        }
+      />
+
       <Route exact path='/login/' element={<PublicLogin />} />
     </>
   )

@@ -20,7 +20,7 @@ class SubscriptionAdmin(admin.ModelAdmin):
 class EventFilterAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "subscription_id",
+        "user",
         "filter_name",
         "frequency",
         "magnitude_min",
