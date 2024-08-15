@@ -6,13 +6,13 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
-import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
+import List from '../../components/List'
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
@@ -39,17 +39,10 @@ function PredictionEventDetail() {
         ...res
       })
     })
-    whichEnvironment()
-      .then((res) => {
-        setIsDev(res.is_dev)
-      })
-      .catch(() => {
-        // TODO: Aviso de erro
-      })
   }, [id])
 
   useEffect(() => {
-    const titleText = `Occultation by ${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
+    const titleText = `Occultation by ${occultation.name} ${occultation.number ? `(${occultation.number})` : ''}`
     document.title = titleText
   }, [occultation])
 
@@ -66,7 +59,11 @@ function PredictionEventDetail() {
       },
       {
         title: 'Closest approach',
-        value: `${occultation.closest_approach} (arcsec)`
+        value: occultation.closest_approach
+          ? occultation.closest_approach < 0.1
+            ? `${(occultation.closest_approach * 1000).toFixed(1)} (mas)`
+            : `${occultation.closest_approach.toFixed(3)} (arcsec)`
+          : null
       },
       {
         title: 'Position angle',
@@ -100,15 +97,27 @@ function PredictionEventDetail() {
         title: 'Uncertainty in time (1σ)',
         value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
       },
+      // {
+      //   title: 'Uncertainty in closest approach (1σ)',
+      //   value: `${
+      //     occultation.closest_approach_uncertainty
+      //       ? occultation.closest_approach_uncertainty < 0.1
+      //         ? (occultation.closest_approach_uncertainty * 1000).toFixed(0) + ' (mas)'
+      //         : occultation.closest_approach_uncertainty.toFixed(1) + ' (arcsec)'
+      //       : null
+      //   }`
+      // },
       {
         title: 'Uncertainty in closest approach (1σ)',
-        value: `${
-          occultation.closest_approach_uncertainty
-            ? occultation.closest_approach_uncertainty < 0.1
-              ? (occultation.closest_approach_uncertainty * 1000).toFixed(0) + ' (mas)'
-              : occultation.closest_approach_uncertainty.toFixed(1) + ' (arcsec)'
+        value: (() => {
+          const ca_uncert =
+            Math.tan((occultation.closest_approach_uncertainty * Math.PI) / (180 * 60 * 60)) * (occultation.delta * 149597870.7)
+          return occultation.closest_approach_uncertainty
+            ? ca_uncert < 1
+              ? `${(ca_uncert * 1000).toFixed(0)} (m)`
+              : `${ca_uncert.toFixed(0)} (km)`
             : null
-        }`
+        })()
       },
       {
         title: 'Moon separation',
@@ -124,7 +133,6 @@ function PredictionEventDetail() {
       },
       {
         title: 'Creation date',
-        // tooltip: "Date of the prediction's computation",
         value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
       }
     ])
@@ -175,7 +183,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'RP magnitude (source: Gaia DR3)',
-        value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
+        value: `${starObj.phot_rp_mean_mag ? starObj.phot_rp_mean_mag.toFixed(3) : null}`
       },
       {
         title: 'BP magnitude (source: Gaia DR3)',
@@ -198,7 +206,7 @@ function PredictionEventDetail() {
     setObject([
       {
         title: 'Identification',
-        value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}, ${occultation.principal_designation}`
+        value: `${occultation.name} ${occultation.number ? `(${occultation.number})` : ''}, ${occultation.principal_designation}`
       },
       {
         title: 'Dynamic class (Skybot)',
@@ -213,9 +221,9 @@ function PredictionEventDetail() {
         title: 'Uncertainty in position (1σ)',
         value: `${
           occultation.e_ra_target
-            ? occultation.e_ra_target < 0.1 && occultation.e_dec_target < 0.1
-              ? 'RA ' + (occultation.e_ra_target * 1e3).toFixed(0) + ' (mas), Dec ' + (occultation.e_dec_target * 1e3).toFixed(0) + ' (mas)'
-              : 'RA ' + occultation.e_ra_target.toFixed(1) + ' (arcsec), Dec ' + occultation.e_dec_target.toFixed(1) + ' (arcsec)'
+            ? occultation.e_ra_target < 0.1 || occultation.e_dec_target < 0.1
+              ? `RA ${(occultation.e_ra_target * 1e3).toFixed(1)} (mas), Dec ${(occultation.e_dec_target * 1e3).toFixed(1)} (mas)`
+              : `RA ${occultation.e_ra_target.toFixed(1)} (arcsec), Dec ${occultation.e_dec_target.toFixed(1)} (arcsec)`
             : null
         }`,
         breakline: true
@@ -233,8 +241,8 @@ function PredictionEventDetail() {
         value: `${
           occultation.diameter
             ? occultation.diameter < 1
-              ? (occultation.diameter * 1000).toFixed(0) + ' (m)'
-              : occultation.diameter.toFixed(0) + ' (Km)'
+              ? `${(occultation.diameter * 1000).toFixed(0)} (m)`
+              : `${occultation.diameter.toFixed(0)} (Km)`
             : null
         }`
       },
@@ -284,11 +292,9 @@ function PredictionEventDetail() {
             <CardHeader
               title='Occultation Prediction Circumstances'
               action={
-                <>
-                  <IconButton href='/docs/user-guide/occultation-details-page/' target='_blank' aria-label='help'>
-                    <HelpOutlineIcon />
-                  </IconButton>
-                </>
+                <IconButton href='/docs/user-guide/occultation-details-page/' target='_blank' aria-label='help'>
+                  <HelpOutlineIcon />
+                </IconButton>
               }
             />
             <CardContent>
