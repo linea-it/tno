@@ -49,6 +49,7 @@
     "react-select": "^5.7.0",
     "react-sizeme": "3.0.2",
     "react-syntax-highlight": "^15.3.1",
+    "react-to-pdf": "^1.0.1",
     "react-to-print": "^2.15.1",
     "react-youtube": "10.1.0",
     "update-browserslist-db": "^1.0.13",
