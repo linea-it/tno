@@ -14,11 +14,12 @@ import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
-import PredictOccultationMap from './partials/PredictMap'
+//import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
 import AlertEnvironment from '../../components/AlertEnvironment/index'
 import { whichEnvironment } from '../../services/api/Auth'
-import OcultationMap from '../../components/OcultationMap/index'
+import OcultationMap from './partials/OcultationMap/index'
+import generatePDF, { Resolution, Margin } from 'react-to-pdf'
 
 function PredictionEventDetail() {
   const { id } = useParams()
@@ -246,24 +247,40 @@ function PredictionEventDetail() {
     ])
   }, [occultation, starObj])
 
+  // gera pdf do mapa 
+  const personalização = {
+    method: 'save',
+    page: {
+      // margin is in MM, default is Margin.NONE = 0
+      margin: Margin.SMALL,
+      // default is 'A4'
+      format: 'A4',
+      // default is 'portrait'
+      orientation: 'portrait',
+   },
+  }
+  const conteudoParaPdf = () => document.getElementById('content-id')
+  //
+
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth='lg' id='content-id'>
       {isDev && <AlertEnvironment />}
-      <Typography variant='h4' align='center' sx={{ marginTop: 3 }}>
+      <Typography variant='h4' align='center' sx={{ marginTop: 3 }} >
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
       <Typography variant='h5' align='center' color='text.secondary'>
         {moment(occultation.date_time).format('ll')}
       </Typography>
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
-        <Grid item xs={12}>
-        {/*<Card >*/}
-          <OcultationMap />
-        {/*</Card>*/}
-        </Grid>
+        <button onClick={() => generatePDF(conteudoParaPdf, personalização)}>Gerar pdf</button>
+        {occultation.id !== undefined && (
+        <Grid item xs={12} md={12} sm={12}>
+          <OcultationMap occultationId = {occultation.id} />
+        </Grid>)
+        }
         <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardHeader
+          <Card sx={{ height: '100%' }} >
+            <CardHeader 
               title='Occultation Prediction Circumstances'
               action={
                 <>
@@ -273,7 +290,7 @@ function PredictionEventDetail() {
                 </>
               }
             />
-            <CardContent>
+            <CardContent >
               <List data={circumstances} />
             </CardContent>
           </Card>
