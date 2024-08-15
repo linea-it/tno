@@ -20,10 +20,10 @@ function PublicAboutUs() {
       <Container maxWidth='lg'>
         <Grid item xs={12} className={classes.grid}>
           <Breadcrumbs aria-label='breadcrumb'>
-            <Link color='inherit' to='/'>
+            <Link underline='hover' color='inherit' href='/'>
               Home
             </Link>
-            <Typography color='textPrimary'>About Us</Typography>
+            <Typography color='text.primary'>About Us</Typography>
           </Breadcrumbs>
           <Card sx={{ margin: '16px 0' }}>
             <CardContent>

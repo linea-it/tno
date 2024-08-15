@@ -13,6 +13,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 
 import Tooltip from '@mui/material/Tooltip'
 import { loggedUser, logout } from '../../../services/api/Auth'
+import { Height } from '../../../../node_modules/@mui/icons-material/index'
 
 const PublicHeader = () => {
   const navigate = useNavigate()
@@ -83,7 +84,7 @@ const PublicHeader = () => {
   )
 
   return (
-    <AppBar position='static' sx={{ backgroundColor: '#24292e' }}>
+    <AppBar position='static' sx={{ backgroundColor: '#24292e', height: 64 }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ pt: 1 }}>
