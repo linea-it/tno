@@ -287,6 +287,11 @@ function PredictionEventDetail() {
         {moment(occultation.date_time).format('ll')}
       </Typography>
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
+        {occultation.id !== undefined && (
+          <Grid item xs={12}>
+            <PredictOccultationMap occultationId={occultation.id} />
+          </Grid>
+        )}
         <Grid item xs={12} md={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader
@@ -299,19 +304,6 @@ function PredictionEventDetail() {
             />
             <CardContent>
               <List data={circumstances} />
-            </CardContent>
-          </Card>
-        </Grid>
-        {occultation.id !== undefined && (
-          <Grid item xs={12} md={6}>
-            <PredictOccultationMap occultationId={occultation.id} />
-          </Grid>
-        )}
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardHeader title='Occulted Star' />
-            <CardContent>
-              <List data={star} />
             </CardContent>
           </Card>
         </Grid>
@@ -344,6 +336,14 @@ function PredictionEventDetail() {
                   </>
                 )}
               </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card sx={{ height: '100%' }}>
+            <CardHeader title='Occulted Star' />
+            <CardContent>
+              <List data={star} />
             </CardContent>
           </Card>
         </Grid>
