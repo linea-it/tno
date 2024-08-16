@@ -12,8 +12,6 @@ class Subscription(models.Model):
         on_delete=models.CASCADE,
         verbose_name="User",
         related_name="subscription",
-        null=True,
-        default=None,
     )
 
     activation_code = models.CharField(

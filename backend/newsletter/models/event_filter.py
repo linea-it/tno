@@ -22,8 +22,6 @@ class EventFilter(models.Model):
         on_delete=models.CASCADE,
         verbose_name="User",
         related_name="event_filter",
-        null=True,
-        default=None,
     )
 
     filter_name = models.CharField(
