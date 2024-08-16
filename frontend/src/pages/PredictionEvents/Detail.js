@@ -20,6 +20,7 @@ import AlertEnvironment from '../../components/AlertEnvironment/index'
 import { whichEnvironment } from '../../services/api/Auth'
 import OcultationMap from './partials/OcultationMap/index'
 import generatePDF, { Resolution, Margin } from 'react-to-pdf'
+//import PredictionEventDetailPrint from './DetailPrint'
 
 function PredictionEventDetail() {
   const { id } = useParams()
@@ -248,6 +249,7 @@ function PredictionEventDetail() {
   }, [occultation, starObj])
 
   // gera pdf do mapa 
+  /*
   const personalização = {
     method: 'save',
     page: {
@@ -259,11 +261,11 @@ function PredictionEventDetail() {
       orientation: 'portrait',
    },
   }
-  const conteudoParaPdf = () => document.getElementById('content-id')
+  const conteudoParaPdf = () => document.getElementById('content-id')*/
   //
 
   return (
-    <Container maxWidth='lg' id='content-id'>
+    <Container maxWidth='lg'>
       {isDev && <AlertEnvironment />}
       <Typography variant='h4' align='center' sx={{ marginTop: 3 }} >
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
@@ -272,7 +274,7 @@ function PredictionEventDetail() {
         {moment(occultation.date_time).format('ll')}
       </Typography>
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
-        <button onClick={() => generatePDF(conteudoParaPdf, personalização)}>Gerar pdf</button>
+        {/*<button onClick={() => generatePDF(conteudoParaPdf, personalização)}>Gerar pdf</button>*/}
         {occultation.id !== undefined && (
         <Grid item xs={12} md={12} sm={12}>
           <OcultationMap occultationId = {occultation.id} />
