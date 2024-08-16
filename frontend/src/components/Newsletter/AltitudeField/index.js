@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import TextField from '@mui/material/TextField'
 
-function AltitudeField({ value, onChange }) {
+function AltitudeField({ value, onChange, ...props }) {
   const handleChange = (e) => {
     let newValue = e.target.value
 
@@ -18,9 +18,10 @@ function AltitudeField({ value, onChange }) {
       type='number'
       label='Altitude (m)'
       variant='outlined'
-      value={value !== undefined ? parseFloat(value) : ''}
+      value={value !== undefined ? value : ''}
       onChange={handleChange}
       fullWidth
+      {...props}
     />
   )
 }
@@ -29,7 +30,7 @@ AltitudeField.defaultProps = {
   value: undefined
 }
 AltitudeField.propTypes = {
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func.isRequired
 }
 

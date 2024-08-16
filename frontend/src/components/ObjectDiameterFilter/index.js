@@ -8,7 +8,7 @@ function ObjectDiameterFilter({ value, onChange }) {
     onChange(newValue)
   }
   return (
-    <Grid container spacing={2} alignItems='center'>
+    <Grid container alignItems='center'>
       <Grid item xs={12}>
         <Grid container spacing={2} alignItems='center'>
           <Grid item xs={12} sm={6}>

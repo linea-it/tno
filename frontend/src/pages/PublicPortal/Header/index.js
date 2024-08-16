@@ -13,7 +13,6 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 
 import Tooltip from '@mui/material/Tooltip'
 import { loggedUser, logout } from '../../../services/api/Auth'
-import { Height } from '../../../../node_modules/@mui/icons-material/index'
 
 const PublicHeader = () => {
   const navigate = useNavigate()

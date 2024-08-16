@@ -4,7 +4,7 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 
-function MaginitudeSelect({ value, onChange, min, max }) {
+function MaginitudeSelect({ value, onChange, min, max, ...props }) {
   const options = Array.from({ length: max - min + 1 }, (_, i) => i + min)
   return (
     <FormControl
@@ -19,6 +19,7 @@ function MaginitudeSelect({ value, onChange, min, max }) {
         value={value !== undefined ? value : ''}
         label='Mag Limit'
         onChange={onChange}
+        {...props}
       >
         {options.map((row) => {
           // return (<MenuItem key={row} value={`${row}`}>{row}</MenuItem>)
@@ -40,7 +41,7 @@ MaginitudeSelect.defaultProps = {
 MaginitudeSelect.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
-  value: PropTypes.number.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func.isRequired
 }
 

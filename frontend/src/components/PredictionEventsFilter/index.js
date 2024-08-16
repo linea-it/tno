@@ -175,13 +175,13 @@ function PredictionEventsFilter() {
           <Grid item xs={3} container>
             <EventDurationField
               value={queryOptions.filters.eventDurationMin}
-              onChange={(value) => {
+              onChange={(e) => {
                 setQueryOptions((prev) => {
                   return {
                     ...prev,
                     filters: {
                       ...prev.filters,
-                      eventDurationMin: value
+                      eventDurationMin: e.target.value
                     }
                   }
                 })

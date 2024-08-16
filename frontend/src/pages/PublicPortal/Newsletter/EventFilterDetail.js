@@ -14,7 +14,11 @@ import Button from '@mui/material/Button'
 import EventFilterForm from './EventFilterForm'
 import { getUserEventFilterbById, userEventFilterbUpdate, userEventFilterbCreate } from '../../../services/api/Newsletter'
 import { Box } from '../../../../node_modules/@mui/material/index'
-
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import timezone from 'dayjs/plugin/timezone'
+dayjs.extend(utc)
+dayjs.extend(timezone)
 function EventFilterDetail() {
   const navigate = useNavigate()
   const { id } = useParams()
@@ -24,21 +28,22 @@ function EventFilterDetail() {
     filter_name: '',
     description: '',
     frequency: 1,
-    magnitude_min: 15,
-    magnitude_max: 15,
+    magnitude_min: 4,
+    magnitude_max: 18,
     filter_type: 'name',
     filter_value: '',
-    local_solar_time_after: null,
-    local_solar_time_before: null,
-    magnitude_drop_min: null,
-    magnitude_drop_max: null,
-    event_duration: null,
-    diameter_min: null,
-    diameter_max: null,
+    magnitude_drop_min: 4,
+    magnitude_drop_max: 18,
+    solar_time_enabled: false,
+    local_solar_time_after: dayjs().set('hour', 18).startOf('hour'),
+    local_solar_time_before: dayjs().set('hour', 6).startOf('hour'),
+    event_duration: undefined,
+    diameter_min: undefined,
+    diameter_max: undefined,
     latitude: null,
     longitude: null,
-    altitude: null,
-    location_radius: null
+    location_radius: 100,
+    altitude: null
   }
 
   const [initialData, setinitialData] = useState(default_data)

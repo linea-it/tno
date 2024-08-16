@@ -40,7 +40,17 @@ export const getUserEventFilters = ({ queryKey }) => {
 
 export const getUserEventFilterbById = ({ id }) => api.get(`/event_filter/${id}`)
 
-export const userEventFilterbCreate = ({ data }) => api.post(`/event_filter/`, { ...data })
+export const userEventFilterbCreate = ({ data }) => {
+  // Fix Time format
+  if (data.local_solar_time_after) {
+    data.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
+  }
+  if (data.local_solar_time_before) {
+    data.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
+  }
+
+  return api.post(`/event_filter/`, { ...data })
+}
 
 export const userEventFilterbUpdate = ({ id, data }) => api.patch(`/event_filter/${id}/`, { ...data })
 
