@@ -17,7 +17,8 @@ import { Box, Card } from '@mui/material'
 import 'leaflet-easyprint'
 import generatePDF, { Resolution, Margin } from 'react-to-pdf'
 import { getOccultationById, getStarByOccultationId } from '../../../../services/api/Occultation'
-import PredictionEventDetail from '../../DetailPrint'
+//import PredictionEventDetailPrint from '../../DetailPrint'
+import { exportComponentAsJPEG, exportComponentAsPDF, exportComponentAsPNG } from 'react-component-export-image';
 
 const OcultationMap = ({ occultationId }) => {
 
@@ -138,17 +139,24 @@ const OcultationMap = ({ occultationId }) => {
       return null
     }
     ///
+    const componentRef = useRef();
     // gera pdf do mapa 
     const personalização = {
-      method: 'save',
+      filename: "./advanced-example.pdf",
+      method: 'open',
       page: {
         // margin is in MM, default is Margin.NONE = 0
         margin: Margin.SMALL,
         // default is 'A4'
         format: 'A4',
         // default is 'portrait'
-        orientation: 'portrait',
+        orientation: 'landscape',
      },
+     canvas: {
+      // default is 'image/jpeg' for better size performance
+      mimeType: 'image/png',
+      qualityRatio: 1
+   },
     }
     const conteudoParaPdf = () => document.getElementById('content-id')
     //
@@ -177,7 +185,7 @@ const OcultationMap = ({ occultationId }) => {
     }
 
   return (
-    <Card id='content-id' className={styles.mapPrint}>
+    <Card ref={componentRef} id='content-id' className={styles.mapPrint} spacing={4}>
     <Box>
       {latt?.occ_path_coeff !== undefined && (
         <MapContainer  
@@ -230,12 +238,18 @@ const OcultationMap = ({ occultationId }) => {
       </MapContainer>
       )}
       </Box>
-        <Box>
-        <button onClick={() => generatePDF(conteudoParaPdf, personalização)}>Gerar pdf</button>
-        </Box>
-        <Box>
-          <PredictionEventDetail />
-        </Box>
+        {/*<Card>
+          <Box>
+          <PredictionEventDetailPrint />
+          </Box>
+          </Card>*/}
+          <Box>
+          <button onClick={() => generatePDF(conteudoParaPdf, personalização)}>Gerar pdf</button>
+          <button onClick={() => exportComponentAsPNG(componentRef)}>
+            Export As PNG
+          </button>
+          </Box>
+
       </Card> 
   )
 }
