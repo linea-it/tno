@@ -145,10 +145,6 @@ services:
   mailhog:
     image: mailhog/mailhog:v1.0.0
 
-  mailhog:
-    image: mailhog/mailhog:v1.0.0
-
-
 
   # https://medium.com/testing-with-cypress/running-cypress-tests-in-docker-containers-using-different-docker-images-2dee3450881e
   # cypress:
