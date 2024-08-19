@@ -162,7 +162,7 @@ const OcultationMap = ({ occultationId }) => {
     //
 
     // leaflet.easyprint = dont work
-    const PrintControl = () => {
+    /*const PrintControl = () => {
       const map = useMap();
     
       useEffect(() => {
@@ -182,12 +182,13 @@ const OcultationMap = ({ occultationId }) => {
       }, [map]);
     
       return null;
-    }
+    }*/
 
   return (
-    <Card ref={componentRef} id='content-id' className={styles.mapPrint} spacing={4}>
-    <Box>
+    <Card className={styles.mapPrint} spacing={4}>
+    <Box ref={componentRef} id='content-id'>
       {latt?.occ_path_coeff !== undefined && (
+        console.log(latt?.occ_path_coeff.max_latitude, lat[0]),
         <MapContainer  
           className={styles.map} 
           center={[latt?.occ_path_coeff.max_latitude, latt?.occ_path_coeff.max_longitude]} 
@@ -237,19 +238,13 @@ const OcultationMap = ({ occultationId }) => {
         <Circle center={position} pathOptions={circle1Options} radius={200000}  />
       </MapContainer>
       )}
-      </Box>
-        {/*<Card>
-          <Box>
-          <PredictionEventDetailPrint />
-          </Box>
-          </Card>*/}
-          <Box>
+      <Box>
           <button onClick={() => generatePDF(conteudoParaPdf, personalização)}>Gerar pdf</button>
           <button onClick={() => exportComponentAsPNG(componentRef)}>
             Export As PNG
           </button>
-          </Box>
-
+      </Box>
+      </Box>
       </Card> 
   )
 }
