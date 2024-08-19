@@ -384,6 +384,28 @@ CELERY_TASK_SEND_SENT_EVENT = True
 # Autenticacao com Shibboleth desativada por padrão
 SHIBBOLETH_ENABLED = False
 
+# Prediction Jobs for Updated Asteroids Automatic
+PREDICTION_JOB_AUTO_UPDATE = env.bool("PREDICTION_JOB_AUTO_UPDATE", False)
+PORTAL_INTERNAL_USER = "autobot"
+# Quantidade maxima de asteroids por job criado automaticamente.
+PREDICTION_JOB_CHUNK_SIZE = 2000
+# Limita os jobs de predição para executarem apenas para estas classes.
+PREDICTION_JOB_BASE_DYNCLASS = ["Trojan", "Centaur", "Kuiper Belt Object"]
+
+PASSWORDLESS_AUTH = {
+    "PASSWORDLESS_AUTH_TYPES": [
+        "EMAIL",
+    ],
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
+    "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
+    "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
+    "PASSWORDLESS_REGISTER_NEW_USERS": False,
+}
+
+
+# NEWSLETTER SUBSCRIPTION
+NEWSLETTER_SUBSCRIPTION_ENABLED = env.bool("NEWSLETTER_SUBSCRIPTION_ENABLED", False)
+
 # Aqui é feita a importação do arquivo de variaveis locais.
 # As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
 # deste import. isso é usado para permitir diferentes configurações por ambiente.
@@ -411,26 +433,6 @@ if SHIBBOLETH_ENABLED is True:
     AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
 
     SHIBBOLETH_ENABLED = True
-
-
-# Prediction Jobs for Updated Asteroids Automatic
-PREDICTION_JOB_AUTO_UPDATE = env.bool("PREDICTION_JOB_AUTO_UPDATE", False)
-PORTAL_INTERNAL_USER = "autobot"
-# Quantidade maxima de asteroids por job criado automaticamente.
-PREDICTION_JOB_CHUNK_SIZE = 2000
-# Limita os jobs de predição para executarem apenas para estas classes.
-PREDICTION_JOB_BASE_DYNCLASS = ["Trojan", "Centaur", "Kuiper Belt Object"]
-
-PASSWORDLESS_AUTH = {
-    "PASSWORDLESS_AUTH_TYPES": [
-        "EMAIL",
-    ],
-    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
-    "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
-    "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
-    "PASSWORDLESS_REGISTER_NEW_USERS": False,
-}
-
 
 LOGGING = {
     "version": 1,

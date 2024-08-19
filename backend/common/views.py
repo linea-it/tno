@@ -79,6 +79,19 @@ def which_environment(request):
         return Response(result)
 
 
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def environment_settings(request):
+
+    if request.method == "GET":
+
+        return Response(
+            {
+                "NEWSLETTER_SUBSCRIPTION_ENABLED": settings.NEWSLETTER_SUBSCRIPTION_ENABLED,
+            }
+        )
+
+
 @action(detail=False, methods=["GET"])
 def logout_view(request):
     logout(request)

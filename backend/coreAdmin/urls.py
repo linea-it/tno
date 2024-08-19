@@ -100,17 +100,9 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
     path("api/auth/", include("rest_framework.urls")),
-    # re_path(r"^api/logout/", common_views.logout_view),
     path("", include("drfpasswordless.urls")),
-    # re_path(
-    #     r"^api/des/clear_des_data_preparation_tables",
-    #     des_management_views.clear_des_data_preparation_tables,
-    # ),
-    # re_path(r"^api/read_file", common_views.read_file),
-    # re_path(r"^api/read_csv", common_views.read_csv),
-    # re_path(r"^api/teste", common_views.teste),
-    # re_path(r"^api/test_background_task", common_views.test_background_task),
     re_path(r"^api/which_environment", common_views.which_environment),
+    re_path(r"^api/environment_settings", common_views.environment_settings),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",

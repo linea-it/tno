@@ -32,3 +32,6 @@ PREDICTION_MAP_BLOCK_SIZE = 100
 # Em ambiente de desenvolvimento ou que não esteja configurado o shibboleth usar SHIBBOLETH_ENABLED = False.
 # Em ambiente de produção que já esteja configurado com shibboleth usar SHIBBOLETH_ENABLED = True.
 SHIBBOLETH_ENABLED = False
+
+# Newsletter Subscription
+NEWSLETTER_SUBSCRIPTION_ENABLED = False

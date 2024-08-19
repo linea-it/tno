@@ -77,6 +77,13 @@ export function getAPIClient(ctx) {
 
 export const api = getAPIClient()
 
+export function environmentSettings() {
+  return api.get('/environment_settings').then((res) => {
+    const result = res.data
+    return result
+  })
+}
+
 export const parseFilters = (filterModel) => {
   const params = {}
 
