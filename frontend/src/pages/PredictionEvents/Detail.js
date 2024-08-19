@@ -29,6 +29,16 @@ function PredictionEventDetail() {
   const [isDev, setIsDev] = useState(false)
 
   useEffect(() => {
+    whichEnvironment()
+      .then((res) => {
+        setIsDev(res.is_dev)
+      })
+      .catch(() => {
+        // TODO: Aviso de erro
+      })
+  }, [])
+
+  useEffect(() => {
     getOccultationById({ id }).then((res) => {
       setOccultation({
         ...res

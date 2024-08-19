@@ -25,6 +25,7 @@ from dao import (
 
 try:
     from parsl_config import get_config
+
     from predict_occultation.app import run_pipeline
 except Exception as error:
     print("Error: %s" % str(error))
@@ -587,7 +588,7 @@ def submit_tasks(jobid: int):
         # Asteroid contendo seus arquivos de inputs e outputs.
         # Atenção: Precisar permitir uma quantidade grande de acessos de leitura e escrita simultaneas.
         ASTEROID_PATH = current_path.joinpath("asteroids")
-        ASTEROID_PATH.mkdir(parents=True, exist_ok=False)
+        ASTEROID_PATH.mkdir(parents=True, exist_ok=DEBUG)
 
         log.debug(f"Asteroid PATH: [{ASTEROID_PATH}]")
 
