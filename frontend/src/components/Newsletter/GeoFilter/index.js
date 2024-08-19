@@ -107,7 +107,7 @@ function GeoFilter({ value, onChange }) {
           <Select
             labelId='radius-select--label'
             variant='outlined'
-            id='radius-select-'
+            id='radius-select'
             value={value.radius === undefined ? '' : value.radius}
             label='Loc. Radius (Km)'
             onChange={(event) => {
@@ -129,10 +129,10 @@ function GeoFilter({ value, onChange }) {
         <AltitudeField
           name='altitude'
           value={value.altitude === undefined ? '' : value.altitude}
-          onChange={(value) => {
+          onChange={(v) => {
             handleChange({
               ...value,
-              altitude: value
+              altitude: v
             })
           }}
         />

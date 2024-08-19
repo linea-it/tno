@@ -25,7 +25,14 @@ export default function EventFilterForm({ data, onChange }) {
           <TextField required name='filter_name' label='Filter Name' value={data.filter_name} onChange={handleChange} fullWidth />
           <FrequencyTypeSelect value={data.frequency} onChange={handleChange} name='frequency' />
         </Stack>
-        <TextField label='Description' name='description' value={data.description} onChange={handleChange} multiline rows={4} />
+        <TextField
+          label='Description'
+          name='description'
+          value={data.description !== null ? data.description : ''}
+          onChange={handleChange}
+          multiline
+          rows={4}
+        />
         <Divider />
         <AsteroidSelect
           source={'prediction'}
@@ -118,7 +125,7 @@ export default function EventFilterForm({ data, onChange }) {
               ...data,
               latitude: value.latitude,
               longitude: value.longitude,
-              radius: value.radius,
+              location_radius: value.radius,
               altitude: value.altitude
             }
             onChange(newData)
