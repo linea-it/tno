@@ -7,4 +7,5 @@ class EventFilterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = EventFilter
-        fields = "__all__"
+        # fields = "__all__"
+        exclude = ("user",)
