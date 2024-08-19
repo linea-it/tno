@@ -164,6 +164,11 @@ def upcoming_events_to_create_maps(
                 "delta": obj.delta,
                 "g": obj.g_star,
                 "long": obj.long,
+                "error": (
+                    None
+                    if obj.closest_approach_uncertainty is None
+                    else obj.closest_approach_uncertainty * 1000
+                ),  # it is multiplied by 1000 because sora need the value in miliarcsec
                 "filepath": str(obj.get_map_filepath()),
             }
         )
@@ -188,7 +193,8 @@ def sora_occultation_map(
     g: float,
     long: float,
     filepath: Union[Path, str],
-    dpi: int = 50,
+    dpi: int = 150,
+    error: Optional[float] = None,
 ) -> str:
 
     if isinstance(filepath, str):
@@ -220,6 +226,12 @@ def sora_occultation_map(
         nameimg=fname,
         path=path,
         fmt=fmt,
+        error=error,
+        lncolor="#00468D",
+        ptcolor="#00468D",
+        ercolor="#D32F2F",
+        outcolor="#D3D3D3",
+        # labels = False,
     )
 
     if not filepath.exists():

@@ -6,13 +6,13 @@ import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Box from '@mui/material/Box'
-import List from '../../components/List'
 import Typography from '@mui/material/Typography'
 import Link from '@mui/material/Link'
 import Container from '@mui/material/Container'
 import IconButton from '@mui/material/IconButton'
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 
+import List from '../../components/List'
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 import PredictOccultationMap from './partials/PredictMap'
 import AladinV3 from '../../components/AladinV3/index'
@@ -39,17 +39,10 @@ function PredictionEventDetail() {
         ...res
       })
     })
-    whichEnvironment()
-      .then((res) => {
-        setIsDev(res.is_dev)
-      })
-      .catch(() => {
-        // TODO: Aviso de erro
-      })
   }, [id])
 
   useEffect(() => {
-    const titleText = `Occultation by ${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
+    const titleText = `Occultation by ${occultation.name} ${occultation.number ? `(${occultation.number})` : ''}`
     document.title = titleText
   }, [occultation])
 
@@ -66,7 +59,11 @@ function PredictionEventDetail() {
       },
       {
         title: 'Closest approach',
-        value: `${occultation.closest_approach} (arcsec)`
+        value: occultation.closest_approach
+          ? occultation.closest_approach < 0.1
+            ? `${(occultation.closest_approach * 1000).toFixed(1)} (mas)`
+            : `${occultation.closest_approach.toFixed(3)} (arcsec)`
+          : null
       },
       {
         title: 'Position angle',
@@ -93,20 +90,49 @@ function PredictionEventDetail() {
         value: `${occultation.h_star ? occultation.h_star.toFixed(3) : null}`
       },
       {
+        title: 'Magnitude drop',
+        value: `${occultation.magnitude_drop ? occultation.magnitude_drop.toFixed(1) : null} (mag)`
+      },
+      {
+        title: 'Uncertainty in time (1σ)',
+        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
+      },
+      // {
+      //   title: 'Uncertainty in closest approach (1σ)',
+      //   value: `${
+      //     occultation.closest_approach_uncertainty
+      //       ? occultation.closest_approach_uncertainty < 0.1
+      //         ? (occultation.closest_approach_uncertainty * 1000).toFixed(0) + ' (mas)'
+      //         : occultation.closest_approach_uncertainty.toFixed(1) + ' (arcsec)'
+      //       : null
+      //   }`
+      // },
+      {
+        title: 'Uncertainty in closest approach (1σ)',
+        value: (() => {
+          const ca_uncert =
+            Math.tan((occultation.closest_approach_uncertainty * Math.PI) / (180 * 60 * 60)) * (occultation.delta * 149597870.7)
+          return occultation.closest_approach_uncertainty
+            ? ca_uncert < 1
+              ? `${(ca_uncert * 1000).toFixed(0)} (m)`
+              : `${ca_uncert.toFixed(0)} (km)`
+            : null
+        })()
+      },
+      {
         title: 'Moon separation',
         value: `${occultation.moon_separation ? occultation.moon_separation.toFixed(1) : null} (deg)`
+      },
+      {
+        title: 'Moon illuminated fraction',
+        value: `${occultation.moon_illuminated_fraction ? (occultation.moon_illuminated_fraction * 100).toFixed(1) : null}%`
       },
       {
         title: 'Sun elongation',
         value: `${occultation.sun_elongation ? occultation.sun_elongation.toFixed(1) : null} (deg)`
       },
       {
-        title: 'Uncertainty in Time',
-        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null}`
-      },
-      {
         title: 'Creation date',
-        // tooltip: "Date of the prediction's computation",
         value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
       }
     ])
@@ -133,10 +159,10 @@ function PredictionEventDetail() {
       },
       {
         title: 'Proper motion',
-        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(1) : null} ±${
-          starObj.pmra_error ? starObj.pmra_error.toFixed(1) : null
-        } (mas/yr), Dec ${starObj.pmdec ? starObj.pmdec.toFixed(1) : null} ±${
-          starObj.pmdec_error ? starObj.pmdec_error.toFixed(1) : null
+        value: `RA ${starObj.pmra ? starObj.pmra.toFixed(2) : null} ±${
+          starObj.pmra_error ? starObj.pmra_error.toFixed(2) : null
+        } (mas/yr), Dec ${starObj.pmdec ? starObj.pmdec.toFixed(2) : null} ±${
+          starObj.pmdec_error ? starObj.pmdec_error.toFixed(2) : null
         } (mas/yr)`,
         breakline: true
       },
@@ -146,8 +172,8 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in the star position',
-        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(1) : null} (mas), Dec ${
-          starObj.dec_error ? starObj.dec_error.toFixed(1) : null
+        value: `RA ${starObj.ra_error ? starObj.ra_error.toFixed(3) : null} (mas), Dec ${
+          starObj.dec_error ? starObj.dec_error.toFixed(3) : null
         } (mas)`,
         breakline: true
       },
@@ -157,7 +183,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'RP magnitude (source: Gaia DR3)',
-        value: `${starObj.phot_g_mean_mag ? starObj.phot_g_mean_mag.toFixed(3) : null}`
+        value: `${starObj.phot_rp_mean_mag ? starObj.phot_rp_mean_mag.toFixed(3) : null}`
       },
       {
         title: 'BP magnitude (source: Gaia DR3)',
@@ -179,12 +205,27 @@ function PredictionEventDetail() {
 
     setObject([
       {
-        title: 'Object',
-        value: `${occultation.name} ${occultation.number ? '(' + occultation.number + ')' : ''}`
+        title: 'Identification',
+        value: `${occultation.name} ${occultation.number ? `(${occultation.number})` : ''}, ${occultation.principal_designation}`
       },
       {
-        title: "Object's astrometric position (ICRF)",
+        title: 'Dynamic class (Skybot)',
+        value: `${occultation.dynclass}`
+      },
+      {
+        title: 'Astrometric position (ICRF)',
         value: `RA ${occultation.ra_target}, Dec ${occultation.dec_target}`,
+        breakline: true
+      },
+      {
+        title: 'Uncertainty in position (1σ)',
+        value: `${
+          occultation.e_ra_target
+            ? occultation.e_ra_target < 0.1 || occultation.e_dec_target < 0.1
+              ? `RA ${(occultation.e_ra_target * 1e3).toFixed(1)} (mas), Dec ${(occultation.e_dec_target * 1e3).toFixed(1)} (mas)`
+              : `RA ${occultation.e_ra_target.toFixed(1)} (arcsec), Dec ${occultation.e_dec_target.toFixed(1)} (arcsec)`
+            : null
+        }`,
         breakline: true
       },
       {
@@ -200,8 +241,8 @@ function PredictionEventDetail() {
         value: `${
           occultation.diameter
             ? occultation.diameter < 1
-              ? (occultation.diameter * 1000).toFixed(0) + ' (m)'
-              : occultation.diameter.toFixed(0) + ' (Km)'
+              ? `${(occultation.diameter * 1000).toFixed(0)} (m)`
+              : `${occultation.diameter.toFixed(0)} (Km)`
             : null
         }`
       },
@@ -210,17 +251,8 @@ function PredictionEventDetail() {
         value: `${occultation.apparent_diameter ? occultation.apparent_diameter.toFixed(4) : null} (mas)`
       },
       {
-        title: 'Uncertainty in position',
-        value: `RA ${occultation.e_ra_target}, Dec ${occultation.e_dec_target} (mas)`,
-        breakline: true
-      },
-      {
         title: 'Ephemeris',
         value: `${occultation.ephemeris_version ? occultation.ephemeris_version : null}`
-      },
-      {
-        title: 'Dynamic class (Skybot)',
-        value: `${occultation.dynclass}`
       },
       {
         title: 'Semi-major axis',
@@ -228,7 +260,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Eccentricity',
-        value: `${occultation.eccentricity ? occultation.eccentricity.toFixed(4) : null} (AU)`
+        value: `${occultation.eccentricity ? occultation.eccentricity.toFixed(4) : null}`
       },
       {
         title: 'Inclination',
@@ -255,33 +287,23 @@ function PredictionEventDetail() {
         {moment(occultation.date_time).format('ll')}
       </Typography>
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardHeader
-              title='Occultation Prediction Circumstances'
-              action={
-                <>
-                  <IconButton href='/docs/user-guide/occultation-details-page/' target='_blank' aria-label='help'>
-                    <HelpOutlineIcon />
-                  </IconButton>
-                </>
-              }
-            />
-            <CardContent>
-              <List data={circumstances} />
-            </CardContent>
-          </Card>
-        </Grid>
         {occultation.id !== undefined && (
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <PredictOccultationMap occultationId={occultation.id} />
           </Grid>
         )}
         <Grid item xs={12} md={5.6} lg={6}>
           <Card sx={{ height: '100%' }}>
-            <CardHeader title='Occulted Star' />
+            <CardHeader
+              title='Occultation Prediction Circumstances'
+              action={
+                <IconButton href='/docs/user-guide/occultation-details-page/' target='_blank' aria-label='help'>
+                  <HelpOutlineIcon />
+                </IconButton>
+              }
+            />
             <CardContent>
-              <List data={star} />
+              <List data={circumstances} />
             </CardContent>
           </Card>
         </Grid>
@@ -314,6 +336,14 @@ function PredictionEventDetail() {
                   </>
                 )}
               </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12}>
+          <Card sx={{ height: '100%' }}>
+            <CardHeader title='Occulted Star' />
+            <CardContent>
+              <List data={star} />
             </CardContent>
           </Card>
         </Grid>
