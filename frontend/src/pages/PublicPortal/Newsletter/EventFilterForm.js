@@ -41,8 +41,7 @@ export default function EventFilterForm({ data, onChange }) {
             filterValue: data.filter_value
           }}
           onChange={(value) => {
-            console.log(value)
-            const newData = { ...data, filter_type: value.filterType, filter_value: value.filterValue }
+            const newData = { ...data, filter_value: value.filterValue }
             onChange(newData)
           }}
         />
