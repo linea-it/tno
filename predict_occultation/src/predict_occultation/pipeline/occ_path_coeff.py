@@ -7,19 +7,26 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import spiceypy as spice
+from astropy.time import Time
 from library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
     get_apparent_diameter,
+    get_closest_approach_uncertainty,
     get_event_duration,
+    get_instant_uncertainty,
+    get_mag_ra_dec_uncertainties_interpolator,
     get_moon_and_sun_separation,
+    get_moon_illuminated_fraction,
     ra_hms_to_deg,
 )
 from occviz import occultation_path_coeff
 
 
-def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
+def run_occultation_path_coeff(
+    predict_table_path: Path, obj_data: dict, mag_and_uncert_path: Path
+) -> dict:
 
     calculate_path_coeff = {}
     t0 = dt.now(tz=timezone.utc)
@@ -31,7 +38,26 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 f"Predictions file does not exist. {str(predict_table_path)}"
             )
 
+        # Le o arquivo de incertezas
+        has_uncertainties = False
+        mag_cs, ra_cs, dec_cs = None, None, None
+        if mag_and_uncert_path.exists():
+            # Arquivo com incertezas nao foi criado
+            with open(mag_and_uncert_path, "r") as f:
+                mag_and_uncertainties = json.load(f)
+            # Interpolador para as incertezas
+            mag_cs, ra_cs, dec_cs = get_mag_ra_dec_uncertainties_interpolator(
+                **mag_and_uncertainties
+            )
+
+        if ra_cs and dec_cs:
+            has_uncertainties = True
+
+        else:
+            print(f"Uncertainties file does not exist. {str(mag_and_uncert_path)}")
+
         # Le o arquivo occultation table e cria um dataframe
+
         df = pd.read_csv(
             predict_table_path,
             delimiter=";",
@@ -105,7 +131,7 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
         # Le o source_id, ra, dec e g magnitude do catalogo gaia csv
         df_gaia_csv = pd.read_csv(
             os.path.join(obj_data["path"], "gaia_catalog.csv"),
-            usecols=(0, 1, 3, 13),
+            usecols=(0, 1, 2, 3, 4, 13),
             delimiter=";",
         )
 
@@ -125,8 +151,14 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "apparent_diameter": None,
                 "event_duration": None,
                 "instant_uncertainty": None,
+                "closest_approach_uncertainty": None,
                 "moon_separation": None,
                 "sun_elongation": None,
+                "moon_illuminated_fraction": None,
+                "e_ra_target": None,
+                "e_dec_target": None,
+                "e_ra_star": None,
+                "e_dec_star": None,
                 "have_path_coeff": False,
                 "occ_path_min_longitude": None,
                 "occ_path_max_longitude": None,
@@ -149,24 +181,40 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             )
             new_row.update({"gaia_source_id": source_id, "gaia_g_mag": gaia_g_mag})
 
+            e_ra_star, e_dec_star = (
+                df_gaia_csv["ra_error"][star_index],
+                df_gaia_csv["dec_error"][star_index],
+            )
+            new_row.update({"e_ra_star": e_ra_star, "e_dec_star": e_dec_star})
+
             # ------------------------------------------------------------------------
             # Calcula a magnitude visual do asteroide no instante da ocultação
             # Alerta: os arquivos bsp estão na memoria global por alguma razão,
             #         convém analisar esse comportamente no futuro.
             # ------------------------------------------------------------------------
             ast_vis_mag = None
-            if (
-                obj_data["h"] < 99
-            ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
-                ast_vis_mag = asteroid_visual_magnitude(
-                    obj_data["bsp_jpl"]["filename"],
-                    obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
-                    obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
-                    dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
-                    h=obj_data["h"],
-                    g=obj_data["g"],
-                    spice_global=True,
-                )
+            if mag_cs:
+                # usa intepolacao a partir de dados do JPL
+                # mais preciso em casos como plutao etc..
+                datetime_object = dt.fromisoformat(row["date_time"])
+                # Convert to Julian Date using astropy
+                time_obj = Time(datetime_object)
+                julian_date = time_obj.jd
+                ast_vis_mag = mag_cs(julian_date)  #
+            else:
+                # tenta calcular a partir de h e g do bsp e só funciona para asteroides em geral
+                if (
+                    obj_data["h"] < 99
+                ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
+                    ast_vis_mag = asteroid_visual_magnitude(
+                        obj_data["bsp_jpl"]["filename"],
+                        obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
+                        obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
+                        dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
+                        h=obj_data["h"],
+                        g=obj_data["g"],
+                        spice_global=True,
+                    )
 
             # Calcula a queda em magnitude durante a ocultacao
             magnitude_drop = compute_magnitude_drop(ast_vis_mag, gaia_g_mag)
@@ -184,15 +232,57 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 row["ra_target_deg"], row["dec_target_deg"], row["date_time"]
             )
 
+            # Calcula a fração ilumnada da lua
+            moon_illuminated_fraction = get_moon_illuminated_fraction(row["date_time"])
+
+            # Obtem o valor da incerteza do objeto no instante da ocultação
+            # e calcula a incerteza no instante central
+            e_ra_target, e_dec_target = None, None
+            closest_approach_uncertainty = None
+            instant_uncertainty = None
+            if has_uncertainties:
+                datetime_object = dt.fromisoformat(row["date_time"])
+                # Convert to Julian Date using astropy
+                time_obj = Time(datetime_object)
+                julian_date = time_obj.jd
+                # Errors are divided by 3 because the interpolation is done using 3-sigma values
+                e_ra_target = ra_cs(julian_date) / 3.0
+                e_dec_target = dec_cs(julian_date) / 3.0
+
+                instant_uncertainty = get_instant_uncertainty(
+                    row["position_angle"],
+                    row["delta"],
+                    row["velocity"],
+                    e_ra_target,
+                    e_dec_target,
+                    e_ra_star=df_gaia_csv["ra_error"][star_index] / 1000,
+                    e_dec_star=df_gaia_csv["dec_error"][star_index] / 1000,
+                )
+
+                closest_approach_uncertainty = get_closest_approach_uncertainty(
+                    row["position_angle"],
+                    e_ra_target,
+                    e_dec_target,
+                    e_ra_star=df_gaia_csv["ra_error"][star_index] / 1000,
+                    e_dec_star=df_gaia_csv["dec_error"][star_index] / 1000,
+                )
+
+                # instant_uncertainty = get_instant_uncertainty(row["position_angle"], row["delta"], row["velocity"],
+                #     e_ra_target, e_dec_target, e_ra_star=df_gaia_csv["ra_error"][star_index]/1000, e_dec_star=df_gaia_csv["dec_error"][star_index]/1000)
+
             new_row.update(
                 {
                     "apparent_magnitude": ast_vis_mag,
                     "magnitude_drop": magnitude_drop,
                     "apparent_diameter": apparent_diameter,
                     "event_duration": event_duration,
-                    # "instant_uncertainty": None,
+                    "instant_uncertainty": instant_uncertainty,
+                    "closest_approach_uncertainty": closest_approach_uncertainty,
                     "moon_separation": moon_separation,
                     "sun_elongation": sun_elongation,
+                    "moon_illuminated_fraction": moon_illuminated_fraction,
+                    "e_ra_target": e_ra_target,
+                    "e_dec_target": e_dec_target,
                 }
             )
 
@@ -256,8 +346,16 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             df["apparent_diameter"] = df_coeff["apparent_diameter"]
             df["event_duration"] = df_coeff["event_duration"]
             df["instant_uncertainty"] = df_coeff["instant_uncertainty"]
+            df["closest_approach_uncertainty"] = df_coeff[
+                "closest_approach_uncertainty"
+            ]
             df["moon_separation"] = df_coeff["moon_separation"]
             df["sun_elongation"] = df_coeff["sun_elongation"]
+            df["moon_illuminated_fraction"] = df_coeff["moon_illuminated_fraction"]
+            df["e_ra_target"] = df_coeff["e_ra_target"]
+            df["e_dec_target"] = df_coeff["e_dec_target"]
+            df["e_ra"] = df_coeff["e_ra_star"]
+            df["e_dec"] = df_coeff["e_dec_star"]
 
             df["have_path_coeff"] = df_coeff["have_path_coeff"]
             df["occ_path_max_longitude"] = df_coeff["occ_path_max_longitude"]
@@ -276,8 +374,14 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             df["apparent_diameter"] = None
             df["event_duration"] = None
             df["instant_uncertainty"] = None
+            df["closest_approach_uncertainty"] = None
             df["moon_separation"] = None
             df["sun_elongation"] = None
+            df["moon_illuminated_fraction"] = None
+            df["e_ra_target"] = None
+            df["e_dec_target"] = None
+            df["e_ra"] = None
+            df["e_dec"] = None
 
             df["have_path_coeff"] = False
             df["occ_path_max_longitude"] = None
@@ -359,16 +463,14 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
             "g_mag_vel_corrected",
             "rp_mag_vel_corrected",
             "h_mag_vel_corrected",
-            "instant_uncertainty",
             "ra_star_with_pm",
             "dec_star_with_pm",
             "ra_star_to_date",
             "dec_star_to_date",
             "ra_target_apparent",
             "dec_target_apparent",
-            "e_ra_target",
-            "e_dec_target",
             "ephemeris_version",
+            "probability_of_centrality",
         ]
         for column in columns_for_future:
             df[column] = None
@@ -482,12 +584,14 @@ def run_occultation_path_coeff(predict_table_path: Path, obj_data: dict):
                 "event_duration",
                 "moon_separation",
                 "sun_elongation",
+                "closest_approach_uncertainty",
+                "moon_illuminated_fraction",
+                "probability_of_centrality",
             ]
         )
 
         # ATENCAO! Sobrescreve o arquivo occultation_table.csv
         df.to_csv(predict_table_path, index=False, sep=";")
-
         del df
 
     except Exception as e:

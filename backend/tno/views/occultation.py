@@ -400,6 +400,11 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 delta=obj.delta,
                 g=obj.g_star,
                 long=obj.long,
+                error=(
+                    None
+                    if obj.closest_approach_uncertainty is None
+                    else obj.closest_approach_uncertainty * 1000
+                ),  # it is multiplied by 1000 because sora need the value in miliarcsec
                 filepath=str(filepath),
                 dpi=50,
             )

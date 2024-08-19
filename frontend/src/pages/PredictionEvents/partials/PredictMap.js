@@ -6,12 +6,10 @@ import CardContent from '@mui/material/CardContent'
 import CircularProgress from '@mui/material/CircularProgress'
 import Alert from '@mui/material/Alert'
 import Stack from '@mui/material/Stack'
-
 import IconButton from '@mui/material/IconButton'
 import Typography from '@mui/material/Typography'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-
 import Box from '@mui/material/Box'
 import { useQuery } from 'react-query'
 import { getOrCreatePredictionMap } from '../../../services/api/Occultation'
@@ -58,62 +56,68 @@ function PredictOccultationMap({ occultationId }) {
         }
       />
       <CardContent
-        display='flex'
         sx={{
+          display: 'flex',
           justifyContent: 'center',
           alignItems: 'center'
+          // height: '85%'
         }}
       >
-        <Box>
-          <Box
-            flex={1}
-            display='flex'
-            sx={{
-              justifyContent: 'center',
-              alignItems: 'center'
-            }}
-          >
-            {isLoading && (
-              <Box
-                display='flex'
-                minHeight={250}
-                alignItems='center'
-                justifyContent='center'
-                m='auto'
-                flexDirection='column'
-                alignSelf='center'
-                flex={1}
-              >
-                <CircularProgress color='secondary' />
-                <Typography variant='body2' mt={2}>
-                  Creating map. This request may take a few seconds.
-                </Typography>
-              </Box>
-            )}
-            {isError && (
-              <Stack sx={{ width: '100%' }}>
-                <Alert variant='outlined' severity='error'>
-                  Sorry, map creation failed. Please try again and if the problem persists, let us know via the helpdesk
-                </Alert>
-              </Stack>
-            )}
-            {data !== undefined && (
-              <Box
-                component='img'
-                sx={{
-                  maxWidth: '105%',
-                  height: 'auto'
-                }}
-                alt=''
-                src={data.url}
-              />
-            )}
-          </Box>
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100%',
+            width: '100%'
+          }}
+        >
+          {isLoading && (
+            <Box
+              sx={{
+                display: 'flex',
+                minHeight: 250,
+                alignItems: 'center',
+                justifyContent: 'center',
+                m: 'auto',
+                flexDirection: 'column',
+                alignSelf: 'center',
+                flex: 1
+              }}
+            >
+              <CircularProgress color='secondary' />
+              <Typography variant='body2' mt={2}>
+                Creating map. This request may take a few seconds.
+              </Typography>
+            </Box>
+          )}
+          {isError && (
+            <Stack sx={{ width: '100%' }}>
+              <Alert variant='outlined' severity='error'>
+                Sorry, map creation failed. Please try again and if the problem persists, let us know via the helpdesk
+              </Alert>
+            </Stack>
+          )}
+          {data !== undefined && (
+            <Box
+              component='img'
+              sx={{
+                maxWidth: '100%',
+                maxHeight: '100%',
+                objectFit: 'contain',
+                display: 'block',
+                margin: 'auto'
+              }}
+              alt=''
+              src={data.url}
+            />
+          )}
         </Box>
       </CardContent>
     </Card>
   )
 }
+
 PredictOccultationMap.defaultProps = {}
 
 PredictOccultationMap.propTypes = {

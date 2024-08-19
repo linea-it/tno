@@ -373,6 +373,38 @@ class Occultation(models.Model):
         default=None,
         help_text="Sun elongation (degrees)",
     )
+
+    instant_uncertainty = models.FloatField(
+        verbose_name="instant_uncertainty",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Instant of the closest approach uncertainty (seconds)",
+    )
+
+    closest_approach_uncertainty = models.FloatField(
+        verbose_name="Closest approach uncertainty",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Uncertainty in geocentric closest approach (arcsec)",
+    )
+
+    moon_illuminated_fraction = models.FloatField(
+        verbose_name="Moon illuminated fraction",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Fraction of the Moon illuminated at the instant of the event",
+    )
+
+    probability_of_centrality = models.FloatField(
+        verbose_name="Probability of centrality of the event",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Indicates the probability that the event will happen at the indicated path",
+    )
     # ------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
     # ------------------------------------------------------
@@ -406,14 +438,6 @@ class Occultation(models.Model):
         blank=True,
         default=None,
         help_text="2MASS H magnitude corrected from velocity",
-    )
-
-    instant_uncertainty = models.FloatField(
-        verbose_name="instant_uncertainty",
-        null=True,
-        blank=True,
-        default=None,
-        help_text="Instant of the closest approach uncertainty (seconds)",
     )
 
     ra_star_with_pm = models.CharField(
@@ -783,7 +807,7 @@ class Occultation(models.Model):
     # -------------------------------------------------
     catalog = models.CharField(
         max_length=10,
-        default="GAIA DR2",
+        default="GAIA DR3",
         null=True,
         blank=True,
         verbose_name="Stellar Catalog",
@@ -874,7 +898,7 @@ class Occultation(models.Model):
 
     def get_map_filename(self) -> str:
         dt = self.date_time.strftime("%Y%m%d%H%M%S")
-        return f"{self.get_alias()}-{dt}.jpg"
+        return f"{self.get_alias()}-{dt}.png"
 
     def get_map_filepath(self) -> Path:
         return Path.joinpath(settings.PREDICTION_MAP_DIR, self.get_map_filename())

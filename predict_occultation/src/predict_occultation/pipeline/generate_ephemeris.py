@@ -75,6 +75,11 @@ def generate_ephemeris(dates_file, bsp, dexxx, leap_sec, eph_filename, radec_fil
     source = {"NIMA": (45, "ASTEROID_SPK_ID ="), "JPL": (74, "Target SPK ID   :")}
     n, key = source["NIMA"]
     idspk = findIDSPK(n, key)
+
+    # TODO: Plutao nao segue as regras de bsp dos demais asteroides. Essa é uma solução temporária
+    if bsp == "Pluto.bsp":
+        idspk = "999"
+
     if idspk == "":
         n, key = source["JPL"]
         idspk = findIDSPK(n, key)
