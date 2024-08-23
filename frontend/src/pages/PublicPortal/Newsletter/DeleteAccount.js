@@ -36,9 +36,11 @@ export function ConfirmDialog({ open, handleClose }) {
           }
         }}
       >
-        <DialogTitle>Confirm</DialogTitle>
+        <DialogTitle>Confirm Deletion</DialogTitle>
         <DialogContent>
-          <DialogContentText>Are you sure you want to delete your account? Enter your email and click delete account.</DialogContentText>
+          <DialogContentText>
+            Are you sure you want to delete your account? Please enter your email address and click 'Delete Account' to proceed.
+          </DialogContentText>
           <TextField
             autoFocus
             required
@@ -52,8 +54,7 @@ export function ConfirmDialog({ open, handleClose }) {
           />
           {error && (
             <Alert severity='error'>
-              There was an error and it was not possible to delete the account, please try again in a few moments and if the problem
-              persists contact the helpdesk.
+              An error occurred, and your account could not be deleted. Please try again later. If the issue persists, contact support.
             </Alert>
           )}
         </DialogContent>
@@ -80,7 +81,7 @@ export default function DeleteAccount() {
       <Card>
         <CardHeader
           title='Delete Account'
-          subheader='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.'
+          subheader='Please note: Deleting your account is permanent and cannot be undone. Make sure this is what you want to do before proceeding.'
           titleTypographyProps={{
             sx: {
               color: 'red'

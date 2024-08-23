@@ -37,17 +37,17 @@ export default function SubscriptionStatus({ value, onChange }) {
         <FormControlLabel
           required
           control={value ? <Switch checked={false} onChange={handleReactivate} /> : <Switch checked={true} onChange={handleUnsubscribe} />}
-          label='Receber emails'
+          label='Receive emails'
         />
         {!value && (
           <Alert variant='outlined' severity='success'>
-            Sua Assinatura está ativa e você recebera os emails conforme suas configurações de filtro.
+            Your subscription is active, and you will receive emails based on your filter settings.
           </Alert>
         )}
 
         {value && (
           <Alert variant='outlined' severity='warning'>
-            Sua Assinatura está inativa e você Não recebera nenhum email.
+            Your subscription is inactive, and you won't receive any emails.
           </Alert>
         )}
       </Stack>
@@ -59,9 +59,7 @@ export default function SubscriptionStatus({ value, onChange }) {
           onClose={() => setUnsubError(false)}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity='error'>
-            Falhou ao cancelar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
-          </Alert>
+          <Alert severity='error'>Failed to unsubscribe. Please try again in a few moments or contact support.</Alert>
         </Snackbar>
       )}
 
@@ -72,9 +70,7 @@ export default function SubscriptionStatus({ value, onChange }) {
           onClose={() => setActivError(false)}
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         >
-          <Alert severity='error'>
-            Falhou ao Reativar a inscrição tente novamente em alguns instantes ou entre em contato com o helpdesk.
-          </Alert>
+          <Alert severity='error'>Failed to reactivate subscription. Please try again in a few moments or contact support.</Alert>
         </Snackbar>
       )}
     </>
