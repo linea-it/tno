@@ -12,6 +12,7 @@ from library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
+    generate_hash,
     get_apparent_diameter,
     get_closest_approach_uncertainty,
     get_event_duration,
@@ -144,6 +145,7 @@ def run_occultation_path_coeff(
         for row in df.to_dict(orient="records"):
 
             new_row = {
+                "hash_id": None,
                 "gaia_source_id": None,
                 "gaia_g_mag": None,
                 "apparent_magnitude": None,
@@ -338,7 +340,6 @@ def run_occultation_path_coeff(
 
         if len(coeff_paths) > 0:
             df_coeff = pd.DataFrame.from_dict(coeff_paths)
-
             df["gaia_source_id"] = df_coeff["gaia_source_id"]
             df["g_star"] = df_coeff["gaia_g_mag"]
             df["apparent_magnitude"] = df_coeff["apparent_magnitude"]
@@ -366,8 +367,11 @@ def run_occultation_path_coeff(
             df["occ_path_min_latitude"] = df_coeff["occ_path_min_latitude"]
 
             del df_coeff
+        # TODO: esse else pode ser removido, todas as colunas calculadas anteriormente precisam ser incluidas no df.
+        # Só entra neste else se não tiver nenhuma predição.
+        # O array coeff_paths na verdade está representando cada uma das predições.
         else:
-            df["gaia_source_id"] = None
+            # df["gaia_source_id"] = None
             df["g_star"] = None
             df["apparent_magnitude"] = None
             df["magnitude_drop"] = None
@@ -478,6 +482,12 @@ def run_occultation_path_coeff(
         # Converter as strings date_time do instante da ocultação em objetos datetime utc
         df["date_time"] = pd.to_datetime(df["date_time"], utc=True)
 
+        # Gera um hash unico para cada evento de predicao
+        df["hash_id"] = df.apply(
+            lambda x: generate_hash(x["name"], x["gaia_source_id"], x["date_time"]),
+            axis=1,
+        )
+
         # Altera a ordem das colunas para coincidir com a da tabela
         df = df.reindex(
             columns=[
@@ -587,6 +597,7 @@ def run_occultation_path_coeff(
                 "closest_approach_uncertainty",
                 "moon_illuminated_fraction",
                 "probability_of_centrality",
+                "hash_id",
             ]
         )
 

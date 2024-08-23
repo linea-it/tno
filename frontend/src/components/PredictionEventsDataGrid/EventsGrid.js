@@ -53,14 +53,6 @@ function PredictEventGrid() {
     return (
       <React.Fragment>
         <Grid container spacing={2}>
-          {/* <Grid item xs={12}>
-            <Stack direction='row' justifyContent='center' alignItems='center' spacing={1}>
-              <CircularProgress size='1rem' />
-              <Typography variant='body2' sx={{ mb: 2 }} color='text.secondary'>
-                {message}
-              </Typography>
-            </Stack>
-          </Grid> */}
           <Grid item xs={12}>
             <Skeleton variant='rectangular' width={'100%'} height={250} />
           </Grid>
