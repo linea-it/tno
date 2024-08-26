@@ -8,7 +8,8 @@ import numpy as np
 import pandas as pd
 import spiceypy as spice
 from astropy.time import Time
-from library import (
+from occviz import occultation_path_coeff
+from predict_occultation.pipeline.library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
@@ -22,7 +23,6 @@ from library import (
     get_moon_illuminated_fraction,
     ra_hms_to_deg,
 )
-from occviz import occultation_path_coeff
 
 
 def run_occultation_path_coeff(
@@ -139,8 +139,31 @@ def run_occultation_path_coeff(
         # -------------------------------------------------
         # Coeff paths e calculo de outros grandezas
         # -------------------------------------------------
-        coeff_paths = []
+        df["hash_id"] = None
+        df["gaia_source_id"] = None
+        df["g_star"] = None
+        df["apparent_magnitude"] = None
+        df["magnitude_drop"] = None
+        df["apparent_diameter"] = None
+        df["event_duration"] = None
+        df["instant_uncertainty"] = None
+        df["closest_approach_uncertainty"] = None
+        df["moon_separation"] = None
+        df["sun_elongation"] = None
+        df["moon_illuminated_fraction"] = None
+        df["e_ra_target"] = None
+        df["e_dec_target"] = None
+        df["e_ra"] = None
+        df["e_dec"] = None
+        df["have_path_coeff"] = False
+        df["occ_path_max_longitude"] = None
+        df["occ_path_min_longitude"] = None
+        df["occ_path_coeff"] = None
+        df["occ_path_is_nightside"] = None
+        df["occ_path_max_latitude"] = None
+        df["occ_path_min_latitude"] = None
 
+        coeff_paths = []
         # Para cada Ocultacao e necessario calcular o occultation path.
         for row in df.to_dict(orient="records"):
 
@@ -367,33 +390,6 @@ def run_occultation_path_coeff(
             df["occ_path_min_latitude"] = df_coeff["occ_path_min_latitude"]
 
             del df_coeff
-        # TODO: esse else pode ser removido, todas as colunas calculadas anteriormente precisam ser incluidas no df.
-        # Só entra neste else se não tiver nenhuma predição.
-        # O array coeff_paths na verdade está representando cada uma das predições.
-        else:
-            # df["gaia_source_id"] = None
-            df["g_star"] = None
-            df["apparent_magnitude"] = None
-            df["magnitude_drop"] = None
-            df["apparent_diameter"] = None
-            df["event_duration"] = None
-            df["instant_uncertainty"] = None
-            df["closest_approach_uncertainty"] = None
-            df["moon_separation"] = None
-            df["sun_elongation"] = None
-            df["moon_illuminated_fraction"] = None
-            df["e_ra_target"] = None
-            df["e_dec_target"] = None
-            df["e_ra"] = None
-            df["e_dec"] = None
-
-            df["have_path_coeff"] = False
-            df["occ_path_max_longitude"] = None
-            df["occ_path_min_longitude"] = None
-            df["occ_path_coeff"] = None
-            df["occ_path_is_nightside"] = None
-            df["occ_path_max_latitude"] = None
-            df["occ_path_min_latitude"] = None
 
         # -------------------------------------------------
         # MPC asteroid data used for prediction
