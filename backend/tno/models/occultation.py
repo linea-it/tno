@@ -414,6 +414,14 @@ class Occultation(models.Model):
         default=None,
         help_text="Indicates the probability that the event will happen at the indicated path",
     )
+
+    closest_approach_uncertainty_km = models.FloatField(
+        verbose_name="Closest approach uncertainty in km",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Uncertainty in geocentric closest approach (km)",
+    )
     # ------------------------------------------------------
     # Colunas que aparentemente não esto sendo preenchidas
     # ------------------------------------------------------

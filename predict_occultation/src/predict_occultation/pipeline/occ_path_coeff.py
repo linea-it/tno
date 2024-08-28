@@ -148,6 +148,7 @@ def run_occultation_path_coeff(
         df["event_duration"] = None
         df["instant_uncertainty"] = None
         df["closest_approach_uncertainty"] = None
+        df["closest_approach_uncertainty_km"] = None
         df["moon_separation"] = None
         df["sun_elongation"] = None
         df["moon_illuminated_fraction"] = None
@@ -177,6 +178,7 @@ def run_occultation_path_coeff(
                 "event_duration": None,
                 "instant_uncertainty": None,
                 "closest_approach_uncertainty": None,
+                "closest_approach_uncertainty_km": None,
                 "moon_separation": None,
                 "sun_elongation": None,
                 "moon_illuminated_fraction": None,
@@ -264,6 +266,7 @@ def run_occultation_path_coeff(
             # e calcula a incerteza no instante central
             e_ra_target, e_dec_target = None, None
             closest_approach_uncertainty = None
+            closest_approach_uncertainty_km = None
             instant_uncertainty = None
             if has_uncertainties:
                 datetime_object = dt.fromisoformat(row["date_time"])
@@ -292,6 +295,9 @@ def run_occultation_path_coeff(
                     e_dec_star=df_gaia_csv["dec_error"][star_index] / 1000,
                 )
 
+                closest_approach_uncertainty_km = np.tan(
+                    (closest_approach_uncertainty * np.pi) / (180 * 60 * 60)
+                ) * (row["delta"] * 149597870.7)
                 # instant_uncertainty = get_instant_uncertainty(row["position_angle"], row["delta"], row["velocity"],
                 #     e_ra_target, e_dec_target, e_ra_star=df_gaia_csv["ra_error"][star_index]/1000, e_dec_star=df_gaia_csv["dec_error"][star_index]/1000)
 
@@ -303,6 +309,7 @@ def run_occultation_path_coeff(
                     "event_duration": event_duration,
                     "instant_uncertainty": instant_uncertainty,
                     "closest_approach_uncertainty": closest_approach_uncertainty,
+                    "closest_approach_uncertainty_km": closest_approach_uncertainty_km,
                     "moon_separation": moon_separation,
                     "sun_elongation": sun_elongation,
                     "moon_illuminated_fraction": moon_illuminated_fraction,
@@ -372,6 +379,9 @@ def run_occultation_path_coeff(
             df["instant_uncertainty"] = df_coeff["instant_uncertainty"]
             df["closest_approach_uncertainty"] = df_coeff[
                 "closest_approach_uncertainty"
+            ]
+            df["closest_approach_uncertainty_km"] = df_coeff[
+                "closest_approach_uncertainty_km"
             ]
             df["moon_separation"] = df_coeff["moon_separation"]
             df["sun_elongation"] = df_coeff["sun_elongation"]
@@ -594,6 +604,7 @@ def run_occultation_path_coeff(
                 "moon_illuminated_fraction",
                 "probability_of_centrality",
                 "hash_id",
+                "closest_approach_uncertainty_km",
             ]
         )
 

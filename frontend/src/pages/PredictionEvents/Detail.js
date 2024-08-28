@@ -109,15 +109,13 @@ function PredictionEventDetail() {
       // },
       {
         title: 'Uncertainty in closest approach (1σ)',
-        value: (() => {
-          const ca_uncert =
-            Math.tan((occultation.closest_approach_uncertainty * Math.PI) / (180 * 60 * 60)) * (occultation.delta * 149597870.7)
-          return occultation.closest_approach_uncertainty
-            ? ca_uncert < 1
-              ? `${(ca_uncert * 1000).toFixed(0)} (m)`
-              : `${ca_uncert.toFixed(0)} (km)`
+        value: `${
+          occultation.closest_approach_uncertainty_km
+            ? occultation.closest_approach_uncertainty_km < 1
+              ? `${(occultation.closest_approach_uncertainty_km * 1000).toFixed(0)} (m)`
+              : `${occultation.closest_approach_uncertainty_km.toFixed(0)} (Km)`
             : null
-        })()
+        }`
       },
       {
         title: 'Moon separation',
