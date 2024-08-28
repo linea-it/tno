@@ -981,6 +981,7 @@ class Asteroid:
                     "closest_approach_uncertainty",
                     "moon_illuminated_fraction",
                     "probability_of_centrality",
+                    "hash_id",
                 ]
             )
 
@@ -996,6 +997,7 @@ class Asteroid:
             )
             data.seek(0)
 
+            # rowcount = dao.import_occultations(list(df.columns), data)
             rowcount = dao.import_occultations(data)
 
             del df

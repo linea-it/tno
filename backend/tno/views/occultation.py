@@ -9,6 +9,7 @@ import humanize
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.db.models import F, FloatField, Q, Value
+from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
@@ -29,6 +30,9 @@ class CharInFilter(django_filters.BaseInFilter, django_filters.CharFilter):
 
 class OccultationFilter(django_filters.FilterSet):
 
+    hash_id = django_filters.CharFilter(
+        label="Hash ID", field_name="hash_id", lookup_expr="exact"
+    )
     date_time = django_filters.DateTimeFromToRangeFilter()
 
     name = CharInFilter(field_name="name", lookup_expr="in")
@@ -142,6 +146,8 @@ class OccultationFilter(django_filters.FilterSet):
 class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     permission_classes = [AllowAny]
 
+    lookup_field = "hash_id"
+
     queryset = Occultation.objects.all()
     serializer_class = OccultationSerializer
 
@@ -211,33 +217,41 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         return lat, long, radius
 
-    # TODO: Estudar a possibilidade de um metodo asyncrono
-    # Teste Com metodo assincrono pode ser promissor!
-    # if None not in [lat, long, radius]:
-    #     # print(f"Latitude: {lat} Longitude: {long} Radius: {radius}")
-    #     job = group(
-    #         assync_visibility_from_coeff.s(
-    #             event_id=event.id,
-    #             latitude=lat,
-    #             longitude=long,
-    #             radius=radius,
-    #             date_time=event.date_time.isoformat(),
-    #             inputdict=event.occ_path_coeff,
-    #             # object_diameter=event.diameter,
-    #             # ring_diameter=event.diameter,
-    #             # n_elements= 1500,
-    #             # ignore_nighttime= False,
-    #             # latitudinal= False
-    #          ) for event in queryset)
+    # TODO: Remover este metodo depois que todas as predições tiverem hash_id.
+    # Este metodo sobrescreve o metodo base que retorna o objeto pela lookup_field na url.
+    # Este metodo foi criado para permitir a busca pelo ID do objeto no banco de dados visando manter a compatibilidade com urls antigas.
+    def get_object(self):
+        """
+        Returns the object the view is displaying.
 
-    #     result = job.apply_async()
-    #     while result.ready() == False:
-    #         print(f"Completed: {result.completed_count()}")
-    #         sleep(1)
-    # t1 = datetime.now()
-    # dt = t1 - t0
-    # logger.info(f"Query Completed in {humanize.naturaldelta(dt)}")
-    # return queryset
+        You may want to override this if you need to provide non-standard
+        queryset lookups.  Eg if objects are referenced using multiple
+        keyword arguments in the url conf.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+
+        assert lookup_url_kwarg in self.kwargs, (
+            "Expected view %s to be called with a URL keyword argument "
+            'named "%s". Fix your URL conf, or set the `.lookup_field` '
+            "attribute on the view correctly."
+            % (self.__class__.__name__, lookup_url_kwarg)
+        )
+
+        try:
+            id = int(self.kwargs[lookup_url_kwarg])
+            filter_kwargs = {"pk": id}
+        except:
+            filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+
+        obj = get_object_or_404(queryset, **filter_kwargs)
+
+        # May raise a permission denied
+        self.check_object_permissions(self.request, obj)
+
+        return obj
 
     def list(self, request):
         t0 = datetime.now()
@@ -369,7 +383,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         },
     )
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
-    def get_or_create_map(self, request, pk):
+    def get_or_create_map(self, request, pk=None, hash_id=None):
         """Retorna o mapa para o evento de ocultação.
 
         Verifica se já existe mapa para o evento especifico para o ID.
@@ -500,7 +514,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
     @extend_schema(exclude=True)
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
-    def get_star_by_event(self, request, pk=None):
+    def get_star_by_event(self, request, pk=None, hash_id=None):
         pre_occ = self.get_object()
 
         source_id = pre_occ.gaia_source_id

@@ -1,7 +1,10 @@
 #!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
+import base64
+import hashlib
 import os
 import re
+from datetime import datetime, timedelta
 
 import astropy.units as u
 import numpy as np
@@ -9,6 +12,46 @@ import spiceypy as spice
 from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body, get_sun
 from astropy.time import Time
 from scipy.interpolate import interp1d
+
+
+def normalize_to_nearest_hour(dt):
+    # Ensure input is a datetime object
+    if not isinstance(dt, datetime):
+        raise TypeError("Input must be a datetime object")
+
+    # Extract the minute component
+    minute = dt.minute
+
+    # If minutes >= 30, round up to the next hour
+    if minute >= 30:
+        dt = dt + timedelta(hours=1)
+
+    # Normalize to the nearest hour by setting minutes and seconds to zero
+    normalized_dt = dt.replace(minute=0, second=0, microsecond=0)
+
+    return normalized_dt
+
+
+def generate_hash(name: str, source_id: int, date_time: datetime):
+    """
+    Generates a hash based on the given parameters.
+
+    Args:
+        name (str): The name parameter.
+        source_id (int): The source ID parameter.
+        date_time (datetime): The date and time parameter.
+
+    Returns:
+        str: The generated hash.
+
+    """
+    # Convert date and time of event to the nearest hour
+    nearest_hour = normalize_to_nearest_hour(date_time)
+    # Generate the identifier string with asteroid name, star gaia source id, and nearest hour
+    identifier = f"{name} {source_id} {nearest_hour.strftime('%Y-%m-%d %H:%M:%S')}"
+    md5 = hashlib.md5(identifier.encode("utf-8")).digest()
+    hash = base64.urlsafe_b64encode(md5).decode("utf-8").rstrip("=")
+    return hash
 
 
 def check_leapsec(filename):

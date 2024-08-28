@@ -9,6 +9,7 @@ import time
 import traceback
 from datetime import datetime, timezone
 from io import StringIO
+from time import sleep
 
 import humanize
 import pandas as pd
@@ -209,9 +210,11 @@ def remove_job_directory(jobid):
     print(f"Clear Job path: [{job_path}]")
     try:
         shutil.rmtree(job_path, ignore_errors=False)
+        print("Removed directory using shutil: [%s]" % job_path)
     except:
         cmd = f"rm -rf {job_path}"
-        print(f"Removeu diretorio: [{cmd}]")
+        print(f"Remove directory CMD: [{cmd}]")
+        print("Removed directory using rm -rf: [%s]" % job_path)
         os.system(cmd)
 
 
@@ -263,6 +266,10 @@ def rerun_job(jobid: int):
     """Apaga os dados no DB referente ao job e remove o diretorio.
     Altera o status do Job para idle.
     """
+    print("------------------- Rerun Job -------------------")
+    # Clear Directory
+    remove_job_directory(jobid)
+
     print(f"Rerun Job: [{jobid}]")
     daojob = PredictOccultationJobDao()
 
@@ -275,10 +282,9 @@ def rerun_job(jobid: int):
     daostatus = PredictOccultationJobStatusDao()
     daostatus.delete_by_job_id(jobid)
 
-    # Clear Directory
-    remove_job_directory(jobid)
-
+    sleep(1)
     run_job(jobid)
+    print("-------------------------------------------------")
 
 
 def update_job(job) -> None:
@@ -587,7 +593,7 @@ def submit_tasks(jobid: int):
         # Asteroid contendo seus arquivos de inputs e outputs.
         # Atenção: Precisar permitir uma quantidade grande de acessos de leitura e escrita simultaneas.
         ASTEROID_PATH = current_path.joinpath("asteroids")
-        ASTEROID_PATH.mkdir(parents=True, exist_ok=False)
+        ASTEROID_PATH.mkdir(parents=True, exist_ok=True)
 
         log.debug(f"Asteroid PATH: [{ASTEROID_PATH}]")
 
