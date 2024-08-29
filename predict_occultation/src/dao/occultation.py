@@ -58,3 +58,16 @@ class OccultationDao(DBBase):
         rowcount = self.import_with_copy_expert(sql, data)
 
         return rowcount
+
+    def upinsert_occultations(self, df):
+
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            # Insert data into the table
+            df.to_sql(
+                "tno_occultation",
+                con=con,
+                if_exists="append",
+                index=False,
+                method="multi",
+            )

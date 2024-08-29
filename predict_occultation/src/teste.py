@@ -7,12 +7,14 @@ from pathlib import Path
 
 import colorlog
 from asteroid import Asteroid
+import pandas as pd
+from dao.occultation import OccultationDao
 
-log = logging.getLogger("teste")
-log.setLevel(logging.DEBUG)
-consoleFormatter = logging.Formatter("[%(levelname)s] %(message)s")
-consoleHandler = logging.StreamHandler(sys.stdout)
-log.addHandler(consoleHandler)
+# log = logging.getLogger("teste")
+# log.setLevel(logging.DEBUG)
+# consoleFormatter = logging.Formatter("[%(levelname)s] %(message)s")
+# consoleHandler = logging.StreamHandler(sys.stdout)
+# log.addHandler(consoleHandler)
 
 
 log = colorlog.getLogger("teste")
@@ -24,14 +26,46 @@ log.setLevel(logging.DEBUG)
 
 log.info("------- Asteroid Class -------")
 
-base_path = Path("/app/outputs/predict_occultations/5/asteroids/2006BK86")
-
-from predict_occultation.pipeline.occ_path_coeff import run_occultation_path_coeff
+base_path = Path("/app/outputs/predict_occultations/6/asteroids/Chiron")
 
 pred_table = base_path.joinpath("occultation_table.csv")
-obj_dict = json.load(base_path.joinpath("2006BK86.json").open())
-mag_and_uncert = base_path.joinpath("apmag_and_uncertainties.json")
-run_occultation_path_coeff(pred_table, obj_dict, mag_and_uncert)
+print(pred_table)
+df = pd.read_csv(
+    pred_table,
+    delimiter=";",
+)
+
+def postgres_upsert(table, conn, keys, data_iter):
+    from sqlalchemy.dialects.postgresql import insert
+    from sqlalchemy.dialects import postgresql
+    
+    data = [dict(zip(keys, row)) for row in data_iter]
+
+    insert_statement = insert(table.table).values(data)
+    upsert_statement = insert_statement.on_conflict_do_update(
+        constraint=f"hash_id",
+        set_={c.key: c for c in insert_statement.excluded},
+    )
+    # print(upsert_statement.compile(dialect=postgresql.dialect()))
+    conn.execute(upsert_statement)
+
+
+print(df.head(5))
+dao = OccultationDao(log=log)
+engine = dao.get_db_engine()
+# dao.upinsert_occultations(df)
+with engine.connect() as conn:
+    df.to_sql(
+        "tno_occultation",
+        con=conn,
+        if_exists="append",
+        method=postgres_upsert,
+        index=False,
+    ) 
+
+# obj_dict = json.load(base_path.joinpath("2006BK86.json").open())
+# mag_and_uncert = base_path.joinpath("apmag_and_uncertainties.json")
+# run_occultation_path_coeff(pred_table, obj_dict, mag_and_uncert)
 
 # try:
 #     a = Asteroid(
@@ -124,3 +158,16 @@ run_occultation_path_coeff(pred_table, obj_dict, mag_and_uncert)
 # # md5 = hashlib.md5(a.encode('utf-8')).digest()
 # # hash = base64.urlsafe_b64encode(md5).decode('utf-8').rstrip("=")
 # # print(hash)
+
+
+# def postgres_upsert(table, conn, keys, data_iter):
+#     from sqlalchemy.dialects.postgresql import insert
+
+#     data = [dict(zip(keys, row)) for row in data_iter]
+
+#     insert_statement = insert(table.table).values(data)
+#     upsert_statement = insert_statement.on_conflict_do_update(
+#         constraint=f"{table.table.name}_pkey",
+#         set_={c.key: c for c in insert_statement.excluded},
+#     )
+#     conn.execute(upsert_statement)

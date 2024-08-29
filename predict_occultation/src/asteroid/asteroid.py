@@ -846,7 +846,7 @@ class Asteroid:
             dao = OccultationDao(log=log)
             # Apaga as occultations já registradas para este asteroid antes de inserir.
             # IMPORTANTE! apaga mesmo que não tenham sido gerados resultados.
-            dao.delete_by_asteroid_name_period(self.name, start_period, end_period)
+            # dao.delete_by_asteroid_name_period(self.name, start_period, end_period)
 
             if "filename" not in self.predict_occultation:
                 log.warning("There is no file with the predictions.")
@@ -862,7 +862,6 @@ class Asteroid:
                 return 0
 
             # Le o arquivo occultation table e cria um dataframe
-            # occultation_date;ra_star_candidate;dec_star_candidate;ra_object;dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde
             df = pd.read_csv(
                 predict_table_path,
                 delimiter=";",
