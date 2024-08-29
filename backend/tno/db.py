@@ -28,7 +28,7 @@ from sqlalchemy.sql.expression import ClauseElement, Executable, between, litera
 
 class DBBase:
 
-    def __init__(self, db_name: str = "default", pool=False):
+    def __init__(self, pool=False, db_name: str = "default"):
 
         self.db_name = db_name
 

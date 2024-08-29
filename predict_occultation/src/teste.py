@@ -6,8 +6,8 @@ import traceback
 from pathlib import Path
 
 import colorlog
-from asteroid import Asteroid
 import pandas as pd
+from asteroid import Asteroid
 from dao.occultation import OccultationDao
 
 # log = logging.getLogger("teste")
@@ -26,7 +26,7 @@ log.setLevel(logging.DEBUG)
 
 log.info("------- Asteroid Class -------")
 
-base_path = Path("/app/outputs/predict_occultations/6/asteroids/Chiron")
+base_path = Path("/app/outputs/predict_occultations/2/asteroids/Chiron")
 
 pred_table = base_path.joinpath("occultation_table.csv")
 print(pred_table)
@@ -35,33 +35,36 @@ df = pd.read_csv(
     delimiter=";",
 )
 
-def postgres_upsert(table, conn, keys, data_iter):
-    from sqlalchemy.dialects.postgresql import insert
-    from sqlalchemy.dialects import postgresql
-    
-    data = [dict(zip(keys, row)) for row in data_iter]
+# def postgres_upsert(table, conn, keys, data_iter):
+#     from sqlalchemy.dialects.postgresql import insert
+#     from sqlalchemy.dialects import postgresql
 
-    insert_statement = insert(table.table).values(data)
-    upsert_statement = insert_statement.on_conflict_do_update(
-        constraint=f"hash_id",
-        set_={c.key: c for c in insert_statement.excluded},
-    )
-    # print(upsert_statement.compile(dialect=postgresql.dialect()))
-    conn.execute(upsert_statement)
+#     data = [dict(zip(keys, row)) for row in data_iter]
+#     print(data)
+
+# insert_statement = insert(table.table).values(data)
+# upsert_statement = insert_statement.on_conflict_do_update(
+#     constraint=f"tno_occultation_hash_id_key",
+#     set_={c.key: c for c in insert_statement.excluded},
+# )
+# # print(upsert_statement.compile(dialect=postgresql.dialect()))
+# conn.execute(upsert_statement)
 
 
 print(df.head(5))
 dao = OccultationDao(log=log)
 engine = dao.get_db_engine()
-# dao.upinsert_occultations(df)
-with engine.connect() as conn:
-    df.to_sql(
-        "tno_occultation",
-        con=conn,
-        if_exists="append",
-        method=postgres_upsert,
-        index=False,
-    ) 
+rowcount = dao.upinsert_occultations(df)
+print(rowcount)
+# with engine.connect() as conn:
+#     df.to_sql(
+#         "tno_occultation",
+#         con=conn,
+#         if_exists="append",
+#         method=postgres_upsert,
+#         index=False,
+#     )
+
 
 # obj_dict = json.load(base_path.joinpath("2006BK86.json").open())
 # mag_and_uncert = base_path.joinpath("apmag_and_uncertainties.json")

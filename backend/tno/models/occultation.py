@@ -893,6 +893,9 @@ class Occultation(models.Model):
     # este campo sempre representa o momento da ultima atualização deste evento de
     # ocultação.
     created_at = models.DateTimeField(verbose_name="Created at", auto_now_add=True)
+    # Data de atualização do registro,
+    # Após a criação do hash_id, os registro podem ser atualizadas.
+    updated_at = models.DateTimeField(verbose_name="Updated at", auto_now=True)
 
     job_id = models.IntegerField(
         verbose_name="Prediction Job",

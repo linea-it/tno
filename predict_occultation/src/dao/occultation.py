@@ -1,5 +1,22 @@
+# from sqlalchemy.dialects import postgresql
+import pandas as pd
 from dao.db_base import DBBase
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.sql import and_, delete
+
+
+def occultations_upsert(table, conn, keys, data_iter):
+
+    data = [dict(zip(keys, row)) for row in data_iter]
+
+    insert_statement = insert(table.table).values(data)
+    upsert_statement = insert_statement.on_conflict_do_update(
+        constraint=f"tno_occultation_hash_id_key",
+        set_={c.key: c for c in insert_statement.excluded},
+    )
+    # print(upsert_statement.compile(dialect=postgresql.dialect()))
+    result = conn.execute(upsert_statement)
+    return result.rowcount
 
 
 class OccultationDao(DBBase):
@@ -61,13 +78,17 @@ class OccultationDao(DBBase):
 
     def upinsert_occultations(self, df):
 
+        # Add updated_at column
+        df["updated_at"] = pd.to_datetime("now", utc=True)
+
         engine = self.get_db_engine()
-        with engine.connect() as con:
-            # Insert data into the table
-            df.to_sql(
+        with engine.connect() as conn:
+            rowcount = df.to_sql(
                 "tno_occultation",
-                con=con,
+                con=conn,
                 if_exists="append",
+                method=occultations_upsert,
                 index=False,
-                method="multi",
             )
+
+            return rowcount
