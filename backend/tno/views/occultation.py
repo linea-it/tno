@@ -58,7 +58,7 @@ class OccultationFilter(django_filters.FilterSet):
 
     magnitude_drop = django_filters.RangeFilter(field_name="magnitude_drop")
 
-    closest_approach_uncertainty = django_filters.NumberFilter(
+    closest_approach_uncertainty_km = django_filters.RangeFilter(
         field_name="closest_approach_uncertainty_km"
     )
 
@@ -141,6 +141,7 @@ class OccultationFilter(django_filters.FilterSet):
             "magnitude_drop",
             "diameter",
             "event_duration",
+            "closest_approach_uncertainty_km",
             "local_solar_time",
             "nightside",
             "jobid",

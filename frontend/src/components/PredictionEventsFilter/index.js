@@ -157,7 +157,7 @@ function PredictionEventsFilter() {
           <Grid item xs={12}>
             <Divider />
           </Grid>
-          <Grid item xs={2} container>
+          <Grid item xs={12} md={6} lg={4}>
             <MaginitudeDropSelect
               value={queryOptions.filters.maginitudeDropMin}
               onChange={(newValue) => {
@@ -173,7 +173,7 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={2} container>
+          <Grid item xs={12} md={6} lg={4}>
             <EventDurationField
               value={queryOptions.filters.eventDurationMin}
               onChange={(value) => {
@@ -189,7 +189,23 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={5} container>
+          <Grid item xs={12} md={6} lg={4}>
+            <ClosestApproachUncertaintyField
+              value={queryOptions.filters.closestApproachUncertainty}
+              onChange={(value) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      closestApproachUncertainty: value
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={8}>
             <ObjectDiameterFilter
               value={{
                 diameterMin: queryOptions.filters.diameterMin,
@@ -202,22 +218,6 @@ function PredictionEventsFilter() {
                     filters: {
                       ...prev.filters,
                       ...value
-                    }
-                  }
-                })
-              }}
-            />
-          </Grid>
-          <Grid item xs={3} container>
-            <ClosestApproachUncertaintyField
-              value={queryOptions.filters.closestApproachUncertainty}
-              onChange={(value) => {
-                setQueryOptions((prev) => {
-                  return {
-                    ...prev,
-                    filters: {
-                      ...prev.filters,
-                      closestApproachUncertainty: value
                     }
                   }
                 })
