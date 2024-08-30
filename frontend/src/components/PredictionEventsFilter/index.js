@@ -17,6 +17,7 @@ import { PredictionEventsContext } from '../../contexts/PredictionContext'
 import SolarTimeFilter from '../SolarTimeFilter'
 import Divider from '@mui/material/Divider'
 import Button from '@mui/material/Button'
+import ClosestApproachUncertaintyField from '../ClosestApproachUncertaintyField/index'
 
 function PredictionEventsFilter() {
   const { queryOptions, setQueryOptions, clearFilter } = useContext(PredictionEventsContext)
@@ -156,7 +157,7 @@ function PredictionEventsFilter() {
           <Grid item xs={12}>
             <Divider />
           </Grid>
-          <Grid item xs={3} container>
+          <Grid item xs={12} md={6} lg={4}>
             <MaginitudeDropSelect
               value={queryOptions.filters.maginitudeDropMin}
               onChange={(newValue) => {
@@ -172,7 +173,7 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={3} container>
+          <Grid item xs={12} md={6} lg={4}>
             <EventDurationField
               value={queryOptions.filters.eventDurationMin}
               onChange={(e) => {
@@ -188,7 +189,23 @@ function PredictionEventsFilter() {
               }}
             />
           </Grid>
-          <Grid item xs={6} container>
+          <Grid item xs={12} md={6} lg={4}>
+            <ClosestApproachUncertaintyField
+              value={queryOptions.filters.closestApproachUncertainty}
+              onChange={(value) => {
+                setQueryOptions((prev) => {
+                  return {
+                    ...prev,
+                    filters: {
+                      ...prev.filters,
+                      closestApproachUncertainty: value
+                    }
+                  }
+                })
+              }}
+            />
+          </Grid>
+          <Grid item xs={12} md={6} lg={8}>
             <ObjectDiameterFilter
               value={{
                 diameterMin: queryOptions.filters.diameterMin,

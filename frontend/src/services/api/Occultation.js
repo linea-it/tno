@@ -160,6 +160,10 @@ const parsePredictEventsFilters = (params) => {
       newFilters.event_duration_min = filters.eventDurationMin
     }
 
+    if (filters.closestApproachUncertainty !== undefined && filters.closestApproachUncertainty !== '') {
+      newFilters.closest_approach_uncertainty_km_max = filters.closestApproachUncertainty
+    }
+
     // Filtro por Object Diameter Range min, max
     if (filters.diameterMin !== undefined && filters.diameterMin !== '') {
       newFilters.diameter_min = filters.diameterMin

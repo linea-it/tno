@@ -978,6 +978,7 @@ class Asteroid:
                     "moon_illuminated_fraction",
                     "probability_of_centrality",
                     "hash_id",
+                    "closest_approach_uncertainty_km",
                 ]
             )
 
