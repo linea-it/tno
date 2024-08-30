@@ -593,7 +593,7 @@ def submit_tasks(jobid: int):
         # Asteroid contendo seus arquivos de inputs e outputs.
         # Atenção: Precisar permitir uma quantidade grande de acessos de leitura e escrita simultaneas.
         ASTEROID_PATH = current_path.joinpath("asteroids")
-        ASTEROID_PATH.mkdir(parents=True, exist_ok=True)
+        ASTEROID_PATH.mkdir(parents=True, exist_ok=DEBUG)
 
         log.debug(f"Asteroid PATH: [{ASTEROID_PATH}]")
 

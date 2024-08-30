@@ -4,8 +4,8 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 
 function importBuildTarget() {
-  console.log('NODE_ENV: %o', process.env.NODE_ENV)
-  console.log('REACT_APP_BUILD_TARGET: %o', process.env.REACT_APP_BUILD_TARGET)
+  // console.log('NODE_ENV: %o', process.env.NODE_ENV)
+  // console.log('REACT_APP_BUILD_TARGET: %o', process.env.REACT_APP_BUILD_TARGET)
   // DefinePlugin in webpack.config.js will substitute
   // process.env.REACT_APP_BUILD_TARGET with it's value at build time.
   // https://webpack.js.org/plugins/define-plugin/

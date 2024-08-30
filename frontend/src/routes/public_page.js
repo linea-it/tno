@@ -7,6 +7,9 @@ import PublicAboutUs from '../pages/PublicPortal/AboutUs/index'
 import PublicContact from '../pages/PublicPortal/Contact/index'
 import FooterSupporters from '../pages/PublicPortal/Footer/FooterSupporters'
 import PredictionEventDetail from '../pages/PredictionEvents/Detail'
+import NewsletterSettings from '../pages/PublicPortal/Newsletter/NewsletterSettings'
+import EventFilterDetail from '../pages/PublicPortal/Newsletter/EventFilterDetail'
+import PublicLogin from '../pages/PublicPortal/Login'
 
 const PublicPortalPage = ({ children }) => {
   return (
@@ -41,7 +44,6 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
-
       <Route
         isHomePage
         exact
@@ -62,7 +64,38 @@ export function PublicPageRoutes() {
           </PublicPortalPage>
         }
       />
-      {/* <Route isHomePage exact path='/documentation' element={<Navigate to='/docs/' />} /> */}
+      <Route
+        isHomePage
+        exact
+        path='/newsletter_settings'
+        element={
+          <PublicPortalPage>
+            <NewsletterSettings />
+          </PublicPortalPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/new_event_filter/'
+        element={
+          <PublicPortalPage>
+            <EventFilterDetail />
+          </PublicPortalPage>
+        }
+      />
+      <Route
+        isHomePage
+        exact
+        path='/event_filter_detail/:id'
+        element={
+          <PublicPortalPage>
+            <EventFilterDetail />
+          </PublicPortalPage>
+        }
+      />
+
+      <Route exact path='/login/' element={<PublicLogin />} />
     </>
   )
 }

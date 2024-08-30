@@ -28,8 +28,11 @@ from sqlalchemy.sql.expression import ClauseElement, Executable, between, litera
 
 class DBBase:
 
-    def __init__(self, db_name: str = "default", pool=False):
-
+    def __init__(
+        self,
+        pool=False,
+        db_name="default",
+    ):
         self.db_name = db_name
 
         with warnings.catch_warnings():
@@ -48,7 +51,6 @@ class DBBase:
         self.logger = logging.getLogger("django")
 
     def get_db_uri(self):
-
         db_admin = settings.DATABASES[self.db_name]
 
         # postgresql+psycopg2
