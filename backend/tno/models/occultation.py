@@ -11,7 +11,15 @@ from tno.models import Asteroid
 # TODO Squash Migrations:
 # https://coderbook.com/@marcus/how-to-squash-and-merge-django-migrations/
 class Occultation(models.Model):
-
+    hash_id = models.CharField(
+        max_length=26,
+        verbose_name="Hash ID",
+        null=True,
+        blank=True,
+        default=None,
+        help_text="Unique hash identifier for the prediction event",
+        unique=True,
+    )
     # -------------------------------------------------
     # Identificação do Objeto
     # -------------------------------------------------
@@ -91,6 +99,7 @@ class Occultation(models.Model):
     # -------------------------------------------------
     # Informações da prediçao
     # -------------------------------------------------
+
     date_time = models.DateTimeField(
         verbose_name="Date Time", auto_now_add=False, null=False, blank=False
     )
@@ -884,6 +893,9 @@ class Occultation(models.Model):
     # este campo sempre representa o momento da ultima atualização deste evento de
     # ocultação.
     created_at = models.DateTimeField(verbose_name="Created at", auto_now_add=True)
+    # Data de atualização do registro,
+    # Após a criação do hash_id, os registro podem ser atualizadas.
+    updated_at = models.DateTimeField(verbose_name="Updated at", auto_now=True)
 
     job_id = models.IntegerField(
         verbose_name="Prediction Job",
@@ -963,6 +975,11 @@ class Occultation(models.Model):
                 ]
             ),
             # event indexes
+            models.Index(
+                fields=[
+                    "hash_id",
+                ]
+            ),
             models.Index(
                 fields=[
                     "date_time",

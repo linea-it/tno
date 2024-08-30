@@ -48,7 +48,12 @@ export const filter_by_location = ({
   return api.get('/occultations/filter_location/', { params })
 }
 
-export const getOccultationById = ({ id }) => api.get(`/occultations/${id}`).then((res) => res.data)
+export const getOccultationById = ({ id }) => {
+  if (!id) {
+    return
+  }
+  return api.get(`/occultations/${id}`).then((res) => res.data)
+}
 
 export const getNextTwenty = ({ page, pageSize, ordering }) => {
   const params = {

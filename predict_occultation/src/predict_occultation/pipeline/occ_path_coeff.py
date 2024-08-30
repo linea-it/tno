@@ -8,10 +8,12 @@ import numpy as np
 import pandas as pd
 import spiceypy as spice
 from astropy.time import Time
-from library import (
+from occviz import occultation_path_coeff
+from predict_occultation.pipeline.library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
+    generate_hash,
     get_apparent_diameter,
     get_closest_approach_uncertainty,
     get_event_duration,
@@ -21,7 +23,6 @@ from library import (
     get_moon_illuminated_fraction,
     ra_hms_to_deg,
 )
-from occviz import occultation_path_coeff
 
 
 def run_occultation_path_coeff(
@@ -138,12 +139,36 @@ def run_occultation_path_coeff(
         # -------------------------------------------------
         # Coeff paths e calculo de outros grandezas
         # -------------------------------------------------
-        coeff_paths = []
+        df["hash_id"] = None
+        df["gaia_source_id"] = None
+        df["g_star"] = None
+        df["apparent_magnitude"] = None
+        df["magnitude_drop"] = None
+        df["apparent_diameter"] = None
+        df["event_duration"] = None
+        df["instant_uncertainty"] = None
+        df["closest_approach_uncertainty"] = None
+        df["moon_separation"] = None
+        df["sun_elongation"] = None
+        df["moon_illuminated_fraction"] = None
+        df["e_ra_target"] = None
+        df["e_dec_target"] = None
+        df["e_ra"] = None
+        df["e_dec"] = None
+        df["have_path_coeff"] = False
+        df["occ_path_max_longitude"] = None
+        df["occ_path_min_longitude"] = None
+        df["occ_path_coeff"] = None
+        df["occ_path_is_nightside"] = None
+        df["occ_path_max_latitude"] = None
+        df["occ_path_min_latitude"] = None
 
+        coeff_paths = []
         # Para cada Ocultacao e necessario calcular o occultation path.
         for row in df.to_dict(orient="records"):
 
             new_row = {
+                "hash_id": None,
                 "gaia_source_id": None,
                 "gaia_g_mag": None,
                 "apparent_magnitude": None,
@@ -338,7 +363,6 @@ def run_occultation_path_coeff(
 
         if len(coeff_paths) > 0:
             df_coeff = pd.DataFrame.from_dict(coeff_paths)
-
             df["gaia_source_id"] = df_coeff["gaia_source_id"]
             df["g_star"] = df_coeff["gaia_g_mag"]
             df["apparent_magnitude"] = df_coeff["apparent_magnitude"]
@@ -366,30 +390,6 @@ def run_occultation_path_coeff(
             df["occ_path_min_latitude"] = df_coeff["occ_path_min_latitude"]
 
             del df_coeff
-        else:
-            df["gaia_source_id"] = None
-            df["g_star"] = None
-            df["apparent_magnitude"] = None
-            df["magnitude_drop"] = None
-            df["apparent_diameter"] = None
-            df["event_duration"] = None
-            df["instant_uncertainty"] = None
-            df["closest_approach_uncertainty"] = None
-            df["moon_separation"] = None
-            df["sun_elongation"] = None
-            df["moon_illuminated_fraction"] = None
-            df["e_ra_target"] = None
-            df["e_dec_target"] = None
-            df["e_ra"] = None
-            df["e_dec"] = None
-
-            df["have_path_coeff"] = False
-            df["occ_path_max_longitude"] = None
-            df["occ_path_min_longitude"] = None
-            df["occ_path_coeff"] = None
-            df["occ_path_is_nightside"] = None
-            df["occ_path_max_latitude"] = None
-            df["occ_path_min_latitude"] = None
 
         # -------------------------------------------------
         # MPC asteroid data used for prediction
@@ -477,6 +477,12 @@ def run_occultation_path_coeff(
 
         # Converter as strings date_time do instante da ocultação em objetos datetime utc
         df["date_time"] = pd.to_datetime(df["date_time"], utc=True)
+
+        # Gera um hash unico para cada evento de predicao
+        df["hash_id"] = df.apply(
+            lambda x: generate_hash(x["name"], x["gaia_source_id"], x["date_time"]),
+            axis=1,
+        )
 
         # Altera a ordem das colunas para coincidir com a da tabela
         df = df.reindex(
@@ -587,6 +593,7 @@ def run_occultation_path_coeff(
                 "closest_approach_uncertainty",
                 "moon_illuminated_fraction",
                 "probability_of_centrality",
+                "hash_id",
             ]
         )
 

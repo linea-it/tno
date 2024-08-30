@@ -91,16 +91,24 @@ class AsteroidSerializer(serializers.ModelSerializer):
 
 
 class OccultationSerializer(serializers.ModelSerializer):
+    id = serializers.SerializerMethodField()
     map_url = serializers.SerializerMethodField()
 
     class Meta:
         model = Occultation
         exclude = (
+            "hash_id",
             "occ_path_min_longitude",
             "occ_path_max_longitude",
             "occ_path_min_latitude",
             "occ_path_max_latitude",
         )
+
+    def get_id(self, obj):
+        if obj.hash_id != None:
+            return obj.hash_id
+        else:
+            return obj.id
 
     def get_map_url(self, obj):
         request = self.context.get("request")
