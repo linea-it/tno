@@ -9,7 +9,7 @@ from typing import Optional
 from celery import group, shared_task
 from django.conf import settings
 from tno.models import Occultation
-from tno.occviz import occultation_path_coeff2, visibility_from_coeff
+from tno.occviz import occultation_path_coeff, visibility_from_coeff
 from tno.predict_job import (
     run_predicition_for_upper_end_update,
     run_prediction_for_updated_asteroids,
@@ -119,7 +119,7 @@ def create_prediction_maps():
 @shared_task
 def calculate_occultation_path(occultation_id, **kwargs):
     print(f"calculate_occultation_path: {occultation_id}")
-    output = occultation_path_coeff2(**kwargs)
+    output = occultation_path_coeff(**kwargs)
     print(output)
     occ_event = Occultation.objects.get(pk=occultation_id)
 
