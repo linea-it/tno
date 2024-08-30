@@ -61,15 +61,12 @@ function NewsletterSettings() {
         </Grid>
         <Grid item xs={12} mt={4} sx={{ textAlign: 'center' }}>
           <Typography color='text.primary' variant='h4' gutterBottom>
-            Olá, {info?.email}
+            Hello, {info?.email}!
           </Typography>
         </Grid>
         <Grid item xs={12} mt={2}>
           <Card>
-            <CardHeader
-              title='Filtros e Configurações'
-              subheader='Gerencie suas preferencias de filtro e frequencia dos emails.'
-            ></CardHeader>
+            <CardHeader title='Filter Settings' subheader='Manage your filter preferences and email frequency settings.'></CardHeader>
             <CardContent></CardContent>
           </Card>
         </Grid>
@@ -86,8 +83,8 @@ function NewsletterSettings() {
         <Grid item xs={12} mt={2}>
           <Card>
             <CardHeader
-              title='Filtros'
-              subheader='Gerencie suas preferencias de filtro e frequencia dos emails.'
+              title='Email Filters'
+              subheader='Manage your filter preferences and email frequency settings.'
               action={
                 <Button variant='contained' color='primary' startIcon={<AddIcon />} onClick={handleAddFilterClick}>
                   New Filter
@@ -101,7 +98,7 @@ function NewsletterSettings() {
         </Grid>
         <Grid item xs={12} mt={2}>
           <Card>
-            <CardHeader title='Assinatura' subheader='Ative ou desative o recebimento de emails.'></CardHeader>
+            <CardHeader title='Email Subscription' subheader='Enable or disable email notifications.'></CardHeader>
             <CardContent>
               <SubscriptionStatus value={info?.unsubscribe} onChange={loadData} />
             </CardContent>

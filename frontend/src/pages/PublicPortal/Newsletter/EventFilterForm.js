@@ -11,8 +11,8 @@ import SolarTimeFilter from '../../../components/SolarTimeFilter/index'
 import EventDurationField from '../../../components/EventDurationField/index'
 import MaginitudeDropSelect from '../../../components/MaginitudeDropSelect/index'
 import ObjectDiameterFilter from '../../../components/ObjectDiameterFilter/index'
-
 import GeoFilter from '../../../components/Newsletter/GeoFilter/index'
+
 export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
     const newData = { ...data, [e.target.name]: e.target.value }
@@ -26,7 +26,7 @@ export default function EventFilterForm({ data, onChange }) {
           <FrequencyTypeSelect value={data.frequency} onChange={handleChange} name='frequency' />
         </Stack>
         <TextField
-          label='Description'
+          label='Filter Description'
           name='description'
           value={data.description !== null ? data.description : ''}
           onChange={handleChange}
@@ -111,7 +111,12 @@ export default function EventFilterForm({ data, onChange }) {
             onChange(newData)
           }}
         />
-        <EventDurationField name='event_duration' value={data.event_duration !== null ? data.event_duration : ''} onChange={handleChange} />
+        <EventDurationField
+          name='event_duration'
+          value={data.event_duration !== null ? data.event_duration : ''}
+          onChange={handleChange}
+          label='Event Duration (seconds)'
+        />
         <Divider />
         <GeoFilter
           value={{

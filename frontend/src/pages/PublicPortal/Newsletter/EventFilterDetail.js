@@ -19,6 +19,7 @@ import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
 dayjs.extend(utc)
 dayjs.extend(timezone)
+
 function EventFilterDetail() {
   const navigate = useNavigate()
   const { id } = useParams()
@@ -56,7 +57,7 @@ function EventFilterDetail() {
         setinitialData(res.data)
       })
       .catch((res) => {
-        console.log('Falhou ao Carregar os dados', res)
+        console.log('Failed to load data', res)
       })
   }
 
@@ -84,7 +85,7 @@ function EventFilterDetail() {
         toPreferences()
       })
       .catch((res) => {
-        console.log('Falhou ao criar o filtro', res)
+        console.log('Failed to create the filter', res)
       })
   }
 
@@ -93,9 +94,10 @@ function EventFilterDetail() {
       .then((res) => {
         setinitialData(res.data)
         setCurrentData(res.data)
+        toPreferences()
       })
       .catch((res) => {
-        console.log('Falhou ao atualizar')
+        console.log('Failed to update the filter')
       })
   }
 
@@ -110,30 +112,30 @@ function EventFilterDetail() {
             <Link underline='hover' color='inherit' href='/newsletter_settings/'>
               Newsletter Settings
             </Link>
-            {id === undefined && <Typography color='text.primary'>New Event Filter</Typography>}
-            {id !== undefined && <Typography color='text.primary'>Event Filter Detail</Typography>}
+            {id === undefined && <Typography color='text.primary'>New Filter</Typography>}
+            {id !== undefined && <Typography color='text.primary'>Filter Details</Typography>}
           </Breadcrumbs>
         </Grid>
         <Grid item xs={12} mt={4}>
           <Card>
             <CardHeader
-              title={id === undefined ? 'New Event Filter' : 'Event Filter Detail'}
-              subheader='Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. '
+              title={id === undefined ? 'Create New Filter' : 'Filter Details'}
+              subheader='Please configure the event filter according to your preferences and save the settings.'
             ></CardHeader>
             <CardContent>
               <EventFilterForm data={currentData} onChange={handleChange} />
             </CardContent>
             <CardActions>
               <Box sx={{ flexGrow: 1 }}></Box>
-              <Button onClick={handleCancel}>Cancel</Button>
+              <Button onClick={handleCancel}>Discard Changes</Button>
               {id === undefined && (
                 <Button onClick={handleCreate} disabled={currentData === initialData}>
-                  Save
+                  Save Filter
                 </Button>
               )}
               {id !== undefined && (
                 <Button onClick={handleUpdate} disabled={currentData === initialData}>
-                  Update
+                  Update Filter
                 </Button>
               )}
             </CardActions>
