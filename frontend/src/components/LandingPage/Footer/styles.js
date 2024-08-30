@@ -1,51 +1,118 @@
 import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
-  root: {
+  footer: {
+    padding: theme.spacing(4, 0),
+  },
+  footerDivider: {
     width: '100%',
-    float: 'right',
-    height: 64,
-    position: 'fixed'
+    maxWidth: '1000px',
+    height: '0.5px',
+    backgroundColor: '#ccc',
+    margin: '0 auto',
+    marginBottom: theme.spacing(12),
   },
-  appBarDrawerClose: {
-    top: 'auto',
-    bottom: 0,
-    backgroundColor: '#212121',
-    transition: theme.transitions.create('width', {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.leavingScreen
-    })
+  verticalDivider: {
+    height: '110px',
+    width: '0.5px',
+    backgroundColor: '#ccc',
+    margin: '0 auto',
+    position: 'relative',
+    top: '-80px',
   },
-  toolbar: {
+  logoContainer: {
+    display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'flex-start',
+    paddingLeft: theme.spacing(4),
   },
-  versionLink: {
-    color: '#d2cf00',
-    textDecoration: 'none',
-    fontSize: '0.9rem',
-    cursor: 'pointer'
+  address: {
+    fontSize: '14px',
+    color: '#000',
+    paddingLeft: theme.spacing(10),
   },
-  logoLink: {
-    lineHeight: 0,
-    display: 'inline-block',
-    verticalAlign: 'middle'
+  futureText: {
+    mT: '32px',
+    background: '-webkit-linear-gradient(120deg, #0989cb, #31297f)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    fontSize: '16px',
+    fontWeight: 'normal',
+    textAlign: 'left',
+    paddingLeft: theme.spacing(5),
+    wordSpacing: '0.8rem',
+    mB: '10px',
   },
-  poweredBy: {
-    display: 'inline-block',
-    verticalAlign: 'middle',
-    color: '#fff'
+  partnerSection: {
+    textAlign: 'left',
+    marginBottom: theme.spacing(2),
   },
-  logoFooter: {
-    cursor: 'pointer',
-    marginLeft: '10px',
-    maxWidth: '75px'
+  apoioText: {
+    color: '#a3a3a3',
+    fontSize: '.9rem',
+    textAlign: 'left',
   },
-  marginItem: {
-    marginLeft: 20,
-    marginRight: 20,
-    marginTop: 5
-  }
+  partnerLogo: {
+    width: '100px',
+    height: '60px',
+    margin: theme.spacing(1.5),
+    filter: 'grayscale(100%)',
+    transition: 'filter 0.3s ease',
+    '&:hover': {
+      filter: 'grayscale(0%)',
+    },
+  },
+  inctLogo: {
+    width: '60px',
+    height: '60px',
+    margin: theme.spacing(1.5),
+    filter: 'grayscale(100%)',
+    transition: 'filter 0.3s ease',
+    '&:hover': {
+      filter: 'grayscale(0%)',
+    },
+  },
+  contactSection: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: theme.spacing(6),
+  },
+  socialIcons: {
+    marginTop: theme.spacing(1),
+    display: 'flex',
+    justifyContent: 'center',
+  },
+  socialIcon: {
+    width: '68px',
+    height: '48px',
+  },
+  linkedinHover: {
+    '&:hover': {
+      color: '#0077B5',
+    },
+  },
+  instagramHover: {
+    '&:hover': {
+      color: '#E1306C',
+    },
+  },
+  youtubeHover: {
+    '&:hover': {
+      color: '#FF0000',
+    },
+  },
+  facebookHover: {
+    '&:hover': {
+      color: '#1877F2',
+    },
+  },
+  bottomText: {
+    textAlign: 'center',
+    color: '#a3a3a3',
+    fontSize: '0.875rem',
+  },
+
 }))
 
 export default useStyles
