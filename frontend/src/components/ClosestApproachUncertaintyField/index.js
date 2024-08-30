@@ -16,7 +16,7 @@ function ClosestApproachUncertaintyField({ value, onChange }) {
   return (
     <TextField
       type='number'
-      label='Closest approach uncertainty (km)'
+      label='Uncertainty (km)'
       variant='outlined'
       value={value !== undefined ? parseFloat(value) : ''}
       onChange={handleChange}
