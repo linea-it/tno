@@ -4,7 +4,7 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 
-function MaginitudeDropSelect({ value, onChange, min, max }) {
+function MaginitudeDropSelect({ value, onChange, min, max, ...props }) {
   const options = Array.from({ length: max - min + 1 }, (_, i) => i + min)
 
   const handleChange = (e) => {
@@ -24,6 +24,7 @@ function MaginitudeDropSelect({ value, onChange, min, max }) {
         value={value !== undefined ? `${value}` : ''}
         label='Magnitude Drop'
         onChange={handleChange}
+        {...props}
       >
         <MenuItem value=''>Empty</MenuItem>
         {options.map((row) => {
@@ -45,7 +46,7 @@ MaginitudeDropSelect.defaultProps = {
 MaginitudeDropSelect.propTypes = {
   min: PropTypes.number,
   max: PropTypes.number,
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func.isRequired
 }
 

@@ -44,6 +44,8 @@ else:
         "DJANGO_ALLOWED_HOSTS", default=["solarsystem.linea.org.br"]
     )
 
+# the hostname and port number of the current Server URL
+SITE_URL = "//localhost"
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -158,13 +160,14 @@ ENVIRONMENT_NAME = env("DJANGO_ENVIRONMENT_NAME", default="Development")
 
 # Emails
 # Notifications Email
-EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.gov.br")
+EMAIL_NEWSLETTER_NOREPLY = "noreplysolarsystem@linea.org.br"
+EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.org.br")
 
 
-EMAIL_HELPDESK = os.environ.get("EMAIL_HELPDESK", "helpdesk@linea.gov.br")
+EMAIL_HELPDESK = os.environ.get("EMAIL_HELPDESK", "helpdesk@linea.org.br")
 
 EMAIL_NOTIFICATION_COPY_TO = list(
-    [os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.gov.br")]
+    [os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.org.br")]
 )
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -192,6 +195,7 @@ INSTALLED_APPS = [
     # third-party apps
     "rest_framework",
     "rest_framework.authtoken",
+    "drfpasswordless",
     "django_filters",
     "url_filter",
     "corsheaders",
@@ -204,6 +208,7 @@ INSTALLED_APPS = [
     "tno",
     "skybot",
     "des",
+    "newsletter",
 ]
 
 MIDDLEWARE = [
@@ -273,11 +278,13 @@ AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 # https://docs.djangoproject.com/en/4.1/ref/settings/#csrf-cookie-name
 CSRF_COOKIE_NAME = "tno.csrftoken"
 
+
 ACCOUNT_AUTHENTICATED_LOGIN_REDIRECTS = True
-LOGIN_REDIRECT_URL = "/dashboard/"
+LOGIN_REDIRECT_URL = "/"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework.authentication.TokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
     "DEFAULT_PAGINATION_CLASS": "common.pagination.StandardResultsSetPagination",
@@ -377,6 +384,28 @@ CELERY_TASK_SEND_SENT_EVENT = True
 # Autenticacao com Shibboleth desativada por padrão
 SHIBBOLETH_ENABLED = False
 
+# Prediction Jobs for Updated Asteroids Automatic
+PREDICTION_JOB_AUTO_UPDATE = env.bool("PREDICTION_JOB_AUTO_UPDATE", False)
+PORTAL_INTERNAL_USER = "autobot"
+# Quantidade maxima de asteroids por job criado automaticamente.
+PREDICTION_JOB_CHUNK_SIZE = 2000
+# Limita os jobs de predição para executarem apenas para estas classes.
+PREDICTION_JOB_BASE_DYNCLASS = ["Trojan", "Centaur", "Kuiper Belt Object"]
+
+PASSWORDLESS_AUTH = {
+    "PASSWORDLESS_AUTH_TYPES": [
+        "EMAIL",
+    ],
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
+    "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
+    "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
+    "PASSWORDLESS_REGISTER_NEW_USERS": False,
+}
+
+
+# NEWSLETTER SUBSCRIPTION
+NEWSLETTER_SUBSCRIPTION_ENABLED = env.bool("NEWSLETTER_SUBSCRIPTION_ENABLED", False)
+
 # Aqui é feita a importação do arquivo de variaveis locais.
 # As variaveis declaradas neste arquivo sobrescrevem as variaveais declaradas antes
 # deste import. isso é usado para permitir diferentes configurações por ambiente.
@@ -404,16 +433,6 @@ if SHIBBOLETH_ENABLED is True:
     AUTHENTICATION_BACKENDS += ("shibboleth.backends.ShibbolethRemoteUserBackend",)
 
     SHIBBOLETH_ENABLED = True
-
-
-# Prediction Jobs for Updated Asteroids Automatic
-PREDICTION_JOB_AUTO_UPDATE = env.bool("PREDICTION_JOB_AUTO_UPDATE", False)
-PORTAL_INTERNAL_USER = "autobot"
-# Quantidade maxima de asteroids por job criado automaticamente.
-PREDICTION_JOB_CHUNK_SIZE = 2000
-# Limita os jobs de predição para executarem apenas para estas classes.
-PREDICTION_JOB_BASE_DYNCLASS = ["Trojan", "Centaur", "Kuiper Belt Object"]
-
 
 LOGGING = {
     "version": 1,
@@ -495,6 +514,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "predict_events.log"),
             "formatter": "standard",
         },
+        "subscription": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "subscription.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -539,6 +566,11 @@ LOGGING = {
         },
         "predict_events": {
             "handlers": ["predict_events"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "subscription": {
+            "handlers": ["subscription"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

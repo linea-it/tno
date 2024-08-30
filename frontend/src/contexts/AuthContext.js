@@ -19,8 +19,13 @@ export function AuthProvider({ children }) {
       // Carrega os dados do usuario logo apos o login
       loggedUser()
         .then((u) => {
-          // Evita que no primeiro render do index o nome de usuario esteja em branco
-          setUser(u)
+          // Só permite o acesso ao dashboard se o usuario tiver o atributo user.profile.dashboard = true
+          if (u.dashboard === true) {
+            // Evita que no primeiro render do index o nome de usuario esteja em branco
+            setUser(u)
+          } else {
+            logout()
+          }
         })
         .catch((res) => {
           logout()
@@ -36,8 +41,6 @@ export function AuthProvider({ children }) {
     const { 'tno.csrftoken': csrftoken } = parseCookies()
 
     destroyCookie(null, 'tno.csrftoken')
-    // delete api.defaults.headers.Authorization
-    // delete api.defaults.headers['X-CSRFToken']
     setUser(null)
 
     if (csrftoken) {

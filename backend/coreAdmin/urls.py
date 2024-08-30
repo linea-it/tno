@@ -38,6 +38,7 @@ from drf_spectacular.views import (
     SpectacularRedocView,
     SpectacularSwaggerView,
 )
+from newsletter.views import EventFilterViewSet, SubscriptionViewSet
 from rest_framework.authtoken.views import obtain_auth_token
 from rest_framework.routers import DefaultRouter, SimpleRouter
 from skybot.views import PositionViewSet
@@ -91,21 +92,17 @@ router.register(r"prediction_job", PredictionJobViewSet)
 
 router.register(r"prediction_job_result", PredictionJobResultViewSet)
 
+router.register(r"subscription", SubscriptionViewSet)
+router.register(r"event_filter", EventFilterViewSet, basename="event_filter")
+
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     re_path(r"^api/", include(router.urls)),
-    # re_path(r"^api/obtain-auth-token/$", csrf_exempt(obtain_auth_token)),
     path("api/auth/", include("rest_framework.urls")),
-    re_path(r"^api/logout/", common_views.logout_view),
-    # re_path(
-    #     r"^api/des/clear_des_data_preparation_tables",
-    #     des_management_views.clear_des_data_preparation_tables,
-    # ),
-    # re_path(r"^api/read_file", common_views.read_file),
-    # re_path(r"^api/read_csv", common_views.read_csv),
-    # re_path(r"^api/teste", common_views.teste),
-    # re_path(r"^api/test_background_task", common_views.test_background_task),
+    path("", include("drfpasswordless.urls")),
     re_path(r"^api/which_environment", common_views.which_environment),
+    re_path(r"^api/environment_settings", common_views.environment_settings),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",

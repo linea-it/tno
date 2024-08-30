@@ -19,10 +19,10 @@ function PublicContact() {
     <Box className={classes.initContainer}>
       <Container maxWidth='lg'>
         <Breadcrumbs aria-label='breadcrumb'>
-          <Link color='inherit' href='/'>
+          <Link underline='hover' color='inherit' href='/'>
             Home
           </Link>
-          <Typography color='textPrimary'>Contact Us</Typography>
+          <Typography color='text.primary'>Contact Us</Typography>
         </Breadcrumbs>
         <Grid item xs={9} className={classes.grid}>
           <Card sx={{ margin: '16px 0' }}>

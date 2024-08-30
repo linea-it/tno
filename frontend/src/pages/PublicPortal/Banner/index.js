@@ -1,11 +1,23 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
+import Subscribe from '../../../components/Subscription/index'
+import { environmentSettings } from '../../../services/api/Api'
 
 function PublicBanner() {
   const classes = styles()
+  const [newsletterEnabled, setNewsletterEnabled] = useState(false)
 
+  useEffect(() => {
+    environmentSettings()
+      .then((res) => {
+        setNewsletterEnabled(res.NEWSLETTER_SUBSCRIPTION_ENABLED)
+      })
+      .catch(() => {
+        // TODO: Aviso de erro
+      })
+  }, [])
   return (
     <Box className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
@@ -14,10 +26,7 @@ function PublicBanner() {
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
         </Grid>
         <Grid item xs={12} container className={classes.bannerWrapper}>
-          <Box
-            className='container textBanner'
-            sx={{ borderRadius: '6px', width: '45vw', border: '1px solid rgba(255, 255, 255, 0.1)', textAlign: 'center' }}
-          >
+          <Box className='container textBanner' sx={{ borderRadius: '6px', width: '45vw', textAlign: 'center' }}>
             <Grid item xs={12} className={classes.textOcultatiom}>
               <label>
                 This is a database of predictions for stellar occultations by small Solar System objects, calculated from the legacy
@@ -26,6 +35,9 @@ function PublicBanner() {
               </label>
             </Grid>
           </Box>
+          <Grid item xs={12}>
+            {newsletterEnabled && <Subscribe />}
+          </Grid>
         </Grid>
       </Grid>
     </Box>

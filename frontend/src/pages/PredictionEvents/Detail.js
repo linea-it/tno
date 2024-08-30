@@ -29,6 +29,16 @@ function PredictionEventDetail() {
   const [isDev, setIsDev] = useState(false)
 
   useEffect(() => {
+    whichEnvironment()
+      .then((res) => {
+        setIsDev(res.is_dev)
+      })
+      .catch(() => {
+        // TODO: Aviso de erro
+      })
+  }, [])
+
+  useEffect(() => {
     getOccultationById({ id }).then((res) => {
       setOccultation({
         ...res
@@ -97,27 +107,17 @@ function PredictionEventDetail() {
         title: 'Uncertainty in time (1σ)',
         value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
       },
-      // {
-      //   title: 'Uncertainty in closest approach (1σ)',
-      //   value: `${
-      //     occultation.closest_approach_uncertainty
-      //       ? occultation.closest_approach_uncertainty < 0.1
-      //         ? (occultation.closest_approach_uncertainty * 1000).toFixed(0) + ' (mas)'
-      //         : occultation.closest_approach_uncertainty.toFixed(1) + ' (arcsec)'
-      //       : null
-      //   }`
-      // },
       {
         title: 'Uncertainty in closest approach (1σ)',
-        value: (() => {
-          const ca_uncert =
-            Math.tan((occultation.closest_approach_uncertainty * Math.PI) / (180 * 60 * 60)) * (occultation.delta * 149597870.7)
-          return occultation.closest_approach_uncertainty
-            ? ca_uncert < 1
-              ? `${(ca_uncert * 1000).toFixed(0)} (m)`
-              : `${ca_uncert.toFixed(0)} (km)`
+        value: `${
+          occultation.closest_approach_uncertainty
+            ? (() => {
+                const ca_uncert =
+                  Math.tan((occultation.closest_approach_uncertainty * Math.PI) / (180 * 60 * 60)) * (occultation.delta * 149597870.7)
+                return ca_uncert < 1 ? `${(ca_uncert * 1000).toFixed(0)} (m)` : `${ca_uncert.toFixed(0)} (km)`
+              })()
             : null
-        })()
+        }`
       },
       {
         title: 'Moon separation',
@@ -292,7 +292,7 @@ function PredictionEventDetail() {
             <PredictOccultationMap occultationId={occultation.id} />
           </Grid>
         )}
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} md={5.6} lg={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader
               title='Occultation Prediction Circumstances'

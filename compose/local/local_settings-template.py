@@ -5,11 +5,11 @@ LOGGING_LEVEL = "DEBUG"
 # TODO: Verificar onde se ainda é utilizado?
 HOST_URL = "//localhost"
 
-# Email Confs
-EMAIL_HOST = "smtp.linea.org.br"
-EMAIL_PORT = 587
-EMAIL_HOST_USER = ""
-EMAIL_HOST_PASSWORD = ""
+# Email Confs using Mailhog
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = False
+EMAIL_HOST = "mailhog"
+EMAIL_PORT = 1025
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
 DEFAULT_FROM_EMAIL = "solarsystem <solarsystem.linea.org.br>"
@@ -32,3 +32,6 @@ PREDICTION_MAP_BLOCK_SIZE = 100
 # Em ambiente de desenvolvimento ou que não esteja configurado o shibboleth usar SHIBBOLETH_ENABLED = False.
 # Em ambiente de produção que já esteja configurado com shibboleth usar SHIBBOLETH_ENABLED = True.
 SHIBBOLETH_ENABLED = False
+
+# Newsletter Subscription
+NEWSLETTER_SUBSCRIPTION_ENABLED = False
