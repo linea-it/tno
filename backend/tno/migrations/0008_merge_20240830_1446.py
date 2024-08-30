@@ -6,10 +6,9 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tno', '0006_merge_20240819_1822'),
-        ('tno', '0007_occultation_closest_approach_uncertainty_km'),
-        ('tno', '0007_occultation_updated_at'),
+        ("tno", "0006_merge_20240819_1822"),
+        ("tno", "0007_occultation_closest_approach_uncertainty_km"),
+        ("tno", "0007_occultation_updated_at"),
     ]
 
-    operations = [
-    ]
+    operations = []
