@@ -201,7 +201,7 @@ def create_occultation_path_coeff():
 
 @shared_task
 def assync_visibility_from_coeff(event_id, result_file, **kwargs):
-    is_visible, info = visibility_from_coeff(**kwargs)
+    is_visible = visibility_from_coeff(**kwargs)
 
     if is_visible:
         with open(Path(result_file)) as fp:

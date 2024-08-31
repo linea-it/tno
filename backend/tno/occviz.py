@@ -705,7 +705,9 @@ def _build_path_from_coeff(
             format="datetime",
             scale="utc",
         )
-        times = np.linspace(0, (t1 - t0).value * 86400, n_elements)
+        # times = np.linspace(0, (t1 - t0).value * 86400, n_elements)
+        deltaT = (t1 - t0).value * 86400
+        times = np.linspace(-deltaT, deltaT, n_elements)
         latitude = np.polyval(lat_coeff, times)
         longitude = np.polyval(lon_coeff, times)
 
@@ -1144,6 +1146,19 @@ def occultation_path_coeff(
     return output
 
 
+def _find_closest_index(array1, array2):
+    # Calculate the absolute differences between each element of array1 and all elements of array2
+    diff_matrix = np.abs(array1[:, np.newaxis] - array2)
+
+    # Find the minimum difference for each element in array1
+    min_diff = np.min(diff_matrix, axis=1)
+
+    # Find the index of the element in array1 with the smallest minimum difference
+    closest_index = np.argmin(min_diff)
+
+    return closest_index
+
+
 def visibility_from_coeff(
     latitude: float,
     longitude: float,
@@ -1202,12 +1217,11 @@ def visibility_from_coeff(
 
     radius = radius * u.km
 
-    nighttime = _check_nighttime(location_c, Time(date_time))
     body_upper_visibility = False
     body_lower_visibility = False
     path_visibility = False
 
-    # if upperlimit coeff is provided check the path
+    # if upperlimit coeff is provided check the path and if overlap return true
     if (
         inputdict["body_upper_coeff_longitude"]
         and inputdict["body_upper_coeff_latitude"]
@@ -1223,11 +1237,27 @@ def visibility_from_coeff(
             inputdict["min_longitude"],
             inputdict["max_longitude"],
         )
+
+        object_upper_limit = np.array(object_upper_limit)
+        if np.any(object_upper_limit[0] < -180):
+            object_upper_limit[0] += 360
+            idx = np.where(object_upper_limit[0] > 180)
+            object_upper_limit[0][idx] -= 360
+
+        if np.any(object_upper_limit[0] > 180):
+            object_upper_limit[0] -= 360
+            idx = np.where(object_upper_limit[0] < -180)
+            object_upper_limit[0][idx] += 360
+
+        object_upper_limit = tuple(object_upper_limit)
+
         body_upper_visibility = _calculate_path_visibility(
             location, object_upper_limit, radius, latitudinal=latitudinal
         )
+        if body_upper_visibility:
+            return True
 
-    # if lower lim is provided check
+    # if lowerlimit coeff is provided check the path and if overlap return true
     if (
         inputdict["body_lower_coeff_longitude"]
         and inputdict["body_lower_coeff_latitude"]
@@ -1243,17 +1273,48 @@ def visibility_from_coeff(
             inputdict["min_longitude"],
             inputdict["max_longitude"],
         )
+
+        object_lower_limit = np.array(object_lower_limit)
+        if np.any(object_lower_limit[0] < -180):
+            object_lower_limit[0] += 360
+            idx = np.where(object_lower_limit[0] > 180)
+            object_lower_limit[0][idx] -= 360
+
+        if np.any(object_lower_limit[0] > 180):
+            object_lower_limit[0] -= 360
+            idx = np.where(object_lower_limit[0] < -180)
+            object_lower_limit[0][idx] += 360
+
+        object_lower_limit = tuple(object_lower_limit)
+
         body_lower_visibility = _calculate_path_visibility(
             location, object_lower_limit, radius, latitudinal=latitudinal
         )
+        if body_lower_visibility:
+            return True
 
-    # if the object is visible from the upper or lower limits, and it is nighttime
-    if np.logical_and(
-        np.logical_or(body_upper_visibility, body_lower_visibility), nighttime
+    # check the vibility in between error or body size lines:
+    if (
+        inputdict["body_upper_coeff_longitude"]
+        and inputdict["body_upper_coeff_latitude"]
+        and inputdict["body_lower_coeff_longitude"]
+        and inputdict["body_lower_coeff_latitude"]
     ):
-        return True
 
-    # if none of above is provided then check the central path
+        lat_max = max(latitudes)
+        idx = np.argmin(abs(object_upper_limit[0] - longitude))
+        upper_lat = object_upper_limit[1][idx]
+        uplim = upper_lat > lat_max
+
+        lat_min = min(latitudes)
+        idx = np.argmin(abs(object_lower_limit[0] - longitude))
+        lower_lat = object_lower_limit[1][idx]
+        lowlim = lower_lat < lat_min
+
+        if uplim and lowlim:
+            return True
+
+    # if has only path:
 
     path = _build_path_from_coeff(
         inputdict["coeff_longitude"],
@@ -1270,5 +1331,7 @@ def visibility_from_coeff(
     path_visibility = _calculate_path_visibility(
         location, path, radius, latitudinal=latitudinal
     )
+    if path_visibility:
+        return True
 
-    return bool(np.logical_and(nighttime, path_visibility))
+    return False
