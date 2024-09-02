@@ -12,12 +12,14 @@ import EventDurationField from '../../../components/EventDurationField/index'
 import MaginitudeDropSelect from '../../../components/MaginitudeDropSelect/index'
 import ObjectDiameterFilter from '../../../components/ObjectDiameterFilter/index'
 import GeoFilter from '../../../components/Newsletter/GeoFilter/index'
+import ClosestApproachUncertaintyField from '../../../components/ClosestApproachUncertaintyField/index'
 
 export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
     const newData = { ...data, [e.target.name]: e.target.value }
     onChange(newData)
   }
+
   return (
     <Box component='form' autoComplete='off'>
       <Stack spacing={2}>
@@ -111,12 +113,20 @@ export default function EventFilterForm({ data, onChange }) {
             onChange(newData)
           }}
         />
-        <EventDurationField
-          name='event_duration'
-          value={data.event_duration !== null ? data.event_duration : ''}
-          onChange={handleChange}
-          label='Event Duration (seconds)'
-        />
+        <Stack direction='row' spacing={2}>
+          <EventDurationField
+            name='event_duration'
+            value={data.event_duration !== null ? data.event_duration : ''}
+            onChange={handleChange}
+            label='Event Duration (seconds)'
+          />
+          <ClosestApproachUncertaintyField
+            name='closest_approach_uncertainty_in_km'
+            value={data.closest_approach_uncertainty_in_km !== null ? data.closest_approach_uncertainty_in_km : ''}
+            onChange={handleChange}
+            label='Uncertainty (km)'
+          />
+        </Stack>
         <Divider />
         <GeoFilter
           value={{
