@@ -27,10 +27,13 @@ import AsteroidJobDetail from '../pages/AsteroidJob/AsteroidJobDetail'
 import Home from '../pages/LandingPage/Home'
 
 export function DashboardPageRoutes() {
-  const { isAuthenticated, signIn } = useAuth()
+  const { user } = useAuth()
 
-  const PrivateRoute = ({ auth: { isAuthenticated }, children }) => {
-    return isAuthenticated ? children : signIn()
+  const PrivateRoute = ({ auth: { user }, children }) => {
+    console.log('PrivateRoute', user)
+    if (user && user.dashboard === true) {
+      return children
+    }
   }
 
   const LandingPage = ({ children }) => {
@@ -46,7 +49,7 @@ export function DashboardPageRoutes() {
   const DashboardPage = ({ children }) => {
     return (
       <>
-        <PrivateRoute auth={{ isAuthenticated }}>
+        <PrivateRoute auth={{ user }}>
           <PersistentDrawerLeft>{children}</PersistentDrawerLeft>
         </PrivateRoute>
       </>

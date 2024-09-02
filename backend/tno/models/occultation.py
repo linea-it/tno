@@ -917,20 +917,24 @@ class Occultation(models.Model):
         return self.alias
 
     def get_map_filename(self) -> str:
-        dt = self.date_time.strftime("%Y%m%d%H%M%S")
-        return f"{self.get_alias()}-{dt}.png"
+        return f"{self.hash_id}.png"
 
     def get_map_filepath(self) -> Path:
-        return Path.joinpath(settings.PREDICTION_MAP_DIR, self.get_map_filename())
+        dt = self.date_time.strftime("%Y-%m-%d")
+        base_path = Path(settings.PREDICTION_MAP_DIR).joinpath(str(dt))
+        # base_path.mkdir(parents=True, exist_ok=True)
+        return base_path.joinpath(self.get_map_filename())
 
     def map_exists(self) -> bool:
         return self.get_map_filepath().exists()
 
     def get_map_relative_url(self) -> Optional[str]:
         if self.map_exists():
-            return urllib.parse.urljoin(
-                settings.PREDICTION_MAP_URL, self.get_map_filename()
+            dt = self.date_time.strftime("%Y-%m-%d")
+            relative_path = Path(settings.PREDICTION_MAP_URL).joinpath(
+                str(dt), self.get_map_filename()
             )
+            return str(relative_path)
         else:
             return None
 

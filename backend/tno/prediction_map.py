@@ -33,17 +33,28 @@ def get_map_folder_size_limit():
     return size_limit
 
 
-def map_event_has_already_happened(filepath: Path) -> bool:
+def map_event_has_already_happened(path: Path) -> bool:
     # checks if the event has already happened
     # Considera que o evento já aconteceu quando se passa mais de um dia do evento
-    now_utc = datetime.utcnow()
-    filename = filepath.name
-    event_dt = filename.strip(".jpg").split("-")[1]
-    date_time = datetime.strptime(event_dt, "%Y%m%d%H%M%S")
-    dt = now_utc.date() - date_time.astimezone(tz=timezone.utc).date()
+    now_utc = datetime.utcnow().date()
+    event_date = (
+        datetime.strptime(path.name, "%Y-%m-%d").astimezone(tz=timezone.utc).date()
+    )
+    dt = now_utc - event_date
+
     if dt.days > 0:
         return True
     return False
+
+
+def delete_old_maps(path: Path):
+    # iterate over maps files and delete
+    count_removed = 0
+    for path in path.glob("*"):
+        if path.is_file():
+            path.unlink()
+            count_removed += 1
+    return count_removed
 
 
 def garbage_collector_maps():
@@ -58,12 +69,18 @@ def garbage_collector_maps():
 
     count_removed = 0
     size_reclaimed = 0
-    for path in maps_directory.glob("*.jpg"):
-        if map_event_has_already_happened(path):
-            size = path.stat().st_size
-            path.unlink()
-            count_removed += 1
+
+    # Iterate over maps subdirectories named as the date of the event
+    for event_dir in maps_directory.iterdir():
+        if not event_dir.is_dir():
+            continue
+
+        if map_event_has_already_happened(event_dir):
+            print(f"Event has already happened: {event_dir}")
+            size = sum(file.stat().st_size for file in event_dir.rglob("*"))
+            count_removed += delete_old_maps(event_dir)
             size_reclaimed += size
+            event_dir.rmdir()
 
     size_after = get_size_of_map_folder()
     logger.debug(f"Maps folder Size After {humanize.naturalsize(size_after)}")

@@ -399,6 +399,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         filepath = obj.get_map_filepath()
 
+        filepath.parent.mkdir(parents=True, exist_ok=True)
+
         force = False
         if "force" in request.query_params and request.query_params["force"] == "true":
             force = True
