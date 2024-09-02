@@ -7,8 +7,11 @@ set -o pipefail
 # exits if any of your variables is not set
 set -o nounset
 
-mkdir -p  /logs /archive /archive/tmp /archive/predict_occultations /archive/astropy_cache /archive/public /archive/public/database_subset /archive/public/maps /archive/skybot_output /archive/asteroid_table
-chmod -R g+w  /logs /archive /archive/tmp /archive/predict_occultations /archive/astropy_cache /archive/public /archive/public/database_subset /archive/public/maps /archive/skybot_output /archive/asteroid_table
+
+echo "Running Entrypoint.sh"
+# mkdir -p  /logs /archive /archive/tmp /archive/predict_occultations /archive/astropy_cache /archive/public /archive/public/database_subset /archive/public/maps /archive/skybot_output /archive/asteroid_table
+# chmod -R g+w  /logs /archive /archive/tmp /archive/predict_occultations /archive/astropy_cache /archive/public /archive/public/database_subset /archive/public/maps /archive/skybot_output /archive/asteroid_table
+
 # postgres_ready() {
 # python << END
 # import sys
