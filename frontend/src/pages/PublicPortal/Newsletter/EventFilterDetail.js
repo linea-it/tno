@@ -39,6 +39,7 @@ function EventFilterDetail() {
     local_solar_time_after: dayjs().set('hour', 18).startOf('hour'),
     local_solar_time_before: dayjs().set('hour', 6).startOf('hour'),
     event_duration: undefined,
+    closest_approach_uncertainty_in_km: undefined,
     diameter_min: undefined,
     diameter_max: undefined,
     latitude: null,
