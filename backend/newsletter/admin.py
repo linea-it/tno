@@ -31,6 +31,7 @@ class EventFilterAdmin(admin.ModelAdmin):
         "magnitude_drop_min",
         "magnitude_drop_max",
         "event_duration",
+        "closest_approach_uncertainty_in_km",
         "diameter_min",
         "diameter_max",
         "latitude",
