@@ -330,8 +330,9 @@ def run_occultation_path_coeff(
                 delta_distance=row["delta"],
                 offset_ra=row["off_ra"],
                 offset_dec=row["off_dec"],
+                closest_approach_error=closest_approach_uncertainty_km,
                 object_diameter=row.get("diameter", None),
-                ring_radius=None,
+                object_diameter_error=row.get("diameter_err_max", None),
             )
 
             if (
