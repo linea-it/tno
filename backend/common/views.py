@@ -32,7 +32,7 @@ def teste(request):
         rows = []
         ids = []
         for e in events:
-            is_visible, info = visibility_from_coeff(
+            is_visible = visibility_from_coeff(
                 latitude=float(lat),
                 longitude=float(long),
                 radius=float(radius),

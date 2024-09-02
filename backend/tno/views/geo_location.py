@@ -56,17 +56,15 @@ class GeoLocation:
         wanted_ids = []
         count = 0
         processed = 0
+
         for event in queryset:
-            is_visible, info = visibility_from_coeff(
+            is_visible = visibility_from_coeff(
                 latitude=lat,
                 longitude=long,
                 radius=radius,
                 date_time=event.date_time,
                 inputdict=event.occ_path_coeff,
-                # object_diameter=event.diameter,
-                # ring_diameter=event.diameter,
                 # n_elements= 1500,
-                # ignore_nighttime= False,
                 # latitudinal= False
             )
             processed += 1
