@@ -192,13 +192,13 @@ function PredictionEventsFilter() {
           <Grid item xs={12} md={6} lg={4}>
             <ClosestApproachUncertaintyField
               value={queryOptions.filters.closestApproachUncertainty}
-              onChange={(value) => {
+              onChange={(e) => {
                 setQueryOptions((prev) => {
                   return {
                     ...prev,
                     filters: {
                       ...prev.filters,
-                      closestApproachUncertainty: value
+                      closestApproachUncertainty: e.target.value
                     }
                   }
                 })
