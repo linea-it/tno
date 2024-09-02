@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import AppBar from '@mui/material/AppBar'
 import Toolbar from '@mui/material/Toolbar'
@@ -12,11 +12,12 @@ import SettingsIcon from '@mui/icons-material/Settings'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 
 import Tooltip from '@mui/material/Tooltip'
-import { loggedUser, logout } from '../../../services/api/Auth'
+import { logout } from '../../../services/api/Auth'
+import { useAuth } from '../../../contexts/AuthContext'
 
 const PublicHeader = () => {
   const navigate = useNavigate()
-
+  const { envSettings, user, isAuthenticated } = useAuth()
   const menus = [
     { description: 'Home', href: '/', target: '_self' },
     { description: 'About', href: '/about-us', target: '_self' },
@@ -24,21 +25,21 @@ const PublicHeader = () => {
     { description: 'Contact', href: '/contact-us', target: '_self' }
   ]
 
-  const [auth, setAuth] = React.useState(false)
-  const [user, setUser] = React.useState({ username: '', dashboard: false })
+  // const [auth, setAuth] = React.useState(false)
+  // const [user, setUser] = React.useState({ username: '', dashboard: false })
   const [anchorEl, setAnchorEl] = React.useState(null)
 
-  useEffect(() => {
-    loggedUser()
-      .then((res) => {
-        setAuth(true)
-        setUser(res)
-      })
-      .catch((res) => {
-        setAuth(false)
-        console.log('Not logged')
-      })
-  }, [])
+  // useEffect(() => {
+  //   loggedUser()
+  //     .then((res) => {
+  //       setAuth(true)
+  //       setUser(res)
+  //     })
+  //     .catch((res) => {
+  //       setAuth(false)
+  //       console.log('Not logged')
+  //     })
+  // }, [])
 
   const handleLogin = () => {
     navigate('/login/')
@@ -58,6 +59,49 @@ const PublicHeader = () => {
 
   const handleDashboard = () => {
     navigate('/dashboard/')
+  }
+
+  const loginArea = () => {
+    return (
+      <>
+        {envSettings.NEWSLETTER_SUBSCRIPTION_ENABLED === true && !isAuthenticated && (
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Button color='inherit' onClick={handleLogin}>
+              Login
+            </Button>
+          </Box>
+        )}
+
+        {isAuthenticated && (
+          <Box sx={{ display: { md: 'flex' } }}>
+            <Tooltip title='Open user preferences'>
+              <IconButton size='large' aria-label='preferences of current user' onClick={handleSettings} color='inherit'>
+                <SettingsIcon />
+              </IconButton>
+            </Tooltip>
+            {user?.dashboard && (
+              <Tooltip title='Open dashboard'>
+                <IconButton size='large' aria-label='go to dashboard' onClick={handleDashboard} color='inherit'>
+                  <DashboardIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+            <IconButton
+              size='large'
+              aria-label='account of current user'
+              aria-controls='menu-appbar'
+              aria-haspopup='true'
+              onClick={handleAuthMenu}
+              color='inherit'
+            >
+              <AccountCircle />
+            </IconButton>
+          </Box>
+        )}
+
+        {renderAuthMenu}
+      </>
+    )
   }
 
   const renderAuthMenu = (
@@ -98,43 +142,7 @@ const PublicHeader = () => {
           </Box>
         </Box>
         <Box sx={{ flexGrow: 1 }} />
-
-        {!auth && (
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button color='inherit' onClick={handleLogin}>
-              Login
-            </Button>
-          </Box>
-        )}
-
-        {auth && (
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Tooltip title='Open user preferences'>
-              <IconButton size='large' aria-label='preferences of current user' onClick={handleSettings} color='inherit'>
-                <SettingsIcon />
-              </IconButton>
-            </Tooltip>
-            {user?.dashboard && (
-              <Tooltip title='Open dashboard'>
-                <IconButton size='large' aria-label='go to dashboard' onClick={handleDashboard} color='inherit'>
-                  <DashboardIcon />
-                </IconButton>
-              </Tooltip>
-            )}
-            <IconButton
-              size='large'
-              aria-label='account of current user'
-              aria-controls='menu-appbar'
-              aria-haspopup='true'
-              onClick={handleAuthMenu}
-              color='inherit'
-            >
-              <AccountCircle />
-            </IconButton>
-          </Box>
-        )}
-
-        {renderAuthMenu}
+        {loginArea()}
       </Toolbar>
     </AppBar>
   )

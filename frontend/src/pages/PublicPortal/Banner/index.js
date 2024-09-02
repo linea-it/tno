@@ -1,23 +1,25 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import Grid from '@mui/material/Grid'
 import styles from './styles'
 import Box from '@mui/material/Box'
 import Subscribe from '../../../components/Subscription/index'
-import { environmentSettings } from '../../../services/api/Api'
+import { useAuth } from '../../../contexts/AuthContext'
+// import { environmentSettings } from '../../../services/api/Api'
 
 function PublicBanner() {
   const classes = styles()
-  const [newsletterEnabled, setNewsletterEnabled] = useState(false)
+  // const [newsletterEnabled, setNewsletterEnabled] = useState(false)
+  const { envSettings } = useAuth()
 
-  useEffect(() => {
-    environmentSettings()
-      .then((res) => {
-        setNewsletterEnabled(res.NEWSLETTER_SUBSCRIPTION_ENABLED)
-      })
-      .catch(() => {
-        // TODO: Aviso de erro
-      })
-  }, [])
+  // useEffect(() => {
+  //   environmentSettings()
+  //     .then((res) => {
+  //       setNewsletterEnabled(res.NEWSLETTER_SUBSCRIPTION_ENABLED)
+  //     })
+  //     .catch(() => {
+  //       // TODO: Aviso de erro
+  //     })
+  // }, [])
   return (
     <Box className={classes.root}>
       <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
@@ -36,7 +38,7 @@ function PublicBanner() {
             </Grid>
           </Box>
           <Grid item xs={12}>
-            {newsletterEnabled && <Subscribe />}
+            {envSettings.NEWSLETTER_SUBSCRIPTION_ENABLED && <Subscribe />}
           </Grid>
         </Grid>
       </Grid>
