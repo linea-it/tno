@@ -295,11 +295,17 @@ def run_occultation_path_coeff(
                     e_dec_star=df_gaia_csv["dec_error"][star_index] / 1000,
                 )
 
-                closest_approach_uncertainty_km = np.tan(
-                    (closest_approach_uncertainty * np.pi) / (180 * 60 * 60)
-                ) * (row["delta"] * 149597870.7)
-                # instant_uncertainty = get_instant_uncertainty(row["position_angle"], row["delta"], row["velocity"],
-                #     e_ra_target, e_dec_target, e_ra_star=df_gaia_csv["ra_error"][star_index]/1000, e_dec_star=df_gaia_csv["dec_error"][star_index]/1000)
+                # TODO: se o angulo for menor que 0 ou maior que 90 graus a incerteza
+                # tende ao infinito e por razoes praticas estao sendo defininas como None.
+                # Verificar se essa é a melhor solução para o caso
+                rad_angle = np.deg2rad(closest_approach_uncertainty / 3600) / 2
+
+                if rad_angle > 0 and rad_angle < np.pi / 2:
+                    closest_approach_uncertainty_km = (
+                        (row["delta"] * 149597870.7) * 2 * abs(np.tan(rad_angle))
+                    )
+                else:
+                    closest_approach_uncertainty_km = None
 
             new_row.update(
                 {
