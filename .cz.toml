@@ -8,5 +8,6 @@ version_files = [
   "backend/__version__.py",
   "backend/pyproject.toml",
   "frontend/package.json",
+  "predict_occultation/__version__.py",
   ".VERSION"
 ]
