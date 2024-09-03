@@ -1,3 +1,9 @@
+## 4.0.2 (2024-09-03)
+
+### Fix
+
+- **commitzen**: test github action
+
 ## 4.0.1 (2024-09-03)
 
 ### Fix
