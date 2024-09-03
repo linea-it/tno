@@ -7,6 +7,7 @@ import traceback
 from datetime import datetime, timedelta
 from pathlib import Path
 
+import pandas as pd
 from dao import GaiaDao
 from library import (
     check_bsp_object,
@@ -287,7 +288,8 @@ if __name__ == "__main__":
         # bsp_object = check_bsp_object(bsp_object_filename)
 
         # Executar o calculo Coeff Path
-        if os.path.exists(occultation_file):
+        # Somente calcula path coeff se o arquivo existir e não for vazio
+        if Path(occultation_file).exists() and not pd.read_csv(occultation_file).empty:
             print("Calculating path coef")
             obj_data["calculate_path_coeff"] = run_occultation_path_coeff(
                 Path(occultation_file), obj_data, mag_and_uncert_path
