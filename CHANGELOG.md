@@ -1,3 +1,9 @@
+## 4.0.3 (2024-09-03)
+
+### Fix
+
+- **commitzen**: fixed bump release action
+
 ## 4.0.2 (2024-09-03)
 
 ### Fix

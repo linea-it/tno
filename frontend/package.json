@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "4.0.2",
+  "version": "4.0.3",
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "2.16.0",
