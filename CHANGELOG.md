@@ -1,3 +1,23 @@
+## 4.0.0 (2024-09-03)
+
+### Feat
+
+- **Predict-maps**: the map identifier has been changed. now the id hash is used (#1075)
+- **Prediction-Occultation**: added unique hash identifier for predictions events
+- **Prediction-Event**: added new unique identifier hash_id
+- **Enviroment-Alert**: added an alert when portal running in development
+- **Commitzen**: Added Commitzen to devcontainer
+
+### Fix
+
+- **Auth**: hided login button when subscription is disabled (#1070)
+- **Autobot**: autobot has been temporarily disabled (#1073)
+- **tasks.py**: fixes soft_time_limit and time_limit values
+- **Detail.js**: pre-commit rerun
+- **Fix-asteroid-table-update**: extends soft time limit for celery
+- **Run-Predict-Occ**: fixed error when selecting more than one object by name
+- **tasks.py**: fixes SoftTimeLimitExceeded() at asteroid table update run
+
 ## v3.1.0 (2024-04-19) Integration with GAIA DR3 catalog
 
 - Fixed #903 - Prediction detail now filter only for asteroid name and … by @glaubervila in https://github.com/linea-it/tno/pull/905
