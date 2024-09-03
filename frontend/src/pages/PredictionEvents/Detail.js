@@ -105,7 +105,13 @@ function PredictionEventDetail() {
       },
       {
         title: 'Uncertainty in time (1σ)',
-        value: `${occultation.instant_uncertainty ? occultation.instant_uncertainty.toFixed(1) : null} (s)`
+        value: `${
+          occultation.instant_uncertainty
+            ? occultation.instant_uncertainty > 9999
+              ? `${occultation.instant_uncertainty.toExponential(3)} (s)`
+              : `${occultation.instant_uncertainty.toFixed(1)} (s)`
+            : null
+        }`
       },
       {
         title: 'Uncertainty in closest approach (1σ)',
@@ -113,6 +119,8 @@ function PredictionEventDetail() {
           occultation.closest_approach_uncertainty_km
             ? occultation.closest_approach_uncertainty_km < 1
               ? `${(occultation.closest_approach_uncertainty_km * 1000).toFixed(0)} (m)`
+              : occultation.closest_approach_uncertainty_km >= 100000
+              ? `${occultation.closest_approach_uncertainty_km.toExponential(3)} (Km)`
               : `${occultation.closest_approach_uncertainty_km.toFixed(0)} (Km)`
             : null
         }`
@@ -219,7 +227,9 @@ function PredictionEventDetail() {
         title: 'Uncertainty in position (1σ)',
         value: `${
           occultation.e_ra_target
-            ? occultation.e_ra_target < 0.1 || occultation.e_dec_target < 0.1
+            ? occultation.e_ra_target > 9999 || occultation.e_dec_target > 9999
+              ? `RA ${occultation.e_ra_target.toExponential(3)} (arcsec), Dec ${occultation.e_dec_target.toExponential(3)} (arcsec)`
+              : occultation.e_ra_target < 0.1 || occultation.e_dec_target < 0.1
               ? `RA ${(occultation.e_ra_target * 1e3).toFixed(1)} (mas), Dec ${(occultation.e_dec_target * 1e3).toFixed(1)} (mas)`
               : `RA ${occultation.e_ra_target.toFixed(1)} (arcsec), Dec ${occultation.e_dec_target.toFixed(1)} (arcsec)`
             : null
