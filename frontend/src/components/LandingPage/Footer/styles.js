@@ -2,7 +2,7 @@ import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   footer: {
-    padding: theme.spacing(4, 0),
+    padding: theme.spacing(4, 0)
   },
   footerDivider: {
     width: '100%',
@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
     height: '0.5px',
     backgroundColor: '#ccc',
     margin: '0 auto',
-    marginBottom: theme.spacing(12),
+    marginBottom: theme.spacing(12)
   },
   verticalDivider: {
     height: '110px',
@@ -18,18 +18,18 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: '#ccc',
     margin: '0 auto',
     position: 'relative',
-    top: '-80px',
+    top: '-80px'
   },
   logoContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingLeft: theme.spacing(4),
+    paddingLeft: theme.spacing(4)
   },
   address: {
     fontSize: '14px',
     color: '#000',
-    paddingLeft: theme.spacing(10),
+    paddingLeft: theme.spacing(10)
   },
   futureText: {
     mT: '32px',
@@ -41,16 +41,16 @@ const useStyles = makeStyles((theme) => ({
     textAlign: 'left',
     paddingLeft: theme.spacing(5),
     wordSpacing: '0.8rem',
-    mB: '10px',
+    mB: '10px'
   },
   partnerSection: {
     textAlign: 'left',
-    marginBottom: theme.spacing(2),
+    marginBottom: theme.spacing(2)
   },
   apoioText: {
     color: '#a3a3a3',
     fontSize: '.9rem',
-    textAlign: 'left',
+    textAlign: 'left'
   },
   partnerLogo: {
     width: '100px',
@@ -59,8 +59,8 @@ const useStyles = makeStyles((theme) => ({
     filter: 'grayscale(100%)',
     transition: 'filter 0.3s ease',
     '&:hover': {
-      filter: 'grayscale(0%)',
-    },
+      filter: 'grayscale(0%)'
+    }
   },
   inctLogo: {
     width: '60px',
@@ -69,50 +69,49 @@ const useStyles = makeStyles((theme) => ({
     filter: 'grayscale(100%)',
     transition: 'filter 0.3s ease',
     '&:hover': {
-      filter: 'grayscale(0%)',
-    },
+      filter: 'grayscale(0%)'
+    }
   },
   contactSection: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: theme.spacing(6),
+    marginTop: theme.spacing(6)
   },
   socialIcons: {
     marginTop: theme.spacing(1),
     display: 'flex',
-    justifyContent: 'center',
+    justifyContent: 'center'
   },
   socialIcon: {
     width: '68px',
-    height: '48px',
+    height: '48px'
   },
   linkedinHover: {
     '&:hover': {
-      color: '#0077B5',
-    },
+      color: '#0077B5'
+    }
   },
   instagramHover: {
     '&:hover': {
-      color: '#E1306C',
-    },
+      color: '#E1306C'
+    }
   },
   youtubeHover: {
     '&:hover': {
-      color: '#FF0000',
-    },
+      color: '#FF0000'
+    }
   },
   facebookHover: {
     '&:hover': {
-      color: '#1877F2',
-    },
+      color: '#1877F2'
+    }
   },
   bottomText: {
     textAlign: 'center',
     color: '#a3a3a3',
-    fontSize: '0.875rem',
-  },
-
+    fontSize: '0.875rem'
+  }
 }))
 
 export default useStyles
