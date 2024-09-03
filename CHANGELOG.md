@@ -1,3 +1,15 @@
+## 4.0.2 (2024-09-03)
+
+### Fix
+
+- **commitzen**: test github action
+
+## 4.0.1 (2024-09-03)
+
+### Fix
+
+- **commitzend**: fixed commitzen release action
+
 ## 4.0.0 (2024-09-03)
 
 ### Feat
