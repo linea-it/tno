@@ -1217,6 +1217,10 @@ def visibility_from_coeff(
 
     radius = radius * u.km
 
+    nighttime = _check_nighttime(location_c, Time(date_time))
+    if not nighttime:
+        return False
+
     body_upper_visibility = False
     body_lower_visibility = False
     path_visibility = False
@@ -1237,20 +1241,23 @@ def visibility_from_coeff(
             inputdict["min_longitude"],
             inputdict["max_longitude"],
         )
+        if len(object_upper_limit[0]) > 0:
+            object_upper_limit = np.array(object_upper_limit)
+            if object_upper_limit[1][0] < object_upper_limit[1][-1]:
+                object_upper_limit[0] = object_upper_limit[0][::-1]
+                object_upper_limit[1] = object_upper_limit[1][::-1]
 
-        object_upper_limit = np.array(object_upper_limit)
-        if np.any(object_upper_limit[0] < -180):
-            object_upper_limit[0] += 360
-            idx = np.where(object_upper_limit[0] > 180)
-            object_upper_limit[0][idx] -= 360
+            if np.any(object_upper_limit[0] < -180):
+                object_upper_limit[0] += 360
+                idx = np.where(object_upper_limit[0] > 180)
+                object_upper_limit[0][idx] -= 360
 
-        if np.any(object_upper_limit[0] > 180):
-            object_upper_limit[0] -= 360
-            idx = np.where(object_upper_limit[0] < -180)
-            object_upper_limit[0][idx] += 360
+            if np.any(object_upper_limit[0] > 180):
+                object_upper_limit[0] -= 360
+                idx = np.where(object_upper_limit[0] < -180)
+                object_upper_limit[0][idx] += 360
 
-        object_upper_limit = tuple(object_upper_limit)
-
+            object_upper_limit = tuple(object_upper_limit)
         body_upper_visibility = _calculate_path_visibility(
             location, object_upper_limit, radius, latitudinal=latitudinal
         )
@@ -1274,19 +1281,23 @@ def visibility_from_coeff(
             inputdict["max_longitude"],
         )
 
-        object_lower_limit = np.array(object_lower_limit)
-        if np.any(object_lower_limit[0] < -180):
-            object_lower_limit[0] += 360
-            idx = np.where(object_lower_limit[0] > 180)
-            object_lower_limit[0][idx] -= 360
+        if len(object_lower_limit[0]) > 0:
+            object_lower_limit = np.array(object_lower_limit)
+            if object_lower_limit[1][0] < object_lower_limit[1][-1]:
+                object_lower_limit[0] = object_lower_limit[0][::-1]
+                object_lower_limit[1] = object_lower_limit[1][::-1]
 
-        if np.any(object_lower_limit[0] > 180):
-            object_lower_limit[0] -= 360
-            idx = np.where(object_lower_limit[0] < -180)
-            object_lower_limit[0][idx] += 360
+            if np.any(object_lower_limit[0] < -180):
+                object_lower_limit[0] += 360
+                idx = np.where(object_lower_limit[0] > 180)
+                object_lower_limit[0][idx] -= 360
 
-        object_lower_limit = tuple(object_lower_limit)
+            if np.any(object_lower_limit[0] > 180):
+                object_lower_limit[0] -= 360
+                idx = np.where(object_lower_limit[0] < -180)
+                object_lower_limit[0][idx] += 360
 
+            object_lower_limit = tuple(object_lower_limit)
         body_lower_visibility = _calculate_path_visibility(
             location, object_lower_limit, radius, latitudinal=latitudinal
         )
@@ -1294,24 +1305,107 @@ def visibility_from_coeff(
             return True
 
     # check the vibility in between error or body size lines:
+    uplim = False
+    lowlim = False
+    rightlim = False
+    leftlim = False
+
     if (
         inputdict["body_upper_coeff_longitude"]
         and inputdict["body_upper_coeff_latitude"]
         and inputdict["body_lower_coeff_longitude"]
         and inputdict["body_lower_coeff_latitude"]
     ):
-
         lat_max = max(latitudes)
-        idx = np.argmin(abs(object_upper_limit[0] - longitude))
-        upper_lat = object_upper_limit[1][idx]
-        uplim = upper_lat > lat_max
-
+        lon_max = max(longitudes)
         lat_min = min(latitudes)
-        idx = np.argmin(abs(object_lower_limit[0] - longitude))
-        lower_lat = object_lower_limit[1][idx]
-        lowlim = lower_lat < lat_min
+        lon_min = min(longitudes)
 
-        if uplim and lowlim:
+        # find if the upper limit of the latitude of the observers' circle is inside the most external limits
+        uplim_A = False
+        uplim_B = False
+        if len(object_upper_limit[0]) > 0:
+            idx = np.argmin(
+                abs(object_upper_limit[0] - longitude)
+            )  # find the closest longitude to the center of the circle to compare to the top latitude of the circle, they are paired
+            upper_lat_A = object_upper_limit[1][idx]
+            uplim_A = upper_lat_A > lat_max
+        if (
+            len(object_lower_limit[0]) > 0
+            and len(object_upper_limit[0]) > 0
+            and len(object_lower_limit[0]) == len(object_upper_limit[0])
+        ):
+            # idx = np.argmin( abs(object_lower_limit[0] - longitude) ) # find the closest longitude to the center of the circle to compare to the top latitude of the circle, they are paired
+            upper_lat_B = object_lower_limit[1][idx]
+            uplim_B = upper_lat_B > lat_max
+        uplim = uplim_A or uplim_B
+        if uplim_A and uplim_B:
+            uplim = False
+
+        # find if the lower limit of the latitude of the observers' circle is inside the most external limits
+        lowlim_A = False
+        lowlim_B = False
+        if len(object_upper_limit[0]) > 0:
+            idx = np.argmin(
+                abs(object_upper_limit[0] - longitude)
+            )  # find the closest longitude to the center of the circle to compare to the top latitude of the circle, they are paired
+            lower_lat_A = object_upper_limit[1][idx]
+            lowlim_A = lower_lat_A < lat_min
+        if (
+            len(object_lower_limit[0]) > 0
+            and len(object_upper_limit[0]) > 0
+            and len(object_lower_limit[0]) == len(object_upper_limit[0])
+        ):
+            # idx = np.argmin( abs(object_lower_limit[0] - longitude) ) # find the closest longitude to the center of the circle to compare to the top latitude of the circle, they are paired
+            lower_lat_B = object_lower_limit[1][idx]
+            lowlim_B = lower_lat_B < lat_min
+        lowlim = lowlim_A or lowlim_B
+        if lowlim_A and lowlim_B:
+            lowlim = False
+
+        # find if the most right limit of the longitude of the observers' circle is inside the most external limits
+        rightlim_A = False
+        righlim_B = False
+        if len(object_upper_limit[1]) > 0:
+            idx = np.argmin(
+                abs(object_upper_limit[1] - latitude)
+            )  # find the closest latitude to the center of the circle to compare to the right longitude of the circle, they are paired
+            right_lon_A = object_upper_limit[0][idx]
+            rightlim_A = right_lon_A > lon_max
+        if (
+            len(object_lower_limit[1]) > 0
+            and len(object_upper_limit[1]) > 0
+            and len(object_lower_limit[1]) == len(object_upper_limit[1])
+        ):
+            # idx = np.argmin( abs(object_lower_limit[1] - latitude) ) # find the closest latitude to the center of the circle to compare to the right longitude of the circle, they are paired
+            right_lon_B = object_lower_limit[0][idx]
+            rightlim_B = right_lon_B > lon_max
+        rightlim = rightlim_A or righlim_B
+        if rightlim_A and righlim_B:
+            rightlim = False
+
+        # find if the most left limit of the longitude of the observers' circle is inside the most external limits
+        leftlim_A = False
+        leftlim_B = False
+        if len(object_upper_limit[1]) > 0:
+            idx = np.argmin(
+                abs(object_upper_limit[1] - latitude)
+            )  # find the closest latitude to the center of the circle to compare to the right longitude of the circle, they are paired
+            left_lon_A = object_upper_limit[0][idx]
+            leftlim_A = left_lon_A < lon_min
+        if (
+            len(object_lower_limit[1]) > 0
+            and len(object_upper_limit[1]) > 0
+            and len(object_lower_limit[1]) == len(object_upper_limit[1])
+        ):
+            # idx = np.argmin( abs(object_lower_limit[1] - latitude) ) # find the closest latitude to the center of the circle to compare to the right longitude of the circle, they are paired
+            left_lon_B = object_lower_limit[0][idx]
+            leftlim_B = left_lon_B < lon_min
+        leftlim = leftlim_A or leftlim_B
+        if leftlim_A and leftlim_B:
+            leftlim = False
+
+        if uplim and lowlim and rightlim and leftlim:
             return True
 
     # if has only path:
