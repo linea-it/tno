@@ -1,3 +1,9 @@
+## 4.0.3 (2024-09-04)
+
+### Fix
+
+- **occviz**: fix cases where curved paths generated false positive location passage (#1080)
+
 ## 4.0.2 (2024-09-03)
 
 ### Fix
