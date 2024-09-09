@@ -7,7 +7,7 @@ const styles = makeStyles((theme) => ({
     borderRadius: '15px'
   },
   /*
-  map: { 
+  map: {
     [theme.breakpoints.only('sm')]: {
     height: '80vh',
     width: '100%',
