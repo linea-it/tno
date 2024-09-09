@@ -1,0 +1,30 @@
+.map {
+  height: 80vh;
+  width: 100%;
+  /*margin: auto;*/
+  border-radius: 15px;
+}
+/*
+ .leaflet-container{
+    height: 400px;
+    width: 100%;
+    /*margin: auto;
+    width: 20%;
+    top: 30px;
+    
+    border-radius: 15px;
+    md={6} sm={5}
+ }*/
+
+@media print {
+  .map {
+    height: 200px;
+    width: 100%;
+    /*margin: auto;*/
+    border-radius: 15px;
+  }
+  .mapPrint {
+    /*size: 100px 100px;*/
+    height: 200px;
+  }
+}
