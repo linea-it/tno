@@ -76,6 +76,16 @@ export const getOrCreatePredictionMap = ({ queryKey }) => {
   return api.get(`/occultations/${id}/get_or_create_map`, { params: { force: force } }).then((res) => res.data)
 }
 
+export const getOccultationPaths = ({ queryKey }) => {
+  const params = queryKey[1]
+  const { id, force } = params
+  if (!id) {
+    return
+  }
+
+  return api.get(`/occultations/${id}/get_occultation_paths`, { params: { force: force } }).then((res) => res.data)
+}
+
 export const getHighlightsUniqueAsteroids = () => {
   return api.get(`/occultations/highlights_unique_asteroids/`).then((res) => res.data)
 }
