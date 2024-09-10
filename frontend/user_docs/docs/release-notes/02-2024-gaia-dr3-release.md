@@ -1,10 +1,10 @@
-<!-- 03-2024-ca-uncertainties-release.md -->
+<!-- 02-2024-gaia-dr3-release.md -->
 
-# Predictions with CA Uncertainties
+# Gaia DR3 Update
 
-Release date: September 5th, 2024.
+Release date: April 21st, 2024.
 
-Main updates include the computation of uncertainties at the closest approach and closest apporach instant and includes the newly developed python module lineaSSP to retrive predictions programatically. It also offers a new filtering option by the shaddow path uncertainty in kilometers.
+Main updates include the use of Gaia DR3 star catalogue and new filter options such as magnitude drop, event duration, and object size.
 
 At this stage occultation predictions are computed only for the outer Solar System objects including **Trojans**, **Centaurs**, and **Kuiper Belt** objects.
 
@@ -14,10 +14,10 @@ Below are the description of the main input sources and the outputs produced in 
 
 | Description                                            | Value                                       |
 | ------------------------------------------------------ | ------------------------------------------- |
-| Number of asteroids with predictions (at release date) | 18,835                                      |
-| Number of events (at release date)                     | 2,375,049                                   |
+| Number of asteroids with predictions (at release date) | 16,615                                      |
+| Number of events (at release date)                     | 1,658,372                                   |
 | Earliest prediction (at release date)                  | Jan, 1st 2024                               |
-| Latest prediction (at release date)                    | Oct, 31st 2025                              |
+| Latest prediction (at release date)                    | Jan, 1st 2025                               |
 | Asteroid dynamical classes included (at release date)  | Centaur <br/>Trojan <br/>Kuiper Belt Object |
 | Source of asteroids ephemerides                        | JPL/NASA                                    |
 | Source of planetary ephemerides                        | de440 - JPL/NASA                            |
