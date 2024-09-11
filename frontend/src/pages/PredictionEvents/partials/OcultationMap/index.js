@@ -13,7 +13,7 @@ import { getOccultationPaths } from '../../../../services/api/Occultation'
 //import { circle } from 'leaflet'
 import { NightRegion } from 'react-leaflet-night-region'
 
-const PredictOccultationMap = ({ occultationId }) => {
+const PredictOccultationMap = ({ occultationId, ...props }) => {
   const [force, setForce] = React.useState(false)
 
   const { data } = useQuery({
@@ -32,7 +32,7 @@ const PredictOccultationMap = ({ occultationId }) => {
   let state = {
     lat: (data?.min_latitude + data?.max_latitude) / 2, //center.lat, //-20.1789,
     lon: (data?.min_longitude + data?.max_longitude) / 2, //center.lon, //20.6435,
-    zoom: 3.1
+    zoom: 1
   }
 
   // definicao do icone
@@ -126,7 +126,7 @@ const PredictOccultationMap = ({ occultationId }) => {
   //console.log('linecenter', lineCenter)
 
   return (
-    <Card className={styles.mapPrint} spacing={4}>
+    <Card spacing={4}>
       <Box>
         {data !== undefined &&
           (console.log([data?.central_path_latitude[0], data?.central_path_longitude[0]]),
