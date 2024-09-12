@@ -56,3 +56,9 @@ The Location radius represents the distance in kilometers around the provided la
 > **Atention** ><br/>Be aware that activating this filter without following the instructions will result either in incomplete results or in timeout by the server.
 
 ![Image Alt Text](../static/geolocation_filter.png)
+
+### CLEAR and HELP buttons
+
+The **CLEAR** button will clear all the input filters, reseting to the default values.
+
+The **HELP** button will forward to this documentation URL.
