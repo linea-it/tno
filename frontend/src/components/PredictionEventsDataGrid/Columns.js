@@ -159,9 +159,27 @@ export const PredictionEventsColumns = [
     }
   },
   {
+    field: 'instant_uncertainty',
+    headerName: 'Central Instant unc',
+    description: 'Instant of the closest approach uncertainty (seconds)',
+    type: 'number',
+    headerAlign: 'center',
+    align: 'center',
+    ...floatFixedPrecision3
+  },
+  {
     field: 'closest_approach',
     headerName: 'C/A',
     description: 'Geocentric Closest Approach (arcsec)',
+    type: 'number',
+    headerAlign: 'center',
+    align: 'center',
+    ...floatFixedPrecision3
+  },
+  {
+    field: 'closest_apporach_uncertainty_km',
+    headerName: 'Closest Approach unc',
+    description: 'Closest Approach Uncertainty (km)',
     type: 'number',
     headerAlign: 'center',
     align: 'center',
@@ -205,7 +223,7 @@ export const PredictionEventsColumns = [
   },
   {
     field: 'event_duration',
-    headerName: 'Duration',
+    headerName: 'Event Duration',
     description: 'Event duration (s)',
     type: 'number',
     headerAlign: 'center',
@@ -308,9 +326,27 @@ export const PredictionEventsColumns = [
     sortable: false
   },
   {
+    field: 'e_ra_target',
+    headerName: 'Target RA unc',
+    description: "Error in target's right ascension (arcsec)",
+    width: 130,
+    headerAlign: 'center',
+    align: 'center',
+    sortable: false
+  },
+  {
     field: 'dec_target',
     headerName: 'Object DEC',
     description: "Object's Declination (dd mm ss.sss)",
+    width: 130,
+    headerAlign: 'center',
+    align: 'center',
+    sortable: false
+  },
+  {
+    field: 'e_dec_target',
+    headerName: 'Target Dec unc',
+    description: "Error in target's declination (arcsec)",
     width: 130,
     headerAlign: 'center',
     align: 'center',
