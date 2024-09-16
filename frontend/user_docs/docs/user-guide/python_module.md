@@ -1,11 +1,11 @@
 # Linea Solar System Portal Module (lineaSSP)
 
-`lineaSSP` is a Python package designed to simplify interactions with the Solar System Portal API. The package allows users to retrieve and analyze data related to asteroids, their predictions, occultation events, and more.
+`lineaSSP` is a Python package designed to simplify interactions with the Solar System Portal API. The package allows users to retrieve and analyze data related to solar system small bodies, their predictions, occultation events, and more.
 
 ## Features
 
 - **Prediction Queries**: Access detailed occultation prediction events.
-- **Asteroid Queries**: Retrieve detailed information about asteroids based on various parameters such as name, number, and dynamical class.
+- **Asteroid Queries**: Retrieve detailed information about solar system small bodies based on various parameters such as name, number, and dynamical class.
 - **Map Generation**: Create visual maps for occultation events to assist with observation planning.
 - **Geographical Filtering**: Filter predictions based on visibility from a specific geographic location.
 
@@ -143,7 +143,7 @@ occultations = prediction_api.get_data(params=params, limit=10)
 generate_map(data=occultations, dpi=300, path='./')
 ```
 
-You can use the genearte_map function as a wrapper of the original SORA function passing directly `*args`and `**kwargs`. Please follow the SORA maps documentantion, specially docstrings, to check it out.
+You can use the `generate_map` function as a wrapper of the original SORA function passing directly `*args`and `**kwargs`. Please follow the SORA maps documentantion, specially docstrings, to check it out.
 
 ### Filtering Predictions by Geographical Location with `geofilter`
 
@@ -184,8 +184,8 @@ The `lineaSSP` package allows querying the API with various parameters to retrie
 | ------------------------------------- | ------------------------------------------------------------- | ------- |
 | `date_time_after`                     | Fetch occultations occurring after this date                  | String  |
 | `date_time_before`                    | Fetch occultations occurring before this date                 | String  |
-| `diameter_max`                        | Maximum diameter (km)                                         | Double  |
-| `diameter_min`                        | Minimum diameter (km)                                         | Double  |
+| `diameter_max`                        | Maximum object diameter (km)                                  | Double  |
+| `diameter_min`                        | Minimum object diameter (km)                                  | Double  |
 | `base_dynclass`                       | Object's base dynamical classification (Skybot)               | String  |
 | `dynclass`                            | Object's dynamical subclass (Skybot)                          | String  |
 | `event_duration_max`                  | Maximum event duration (seconds)                              | Double  |
@@ -198,8 +198,8 @@ The `lineaSSP` package allows querying the API with various parameters to retrie
 | `longitude`                           | Longitude for geographical filtering                          | Double  |
 | `magnitude_drop_max`                  | Maximum expected star's magnitude drop                        | Double  |
 | `magnitude_drop_min`                  | Minimum expected star's magnitude drop                        | Double  |
-| `magnitude_max`                       | Maximum magnitude (Gaia G magnitude)                          | Double  |
-| `magnitude_min`                       | Minimum magnitude (Gaia G magnitude)                          | Double  |
+| `magnitude_max`                       | Higher star magnitude (Gaia G magnitude)                      | Double  |
+| `magnitude_min`                       | Lower star magnitude (Gaia G magnitude)                       | Double  |
 | `nightside`                           | Filter for occultations on the nightside                      | Boolean |
 | `name`                                | Object name (multiple values may be separated by commas)      | String  |
 | `number`                              | Object number (multiple values may be separated by commas)    | Integer |
