@@ -10,7 +10,7 @@ Organizes specific information and parameters that, in general, are the product 
 **Star position (ICRF):** Right ascension and declination with assumed proper motion, in ICRF/J2000.<br>
 **Closest approach:** Geocentric closest approach, in arcsec.<br>
 **Position angle:** Planet position angle with respect to star at closest approach, in degrees.<br>
-**Velocity:** Velocity in the plane of the sky. Positive is prograde, negative is retrograde. In Km/s.<br>
+**Velocity:** Velocity in the plane of the sky. Positive is prograde, negative is retrograde. In km/s.<br>
 **Geocentric distance:** Distance between the object and the Earth's geocenter, at closest approach, in au.<br>
 **Event duration:** Estimate of the event duration, in seconds. Only defined for objects with known diameter.<br>
 **Star magnitude (Gaia):** Star G magnitude from Gaia DR3 catalog.<br>
@@ -38,13 +38,13 @@ Brings information about the hidden star, generally from the Gaia stellar catalo
 
 ### Object
 
-Brings information about the occulting object. The orbital parameters are sourced from the Minor Planet Center. Diameter, when available, is sourced from the [Virtual Observatory Solar system Open Database Network](https://ssp.imcce.fr/webservices/ssodnet/) at IMCCE (when using this information in your publications, please check their protocols for adequately citing the source). We also provide links to further information on the object at SsODNet service at IMCCE and Small-Body Database Lookup at JPL/NASA.
+Brings information about the occulting object. The orbital parameters are sourced from the Minor Planet Center ([MPCORB](https://minorplanetcenter.net/iau/MPCORB.html)). Diameter, when available, is sourced from the [Virtual Observatory Solar system Open Database Network](https://ssp.imcce.fr/webservices/ssodnet/) at IMCCE (when using this information in your publications, please check their protocols for adequately citing the source). We also provide links to further information on the object at [SsODNet service](https://ssp.imcce.fr/webservices/ssodnet/) at IMCCE and [Small-Body Database Lookup](https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/) at JPL/NASA.
 
 **Object:** Name or provisional designation. Numeration is shown in parenthesis when the object is numbered.<br>
 **Object's astrometric position (ICRF):** Object's astrometric right ascension and declination, in ICRF/J2000.<br>
 **Absolute magnitude:** Absolute magnitude H of the object as defined by the Minor Planet Center.<br>
 **Apparent magnitude:** Apparent magnitude of the object at closest approach instant. Estimated from parameters H and G provided by the Minor Planet Center.<br>
-**Diameter:** Diameter of the object when known. Displayed in kilometers (or meters for small diameters).<br>
+**Diameter:** Diameter of the object, when known. Displayed in kilometers (or meters for small diameters).<br>
 **Apparent diameter:** Apparent diameter of the object on the plane of the sky at closest approach instant, in mas.<br>
 **Dynamic class (Skybot):** Dynamic classification and sub-classification as defined by Skybot (IMCCE).<br>
 **Semi-major axis:** Semi-major axis of the object's orbit, in au.<br>
