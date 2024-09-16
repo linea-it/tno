@@ -4,8 +4,8 @@
 
 The LIneA Occultation Prediction Database (LOPD) API is a solution for querying and managing predictions of stellar occultations programatically. With this API, you can:
 
-- Search for occultation prediction events by various parameters such as date, time, magnitude.
-- Customize and filter occultation prediction events based on date/time intervals, magnitude limits, object names, dynamical classes, and subclasses.
+- Search for occultation prediction events by various parameters such as date, time, star magnitude.
+- Customize and filter occultation prediction events based on date/time intervals, star magnitude limits, object names, dynamical classes, and subclasses.
 - Access geolocation filtering (experimental) for refined results, among other things.
 - Query asteroids properties, and more.
 
@@ -61,7 +61,7 @@ The API key is personal and non-transferable, and should not be shared with thir
 
 The LOPD API handles the following features:
 
-- **Occultation**: It is an event that contains information regarding the occulting object, such as date and time, apparent magnitude, geocentric distance, etc. Additionally, it provides information about the candidate star to be occulted, such as right ascension, declination, apparent magnitude, etc. Moreover, it includes predictive information about the event, such as the expected drop in magnitude during the occultation, among other data.
+- **Occultation**: It is an event that contains information regarding the occulting object, such as date and time, star apparent magnitude, object geocentric distance, etc. Additionally, it provides information about the candidate star to be occulted, such as right ascension, declination, apparent magnitude, etc. Moreover, it includes predictive information about the event, such as the expected drop in magnitude during the occultation, among other data.
 - **Asteroid**: Aggregates the set of information about a small body in the Solar System, including its orbital properties and, when available, some physical properties.
 - **Base Dynclass**: Contains the main dynamic classifications of asteroids as defined by [Skybot](https://ssp.imcce.fr/webservices/skybot/).
 - **Dynclass**: Contains the set of dynamic subclassifications of asteroids as defined by [Skybot](https://ssp.imcce.fr/webservices/skybot/).
