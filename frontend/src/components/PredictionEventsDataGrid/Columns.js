@@ -1,16 +1,13 @@
 import Box from '@mui/material/Box'
 import moment from 'moment'
+import PredictOccultationMap from '../../pages/PredictionEvents/partials/OccultationMap/index'
+
 function ImageCell(props) {
   return (
     <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank' sx={{ justify: 'center', alignItems: 'center' }}>
-      <Box
-        component='img'
-        // width={props.colDef.computedWidth}
-        width='auto'
-        height={68}
-        alt=''
-        src={props.value !== null ? props.value : 'https://placehold.co/100x75?text=No%20Image'}
-      />
+      <Box>
+        <PredictOccultationMap occultationId={props.row.id} thumbsCard={false} thumbsList={true} />
+      </Box>
     </Box>
   )
 }
