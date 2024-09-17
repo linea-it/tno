@@ -12,11 +12,11 @@ import { blue } from '@mui/material/colors'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import Snackbar from '@mui/material/Snackbar'
-import PredictOccultationMap from '../../pages/PredictionEvents/partials/OcultationMap/index'
+import PredictOccultationMap from '../../pages/PredictionEvents/partials/OccultationMap/index'
 
 function PredictEventCard({ data }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
-  //console.log('datathumb', data.map_url)
+
   const getDisplayName = (name, number) => {
     return number !== null ? `${name} (${number})` : `${name}`
   }
@@ -74,15 +74,14 @@ function PredictEventCard({ data }) {
   }
 
   return (
-    <Card sx={{ display: 'flex', height: 170 }}>
+    <Card sx={{ display: 'flex', height: 176 }}>
       <CardMedia
         sx={{
           width: 250
         }}
-        image={!data?.map_url ? 'https://placehold.co/250?text=No%20Image' : data.map_url}
         onError={handleImageError}
       >
-        <PredictOccultationMap occultationId={data.id} />
+        {<PredictOccultationMap occultationId={data.id} thumbsCard={true} thumbsList={false} />}
       </CardMedia>
       <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         <CardHeader
