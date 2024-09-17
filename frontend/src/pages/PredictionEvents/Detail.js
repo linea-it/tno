@@ -15,7 +15,7 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline'
 import List from '../../components/List'
 import { getOccultationById, getStarByOccultationId } from '../../services/api/Occultation'
 //import PredictOccultationMap from './partials/PredictMap'
-import PredictOccultationMap from './partials/OcultationMap/index'
+import PredictOccultationMap from './partials/OccultationMap/index'
 import AladinV3 from '../../components/AladinV3/index'
 import AlertEnvironment from '../../components/AlertEnvironment/index'
 import { whichEnvironment } from '../../services/api/Auth'
@@ -288,7 +288,10 @@ function PredictionEventDetail() {
       <Grid container spacing={2} sx={{ marginTop: '10px' }}>
         {occultation.id !== undefined && (
           <Grid item xs={12}>
-            <PredictOccultationMap occultationId={occultation.id} />
+            {/* // id do evento de ocultacao,
+                // thumbsCard -> mapas menores dos cards grid , 
+                // thumbsList -> mapas pequenos das linhas da lista */}
+            <PredictOccultationMap occultationId={occultation.id} thumbsCard={false} thumbsList={false} />
           </Grid>
         )}
         <Grid item xs={12} md={6} lg={6}>
