@@ -289,7 +289,7 @@ function PredictionEventDetail() {
         {occultation.id !== undefined && (
           <Grid item xs={12}>
             {/* // id do evento de ocultacao,
-                // thumbsCard -> mapas menores dos cards grid , 
+                // thumbsCard -> mapas menores dos cards grid ,
                 // thumbsList -> mapas pequenos das linhas da lista */}
             <PredictOccultationMap occultationId={occultation.id} thumbsCard={false} thumbsList={false} />
           </Grid>
