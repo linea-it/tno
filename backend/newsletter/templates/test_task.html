@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <table border="1">
+      <tr>
+        <th>ID</th>
+        <th>FilName</th>
+        <th>Latitude</th>
+      </tr>
+      {% for x in options %}
+      <tr>
+        <td>{{ x.id }}</td>
+        <td>{{ x.filterName }}</td>
+        <td>{{ x.latitude }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <p>
+      In views.py you can see how to import and fetch members from the database.
+    </p>
+  </body>
+</html>

@@ -61,18 +61,25 @@ class NewsletterSendEmail:
             "Welcome to Solar System Newsletter", html_content, subscription.user.email
         )
 
-    """
-    def renderHtmlUnsubscribe(request, unsubscribe, recipient_list):
-        if unsubscribe == True:
-            print("Ok")
-        # return #sys.stdout.write(f"Exemplo de como fazer um print ${unsubscribe}")
-        html_content = render_to_string("welcome.html", {"nome": "Josiane"})
-        body = EmailMessage(
-            unsubscribe, html_content, "josianes.silva@gmail.com", recipient_list
+    def send_events_mail(self, subscription: Subscription):
+        """Email enviado com os eventos de predição de ocultações
+        solicitados pelo usuario.
+        Contem uma lista com alguns dos eventos e
+        um arquivo csv em anexo com o link dos eventos encontrados.
+        """
+
+        self.log.info(f"Sending events to: {subscription.user.email}")
+
+        html_content = render_to_string(
+            "events_found.html",
+            {
+                "host": settings.SITE_URL.rstrip("/"),
+                "activation_code": subscription.activation_code,
+            },
         )
-        body.content_subtype = "html and image"
-        return body.send()
-    """
+        self.send_newsletter_email(
+            "Occultation predictions found", html_content, subscription.user.email
+        )
 
     def send_newsletter_email(self, subject, body, recipient):
         try:
