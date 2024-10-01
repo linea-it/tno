@@ -38,7 +38,7 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
   }
 
   // opções do icone do sol -> falta definir posição real
-  /* 
+  /*
   const sunIcon = L.icon({
     iconUrl: sun,
     //shadowUrl: leafShadow,
@@ -137,6 +137,11 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
             attributionControl={thumbsList === true ? false : true}
             zoom={thumbsCard === true ? 1 : state.zoom}
           >
+            {/*maxBounds={[
+              [-90, -360],
+              [90, 360]
+            ]}
+            maxBoundsViscosity={1}*/}
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'

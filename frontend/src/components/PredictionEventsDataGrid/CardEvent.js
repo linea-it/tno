@@ -12,7 +12,7 @@ import { blue } from '@mui/material/colors'
 import Chip from '@mui/material/Chip'
 import Button from '@mui/material/Button'
 import Snackbar from '@mui/material/Snackbar'
-import PredictOccultationMap from '../../pages/PredictionEvents/partials/OccultationMap/index'
+//import PredictOccultationMap from '../../pages/PredictionEvents/partials/OccultationMap/index'
 
 function PredictEventCard({ data }) {
   const [snackbarOpen, setSnackbarOpen] = useState(false)
@@ -81,7 +81,7 @@ function PredictEventCard({ data }) {
         }}
         onError={handleImageError}
       >
-        {<PredictOccultationMap occultationId={data.id} thumbsCard={true} thumbsList={false} />}
+        {/*<PredictOccultationMap occultationId={data.id} thumbsCard={true} thumbsList={false} />*/}
       </CardMedia>
       <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         <CardHeader
