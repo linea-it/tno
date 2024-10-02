@@ -33,7 +33,7 @@ On by default. When activated, it takes a step further in constraining the close
 
 ### Hide Diurn Events
 
-On by default, it filters out occultations whose paths happen exclusively during daytime and paths that do not cross the Earth at all.
+On by default, it filters out occultations whose full paths (with uncertainties) happen exclusively during daytime and paths that do not cross the Earth at all.
 
 ### Duration and Size
 
@@ -47,7 +47,7 @@ Provide options to filter events by four parameters:
 
 _The geolocation filter is experimental and is intended to be the last filter option to be applied._ Since it is computationally costly, we recomend to filter down your results using the previous filtering options to an amount of **at most 2000 events** as indicated in the image below. It can be acomplished for instance using a narrower datetime interval or set of objects.
 
-Off by default. When activated, it takes a step further in constraining the closest approach instant to a specific location, in terms of latitude, longitude, and locarion radius. 
+Off by default. When activated, it takes a step further in constraining the closest approach instant to a specific location, in terms of latitude, longitude, locarion radius, and uncertainties.
 
 Latitude and longitude must be presented in degrees. Negative latitudes correspon to the South, while positive ones are to the North. Negative longitudes correspond to the West, while positive ones are the East.
 
