@@ -9,7 +9,6 @@ from django.template import loader
 from django.template.loader import render_to_string
 from django.utils import timezone
 from newsletter.models import EventFilter
-
 from tno.models import Occultation
 from tno.views.occultation import OccultationFilter
 
