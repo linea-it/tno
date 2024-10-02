@@ -6,7 +6,7 @@ Release date: April 21st, 2024.
 
 Main updates include the use of Gaia DR3 star catalogue and new filter options such as magnitude drop, event duration, and object size.
 
-At this stage occultation predictions are computed only for the outer Solar System objects including those classified as **Trojans**, **Centaurs**, **Kuiper Belt**, and **Inner Oort Cloud**.
+At this stage occultation predictions are computed only for the outer Solar System objects including those classified as **Trojans**, **Centaurs**, and **Kuiper Belt**.
 
 The total number of predictions also include a small percentage of events that happen strictly during the day, which are in very special cases of interest to some astronomers.
 
