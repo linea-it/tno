@@ -198,8 +198,8 @@ The `lineaSSP` package allows querying the API with various parameters to retrie
 | `longitude`                           | Longitude for geographical filtering                          | Double  |
 | `magnitude_drop_max`                  | Maximum expected star's magnitude drop                        | Double  |
 | `magnitude_drop_min`                  | Minimum expected star's magnitude drop                        | Double  |
-| `magnitude_max`                       | Higher star magnitude (Gaia G magnitude)                      | Double  |
-| `magnitude_min`                       | Lower star magnitude (Gaia G magnitude)                       | Double  |
+| `magnitude_max`                       | Higher - numerical value - star magnitude (Gaia G magnitude)  | Double  |
+| `magnitude_min`                       | Lower - numerical value - star magnitude (Gaia G magnitude)   | Double  |
 | `nightside`                           | Filter for occultations on the nightside                      | Boolean |
 | `name`                                | Object name (multiple values may be separated by commas)      | String  |
 | `number`                              | Object number (multiple values may be separated by commas)    | Integer |
