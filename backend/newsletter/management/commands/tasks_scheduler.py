@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 
 from django.core.mail import mail_admins, mail_managers, send_mail
 from django.core.management.base import BaseCommand
-from newsletter.filterPreferencesUser import filter_preferences_user
+from newsletter.filter_preferences_user import filter_preferences_user
 from newsletter.models.subscription import Subscription
 from newsletter.newsletter_send_mail import NewsletterSendEmail
 
@@ -23,18 +23,18 @@ class Command(BaseCommand):
 
     help = "Agendador de tarefas."
 
-    def add_arguments(self, parser):
-        parser.add_argument(
-            "email",
-            help="One email addresses to send a test email to.",
-        )
+    # def add_arguments(self, parser):
+    #    parser.add_argument(
+    #        "email",
+    #        help="One email addresses to send a test email to.",
+    #    )
 
     def handle(self, *args, **kwargs):
-        email = kwargs["email"]
+        # email = kwargs["email"]
         scheduler = sched.scheduler(time.time, time.sleep)
 
-        user = Subscription.objects.get()
-        print("user...", user)
+        # user = Subscription.objects.get()
+        # print("user...", user)
 
         """
         # funcao 1 executada apos 3 segundos
@@ -92,11 +92,11 @@ class Command(BaseCommand):
                 filter_preferences_user,
             )
 
-            scheduler.enterabs(
-                time.mktime(time.strptime("27/9/2024 17:50:00", "%d/%m/%Y %H:%M:%S")),
-                10,
-                NewsletterSendEmail.send_events_mail(self, email),
-            )
+            # scheduler.enterabs(
+            #    time.mktime(time.strptime("27/9/2024 17:50:00", "%d/%m/%Y %H:%M:%S")),
+            #    10,
+            #    NewsletterSendEmail.send_events_mail(self, email),
+            # )
 
         sched_a()
         scheduler.run()
