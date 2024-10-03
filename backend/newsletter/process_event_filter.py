@@ -78,8 +78,10 @@ class ProcessEventFilters:
         for r in result:
             print(r)
 
+        """
         result_query = self.query_occultation()
         for rq in result_query:
             # print(rq)
             print("ok")
         # print(result_query)
+        """
