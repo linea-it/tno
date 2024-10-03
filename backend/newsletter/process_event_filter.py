@@ -31,40 +31,21 @@ class ProcessEventFilters:
         except Exception as e:
             raise Exception(f"Failed to query subscription filters. {e}")
 
-    def query_occultation(self):
+    def query_occultation(self, input, date_start):
         try:
             # filtro por data. Obs, os filtros salvos nao tem data
             # a data será passada no momento de fazer a rodada
             # por exemplo, periodo weekly = data + 7 dias
             # periodo month = data e o mes atual
 
-            date_start = "2025-03-12 15:01:15"
-            # date_end = "2025-04-12 15:01:15"
+            date_end = "2025-03-12 15:01:15"
             date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
+            date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
 
             query_occultation = Occultation.objects.filter(
-                date_time=date_start,
-                have_path_coeff=True,
+                date_time__range=[date_start, date_end]
             )
-
-            """
-            # filtro por latitude
-            query_occultation = []
-            query_occultation_data = Occultation.objects.values()
-
-            for i in query_occultation_data:
-                query_occultation.append(i["occ_path_coeff"])
-                # query_occultation.append(i["min_latitude"])
-            query_occultation = query_occultation
-            print("metodo query", query_occultation)  # [0]["min_latitude"])
-            # query_occultation = query_occultation.
-            #    print(i)
-
-            # query_ocultation = Occultation.objects.filter(
-            #    min_latitude="-65.46754083242169",
-            # )
-            """
-
+            # print(query_occultation.values()[0])
             if query_occultation:
                 return query_occultation
             else:
@@ -75,13 +56,6 @@ class ProcessEventFilters:
 
     def run_filter(self):
         result = self.get_filters()
-        for r in result:
-            print(r)
-
-        """
-        result_query = self.query_occultation()
-        for rq in result_query:
-            # print(rq)
-            print("ok")
-        # print(result_query)
-        """
+        for i, r in enumerate(result):
+            if i == 0:
+                print(r.keys())
