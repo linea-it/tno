@@ -125,6 +125,36 @@ def get_asteroids_by_base_dynclass(engine, base_dynclass):
         return tno_names
 
 
+def get_asteroids_by_dynclass(engine, dynclass):
+    """
+    Retrieves the names of asteroids from the 'tno_asteroid' table based on the provided sub dynamic class.
+
+    Parameters:
+    - engine: SQLAlchemy engine object used to connect to the database.
+    - dynclass: List of sub dynamic classes to filter the query.
+
+    Returns:
+    - tno_names: List of asteroid names matching the provided sub dynamic class.
+
+    Example usage:
+    engine = create_engine('your_database_connection_string')
+    asteroid_names = get_asteroids_by_dynclass(engine, ['Class1', 'Class2'])
+    """
+
+    with engine.connect() as connection:
+        query = f"""
+            SELECT name
+            FROM tno_asteroid
+            WHERE tno_asteroid.dynclass IN ({', '.join(f"'{item}'" for item in dynclass)})
+        """
+        result = connection.execute(text(query))
+        tno_names = result.fetchall()
+
+        tno_names = np.array([pp[0] for pp in tno_names])
+
+        return tno_names
+
+
 def get_jpl_sbdb_soln_date(sstr):
     """
     Retrieves the solution date for a given solar system object from the JPL Small-Body Database (SBDB) API.
@@ -177,27 +207,82 @@ def get_prediction_date(future_months=15, start=False, start_datetime=None):
         datetime.datetime: The prediction date.
 
     """
-    if start_datetime is None:
-        start_datetime = datetime.datetime.now()
-    # we only update the upper limit every 3 months, so
-    # calculate the upper limit
-    lower_ref_month = (((start_datetime.month - 1) // 3) * 3) + 1
-    lower_ref_year = start_datetime.year
-    lower_ref_datetime = datetime.datetime(
-        lower_ref_year, lower_ref_month, 1, 0, 0, 0, 0, tzinfo=datetime.timezone.utc
+    # Step 1: Get today's date (current datetime)
+    today = datetime.datetime.today()
+
+    # Step 2: Function to compute the start of the current quarter (quarter starts in January, April, July, or October)
+    def get_quarter_start(date):
+        # Calculate the first month of the current quarter
+        quarter_month_start = (date.month - 1) // 3 * 3 + 1
+        # Return the date set to the 1st day of that month
+        return datetime.datetime(date.year, quarter_month_start, 1)
+
+    current_quarter_start = get_quarter_start(today)
+
+    # Step 3: Calculate the future date by adding a fraction of a year
+    # Approximate 'future_months' in terms of years, where 1 year is 12 months
+    ref = future_months / 12
+    future_date = current_quarter_start + datetime.timedelta(days=365 * ref)
+
+    # Adjust date oscillations caused by fractions of years
+    # We adjust to ensure the future date falls on the correct end of the month
+    days_in_month = {
+        1: 31,
+        2: 29 if calendar.isleap(future_date.year) else 28,
+        3: 31,
+        4: 30,
+        5: 31,
+        6: 30,
+        7: 31,
+        8: 31,
+        9: 30,
+        10: 31,
+        11: 30,
+        12: 31,
+    }
+    # Calculate the difference between the computed future date and the actual end of the month
+    above = abs(
+        future_date
+        - datetime.datetime(
+            future_date.year, future_date.month, days_in_month[future_date.month]
+        )
     )
-    upper_ref_year = (
-        lower_ref_datetime.year + (lower_ref_datetime.month + future_months - 1) // 12
+    # Set the future date to the last day of the computed month
+    new_future_date = datetime.datetime(
+        future_date.year, future_date.month, days_in_month[future_date.month]
     )
-    upper_ref_month = ((lower_ref_datetime.month + future_months) % 12) - 1
-    upper_ref_month = 12 if upper_ref_month == 0 else upper_ref_month
-    last_day_of_month = calendar.monthrange(upper_ref_year, upper_ref_month)[1]
+
+    # Handle special case where the month change is required
+    # If future date's month is January, adjust year and month values for the previous year-end (December)
+    ft_year = future_date.year - 1 if (future_date.month - 1) < 1 else future_date.year
+    ft_month = 12 if (future_date.month - 1) < 1 else future_date.month - 1
+
+    # Get the number of days in the previous month of the adjusted year
+    days_in_month = {
+        1: 31,
+        2: 29 if calendar.isleap(ft_year) else 28,
+        3: 31,
+        4: 30,
+        5: 31,
+        6: 30,
+        7: 31,
+        8: 31,
+        9: 30,
+        10: 31,
+        11: 30,
+        12: 31,
+    }
+    # Calculate the difference between the future date and the last day of the previous month
+    below = abs(
+        future_date - datetime.datetime(ft_year, ft_month, days_in_month[ft_month])
+    )
+    # If the difference is smaller, adjust the future date to the previous month's end
+    if below < above:
+        new_future_date = datetime.datetime(ft_year, ft_month, days_in_month[ft_month])
+
+    # If 'start' is True, compute the start date of the next year from the current quarter's start
     if start:
-        if ((lower_ref_datetime.month + future_months - 1) % 12) == 0:
-            upper_ref_year -= 1
-        start_date = datetime.datetime(
-            upper_ref_year, upper_ref_month, last_day_of_month
-        ) + datetime.timedelta(days=1)
+        start_date = current_quarter_start + datetime.timedelta(days=365)  # Add 1 year
         prediction_datetime = datetime.datetime(
             start_date.year,
             start_date.month,
@@ -205,22 +290,46 @@ def get_prediction_date(future_months=15, start=False, start_datetime=None):
             0,
             0,
             0,
-            0,
-            tzinfo=datetime.timezone.utc,
+            0,  # Set time to midnight (start of the day)
+            tzinfo=datetime.timezone.utc,  # Ensure the time is in UTC
         )
         return prediction_datetime
-    else:
-        prediction_datetime = datetime.datetime(
-            upper_ref_year,
-            upper_ref_month,
-            last_day_of_month,
-            23,
-            59,
-            59,
-            999999,
-            tzinfo=datetime.timezone.utc,
-        )
-        return prediction_datetime
+
+    # Step 4: Determine the quarter of the adjusted future date
+    def get_quarter(date):
+        return (date.month - 1) // 3 + 1  # Return the quarter as a number (1-4)
+
+    future_quarter = get_quarter(new_future_date)
+
+    # Step 5: Find the last day of the future quarter
+    def last_day_of_quarter(year, quarter):
+        quarter_month_end = (
+            quarter * 3
+        )  # Last month of the quarter is the quarter number * 3 (March, June, September, December)
+        last_day = calendar.monthrange(year, quarter_month_end)[
+            1
+        ]  # Get the number of days in that month
+        return datetime.datetime(
+            year, quarter_month_end, last_day
+        )  # Return the date of the last day of the quarter
+
+    # Ensure the leap year is considered for the future date
+    future_year = new_future_date.year
+    end_date = last_day_of_quarter(future_year, future_quarter)
+
+    # Set the final prediction datetime to the last moment of the quarter (23:59:59.999999 in UTC)
+    prediction_datetime = datetime.datetime(
+        end_date.year,
+        end_date.month,
+        end_date.day,
+        23,
+        59,
+        59,
+        999999,
+        tzinfo=datetime.timezone.utc,
+    )
+
+    return prediction_datetime
 
 
 def get_asteroids_with_updated_orbits(
