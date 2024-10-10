@@ -177,7 +177,7 @@ def run_prediction_by_class(
     Returns:
         None
     """
-    if base_dynclass or sub_class is None:
+    if base_dynclass is None and sub_class is None:
         print("Please provide a base or sub dynamical class")
         return
 
@@ -200,6 +200,7 @@ def run_prediction_by_class(
         objects = get_asteroids_by_dynclass(admin_db_engine, dynclass=input_list)
     else:
         input_list = [item.strip() for item in base_dynclass.split(",")]
+        print(input_list)
         objects = get_asteroids_by_base_dynclass(
             admin_db_engine, base_dynclass=input_list
         )
