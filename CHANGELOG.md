@@ -1,3 +1,9 @@
+## 4.0.4 (2024-10-10)
+
+### Fix
+
+- **prediction_job_by_class**: base_dynclass sub_class logic bug fix
+
 ## 4.0.3 (2024-09-04)
 
 ### Fix
