@@ -6,6 +6,7 @@ import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
 import FrequencyTypeSelect from '../../../components/Newsletter/Frequency/FrequencyTypeSelect'
 import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect'
+//import FilterTypeSelect from '../../../components/Newsletter/FilterTypeSelect'
 import MaginitudeSelect from '../../../components/MaginitudeSelect/index'
 import SolarTimeFilter from '../../../components/SolarTimeFilter/index'
 import EventDurationField from '../../../components/EventDurationField/index'
@@ -17,6 +18,7 @@ export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
     const newData = { ...data, [e.target.name]: e.target.value }
     onChange(newData)
+    console.log('form filtertype ', data.filter_type)
   }
   return (
     <Box component='form' autoComplete='off'>
@@ -36,12 +38,14 @@ export default function EventFilterForm({ data, onChange }) {
         <Divider />
         <AsteroidSelect
           source={'asteroid'}
+          //source={'prediction'}
           value={{
             filterType: data.filter_type,
             filterValue: data.filter_value
           }}
           onChange={(value) => {
-            const newData = { ...data, filter_value: value.filterValue }
+            //const newData = { ...data, filter_type: value.filterType, filter_value: value.filterValue }
+            const newData = { ...data, filter_type: value.filterType, filter_value: value.filterValue }
             onChange(newData)
           }}
         />

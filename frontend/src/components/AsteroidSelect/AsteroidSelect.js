@@ -5,6 +5,7 @@ import BaseDynclassSelect from './BaseDynclassSelect'
 import DynclassSelect from './DynclassSelect'
 import Grid from '@mui/material/Grid'
 function AsteroidSelect({ value, onChange, source, error, required }) {
+  console.log('asteroid select', value)
   return (
     <Grid container>
       <Grid item xs={12} sm={6} md={6} pr={2}>
