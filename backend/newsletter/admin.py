@@ -26,6 +26,7 @@ class EventFilterAdmin(admin.ModelAdmin):
         "magnitude_min",
         "magnitude_max",
         "filter_type",
+        "filter_value",
         "local_solar_time_after",
         "local_solar_time_before",
         "magnitude_drop_min",
