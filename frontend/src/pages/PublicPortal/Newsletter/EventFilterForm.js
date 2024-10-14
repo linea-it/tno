@@ -13,6 +13,7 @@ import EventDurationField from '../../../components/EventDurationField/index'
 import MaginitudeDropSelect from '../../../components/MaginitudeDropSelect/index'
 import ObjectDiameterFilter from '../../../components/ObjectDiameterFilter/index'
 import GeoFilter from '../../../components/Newsletter/GeoFilter/index'
+import ClosestApproachUncertaintyField from '../../../components/ClosestApproachUncertaintyField/index'
 
 export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
@@ -51,13 +52,13 @@ export default function EventFilterForm({ data, onChange }) {
         />
         <Divider />
         <Stack direction='row' spacing={2}>
-          <MaginitudeSelect
+          {/*<MaginitudeSelect
             value={data.magnitude_min !== null ? data.magnitude_min : ''}
             name='magnitude_min'
             onChange={handleChange}
             min={4}
             max={18}
-          />
+          />*/}
           <MaginitudeSelect
             value={data.magnitude_max !== null ? data.magnitude_max : ''}
             name='magnitude_max'
@@ -86,13 +87,13 @@ export default function EventFilterForm({ data, onChange }) {
         />
         <Divider />
         <Stack direction='row' spacing={2}>
-          <MaginitudeDropSelect
+          {/*<MaginitudeDropSelect
             name='magnitude_drop_min'
             value={data.magnitude_drop_min !== null ? data.magnitude_drop_min : ''}
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_min', value } })}
             min={4}
             max={18}
-          />
+          />*/}
           <MaginitudeDropSelect
             name='magnitude_drop_max'
             value={data.magnitude_drop_max !== null ? data.magnitude_drop_max : ''}
@@ -115,12 +116,20 @@ export default function EventFilterForm({ data, onChange }) {
             onChange(newData)
           }}
         />
-        <EventDurationField
-          name='event_duration'
-          value={data.event_duration !== null ? data.event_duration : ''}
-          onChange={handleChange}
-          label='Event Duration (seconds)'
-        />
+        <Stack direction='row' spacing={2}>
+          <EventDurationField
+            name='event_duration'
+            value={data.event_duration !== null ? data.event_duration : ''}
+            onChange={handleChange}
+            label='Event Duration (seconds)'
+          />
+          <ClosestApproachUncertaintyField
+            name='closest_approach_uncertainty_in_km'
+            value={data.closest_approach_uncertainty_in_km !== null ? data.closest_approach_uncertainty_in_km : ''}
+            onChange={handleChange}
+            label='Uncertainty (km)'
+          />
+        </Stack>
         <Divider />
         <GeoFilter
           value={{
