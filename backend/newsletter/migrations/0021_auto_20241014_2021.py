@@ -6,21 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0020_alter_eventfilter_user'),
+        ("newsletter", "0020_alter_eventfilter_user"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='eventfilter',
-            name='magnitude_drop_min',
+            model_name="eventfilter",
+            name="magnitude_drop_min",
         ),
         migrations.RemoveField(
-            model_name='eventfilter',
-            name='magnitude_min',
+            model_name="eventfilter",
+            name="magnitude_min",
         ),
         migrations.AddField(
-            model_name='eventfilter',
-            name='closest_approach_uncertainty_in_km',
-            field=models.IntegerField(blank=True, default=None, help_text='Uncertainty in geocentric closest approach (km).', null=True, verbose_name='Uncertainty (km)'),
+            model_name="eventfilter",
+            name="closest_approach_uncertainty_in_km",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Uncertainty in geocentric closest approach (km).",
+                null=True,
+                verbose_name="Uncertainty (km)",
+            ),
         ),
     ]
