@@ -17,6 +17,7 @@ import { Box } from '../../../../node_modules/@mui/material/index'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+import { data } from '../../../../node_modules/browserslist/index'
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
@@ -123,6 +124,7 @@ function EventFilterDetail() {
               subheader='Please configure the event filter according to your preferences and save the settings.'
             ></CardHeader>
             <CardContent>
+              {console.log('currentdata', currentData)}
               <EventFilterForm data={currentData} onChange={handleChange} />
             </CardContent>
             <CardActions>

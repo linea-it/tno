@@ -5,8 +5,8 @@ from datetime import datetime, time, timezone
 import colorlog
 from django.db.models import Q
 from newsletter.models import EventFilter
-
 from tno.models import Occultation
+from tno.occviz import visibility_from_coeff
 
 
 class ProcessEventFilters:
@@ -21,7 +21,7 @@ class ProcessEventFilters:
             self.log.addHandler(consoleHandler)
 
     def get_filters(self):
-        help = "Busca eventos que correspondem ás preferencias do usuario."
+        help = "Busca as preferencias do usuario salvas no banco."
         try:
             data = EventFilter.objects.all().values()
             if data:
@@ -78,7 +78,7 @@ class ProcessEventFilters:
             local_solar_time_before = input.get("local_solar_time_before", None)
 
             if local_solar_time_after and local_solar_time_before:
-                """ Rodrigo
+                """Rodrigo
                 datetime_after = datetime.combine(datetime.min, local_solar_time_after)
 
                 datetime_before = datetime.combine(
@@ -155,6 +155,15 @@ class ProcessEventFilters:
                     location_radius__lte=location_radius
                 )
             """
+            # TODO: filtro por geolocation
+            # fazer um loop sobre query_occultation chamando a funçõa geolocation
+            # radius = self.get_filters()[0]["location_radius"]
+            radius = self.get_filters().values_list("location_radius")
+            print("radius", radius)
+
+            for e in query_occultation:
+                print("query filtered....", e)
+
             if query_occultation:
                 return query_occultation
             else:
@@ -167,7 +176,9 @@ class ProcessEventFilters:
         result = self.get_filters()
         for i, r in enumerate(result):
             if i == 0:
-                print("run_filter...", self.query_occultation(r, "2024-03-12"))#.values())
+                print(
+                    "run_filter...", self.query_occultation(r, "2024-03-12")
+                )  # .values())
                 """
                 print(
                     "run_filter...",

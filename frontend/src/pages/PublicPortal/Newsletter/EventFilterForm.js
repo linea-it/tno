@@ -18,7 +18,7 @@ export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
     const newData = { ...data, [e.target.name]: e.target.value }
     onChange(newData)
-    console.log('form filtertype ', data.filter_type)
+    console.log('form filtertype ', data)
   }
   return (
     <Box component='form' autoComplete='off'>

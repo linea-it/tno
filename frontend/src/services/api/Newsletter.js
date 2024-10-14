@@ -46,16 +46,17 @@ export const userEventFilterbCreate = ({ data }) => {
   const newData = {}
 
   newData.filter_name = data.filter_name
-  newData.filter_type = data.filter_type
+  //newData.filter_type = data.filter_type
+  newData.filter_value = data.filter_value
 
   // Filtro por Nome, Dynclass e Base Dynclass
   if (data.filter_value !== undefined && data.filter_value !== '') {
     if (data.filter_type === 'name') {
       newData['name'] = data.filter_value.map((row) => row.name).join(',')
-      newData.filter_value = newData.name
+      //newData.filter_value = newData.name
     } else {
       newData[data.filter_type] = data.filter_value
-      newData.filter_value = data.filter_value
+      //newData.filter_value = data.filter_value
     }
   }
 
