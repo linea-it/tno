@@ -41,13 +41,6 @@ class EventFilter(models.Model):
         help_text="Frequencia de recebimento do periodico 1-semanal, 2-mensal.",
     )
 
-    magnitude_min = models.IntegerField(
-        verbose_name="Magnitude min",
-        default=15,
-        help_text="Magnitude do objeto.",
-        null=True,
-        blank=True,
-    )
     magnitude_max = models.IntegerField(
         verbose_name="Magnitude max",
         default=15,
@@ -87,13 +80,6 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    magnitude_drop_min = models.IntegerField(
-        verbose_name="Magnitude Drop min",
-        help_text="Magnitude Drop min.",
-        null=True,
-        blank=True,
-        default=None,
-    )
     magnitude_drop_max = models.IntegerField(
         verbose_name="Magnitude Drop max",
         help_text="Magnitude Drop max.",
@@ -105,6 +91,14 @@ class EventFilter(models.Model):
     event_duration = models.IntegerField(
         verbose_name="Event Duration",
         help_text="Duraçao da ocorrencia do evento.",
+        null=True,
+        blank=True,
+        default=None,
+    )
+
+    closest_approach_uncertainty_in_km = models.IntegerField(
+        verbose_name="Uncertainty (km)",
+        help_text="Uncertainty in geocentric closest approach (km).",
         null=True,
         blank=True,
         default=None,
