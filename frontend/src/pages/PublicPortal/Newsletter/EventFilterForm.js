@@ -5,8 +5,8 @@ import Box from '@mui/material/Box'
 import TextField from '@mui/material/TextField'
 import Divider from '@mui/material/Divider'
 import FrequencyTypeSelect from '../../../components/Newsletter/Frequency/FrequencyTypeSelect'
-import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect'
-//import FilterTypeSelect from '../../../components/Newsletter/FilterTypeSelect'
+//import AsteroidSelect from '../../../components/AsteroidSelect/AsteroidSelect'
+import AsteroidSelect from '../../../components/Newsletter/AsteroidSelect'
 import MaginitudeSelect from '../../../components/MaginitudeSelect/index'
 import SolarTimeFilter from '../../../components/SolarTimeFilter/index'
 import EventDurationField from '../../../components/EventDurationField/index'
@@ -19,7 +19,8 @@ export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
     const newData = { ...data, [e.target.name]: e.target.value }
     onChange(newData)
-    console.log('form filtertype ', data)
+    console.log('form filtertype ', newData.filter_type)
+    console.log('form filtervalue ', newData.filter_value)
   }
   return (
     <Box component='form' autoComplete='off'>
@@ -66,6 +67,13 @@ export default function EventFilterForm({ data, onChange }) {
             min={4}
             max={18}
           />
+          <MaginitudeDropSelect
+            name='magnitude_drop_max'
+            value={data.magnitude_drop_max !== null ? data.magnitude_drop_max : ''}
+            onChange={(value) => handleChange({ target: { name: 'magnitude_drop_max', value } })}
+            min={4}
+            max={18}
+          />
         </Stack>
         <Divider />
         <SolarTimeFilter
@@ -93,14 +101,14 @@ export default function EventFilterForm({ data, onChange }) {
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_min', value } })}
             min={4}
             max={18}
-          />*/}
+          />
           <MaginitudeDropSelect
             name='magnitude_drop_max'
             value={data.magnitude_drop_max !== null ? data.magnitude_drop_max : ''}
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_max', value } })}
             min={4}
             max={18}
-          />
+          />*/}
         </Stack>
         <ObjectDiameterFilter
           value={{
