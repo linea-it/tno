@@ -69,7 +69,7 @@ export const userEventFilterbCreate = ({ data }) => {
   }
 
   // Filtro por magnitude maxima
-  newData.magnitude_max = data.maginitude_max
+  newData.magnitude_max = data.maginitudeMax
 
   // Filtro por magnitude Drop Maior que
   if (data.maginitude_drop_max !== undefined && data.maginitude_drop_max !== '') {
@@ -86,9 +86,10 @@ export const userEventFilterbCreate = ({ data }) => {
   }
 
   console.log('data newsletter', newData)
-  return api.post(`/event_filter/`, { ...newData })
-  //return api.post(`/event_filter/`, { ...data })
+  //return api.post(`/event_filter/`, { ...newData })
+  return api.post(`/event_filter/`, { ...data })
 }
+
 export const userEventFilterbUpdate = ({ id, data }) => api.patch(`/event_filter/${id}/`, { ...data })
 
 export const userEventFilterDelete = ({ id }) => api.delete(`/event_filter/${id}`)
