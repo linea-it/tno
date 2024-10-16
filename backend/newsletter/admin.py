@@ -22,6 +22,7 @@ class EventFilterAdmin(admin.ModelAdmin):
         "id",
         "user",
         "filter_name",
+        "description",
         "frequency",
         "magnitude_max",
         "filter_type",
