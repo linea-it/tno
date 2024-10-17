@@ -340,6 +340,16 @@ SPECTACULAR_SETTINGS = {
 # Skybot da Franca: SKYBOT_SERVER="http://vo.imcce.fr/webservices/skybot/"
 SKYBOT_SERVER = "http://vo.imcce.fr/webservices/skybot/"
 
+# Memcached
+CACHE_HOST = os.environ.get("CACHE_HOST", "memcached")
+CACHE_PORT = os.environ.get("CACHE_PORT", 11211)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "LOCATION": f"{CACHE_HOST}:{CACHE_PORT}",
+    }
+}
+
 # CELERY_BROKER_URL = os.getenv(
 #     "CELERY_BROKER_URL", "amqp://tno:adminadmin@rabbit:5672/tno_vhost"
 # )
