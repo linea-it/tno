@@ -5,6 +5,7 @@ from datetime import datetime, time, timezone
 import colorlog
 from django.db.models import Q
 from newsletter.models import EventFilter
+
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 
@@ -50,7 +51,7 @@ class ProcessEventFilters:
                 date_end = "2024-12-12 15:01:15"
                 print("periodo  weekly", period, "data final", date_end)
             """
-            date_end = "2024-12-12 15:01:15"
+            date_end = "2025-03-12 15:01:15"
             date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
             date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
 
@@ -111,12 +112,15 @@ class ProcessEventFilters:
 
             print("total query occultation lst", query_occultation.values().count())
             """"""
+            # print(
+            #    "event duration occultation", query_occultation.values("event_duration")
+            # )
             # TODO: se event_duration foi definido
             event_duration = input.get("event_duration", None)
 
             if event_duration:
                 query_occultation = query_occultation.filter(
-                    event_duration__lte=event_duration
+                    event_duration__gte=event_duration
                 )
             print("total query occultation event", query_occultation.values().count())
 
@@ -128,7 +132,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     diameter__range=[diameter_err_min, diameter_err_max]
                 )
-            print("total query occultation diam", query_occultation.values().count())
+            # print("total query occultation diam", query_occultation.values().count())
 
             # TODO: filtra por geofiltro (latitude, longitude, location_radius)
             occ_path_min_latitude = input.get("occ_path_min_latitude", None)
@@ -158,12 +162,57 @@ class ProcessEventFilters:
             # TODO: filtro por geolocation
             # fazer um loop sobre query_occultation chamando a funçõa geolocation
             # radius = self.get_filters()[0]["location_radius"]
-            radius = self.get_filters().values_list("location_radius")
-            print("radius", radius)
+            radius = self.get_filters().values_list("location_radius", flat=True)
+            print("radius", radius[0])
+            # for r in radius:
+            #    for e in query_occultation:
+            #        print("query filtered....", e, r)
+            # print(query_occultation.values_list("occ_path_min_latitude", flat=True)[0])
+            #
+            """
+            print(
+                "longitude",
+                query_occultation.values_list("occ_path_coeff", flat=True)[0][
+                    "min_longitude"
+                ],
+            )"""
 
-            for e in query_occultation:
-                print("query filtered....", e)
+            body_upper_coeff_longitude = query_occultation.values_list(
+                "occ_path_coeff", flat=True
+            )[0]["body_upper_coeff_longitude"]
 
+            print("bodyupper", body_upper_coeff_longitude)
+            # if body_upper_coeff_longitude:
+            #    print(
+            #        "longitude",
+            #        query_occultation.values_list("occ_path_min_longitude", flat=True),
+            #    )
+
+            # for event in query_occultation:
+            lat = -22.5822
+            # query_occultation.values_list("occ_path_min_latitude", flat=True)[
+            #    0
+            # ]  #
+            # long = -44.9545
+            long = query_occultation.values_list("occ_path_coeff", flat=True)[0][
+                "min_longitude"
+            ]
+            # - 44.9545
+            print("lat", lat, "lon", long)
+
+            # print("inputdict", query_occultation.values_list("occ_path_coeff")[0])
+            radius = radius[0]  # 150
+            is_visible = visibility_from_coeff(
+                latitude=lat,
+                longitude=long,
+                radius=radius,
+                date_time=date_end,  # event.date_time,
+                inputdict=query_occultation,  # .values_list("occ_path_coeff"),
+                # opcionais
+                # n_elements= 1500,
+                # latitudinal= False
+            )
+            print("isvisible", is_visible)
             if query_occultation:
                 return query_occultation
             else:
