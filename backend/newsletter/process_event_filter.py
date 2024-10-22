@@ -1,6 +1,6 @@
 import os
 import sys
-from datetime import datetime, time, timezone
+from datetime import datetime, time, timedelta, timezone
 
 import colorlog
 from django.db.models import Q
@@ -23,6 +23,7 @@ class ProcessEventFilters:
 
     def get_filters(self):
         help = "Busca as preferencias do usuario salvas no banco."
+
         try:
             data = EventFilter.objects.all().values()
             if data:
@@ -33,33 +34,59 @@ class ProcessEventFilters:
         except Exception as e:
             raise Exception(f"Failed to query subscription filters. {e}")
 
-    def query_occultation(self, input, date_start):
+    def query_occultation(self, input, frequency, date_start):
+        e_true = []
         try:
             # filtro por data. Obs, os filtros salvos nao tem data
             # a data será passada no momento de fazer a rodada
             # por exemplo, periodo weekly = data + 7 dias
             # periodo month = data + 30 dias
-            """
-            period = input.get('frequency', None)
 
-            if period == 1:
-                date_end = "2024-04-12 15:01:15"
-                # date_p = date_start + 7
-                print("periodo monthly", period, "data final", date_end)
-            else:
-                # date_end = date_end + 30
-                date_end = "2024-12-12 15:01:15"
-                print("periodo  weekly", period, "data final", date_end)
-            """
-            date_end = "2025-03-12 15:01:15"
+            # period = self.get_filters().values_list(
+            #    "frequency", flat=True
+            # )  # input.get("frequency", None)
+
+            date_end = date_start
             date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
             date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
+
+            # frequency = input.get("frequency", None)
+            ## for frequency in period:
+            print("period", frequency)
+
+            if frequency == 1:
+
+                # frequency == 2
+                date_end = date_start + timedelta(days=7)
+
+                print(
+                    "periodo monthly",
+                    frequency,
+                    "data inicial",
+                    date_start,
+                    "data final",
+                    date_end,
+                )
+            else:
+                # frequency == 2
+                print("periodo weekly", frequency)
+                date_end = date_start + timedelta(days=30)
+
+                print(
+                    "periodo weekly",
+                    frequency,
+                    "data inicial",
+                    date_start,
+                    "data final",
+                    date_end,
+                )
 
             # query baseado no intervalo temporal
             # TODO: adaptar isso ao intervalo weekly e monthly
             query_occultation = Occultation.objects.filter(
                 date_time__range=[date_start, date_end]
             )
+
             print("total query occultation date", query_occultation.values().count())
 
             # se magmax e magmin foram definidos, filtra por magnitude
@@ -111,10 +138,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(Q(after | before))
 
             print("total query occultation lst", query_occultation.values().count())
-            """"""
-            # print(
-            #    "event duration occultation", query_occultation.values("event_duration")
-            # )
+
             # TODO: se event_duration foi definido
             event_duration = input.get("event_duration", None)
 
@@ -132,7 +156,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     diameter__range=[diameter_err_min, diameter_err_max]
                 )
-            # print("total query occultation diam", query_occultation.values().count())
+            print("total query occultation diam", query_occultation.values().count())
 
             # TODO: filtra por geofiltro (latitude, longitude, location_radius)
             occ_path_min_latitude = input.get("occ_path_min_latitude", None)
@@ -143,7 +167,6 @@ class ProcessEventFilters:
                 )
             print("total query occultation lat", query_occultation.values().count())
 
-            # occ_path_min_longitude
             occ_path_min_longitude = input.get("occ_path_min_longitude", None)
 
             if occ_path_min_longitude:
@@ -151,68 +174,46 @@ class ProcessEventFilters:
                     occ_path_min_longitude__lte=occ_path_min_longitude
                 )
             print("total query occultation lon", query_occultation.values().count())
+
+            # print(
+            #    "query occultation lon",
+            #    query_occultation.values_list("occ_path_coeff", flat=True)[20:40],
+            # )
             #
-            """
-            location_radius = input.get("location_radius", None)
-            if location_radius:
-                query_occultation = query_occultation.filter(
-                    location_radius__lte=location_radius
-                )
-            """
             # TODO: filtro por geolocation
             # fazer um loop sobre query_occultation chamando a funçõa geolocation
+
             # radius = self.get_filters()[0]["location_radius"]
             radius = self.get_filters().values_list("location_radius", flat=True)
-            print("radius", radius[0])
-            # for r in radius:
-            #    for e in query_occultation:
-            #        print("query filtered....", e, r)
-            # print(query_occultation.values_list("occ_path_min_latitude", flat=True)[0])
-            #
-            """
-            print(
-                "longitude",
-                query_occultation.values_list("occ_path_coeff", flat=True)[0][
-                    "min_longitude"
-                ],
-            )"""
+            # print("radius", radius[0])
 
-            body_upper_coeff_longitude = query_occultation.values_list(
-                "occ_path_coeff", flat=True
-            )[0]["body_upper_coeff_longitude"]
+            for r in radius:
+                for events in query_occultation:
+                    # print("query filtered....", events, r)
+                    long = events.occ_path_min_longitude
+                    lat = events.occ_path_min_latitude
+                    # print("lat", lat, "lon", long)
 
-            print("bodyupper", body_upper_coeff_longitude)
-            # if body_upper_coeff_longitude:
-            #    print(
-            #        "longitude",
-            #        query_occultation.values_list("occ_path_min_longitude", flat=True),
-            #    )
+                    radius = r  # radius[0]  # 150
 
-            # for event in query_occultation:
-            lat = -22.5822
-            # query_occultation.values_list("occ_path_min_latitude", flat=True)[
-            #    0
-            # ]  #
-            # long = -44.9545
-            long = query_occultation.values_list("occ_path_coeff", flat=True)[0][
-                "min_longitude"
-            ]
-            # - 44.9545
-            print("lat", lat, "lon", long)
+                    is_visible = visibility_from_coeff(
+                        latitude=lat,
+                        longitude=long,
+                        radius=radius,
+                        date_time=date_end,  # event.date_time,
+                        inputdict=events.occ_path_coeff,  # query_occultation.values_list("occ_path_coeff")[0],
+                        # opcionais
+                        # n_elements= 1500,
+                        # latitudinal= False
+                    )
+                    # print("e id", e.hash_id)
+                    # print("isvisible", is_visible)
 
-            # print("inputdict", query_occultation.values_list("occ_path_coeff")[0])
-            radius = radius[0]  # 150
-            is_visible = visibility_from_coeff(
-                latitude=lat,
-                longitude=long,
-                radius=radius,
-                date_time=date_end,  # event.date_time,
-                inputdict=query_occultation,  # .values_list("occ_path_coeff"),
-                # opcionais
-                # n_elements= 1500,
-                # latitudinal= False
-            )
-            print("isvisible", is_visible)
+                    if is_visible:
+                        e_true.append(events)
+
+            query_occultation = e_true
+
             if query_occultation:
                 return query_occultation
             else:
@@ -222,17 +223,22 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription time. {e}")
 
     def run_filter(self):
-        result = self.get_filters()
-        for i, r in enumerate(result):
-            if i == 0:
-                print(
-                    "run_filter...", self.query_occultation(r, "2024-03-12")
-                )  # .values())
-                """
-                print(
-                    "run_filter...",
-                    self.query_occultation(r, "2024-03-12").values_list(
-                        "occ_path_coeff", flat=True
-                    ),
-                )
-                """
+        ## precisa de um for para percorrer todos os periodos do filtro
+        period = self.get_filters().values_list("frequency", flat=True)
+        for frequency in period:
+            print("frequencia runfilter", frequency)
+
+            result = self.get_filters()
+            for i, r in enumerate(result):
+                if i == 0:
+                    print(
+                        "run_filter...",
+                        self.query_occultation(r, frequency, "2024-12-03"),
+                    )  # .values())
+
+                    # print(
+                    #    "run_filter...",
+                    #    self.query_occultation(r, "2024-03-12").values_list(
+                    #        "occ_path_coeff", flat=True
+                    #    ),
+                    # )
