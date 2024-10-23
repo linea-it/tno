@@ -8,6 +8,7 @@ import django_filters
 import humanize
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models import F, FloatField, Q, Value
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, inline_serializer
@@ -524,12 +525,27 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def base_dynclass_with_prediction(self, request):
         """Returns all base_dynclass that have at least one prediction event."""
+        # needs to be unique
+        cache_key = "base_dynclass_with_prediction"
+        # time in seconds for cache to be valid
+        cache_time = 86400  # 24h
+        # returns None if no key-value pair
+        data = cache.get(cache_key)
+
+        if data is not None:
+            return Response(data)
+
         queryset = Occultation.objects.order_by("base_dynclass").distinct(
             "base_dynclass"
         )
 
         rows = [x.base_dynclass for x in queryset]
-        return Response(dict({"results": rows, "count": len(rows)}))
+        result = {"results": rows, "count": len(rows)}
+
+        # Store the data in the cache
+        cache.set(cache_key, result, cache_time)
+
+        return Response(result)
 
     @extend_schema(
         responses={
@@ -547,10 +563,25 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def dynclass_with_prediction(self, request):
         """Returns all dynclass that have at least one prediction event."""
+        # needs to be unique
+        cache_key = "dynclass_with_prediction"
+        # time in seconds for cache to be valid
+        cache_time = 86400  # 24h
+        # returns None if no key-value pair
+        data = cache.get(cache_key)
+
+        if data is not None:
+            return Response(data)
+
         queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
 
         rows = [x.dynclass for x in queryset]
-        return Response(dict({"results": rows, "count": len(rows)}))
+        result = {"results": rows, "count": len(rows)}
+
+        # Store the data in the cache
+        cache.set(cache_key, result, cache_time)
+
+        return Response(result)
 
     @extend_schema(
         responses={

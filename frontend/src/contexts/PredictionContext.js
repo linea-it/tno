@@ -16,8 +16,8 @@ export function PredictionEventsProvider({ children }) {
       filters: {
         dt_after_local: dayjs(),
         date_time_after: dayjs().utc().format(),
-        dt_before_local: null,
-        date_time_before: null,
+        dt_before_local: dayjs().add(1, 'month'),
+        date_time_before: dayjs().utc().add(1, 'month').format(),
         filterType: '',
         filterValue: undefined,
         maginitudeMax: 15,
