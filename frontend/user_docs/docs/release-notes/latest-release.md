@@ -4,7 +4,7 @@
 
 Release date: September 5th, 2024.
 
-Main updates include the computation of uncertainties at the closest approach and closest apporach instant and includes the newly developed python module lineaSSP to retrive predictions programatically. It also offers a new filtering option by the shaddow path uncertainty in kilometers.
+Main updates include the computation of uncertainties related to the the closest approach, and includes the newly developed python module lineaSSP to retrive predictions programatically. It also offers a new filtering option by the shaddow path uncertainty in kilometers.
 
 At this stage occultation predictions are computed only for the outer Solar System objects including **Trojans**, **Centaurs**, and **Kuiper Belt** objects.
 
