@@ -223,7 +223,7 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription time. {e}")
 
     def run_filter(self):
-        ## precisa de um for para percorrer todos os periodos do filtro
+        # TODO # precisa de um for para percorrer todos os periodos do filtro
         period = self.get_filters().values_list("frequency", flat=True)
         for frequency in period:
             print("frequencia runfilter", frequency)
@@ -231,6 +231,7 @@ class ProcessEventFilters:
             result = self.get_filters()
             for i, r in enumerate(result):
                 if i == 0:
+                    ##TODO  array para guardar os resultados no lugar do print
                     print(
                         "run_filter...",
                         self.query_occultation(r, frequency, "2024-12-03"),
@@ -242,3 +243,8 @@ class ProcessEventFilters:
                     #        "occ_path_coeff", flat=True
                     #    ),
                     # )
+
+    ##TODO  escrever os resultados em um csv
+    def create_csv(self):
+
+        print("escrevendo os resultados")
