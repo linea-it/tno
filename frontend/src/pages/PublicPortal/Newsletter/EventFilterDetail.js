@@ -17,7 +17,7 @@ import { Box } from '../../../../node_modules/@mui/material/index'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
-import { data } from '../../../../node_modules/browserslist/index'
+
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
