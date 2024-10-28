@@ -41,33 +41,25 @@ export const getUserEventFilters = ({ queryKey }) => {
 export const getUserEventFilterbById = ({ id }) => api.get(`/event_filter/${id}`)
 
 export const userEventFilterbCreate = ({ data }) => {
-  console.log('data newsletter', data)
-
-  const newData = {}
+  const newData = { ...data }
 
   newData.filter_name = data.filter_name
 
-  //newData.filter_type = data.filter_type
-  //newData.filter_value = data.filter_value
   // Filtro por Nome, Dynclass e Base Dynclass
   if (data.filter_value !== undefined && data.filter_value !== '') {
     if (data.filter_type === 'name') {
-      newData['name'] = data.filter_value.map((row) => row.name).join(',')
-      //newData.filter_value = newData.name
+      newData.filter_value = data.filter_value.map((row) => row.name).join(',')
     } else {
-      newData[data.filter_type] = data.filter_value
-      //newData.filter_value = newData.filter_type
+      newData.filter_value = data.filter_value
     }
   }
 
   // Fix Time format
   if (data.local_solar_time_after) {
-    //newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
-    data.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
+    newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
   }
   if (data.local_solar_time_before) {
-    //newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
-    data.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
+    newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
   }
 
   // Filtro por magnitude maxima
@@ -75,7 +67,6 @@ export const userEventFilterbCreate = ({ data }) => {
 
   // Filtro por magnitude Drop Maior que
   if (data.maginitude_drop_max !== undefined && data.maginitude_drop_max !== '') {
-    //newData.magnitude_drop_max = data.maginitude_drop_max
     newData.magnitude_drop_max = data.maginitude_drop_max
   }
 
@@ -88,9 +79,8 @@ export const userEventFilterbCreate = ({ data }) => {
     newData.closest_approach_uncertainty_km = data.closest_approach_uncertainty_km
   }
 
-  //console.log('data newsletter', newData)
-  //return api.post(`/event_filter/`, { ...newData })
-  return api.post(`/event_filter/`, { ...data })
+  console.log('data newsletter', newData)
+  return api.post(`/event_filter/`, { ...newData })
 }
 
 export const userEventFilterbUpdate = ({ id, data }) => api.patch(`/event_filter/${id}/`, { ...data })

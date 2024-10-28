@@ -5,7 +5,6 @@ import BaseDynclassSelect from './BaseDynclassSelect'
 import DynclassSelect from './DynclassSelect'
 import Grid from '@mui/material/Grid'
 function AsteroidSelect({ value, onChange, source, error, required }) {
-  console.log('asteroid select', value)
   return (
     <Grid container>
       <Grid item xs={12} sm={6} md={6} pr={2}>
@@ -23,10 +22,10 @@ function AsteroidSelect({ value, onChange, source, error, required }) {
         {value.filterType === 'name' && (
           <AsteroidNameSelect
             source={source}
-            onChange={(value) => {
+            onChange={(newValue) => {
               onChange({
                 ...value,
-                filterValue: value
+                filterValue: newValue
               })
             }}
             error={error}
