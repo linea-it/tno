@@ -5,7 +5,7 @@ from newsletter.process_event_filter import ProcessEventFilters
 
 
 class Command(BaseCommand):
-    help = "Updates the asteroid table data using data downloaded from MPC."
+    help = "Executa os filtros de acordo com as preferencias do usuario."
 
     def add_arguments(self, parser):
         parser.add_argument(
