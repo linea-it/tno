@@ -6,13 +6,19 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0021_auto_20241014_2021'),
+        ("newsletter", "0021_auto_20241014_2021"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='eventfilter',
-            name='closest_approach_uncertainty_in_km',
-            field=models.IntegerField(blank=True, default=None, help_text='Uncertainty in geocentric closest approach (km).', null=True, verbose_name='Uncertainty (km)'),
+            model_name="eventfilter",
+            name="closest_approach_uncertainty_in_km",
+            field=models.IntegerField(
+                blank=True,
+                default=None,
+                help_text="Uncertainty in geocentric closest approach (km).",
+                null=True,
+                verbose_name="Uncertainty (km)",
+            ),
         ),
     ]
