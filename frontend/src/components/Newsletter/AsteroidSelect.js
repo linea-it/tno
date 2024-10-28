@@ -25,12 +25,13 @@ function AsteroidSelect({ value, onChange, source, error, required }) {
         {value.filterType === 'name' && (
           <AsteroidNameSelect
             source={source}
-            //value={value.filterValue}
+            value={value.filterValue}
             onChange={(event) => {
               onChange({
                 ...value,
                 //filterValue: value.filterValue
                 filterValue: value.filter_value
+                //filterValue: event.target.value
               })
             }}
             error={error}

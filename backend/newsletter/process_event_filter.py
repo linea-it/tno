@@ -225,13 +225,14 @@ class ProcessEventFilters:
 
     def run_filter(self):
         # seta caminho para escrever o arquivo
-        tmp_path = Path("/archive/subscription/")
+        tmp_path = Path("/archive/newsletter/")
         print("dir... ", tmp_path)
 
         period = self.get_filters().values_list("frequency", flat=True)
         print("count period", period.count())
 
         for frequency in period:
+            # frequency 1 == monthly, frequency 2 == weekly
             if frequency == 1:
                 result = self.get_filters()
                 for i, r in enumerate(result):
@@ -240,7 +241,7 @@ class ProcessEventFilters:
                             r, frequency, "2024-12-03"
                         )
 
-                    # chama a função create_csv
+                    # chama a função que escreve o .csv
                     print(
                         "run_filter_results csv",
                         self.create_csv(run_filter_results, tmp_path),
@@ -250,7 +251,7 @@ class ProcessEventFilters:
     # """
     def create_csv(self, filter_results, tmp_path):
 
-        csv_file = os.path.join(tmp_path, "results_filter_subscription.csv")
+        csv_file = os.path.join(tmp_path, "results_filter_newsletter.csv")
         print("csv ", csv_file)
 
         if filter_results:
@@ -270,23 +271,22 @@ class ProcessEventFilters:
                     "dec_star_candidate",
                     "velocity",
                     "event_duration",
-                    #    "link event",
+                    # "elevation"
+                    #  "link event",
+                    # "http://{{host}}/prediction-event-detail/%s\n" % i["hash_id"])
                 ],
             )
-
-            # print("df....", df)
-
-            # print(i["hash_id"])
             # save.write("http://localhost/prediction-event-detail/%s\n" % i["hash_id"])
 
             # Escreve o dataframe em arquivo.
-            df.to_csv(csv_file, sep=" ", header=True, index=False)
+            df.to_csv(csv_file, sep=" ;", header=True, index=False)
             self.log.info("An archive was created with the Results.")
 
             # logger.debug("Results File: [%s]" % csv_file)
             print("escrevendo os resultados...")
         else:
-            print("Events not found....")
+            self.log.info("Events not found....")
+            # print("Events not found....")
 
         return csv_file
         # """

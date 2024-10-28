@@ -39,10 +39,10 @@ function AsteroidNameSelect({ value, onChange, source, error, required }) {
       loading={isLoading}
       limitTags={1}
       filterSelectedOptions
-      onInputChange={(value, newInputValue) => {
+      onInputChange={(event, newInputValue) => {
         setInputValue(newInputValue)
       }}
-      onChange={(value, newValue) => {
+      onChange={(event, newValue) => {
         onChange(newValue)
       }}
       renderInput={(params) => (

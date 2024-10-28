@@ -62,10 +62,12 @@ export const userEventFilterbCreate = ({ data }) => {
 
   // Fix Time format
   if (data.local_solar_time_after) {
-    newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
+    //newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
+    data.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
   }
   if (data.local_solar_time_before) {
-    newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
+    //newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
+    data.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
   }
 
   // Filtro por magnitude maxima
@@ -73,6 +75,7 @@ export const userEventFilterbCreate = ({ data }) => {
 
   // Filtro por magnitude Drop Maior que
   if (data.maginitude_drop_max !== undefined && data.maginitude_drop_max !== '') {
+    //newData.magnitude_drop_max = data.maginitude_drop_max
     newData.magnitude_drop_max = data.maginitude_drop_max
   }
 
@@ -85,7 +88,7 @@ export const userEventFilterbCreate = ({ data }) => {
     newData.closest_approach_uncertainty_km = data.closest_approach_uncertainty_km
   }
 
-  console.log('data newsletter', newData)
+  //console.log('data newsletter', newData)
   //return api.post(`/event_filter/`, { ...newData })
   return api.post(`/event_filter/`, { ...data })
 }
