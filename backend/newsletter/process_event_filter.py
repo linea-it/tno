@@ -8,7 +8,6 @@ import pandas as pd
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import EventFilter
-
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 
@@ -285,26 +284,26 @@ class ProcessEventFilters:
             """
             # Sql Copy com todas as colunas que vão ser importadas e o formato do csv.
             # IMPORTANTA! A ORDEM DAS COLUNAS PRECISA SER IDENTICA A COMO ESTA NO DB!
-            query occultation  
-            {'id', 'hash_id', 'name','number', 'principal_designation', 'alias','base_dynclass', 'dynclass', 
-            'astorb_dynbaseclass', 'astorb_dynsubclass', 'date_time', 'gaia_source_id', 'ra_star_candidate', 
-            'dec_star_candidate', 'ra_target','dec_taret', 'closest_approach', 'position_angle', 'velocity', 'delta', 
-            'g_star', 'j_star', 'h_star', 'k_star', 'long', 'loc_t', 'off_ra', 'off_dec','proper_motion', 'ct', 'multiplicity_flag', 
-            'e_ra', 'e_dec': 0.021296458, 'pmra': -2.0, 'pmdec': -6.0,'ra_star_deg', 'dec_star_deg', 'ra_target_deg', 
+            query occultation
+            {'id', 'hash_id', 'name','number', 'principal_designation', 'alias','base_dynclass', 'dynclass',
+            'astorb_dynbaseclass', 'astorb_dynsubclass', 'date_time', 'gaia_source_id', 'ra_star_candidate',
+            'dec_star_candidate', 'ra_target','dec_taret', 'closest_approach', 'position_angle', 'velocity', 'delta',
+            'g_star', 'j_star', 'h_star', 'k_star', 'long', 'loc_t', 'off_ra', 'off_dec','proper_motion', 'ct', 'multiplicity_flag',
+            'e_ra', 'e_dec': 0.021296458, 'pmra': -2.0, 'pmdec': -6.0,'ra_star_deg', 'dec_star_deg', 'ra_target_deg',
             'dec_target_deg': -22.8804161111111, 'magnitude_drop', 'apparent_magnitude', 'apparent_diameter', 'event_duration',
-            'moon_separation', 'sun_elongation','instant_uncertainty', 'closest_approach_uncertainty', 
-            'moon_illuminated_fraction', 'probability_of_centrality', 'closest_approach_uncertainty_km', 'g_mag_vel_corrected', 
-            'rp_mag_vel_corrected', 'h_mag_vel_corrected', 'ra_star_with_pm', 'dec_star_with_pm', 'ra_star_to_date', 'dec_star_to_date', 
+            'moon_separation', 'sun_elongation','instant_uncertainty', 'closest_approach_uncertainty',
+            'moon_illuminated_fraction', 'probability_of_centrality', 'closest_approach_uncertainty_km', 'g_mag_vel_corrected',
+            'rp_mag_vel_corrected', 'h_mag_vel_corrected', 'ra_star_with_pm', 'dec_star_with_pm', 'ra_star_to_date', 'dec_star_to_date',
             'ra_target_apparent', 'dec_target_apparent', 'e_ra_target', 'e_dec_target', 'ephemeris_version', 'have_path_coeff',
-            'occ_path_min_longitude', 'occ_path_max_longitude', 'occ_path_min_latitude', 'occ_path_max_latitude', 
-            'occ_path_is_nightside', 'occ_path_coeff': {'t0', 't1', 'nightside', 'max_latitude', 'min_latitude', 'max_longitude', 
-            'min_longitude','coeff_latitude', 'coeff_longitude', 'body_lower_coeff_latitude', 'body_upper_coeff_latitude', 
-            'body_lower_coeff_longitude', 'body_upper_coeff_longitude'}, 
-            'h': 7.18, 'g': 0.15, 'epoch', 'semimajor_axis', 'eccentricity', 'inclination', 'long_asc_node', 'arg_perihelion', 
-            'mean_anomaly', 'mean_daily_motion', 'perihelion': 18.0076795, 'aphelion': 28.0182207, 'rms': 0.73, 'last_obs_included', 
-            'pha_flag', 'mpc_critical_list', 'albedo', 'albedo_err_min', 'albedo_err_max', 'density', 'density_err_min', 
-            'density_err_max', 'diameter', 'diameter_err_min', 'diameter_err_max', 'mass', 'mass_err_min', 
-            'mass_err_max', 'catalog', 'predict_step', 'bsp_source', 'obs_source', 'orb_ele_source', 'bsp_planetary', 
+            'occ_path_min_longitude', 'occ_path_max_longitude', 'occ_path_min_latitude', 'occ_path_max_latitude',
+            'occ_path_is_nightside', 'occ_path_coeff': {'t0', 't1', 'nightside', 'max_latitude', 'min_latitude', 'max_longitude',
+            'min_longitude','coeff_latitude', 'coeff_longitude', 'body_lower_coeff_latitude', 'body_upper_coeff_latitude',
+            'body_lower_coeff_longitude', 'body_upper_coeff_longitude'},
+            'h': 7.18, 'g': 0.15, 'epoch', 'semimajor_axis', 'eccentricity', 'inclination', 'long_asc_node', 'arg_perihelion',
+            'mean_anomaly', 'mean_daily_motion', 'perihelion': 18.0076795, 'aphelion': 28.0182207, 'rms': 0.73, 'last_obs_included',
+            'pha_flag', 'mpc_critical_list', 'albedo', 'albedo_err_min', 'albedo_err_max', 'density', 'density_err_min',
+            'density_err_max', 'diameter', 'diameter_err_min', 'diameter_err_max', 'mass', 'mass_err_min',
+            'mass_err_max', 'catalog', 'predict_step', 'bsp_source', 'obs_source', 'orb_ele_source', 'bsp_planetary',
             'leap_seconds': 'naif0012', 'nima': False, 'created_at','updated_at', 'job_id'}
             sql = (
                 f"COPY {self.tbl} (name, number, date_time, ra_star_candidate, dec_star_candidate, "
