@@ -18,4 +18,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         atm = ProcessEventFilters(stdout=True)
-        atm.run_filter()
+        # passa o periodo no parametro
+        # 1 para monthly, 2 para weekly
+        atm.run_filter(1)

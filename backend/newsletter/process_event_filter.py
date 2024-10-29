@@ -109,32 +109,6 @@ class ProcessEventFilters:
             local_solar_time_before = input.get("local_solar_time_before", None)
 
             if local_solar_time_after and local_solar_time_before:
-                """Rodrigo
-                datetime_after = datetime.combine(datetime.min, local_solar_time_after)
-
-                datetime_before = datetime.combine(
-                    datetime.min, local_solar_time_before
-                )
-                time_difference = datetime_before - datetime_after
-                print("diferenca", time_difference)
-                if time_difference.seconds >= 0:
-                    query_occultation = query_occultation.filter(
-                        loc_t__range=[local_solar_time_after, local_solar_time_before]
-                    )
-                # if retorna query vazia por isso o erro
-                print("local solar time... ", query_occultation)
-                """
-                """
-                else:
-                    after = Q(
-                        loc_t__gte=local_solar_time_after,
-                        loc_t__lte=time(23, 59, 59.999999),
-                    )
-                    before = Q(
-                        loc_t__gte=time(0, 0, 0), loc_t__lte=local_solar_time_before
-                    )
-                    query_occultation = query_occultation.filter(after | before)
-                    """
                 # Filtro por Solar Time 18:00 - 06:00
                 after = Q(loc_t__gte=time(18, 0, 0), loc_t__lte=time(23, 59, 59))
                 before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=time(6, 0, 0))
@@ -189,7 +163,6 @@ class ProcessEventFilters:
                     # print("query filtered....", events, r)
                     long = events.occ_path_min_longitude
                     lat = events.occ_path_min_latitude
-                    # print("lat", lat, "lon", long)
 
                     radius = r  # radius[0]  # 150
 
@@ -205,6 +178,16 @@ class ProcessEventFilters:
                     )
                     # print("e id", e.hash_id)
                     # print("isvisible", is_visible)
+                    print(
+                        "lat",
+                        lat,
+                        "lon",
+                        long,
+                        "radius",
+                        radius,
+                        "isvisible",
+                        is_visible,
+                    )
 
                     if is_visible:
                         e_true.append(events)
@@ -223,7 +206,7 @@ class ProcessEventFilters:
         except Exception as e:
             raise Exception(f"Failed to query subscription time. {e}")
 
-    def run_filter(self):
+    def run_filter(self, p):
         # seta caminho para escrever o arquivo
         tmp_path = Path("/archive/newsletter/")
         print("dir... ", tmp_path)
@@ -233,19 +216,20 @@ class ProcessEventFilters:
 
         for frequency in period:
             # frequency 1 == monthly, frequency 2 == weekly
-            if frequency == 1:
+            # p = 2 não ta rodando ver porque
+            if frequency == 2:
                 result = self.get_filters()
                 for i, r in enumerate(result):
                     if i == 0:
                         run_filter_results = self.query_occultation(
-                            r, frequency, "2024-12-03"
+                            r, frequency, "2024-09-01"
                         )
 
-                    # chama a função que escreve o .csv
-                    print(
-                        "run_filter_results csv",
-                        self.create_csv(run_filter_results, tmp_path),
-                    )
+                        # chama a função que escreve o .csv
+                        print(
+                            "run_filter_results csv",
+                            self.create_csv(run_filter_results, tmp_path),
+                        )
 
     ##TODO  escrever os resultados em um csv
     # """
