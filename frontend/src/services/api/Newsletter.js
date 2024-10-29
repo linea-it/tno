@@ -83,7 +83,47 @@ export const userEventFilterbCreate = ({ data }) => {
   return api.post(`/event_filter/`, { ...newData })
 }
 
-export const userEventFilterbUpdate = ({ id, data }) => api.patch(`/event_filter/${id}/`, { ...data })
+export const userEventFilterbUpdate = ({ id, data }) => {
+  const newData = { ...data }
+
+  newData.filter_name = data.filter_name
+
+  // Filtro por Nome, Dynclass e Base Dynclass
+  if (data.filter_value !== undefined && data.filter_value !== '') {
+    if (data.filter_type === 'name') {
+      newData.filter_value = data.filter_value.map((row) => row.name).join(',')
+    } else {
+      newData.filter_value = data.filter_value
+    }
+  }
+
+  // Fix Time format
+  if (data.local_solar_time_after) {
+    newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
+  }
+  if (data.local_solar_time_before) {
+    newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
+  }
+
+  // Filtro por magnitude maxima
+  newData.magnitude_max = data.maginitudeMax
+
+  // Filtro por magnitude Drop Maior que
+  if (data.maginitude_drop_max !== undefined && data.maginitude_drop_max !== '') {
+    newData.magnitude_drop_max = data.maginitude_drop_max
+  }
+
+  // Filtro por Event Duration Maior que
+  if (data.event_duration !== undefined && data.event_duration !== '') {
+    newData.event_duration = data.event_duration
+  }
+
+  if (data.closest_approach_uncertainty_km !== undefined && data.closest_approach_uncertainty_km !== '') {
+    newData.closest_approach_uncertainty_km = data.closest_approach_uncertainty_km
+  }
+
+  return api.patch(`/event_filter/${id}/`, { ...newData })
+}
 
 export const userEventFilterDelete = ({ id }) => api.delete(`/event_filter/${id}`)
 
