@@ -8,6 +8,9 @@ import pandas as pd
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import EventFilter
+from newsletter.models.event_filter import EventFilter
+from newsletter.models.subscription import Subscription
+from newsletter.newsletter_send_mail import NewsletterSendEmail
 
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
@@ -274,3 +277,22 @@ class ProcessEventFilters:
 
         return csv_file
         # """
+
+    # Função que dispara o envio dos emails com os eventos
+    def exec_send_mail(self):
+        user_subs_all = len(EventFilter.objects.values_list("user", flat=True))
+        print(user_subs_all)
+
+        for u in range(user_subs_all):
+            user_subs = EventFilter.objects.values_list("user", flat=True)[u]
+            filter_names = EventFilter.objects.values_list("filter_name", flat=True)[u]
+            # print("user_subs", user_subs)
+
+            obj = EventFilter.objects.filter(user=user_subs)[0]
+
+            email_user = obj.user.email
+            print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
+
+            context = filter_names
+            send_mail = NewsletterSendEmail()
+            send_mail.send_events_mail(obj.pk, email=email_user, context=context)
