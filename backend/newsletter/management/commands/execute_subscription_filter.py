@@ -21,35 +21,26 @@ class Command(BaseCommand):
             help="Dispara a função que executa os filtros; a função que envia os emails",
         )
 
-        # parser.add_argument(
-        #    "email",
-        #    help="One email addresses to send a test email to.",
-        # )
+        parser.add_argument(
+            "task",
+            help="One email addresses to send a test email to.",
+        )
 
     def handle(self, *args, **kwargs):
         atm = ProcessEventFilters(stdout=True)
+
+        task = kwargs["task"]
+
+        if task == "run_filter":
+            atm.run_filter(1)
+
+        if task == "send_mail":
+            atm.exec_send_mail()
         # passa o periodo no parametro
         # 1 para monthly, 2 para weekly
         # atm.run_filter(1)
 
         # email = kwargs["email"]
 
-        """
-        user_subs_all = len(EventFilter.objects.values_list("user", flat=True))
-        print(user_subs_all)
-
-        for u in range(user_subs_all):
-            user_subs = EventFilter.objects.values_list("user", flat=True)[u]
-            # print("user_subs", user_subs)
-
-            obj = EventFilter.objects.filter(user=user_subs)[0]
-
-            email_user = obj.user.email
-            print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
-
-            context = obj.filter_name
-            send_mail = NewsletterSendEmail()
-            send_mail.send_events_mail(obj.pk, email=email_user, context=context)
-        """
         # função que dispara os emails
-        atm.exec_send_mail()
+        # atm.exec_send_mail()
