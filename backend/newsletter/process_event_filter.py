@@ -58,13 +58,14 @@ class ProcessEventFilters:
 
             # frequency = input.get("frequency", None)
             ## for frequency in period:
-            print("period", frequency)
+            # print("period", frequency)
 
             if frequency == 1:
 
                 # frequency == 2
                 date_end = date_start + timedelta(days=7)
 
+                """
                 print(
                     "periodo monthly",
                     frequency,
@@ -73,11 +74,13 @@ class ProcessEventFilters:
                     "data final",
                     date_end,
                 )
+                """
             else:
                 # frequency == 2
-                print("periodo weekly", frequency)
+                # print("periodo weekly", frequency)
                 date_end = date_start + timedelta(days=30)
 
+                """
                 print(
                     "periodo weekly",
                     frequency,
@@ -86,6 +89,7 @@ class ProcessEventFilters:
                     "data final",
                     date_end,
                 )
+                """
 
             # query baseado no intervalo temporal
             # TODO: adaptar isso ao intervalo weekly e monthly
@@ -181,6 +185,11 @@ class ProcessEventFilters:
                     )
                     # print("e id", e.hash_id)
                     # print("isvisible", is_visible)
+
+                    if is_visible:
+                        e_true.append(events)
+
+                    """
                     print(
                         "lat",
                         lat,
@@ -190,10 +199,10 @@ class ProcessEventFilters:
                         radius,
                         "isvisible",
                         is_visible,
+                        "events.hash_id",
+                        events.hash_id,
                     )
-
-                    if is_visible:
-                        e_true.append(events)
+                    """
 
                     # print("events", e_true)
                     query_occultation = e_true
@@ -215,7 +224,7 @@ class ProcessEventFilters:
         print("dir... ", tmp_path)
 
         period = self.get_filters().values_list("frequency", flat=True)
-        print("count period", period.count())
+        # print("count period", period.count())
 
         for frequency in period:
             # frequency 1 == monthly, frequency 2 == weekly
@@ -223,34 +232,43 @@ class ProcessEventFilters:
             if frequency == 2:
                 result = self.get_filters()
                 for i, r in enumerate(result):
-                    if i == 0:
-                        run_filter_results = self.query_occultation(
-                            r, frequency, "2024-09-01"
-                        )
+                    # if i == 0:
+                    run_filter_results = self.query_occultation(
+                        r, frequency, "2024-09-01"
+                    )
 
-                        # chama a função que escreve o .csv
-                        print(
-                            "run_filter_results csv",
-                            self.create_csv(run_filter_results, tmp_path),
-                        )
+                    # chama a função que escreve o .csv
+                    # print("r", result)
+                    name_file = result[i]["filter_name"]
+                    # print("name_file", name_file.strip(" "))
+                    print(
+                        "run_filter_results csv",
+                        self.create_csv(run_filter_results, tmp_path, name_file),
+                    )
 
     ##TODO  escrever os resultados em um csv
     # """
-    def create_csv(self, filter_results, tmp_path):
+    def create_csv(self, filter_results, tmp_path, name_file):
 
-        csv_file = os.path.join(tmp_path, "results_filter_newsletter.csv")
-        print("csv ", csv_file)
+        # name_file = name_file
+        # print(name_file)
 
+        csv_file = os.path.join(
+            tmp_path, name_file + "_results_filter_newsletter.csv"
+        ).replace(" ", "_")
+        # print("csv ", csv_file.strip(" "))
+
+        # print("in csv", vars(filter_results[0]))
         if filter_results:
-            results_valid = filter_results.values()
+            results_valid = vars(filter_results[0])  # .values()
 
             df = pd.DataFrame(
                 # events
                 # filter_results.values(),
                 results_valid,
                 columns=[
-                    # "id",
-                    # "hash_id",
+                    "id",
+                    "hash_id",
                     "date_time",
                     "name",
                     "magnitude_drop",
@@ -262,11 +280,12 @@ class ProcessEventFilters:
                     #  "link event",
                     # "http://{{host}}/prediction-event-detail/%s\n" % i["hash_id"])
                 ],
+                index=[0],
             )
             # save.write("http://localhost/prediction-event-detail/%s\n" % i["hash_id"])
 
             # Escreve o dataframe em arquivo.
-            df.to_csv(csv_file, sep=" ;", header=True, index=False)
+            df.to_csv(csv_file, sep=";", header=True, index=False)
             self.log.info("An archive was created with the Results.")
 
             # logger.debug("Results File: [%s]" % csv_file)
@@ -278,21 +297,68 @@ class ProcessEventFilters:
         return csv_file
         # """
 
+    # le o csv gerado e passa os valores para o template
+    def get_context_data(self, names):
+        tmp_path = Path("/archive/newsletter/")
+        # for names in
+        data = os.path.join(tmp_path, names + "_results_filter_newsletter.csv")
+
+        if os.path.isfile(data):
+            print("data", data)
+            """
+                job_result = pd.read_csv(
+                file_path,
+                delimiter=";",
+                usecols=["date_obs", "success"],
+                dtype={"success": bool, "date_obs": str},
+            )
+            """
+            print("pegando  dados do resultado")
+            tabela = pd.read_csv(data, sep=";")
+            # print(tabela["date_time"])
+
+            return tabela
+        else:
+            tabela = pd.DataFrame()
+            print("Arquivo não exite.")
+            return tabela
+
     # Função que dispara o envio dos emails com os eventos
     def exec_send_mail(self):
         user_subs_all = len(EventFilter.objects.values_list("user", flat=True))
-        print(user_subs_all)
+        # data_all = EventFilter.objects.values()
 
         for u in range(user_subs_all):
             user_subs = EventFilter.objects.values_list("user", flat=True)[u]
             filter_names = EventFilter.objects.values_list("filter_name", flat=True)[u]
             # print("user_subs", user_subs)
+            # print("data_all", data_all["filter_names"])
 
             obj = EventFilter.objects.filter(user=user_subs)[0]
+            csv_name = filter_names.replace(" ", "_")
 
+            # le os dados do csv e envia para o email
+            data = self.get_context_data(csv_name)
+            print(data)
             email_user = obj.user.email
             print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
 
-            context = filter_names
-            send_mail = NewsletterSendEmail()
-            send_mail.send_events_mail(obj.pk, email=email_user, context=context)
+            # context = data.iloc[0]["name"]  # filter_names
+            # 2024 Oct 25 ~20h UT: Chariklo occults mag 16 star (RA: xx xx xx - DEC: xx xx xx - Vel: xx km/s - Duration: xx s)LINK
+            #
+            if data.empty:  # == None:
+                context = "Events not found"
+                send_mail = NewsletterSendEmail()
+                send_mail.send_mail_not_found(obj.pk, email=email_user, context=context)
+            else:
+                context = [
+                    filter_names,
+                    data["date_time"],
+                    data["name"],
+                    # data.iloc[0]["magnitude_drop"],
+                    data["magnitude_drop"],
+                    data["velocity"],
+                    data["event_duration"],
+                ]
+                send_mail = NewsletterSendEmail()
+                send_mail.send_events_mail(obj.pk, email=email_user, context=context)
