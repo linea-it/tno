@@ -61,16 +61,41 @@ class NewsletterSendEmail:
             "Welcome to Solar System Newsletter", html_content, subscription.user.email
         )
 
-    def send_events_mail(self, subscription: Subscription, email):
+    def send_events_mail(self, subscription: Subscription, email, context):
         # print("subscription....", subscription)
         """Email enviado com os resultados encontrados.
         Contem alguns eventos de predição enontrados de acordo com as preferencias do usuario.
         """
+        # print("context......", context)
         html_content = render_to_string(
             "results.html",
             {
                 "host": settings.SITE_URL.rstrip("/"),
                 # "activation_code": subscription.activation_code,
+                "filter_name": context[0],
+                "date": context[1],
+                "name": context[2],
+                "mag": context[3],
+                "veloc": context[4],
+                "duration": context[5],
+            },
+        )
+        self.send_newsletter_email(
+            "Welcome to Solar System Newsletter", html_content, email
+        )
+
+    def send_mail_not_found(self, subscription: Subscription, email, context):
+        # print("subscription....", subscription)
+        """Email enviado com os resultados encontrados.
+        Contem alguns eventos de predição enontrados de acordo com as preferencias do usuario.
+        """
+        # print("context......", context)
+        html_content = render_to_string(
+            "results_not_found.html",
+            {
+                "host": settings.SITE_URL.rstrip("/"),
+                # "activation_code": subscription.activation_code,
+                "mesage": "Events not Found",
             },
         )
         self.send_newsletter_email(
