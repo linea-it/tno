@@ -246,12 +246,9 @@ class ProcessEventFilters:
                         self.create_csv(run_filter_results, tmp_path, name_file),
                     )
 
-    ##TODO  escrever os resultados em um csv
+    ##TODO  escreve os resultados em um .csv
     # """
     def create_csv(self, filter_results, tmp_path, name_file):
-
-        # name_file = name_file
-        # print(name_file)
 
         csv_file = os.path.join(
             tmp_path, name_file + "_results_filter_newsletter.csv"
@@ -259,8 +256,15 @@ class ProcessEventFilters:
         # print("csv ", csv_file.strip(" "))
 
         # print("in csv", vars(filter_results[0]))
+        host = settings.SITE_URL.rstrip("/")
+        # print(host)
+
         if filter_results:
             results_valid = vars(filter_results[0])  # .values()
+            link_event = (
+                "http:" + host + "/prediction-event-detail/" + results_valid["hash_id"]
+            )
+            print(link_event)
 
             df = pd.DataFrame(
                 # events
@@ -277,7 +281,7 @@ class ProcessEventFilters:
                     "velocity",
                     "event_duration",
                     # "elevation"
-                    #  "link event",
+                    link_event,
                     # "http://{{host}}/prediction-event-detail/%s\n" % i["hash_id"])
                 ],
                 index=[0],
