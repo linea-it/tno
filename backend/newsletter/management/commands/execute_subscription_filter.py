@@ -35,7 +35,7 @@ class Command(BaseCommand):
         task = kwargs["task"]
 
         if task == "run_filter":
-            pef.run_filter(1)
+            pef.run_filter(frequency=1, date_initial="2024-09-01")
 
         # if task == "send_mail":
         #    pef.exec_send_mail()

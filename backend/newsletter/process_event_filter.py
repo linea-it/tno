@@ -43,33 +43,27 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription filters. {e}")
 
     def query_occultation(self, input, frequency, date_start):
+        ## array para guardar os eventos filtrados por is_visible
         e_true = []
-        try:
-            # filtro por data. Obs, os filtros salvos nao tem data
-            # a data será passada no momento de fazer a rodada
-            # por exemplo, periodo weekly = data + 7 dias
-            # periodo month = data + 30 dias
 
-            # period = self.get_filters().values_list(
-            #    "frequency", flat=True
-            # )
+        try:
 
             date_end = date_start
             date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
             date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
 
-            # frequency = input.get("frequency", None)
-            ## for frequency in period:
-            # print("period", frequency)
+            # a data será passada no momento de fazer a rodada
+            # por exemplo, periodo weekly = data + 7 dias
+            # periodo month = data + 30 dias
+            # monta a data de acordo com a frequencia de envio
+            # frequency == 1 periodo weekly
+            if frequency == 2:
 
-            if frequency == 1:
-
-                # frequency == 2
                 date_end = date_start + timedelta(days=7)
 
                 """
                 print(
-                    "periodo monthly",
+                    "periodo weekly",
                     frequency,
                     "data inicial",
                     date_start,
@@ -78,13 +72,12 @@ class ProcessEventFilters:
                 )
                 """
             else:
-                # frequency == 2
-                # print("periodo weekly", frequency)
+                # frequency == 1 periodo monthly
                 date_end = date_start + timedelta(days=30)
 
                 """
                 print(
-                    "periodo weekly",
+                    "periodo monthly",
                     frequency,
                     "data inicial",
                     date_start,
@@ -179,8 +172,8 @@ class ProcessEventFilters:
                         latitude=lat,
                         longitude=long,
                         radius=radius,
-                        date_time=date_end,  # event.date_time,
-                        inputdict=events.occ_path_coeff,  # query_occultation.values_list("occ_path_coeff")[0],
+                        date_time=date_end,
+                        inputdict=events.occ_path_coeff,
                         # opcionais
                         # n_elements= 1500,
                         # latitudinal= False
@@ -220,30 +213,36 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription time. {e}")
 
     # roda os filtros comparando com as opções definidas no envent_filter
-    def run_filter(self, p):
+    def run_filter(self, frequency, date_initial):
         # seta caminho para escrever o arquivo
         tmp_path = Path("/archive/newsletter/")
         print("dir... ", tmp_path)
 
         period = self.get_filters().values_list("frequency", flat=True)
 
-        for frequency in period:
-            # frequency 1 == monthly, frequency 2 == weekly
-            if frequency == 2:
+        date_time = date_initial  # "2024-09-01"  # data inicial da rodada
+
+        # frequency 1 == monthly, frequency 2 == weekly
+        num_frequency = frequency
+
+        # percorre todas as frequencias do banco
+        for f in period:
+            ## verifica o numero da frequencia para rodar todos de uma vez
+            ## exemplo: roda todos weeklys juntos depois todos monthlys
+            if f == num_frequency:
                 result = self.get_filters()
                 for i, r in enumerate(result):
-                    # if i == 0:
-                    run_filter_results = self.query_occultation(
-                        r, frequency, "2024-09-01"
-                    )
+                    run_filter_results = self.query_occultation(r, f, date_time)
 
                     # chama a função que escreve o .csv
                     # print("r", result)
                     name_file = result[i]["filter_name"]
+
                     print(
                         "run_filter_results csv",
                         self.create_csv(run_filter_results, tmp_path, name_file),
                     )
+
                     id = result[i]["id"]
 
                     """
@@ -268,11 +267,8 @@ class ProcessEventFilters:
         csv_file = os.path.join(
             tmp_path, name_file + "_results_filter_newsletter.csv"
         ).replace(" ", "_")
-        # print("csv ", csv_file.strip(" "))
 
-        # print("in csv", vars(filter_results[0]))
         host = settings.SITE_URL.rstrip("/")
-        # print(host)
 
         if filter_results:
             results_valid = vars(filter_results[0])
