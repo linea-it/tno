@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from django.core.management.base import BaseCommand
+from newsletter.events_send_mail import SendEventsMail
 from newsletter.models.event_filter import EventFilter
 from newsletter.models.subscription import Subscription
 from newsletter.newsletter_send_mail import NewsletterSendEmail
@@ -27,15 +28,21 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        atm = ProcessEventFilters(stdout=True)
+        pef = ProcessEventFilters(stdout=True)
+
+        sem = SendEventsMail(stdout=True)
 
         task = kwargs["task"]
 
         if task == "run_filter":
-            atm.run_filter(1)
+            pef.run_filter(1)
+
+        # if task == "send_mail":
+        #    pef.exec_send_mail()
 
         if task == "send_mail":
-            atm.exec_send_mail()
+            sem.exec_send_mail()
+
         # passa o periodo no parametro
         # 1 para monthly, 2 para weekly
         # atm.run_filter(1)
