@@ -135,6 +135,8 @@ if __name__ == "__main__":
         # Se não existir sera um dicionario vazio onde serão colocados esses dados e depois salvo como asteroidename.json
         obj_data = read_asteroid_json(name)
 
+        inputs_dir = Path(os.getenv("PREDICT_INPUTS")).joinpath(obj_data["alias"])
+
         GAIA_NAME = obj_data["star_catalog"]["display_name"]
 
         # True, se o Nima tiver sido executado e o bsp de resultado tiver sido
@@ -208,13 +210,26 @@ if __name__ == "__main__":
 
         # Checa o arquivo bsp_object
         if bsp_object_filename is None:
-            bsp_object_filename = "%s.bsp" % name
-        bsp_object = check_bsp_object(bsp_object_filename)
+            bsp_object_filename = obj_data["bsp_jpl"]["filename"]
+
+        # Procura o arquivo bsp_jpl primeiro no diretório de inputs. 
+        # Depois no diretório do asteroid. 
+        bsp_jpl_filepath = inputs_dir.joinpath(bsp_object_filename)
+        if not bsp_jpl_filepath.exists():
+            # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
+            bsp_jpl_filepath = Path(data_dir).joinpath(bsp_object_filename)
+        print("BSP JPL FILE PATH: [%s]" % bsp_jpl_filepath)
+
+        bsp_object = check_bsp_object(
+            filepath=bsp_jpl_filepath, filename=bsp_object_filename)
 
         # uncertainty file
-        mag_and_uncert_path = Path(data_dir).joinpath(
-            obj_data["bsp_jpl"]["mag_and_uncert_file"]
-        )
+        mag_and_uncert_path = inputs_dir.joinpath(obj_data["bsp_jpl"]["mag_and_uncert_file"])
+        if not mag_and_uncert_path.exists():
+            # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
+            mag_and_uncert_path = Path(data_dir).joinpath(
+                obj_data["bsp_jpl"]["mag_and_uncert_file"]
+            )
         praia_t0 = datetime.now()
 
         # Define o limite máximo para as magnitudes das estrelas ocultadas
@@ -282,17 +297,14 @@ if __name__ == "__main__":
 
         obj_data["predict_occultation"] = praia_result
 
-        # Checa o arquivo bsp_object
-        if bsp_object_filename is None:
-            bsp_object_filename = "%s.bsp" % name
-        # bsp_object = check_bsp_object(bsp_object_filename)
-
         # Executar o calculo Coeff Path
         # Somente calcula path coeff se o arquivo existir e não for vazio
-        if Path(occultation_file).exists() and not pd.read_csv(occultation_file).empty:
+        occultation_filepath = Path(occultation_file)
+        print("Occultation File Path: [%s]" % occultation_filepath)
+        if occultation_filepath.exists() and not pd.read_csv(occultation_file).empty:
             print("Calculating path coef")
             obj_data["calculate_path_coeff"] = run_occultation_path_coeff(
-                Path(occultation_file), obj_data, mag_and_uncert_path
+                occultation_filepath, obj_data, mag_and_uncert_path
             )
 
         # Escreve os dados da execução no arquivo json do objeto.

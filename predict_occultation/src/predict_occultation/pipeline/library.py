@@ -104,28 +104,22 @@ def check_bsp_planetary(filename):
             raise (Exception("BSP Planetary %s file does not exist." % filename))
 
 
-def check_bsp_object(filename):
+def check_bsp_object(filepath, filename):
     """
     Verifica se o arquivo BSP Object existe e cria um link no diretório app
     """
-    print(filename)
+    print("IN BSP: ", filepath)
     app_path = os.environ.get("APP_PATH").rstrip("/")
-    data_dir = os.environ.get("DIR_DATA").rstrip("/")
-
-    in_bsp = os.path.join(data_dir, filename)
-
     dest = os.path.join(app_path, filename)
-
-    print("IN BSP: ", in_bsp)
     print("DEST: ", dest)
 
     # Verifica se o Arquivo existe no diretorio data
-    if os.path.exists(in_bsp):
+    if os.path.exists(filepath):
         # Cria um link simbolico no Diretório do app
-        os.symlink(in_bsp, dest)
+        os.symlink(filepath, dest)
         return filename
     else:
-        raise (Exception("BSP Object %s file does not exist. %s" % (filename, in_bsp)))
+        raise (Exception("BSP Object %s file does not exist. %s" % (filename, filepath)))
 
 
 def HMS2deg(ra="", dec=""):

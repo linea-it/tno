@@ -80,9 +80,14 @@ class Asteroid:
     messages: list
     exec_time: float
 
-    def __init__(self, name, base_path, log, new_run=False):
+    def __init__(self, name, base_path, log, inputs_path=None, new_run=False):
 
         self.__BASE_PATH = base_path
+
+        if inputs_path is None:
+            inputs_path = base_path
+        self.__INPUTS_PATH = inputs_path
+
         self.set_log(log)
 
         # Status
@@ -259,9 +264,22 @@ class Asteroid:
 
     def get_bsp_path(self):
         filename = self.get_bsp_filename()
-        filepath = pathlib.Path.joinpath(pathlib.Path(self.path), filename)
+        # Utiliza o diretório dos arquivos BSP
+        # Fora do diretório da execução.
+        input_path = pathlib.Path(self.__INPUTS_PATH).joinpath(self.alias)
+        input_path.mkdir(parents=True, exist_ok=True)
 
+        filepath = input_path.joinpath(filename)
         return filepath
+
+    def read_bsp_info_json(self):
+        filepath = self.get_bsp_path().parent.joinpath("bsp_jpl_info.json")
+        if not filepath.exists():
+            # Se não existir um json para o arquivo BSP.
+            raise Exception("BSP JPL Info file not found. [%s]" % filepath)
+
+        with open(filepath) as json_file:
+            return json.load(json_file)
 
     def calculate_bsp_start_period(self, start_period):
         years_behind = int(self.__BSP_YEARS_BEHIND)
@@ -298,14 +316,14 @@ class Asteroid:
         log.debug("Downloading BSP JPL started")
         log.debug(f"BSP JPL: [{self.get_bsp_path()}]")
 
-        bsp_path = self.get_bsp_path()
+        bsp_filepath = self.get_bsp_path()
         bsp_filename = self.get_bsp_filename()
 
-        if force is True and bsp_path.exists():
+        if force is True and bsp_filepath.exists():
             # Remove o arquivo se já existir e force=True
             # Um novo download será realizado.
-            bsp_path.unlink()
-            log.debug("Removed old bsp: [%s]" % (not bsp_path.exists()))
+            bsp_filepath.unlink()
+            log.debug("Removed old bsp: [%s]" % (not bsp_filepath.exists()))
 
         if start_period is None:
             start_period = self.__BSP_START_PERIOD
@@ -320,23 +338,33 @@ class Asteroid:
                 self.provisional_designation,
                 start_period,
                 end_period,
-                self.path,
+                bsp_filepath.parent,
                 bsp_filename,
             )
             mag_and_uncert_path = get_asteroid_uncertainty_from_jpl(
                 self.provisional_designation,
                 start_period,
                 end_period,
-                self.path,
+                bsp_filepath.parent,
                 "apmag_and_uncertainties.json",
                 step=12,
             )
             t1 = dt.now(tz=timezone.utc)
             tdelta = t1 - t0
 
+            # Retrieve SPKID FRON BSP FILE
+            spkid = None
+            try:
+                spkid = findSPKID(str(bsp_path))
+                if spkid == "":
+                    spkid = None
+            except Exception as e:
+                raise Exception("Failed to find SPKID in BSP file. Error: [%s]" % e)
+
             data = dict(
                 {
                     "source": "JPL",
+                    "spkid": spkid,
                     "filename": bsp_path.name,
                     "size": bsp_path.stat().st_size,
                     "start_period": start_period,
@@ -344,10 +372,13 @@ class Asteroid:
                     "dw_start": t0.isoformat(),
                     "dw_finish": t1.isoformat(),
                     "dw_time": tdelta.total_seconds(),
-                    "downloaded_in_this_run": True,
                     "mag_and_uncert_file": mag_and_uncert_path.name,
                 }
             )
+
+            bsp_info = pathlib.Path(bsp_filepath.parent, "bsp_jpl_info.json")
+            with open(bsp_info, "w") as json_file:
+                json.dump(data, json_file, default=serialize)
 
             log.info(f"Asteroid BSP Downloaded in {tdelta}")
 
@@ -357,7 +388,7 @@ class Asteroid:
             log.warning(download_exception_warning)
             return (None, download_exception_warning)
 
-    def check_bsp_jpl(self, end_period, days_to_expire=None, start_period=None):
+    def check_bsp_jpl(self, end_period, start_period=None):
         log = self.get_log()
 
         tp0 = dt.now(tz=timezone.utc)
@@ -365,80 +396,48 @@ class Asteroid:
         try:
             log.debug("Asteroid Checking BSP JPL")
 
-            if days_to_expire is None:
-                days_to_expire = self.__BSP_DAYS_TO_EXPIRE
+            # verifica se existe bsp jpl baixado previamente no diretório de inputs
 
-            if days_to_expire == 0:
-                # Força o download de um novo BSP
-                self.bsp_jpl = {}
-                log.debug("Force Download days to expire = 0")
+            # Path para o arquivo BSP
+            bsp_path = self.get_bsp_path()
 
-            bsp_jpl = {}
+            # Verificar se o arquivo BSP existe
+            if bsp_path.exists():
+                # Read bsp jpl information from file
+                bsp_info = self.read_bsp_info_json()
 
-            # Verificar insformações sobre o BSP no Json
-            if self.bsp_jpl and "filename" in self.bsp_jpl:
-                # Já existe Informações de BSP baixado
+                # Verificar se o periodo do bsp atende ao periodo da execução.
+                bsp_start_period = dt.strptime(
+                    bsp_info["start_period"], "%Y-%m-%d"
+                ).date()
+                exec_start_period = dt.strptime(str(start_period), "%Y-%m-%d").date()
 
-                # Path para o arquivo BSP
-                bsp_path = self.get_bsp_path()
+                bsp_end_period = dt.strptime(bsp_info["end_period"], "%Y-%m-%d").date()
+                exec_end_period = dt.strptime(str(end_period), "%Y-%m-%d").date()
 
-                # Verificar se o arquivo BSP existe
-                if bsp_path.exists():
-                    # Arquivo Existe Verificar se está na validade usando da data de criação do arquivo
-                    dt_creation = dt.fromtimestamp(bsp_path.stat().st_mtime)
+                if (
+                    bsp_start_period < exec_start_period
+                    and bsp_end_period > exec_end_period
+                ):
+                    # O BSP contem dados para um periodo maior que o necessário para execução
+                    # BSP que já existe atente todos os critérios não será necessário um novo Download.
+                    self.bsp_jpl = bsp_info
+                    log.info(
+                        "Asteroid Pre-existing BSP is still valid and will be reused."
+                    )
 
-                    if not has_expired(dt_creation, days_to_expire):
-                        # BSP Está na validade
-                        # Verificar se o periodo do bsp atende ao periodo da execução.
-                        bsp_start_period = dt.strptime(
-                            self.bsp_jpl["start_period"], "%Y-%m-%d"
-                        ).date()
-                        exec_start_period = dt.strptime(
-                            str(start_period), "%Y-%m-%d"
-                        ).date()
-
-                        bsp_end_period = dt.strptime(
-                            self.bsp_jpl["end_period"], "%Y-%m-%d"
-                        ).date()
-                        exec_end_period = dt.strptime(
-                            str(end_period), "%Y-%m-%d"
-                        ).date()
-
-                        if (
-                            bsp_start_period < exec_start_period
-                            and bsp_end_period > exec_end_period
-                        ):
-                            # O BSP contem dados para um periodo maior que o necessário para execução
-                            # BSP que já existe atente todos os critérios não será necessário um novo Download.
-                            bsp_jpl = self.bsp_jpl
-                            bsp_jpl["downloaded_in_this_run"] = False
-                            log.info(
-                                "Asteroid Pre-existing BSP is still valid and will be reused."
-                            )
-
-            if not bsp_jpl:
-                # Fazer um novo Download do BSP
-                bsp_jpl = self.download_jpl_bsp(
-                    start_period=start_period, end_period=end_period, force=True
-                )
-
-                # Toda vez que baixar um novo BSP recalcular o SPKID
-                self.spkid = None
-                self.get_spkid()
-
-            # Separa o dado da mensagem/exception retornada do metodo bsp_jpl
-            bsp_jpl, exp_msg = bsp_jpl
-            if bsp_jpl:
-                # Atualiza os dados do bsp
-                self.bsp_jpl = bsp_jpl
-
-                return True
+                    # TODO: Rever esta parte o spkid pode vir ta tabela do Asteroid ou do arquivo bsp_jpl_info.json
+                    # Toda vez que baixar um novo BSP recalcular o SPKID
+                    self.spkid = bsp_info["spkid"]
+                    # self.get_spkid()
+                    if self.spkid is None:
+                        log.warning(
+                            "Asteroid [%s] Could not identify the SPKID." % self.name
+                        )
+                    else:
+                        log.debug("Asteroid [%s] SPKID [%s]." % (self.name, self.spkid))
+                    return True
             else:
-                msg = "BSP JPL file was not created."
-                self.bsp_jpl = dict({"message": msg + " " + exp_msg})
-
-                log.warning("Asteroid [%s] %s" % (self.name, msg))
-                log.warning("Asteroid [%s] %s" % (self.name, exp_msg))
                 return False
 
         except Exception as e:
