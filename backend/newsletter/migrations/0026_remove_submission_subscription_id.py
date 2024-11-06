@@ -6,12 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('newsletter', '0025_submission_sent_date'),
+        ("newsletter", "0025_submission_sent_date"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='submission',
-            name='subscription_id',
+            model_name="submission",
+            name="subscription_id",
         ),
     ]
