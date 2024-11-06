@@ -45,7 +45,6 @@ class EventFilterAdmin(admin.ModelAdmin):
 class SubmissionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "subscription_id",
         "eventFilter_id",
         "process_date",
         "events_count",
@@ -53,7 +52,6 @@ class SubmissionAdmin(admin.ModelAdmin):
         "sending",
         "sent",
         "title",
-        "sent_date",
     )
 
 

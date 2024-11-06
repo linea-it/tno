@@ -5,11 +5,6 @@ from newsletter.models.subscription import Subscription
 
 class Submission(models.Model):
 
-    subscription_id = models.ForeignKey(
-        Subscription,
-        on_delete=models.CASCADE,
-    )
-
     eventFilter_id = models.ForeignKey(
         EventFilter,
         on_delete=models.CASCADE,
@@ -23,31 +18,41 @@ class Submission(models.Model):
     events_count = models.IntegerField(
         verbose_name="Events Count",
         help_text="Contagem dos eventos.",
+        default=0,
     )
 
     prepared = models.BooleanField(
         verbose_name="Prepared",
         help_text="Indica se a submmissao foi preparada ou nao.",
+        default=False,
     )
 
     sending = models.BooleanField(
         verbose_name="Sending",
         help_text="Indica se a submissao está sendo enviada ou nao.",
+        default=False,
     )
 
     sent = models.BooleanField(
         verbose_name="Sent",
         help_text="Indica se a submissao foi enviada ou nao.",
+        default=False,
     )
 
     title = models.TextField(
         verbose_name="Title",
         help_text="Titulo da submissao.",
+        default=None,
+        null=True,
+        blank=True,
     )
 
-    sent_date = models.BooleanField(
+    sent_date = models.DateTimeField(
         verbose_name="Sent Date",
         help_text="Indica se a data de envio da submissao.",
+        default=None,
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
