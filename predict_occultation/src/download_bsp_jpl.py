@@ -40,7 +40,7 @@ def main(start, end, filter_type, filter_value):
         total_asteroids = len(asteroids)
         log.info(f"Total Asteroids: {total_asteroids}")
 
-        for asteroid in asteroids[:10]:
+        for asteroid in asteroids:
             log.info(f"Asteroid: {asteroid['name']}")
 
             a = Asteroid(
