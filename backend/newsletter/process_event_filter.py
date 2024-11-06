@@ -8,14 +8,12 @@ import pandas as pd
 import requests
 from django.conf import settings
 from django.db.models import Q
-from newsletter.models import EventFilter
+from newsletter.models import EventFilter, Submission
 from newsletter.models.event_filter import EventFilter
-from newsletter.views.submission import action
 
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
-
-# from newsletter.views.submission import list_process
+from tno.serializers import OccultationSerializer
 
 
 class ProcessEventFilters:
@@ -43,8 +41,6 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription filters. {e}")
 
     def query_occultation(self, input, frequency, date_start):
-        ## array para guardar os eventos filtrados por is_visible
-        e_true = []
 
         try:
 
@@ -160,11 +156,14 @@ class ProcessEventFilters:
             radius = self.get_filters().values_list("location_radius", flat=True)
             # print("radius", radius[0])
             # """
+            ## array para guardar os eventos filtrados por is_visible
+            results = []
+            host = settings.SITE_URL.rstrip("/")
             for r in radius:
-                for events in query_occultation:
+                for event in query_occultation:
                     # print("query filtered....", events, r)
-                    long = events.occ_path_min_longitude
-                    lat = events.occ_path_min_latitude
+                    long = event.occ_path_min_longitude
+                    lat = event.occ_path_min_latitude
 
                     radius = r  # radius[0]  # 150
 
@@ -173,16 +172,20 @@ class ProcessEventFilters:
                         longitude=long,
                         radius=radius,
                         date_time=date_end,
-                        inputdict=events.occ_path_coeff,
+                        inputdict=event.occ_path_coeff,
                         # opcionais
                         # n_elements= 1500,
                         # latitudinal= False
                     )
-                    # print("e id", e.hash_id)
-                    # print("isvisible", is_visible)
 
                     if is_visible:
-                        e_true.append(events)
+                        link_event = (
+                            "http:" + host + "/prediction-event-detail/" + event.hash_id
+                        )
+                        print(link_event)
+                        result = OccultationSerializer(event).data
+                        result["link_event"] = link_event
+                        results.append(result)
 
                     """
                     print(
@@ -198,16 +201,7 @@ class ProcessEventFilters:
                         events.hash_id,
                     )
                     """
-
-                    # print("events", e_true)
-                    query_occultation = e_true
-            # """
-            # print("query.....", query_occultation)
-
-            if query_occultation:
-                return query_occultation
-            else:
-                return None
+            return results
 
         except Exception as e:
             raise Exception(f"Failed to query subscription time. {e}")
@@ -232,34 +226,26 @@ class ProcessEventFilters:
             if f == num_frequency:
                 result = self.get_filters()
                 for i, r in enumerate(result):
-                    run_filter_results = self.query_occultation(r, f, date_time)
+                    filter_results = self.query_occultation(r, f, date_time)
 
                     # chama a função que escreve o .csv
                     # print("r", result)
                     name_file = result[i]["filter_name"]
 
-                    print(
-                        "run_filter_results csv",
-                        self.create_csv(run_filter_results, tmp_path, name_file),
-                    )
+                    count = len(filter_results)
+                    print("run_filter_results csv")
+                    self.create_csv(filter_results, tmp_path, name_file)
 
                     id = result[i]["id"]
 
-                    """
                     ## salvar o status do processo na tabela submission
-                    ## no momento: dont work 
-                    host = settings.SITE_URL.rstrip("/")
-                    url = "http:" + host + "/api/submission/list_process/"
-                    # url = "http://localhost/api/submission/list_process/"
-                    print("url", url)
-                    response = requests.get(url)  # action(detail="GET")
-                    # Verificar o status e acessar os dados
-                    if response.status_code == 200:
-                        data = response.json()  # Obter dados em formato JSON
-                        print(data)
-                    else:
-                        print(f"Erro: {response.status_code}")
-                    """
+                    record = Submission(
+                        eventFilter_id=EventFilter.objects.get(pk=id),
+                        process_date=datetime.now(tz=timezone.utc),
+                        events_count=count,
+                        prepared=True,
+                    )
+                    record.save()
 
     ##TODO  escreve os resultados em um .csv
     def create_csv(self, filter_results, tmp_path, name_file):
@@ -268,18 +254,11 @@ class ProcessEventFilters:
             tmp_path, name_file + "_results_filter_newsletter.csv"
         ).replace(" ", "_")
 
-        host = settings.SITE_URL.rstrip("/")
-
         if filter_results:
-            results_valid = vars(filter_results[0])
-            link_event = (
-                "http:" + host + "/prediction-event-detail/" + results_valid["hash_id"]
-            )
-            print(link_event)
 
             # monta um dataframe com os resultados
             df = pd.DataFrame(
-                results_valid,
+                filter_results,
                 columns=[
                     "id",
                     "hash_id",
@@ -290,8 +269,7 @@ class ProcessEventFilters:
                     "dec_star_candidate",
                     "velocity",
                     "event_duration",
-                    # "elevation"
-                    link_event,
+                    "link_event",
                 ],
                 index=[0],
             )
