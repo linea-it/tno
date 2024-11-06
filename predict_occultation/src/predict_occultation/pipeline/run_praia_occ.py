@@ -5,7 +5,7 @@ import os
 import sys
 import traceback
 from datetime import datetime
-
+from pathlib import Path
 from dao import GaiaDao, MissingDBURIException
 from generate_dates import generate_dates_file
 from generate_ephemeris import centers_positions_to_deg, generate_ephemeris, run_elimina
@@ -58,6 +58,10 @@ def start_praia_occ(
     max_mag,
 ):
 
+    # Diretorio de Dados dentro do container.
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
+    print("DATA DIR: [%s]" % data_dir)
+
     log_file = os.path.join(os.environ.get("DIR_DATA"), "praia_occ.log")
 
     orig_stdout = sys.stdout
@@ -74,8 +78,6 @@ def start_praia_occ(
     gaia_cat_filename = "gaia_catalog.cat"
     gaia_csv_filename = "gaia_catalog.csv"
     occultation_table_filename = "occultation_table.csv"
-    if bsp_object_filename is None:
-        bsp_object_filename = "%s.bsp" % name
 
     # Inputs/Outputs do PRAIA Occ Star Search,
     # IMPORTANTE! esses filenames são HARDCODED na função praia_occ_input_file
@@ -122,7 +124,18 @@ def start_praia_occ(
     print("BSP Planetary: [%s]" % bsp_planetary)
 
     # Checa o arquivo bsp_object
-    bsp_object = check_bsp_object(bsp_object_filename)
+    # Procura o arquivo bsp_jpl primeiro no diretório de inputs. 
+    # Depois no diretório do asteroid. 
+    bsp_jpl_filepath = os.path.join(os.getenv("PREDICT_INPUTS"), obj_data["alias"], bsp_object_filename)
+    if not os.path.exists(bsp_jpl_filepath):
+        # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
+        bsp_jpl_filepath = Path(data_dir).joinpath(bsp_object_filename)       
+        print("BSP JPL FILE PATH: [%s]" % bsp_jpl_filepath)
+
+
+    bsp_object = check_bsp_object(
+        filepath=bsp_jpl_filepath, filename=bsp_object_filename)
+
     print("BSP Object: [%s]" % bsp_object)
 
     # Gerar arquivo de datas

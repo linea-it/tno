@@ -37,5 +37,6 @@ DB_CATALOG_URI=postgresql://<DB_USER>:<DB_USER>@desdb4.linea.gov.br:5432/prod_ga
 PARSL_ENV=linea
 REMOTE_PIPELINE_ROOT=${TNO_PROJ_DIR:-.}
 PREDICT_OUTPUTS=${TNO_PROJ_DIR:-.}/data/predict_occultations
+PREDICT_INPUTS=${TNO_PROJ_DIR:-.}/data/asteroids
 DB_ADMIN_URI=${DB_ADMIN_URI}
 DB_CATALOG_URI=${DB_CATALOG_URI}

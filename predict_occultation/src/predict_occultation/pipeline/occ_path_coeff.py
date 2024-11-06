@@ -230,9 +230,7 @@ def run_occultation_path_coeff(
                 ast_vis_mag = mag_cs(julian_date)  #
             else:
                 # tenta calcular a partir de h e g do bsp e só funciona para asteroides em geral
-                if (
-                    obj_data["h"] < 99
-                ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
+                if (obj_data["h"] is not None and obj_data["h"] < 99):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
                     ast_vis_mag = asteroid_visual_magnitude(
                         obj_data["bsp_jpl"]["filename"],
                         obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
@@ -453,7 +451,7 @@ def run_occultation_path_coeff(
             df[column] = obj_data.get(column)
 
         # Correcao de valores nao validos para H (magnitude absoluta do asteroide)
-        if obj_data["h"] > 99:
+        if obj_data["h"] is not None and obj_data["h"] > 99:
             df["h"] = None
 
         # -------------------------------------------------
