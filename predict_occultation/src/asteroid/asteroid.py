@@ -452,6 +452,11 @@ class Asteroid:
             # Atualiza o Json do Asteroid
             tp1 = dt.now(tz=timezone.utc)
 
+            if 'filename' not in self.bsp_jpl:
+                self.bsp_jpl.update(
+                    {"message": "BSP JPL file was not found."}
+                )
+
             self.bsp_jpl.update(
                 {"tp_start": tp0.isoformat(), "tp_finish": tp1.isoformat()}
             )
@@ -1056,7 +1061,8 @@ class Asteroid:
                 if "message" in self.bsp_jpl:
                     self.messages.append(self.bsp_jpl["message"])
                     self.set_failure()
-                else:
+
+                elif "filename" in self.bsp_jpl and self.bsp_jpl["filename"]:
                     a.update(
                         {
                             "bsp_jpl_start": self.bsp_jpl["dw_start"],
