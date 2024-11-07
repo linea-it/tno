@@ -27,21 +27,13 @@ class SendEventsMail:
 
         if os.path.isfile(data):
             print("data", data)
-            """
-                job_result = pd.read_csv(
-                file_path,
-                delimiter=";",
-                usecols=["date_obs", "success"],
-                dtype={"success": bool, "date_obs": str},
-            )
-            """
             print("pegando  dados do resultado")
             tabela = pd.read_csv(data, sep=";")
 
             return tabela
         else:
             tabela = pd.DataFrame()
-            print("Arquivo não exite.")
+            self.log.info("Arquivo não exite.")
             return tabela
 
     # Função que dispara o envio dos emails com os eventos
@@ -59,9 +51,10 @@ class SendEventsMail:
 
             # le os dados do csv e envia para o email
             data = self.get_context_data(csv_name)
-            print(data)
+            # print(data)
             email_user = obj.user.email
-            print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
+            # print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
+            self.log.info(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
 
             # context = data.iloc[0]["name"]  # filter_names
             # 2024 Oct 25 ~20h UT: Chariklo occults mag 16 star (RA: xx xx xx - DEC: xx xx xx - Vel: xx km/s - Duration: xx s)LINK
