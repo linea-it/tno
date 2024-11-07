@@ -8,8 +8,7 @@ import pandas as pd
 import requests
 from django.conf import settings
 from django.db.models import Q
-from newsletter.models import EventFilter, Submission
-from newsletter.models.event_filter import EventFilter
+from newsletter.models import Attachment, EventFilter, Submission
 
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
@@ -274,7 +273,7 @@ class ProcessEventFilters:
                     # print("run_filter_results csv")
                     self.create_csv(filter_results, tmp_path, name_file)
                 else:
-                    self.log.info("Events not found....")
+                    self.log.warning("Events not found....")
 
                 ## salvar o status do processo na tabela submission
                 id = result[i]["id"]
@@ -309,12 +308,42 @@ class ProcessEventFilters:
                     "hash_id",
                     "date_time",
                     "name",
-                    "magnitude_drop",
+                    "number",
+                    "base_dynclass",
+                    "dynclass",
                     "ra_star_candidate",
                     "dec_star_candidate",
+                    "closest_approach",
+                    "position_angle",
                     "velocity",
+                    "delta",
+                    "g_star",
+                    "long",
+                    "loc_t",
+                    "off_ra",
+                    "off_dec",
+                    "proper_motion",
+                    "ra_star_deg",
+                    "dec_star_deg",
+                    "magnitude_drop",
+                    "apparent_magnitude",
                     "event_duration",
                     "link_event",
+                    "moon_separation",
+                    "sun_elongation",
+                    "instant_uncertainty",
+                    "closest_approach_uncertainty",
+                    "moon_illuminated_fraction",
+                    "closest_approach_uncertainty_km",
+                    "g",
+                    "semimajor_axis",
+                    "eccentricity",
+                    "inclination",
+                    "perihelion",
+                    "aphelion",
+                    "diameter",
+                    "catalog",
+                    "created_at",
                 ],
                 # index=[0],
             )
@@ -326,7 +355,28 @@ class ProcessEventFilters:
             # logger.debug("Results File: [%s]" % csv_file)
             # print("escrevendo os resultados...")
 
-        # else:
-        #    self.log.info("Events not found....")
-        # print("sai do create csv...")
+            # else:
+            #    self.log.info("Events not found....")
+            # print("sai do create csv...")
+            # grava status do arquivo
+            try:
+                size = os.path.getsize(csv_file)
+
+            except OSError:
+                self.log.warning(
+                    "Path '%s' does not exists or is inaccessible" % csv_file
+                )
+                sys.exit()
+
+            print("Size (In bytes) of '% s':" % csv_file, size)
+
+            file_name = name_file + "_results_filter_newsletter.csv".replace(" ", "_")
+            record = Attachment(
+                submission_id=Submission.objects.get(pk=id),
+                file_name=file_name,
+                size=size,
+            )
+            print("gravando registro...", record)
+            record.save()
+
         return csv_file
