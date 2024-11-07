@@ -1,10 +1,11 @@
 import os
 import sys
+from datetime import datetime, time, timedelta, timezone
 from pathlib import Path
 
 import colorlog
 import pandas as pd
-from newsletter.models.event_filter import EventFilter
+from newsletter.models import EventFilter, Submission
 from newsletter.newsletter_send_mail import NewsletterSendEmail
 
 
@@ -43,6 +44,7 @@ class SendEventsMail:
         for u in range(user_subs_all):
             user_subs = EventFilter.objects.values_list("user", flat=True)[u]
             filter_names = EventFilter.objects.values_list("filter_name", flat=True)[u]
+
             # print("user_subs", user_subs)
             # print("data_all", data_all["filter_names"])
 
@@ -74,3 +76,18 @@ class SendEventsMail:
                 ]
                 send_mail = NewsletterSendEmail()
                 send_mail.send_events_mail(obj.pk, email=email_user, context=context)
+
+                ## salvar o status do processo na tabela submission
+            id = EventFilter.objects.values_list("id", flat=True)[u]
+            print("data send_mail", id)
+            # id = result[i]["id"]
+            record = Submission(
+                eventFilter_id=EventFilter.objects.get(pk=id),
+                process_date=datetime.now(tz=timezone.utc),
+                # events_count=count,
+                prepared=True,
+                sending=True,
+                title=filter_names,
+            )
+            print("gravando registro...", record)
+            record.save()
