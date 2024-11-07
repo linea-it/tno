@@ -61,6 +61,22 @@ class SendEventsMail:
             # context = data.iloc[0]["name"]  # filter_names
             # 2024 Oct 25 ~20h UT: Chariklo occults mag 16 star (RA: xx xx xx - DEC: xx xx xx - Vel: xx km/s - Duration: xx s)LINK
             #
+            id = EventFilter.objects.values_list("id", flat=True)[u]
+            print("data send_mail", id)
+            count = len(data)
+            print("count", count)
+            record = Submission(
+                eventFilter_id=EventFilter.objects.get(pk=id),
+                process_date=datetime.now(tz=timezone.utc),
+                events_count=count,
+                # prepared=True,
+                sending=True,
+                # sent=True,
+                title=filter_names,
+            )
+            print("gravando registro...", record)
+            record.save()
+
             if data.empty:
                 context = "Events not found"
                 send_mail = NewsletterSendEmail()
@@ -77,16 +93,14 @@ class SendEventsMail:
                 send_mail = NewsletterSendEmail()
                 send_mail.send_events_mail(obj.pk, email=email_user, context=context)
 
-                ## salvar o status do processo na tabela submission
-            id = EventFilter.objects.values_list("id", flat=True)[u]
-            print("data send_mail", id)
-            # id = result[i]["id"]
+            ## salvar o status do processo na tabela submission
             record = Submission(
                 eventFilter_id=EventFilter.objects.get(pk=id),
                 process_date=datetime.now(tz=timezone.utc),
-                # events_count=count,
-                prepared=True,
-                sending=True,
+                events_count=count,
+                # prepared=True,
+                # sending=True,
+                sent=True,
                 title=filter_names,
             )
             print("gravando registro...", record)
