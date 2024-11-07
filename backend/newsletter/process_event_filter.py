@@ -57,7 +57,6 @@ class ProcessEventFilters:
 
                 date_end = date_start + timedelta(days=7)
 
-                """
                 print(
                     "periodo weekly",
                     frequency,
@@ -66,12 +65,11 @@ class ProcessEventFilters:
                     "data final",
                     date_end,
                 )
-                """
+
             else:
                 # frequency == 1 periodo monthly
                 date_end = date_start + timedelta(days=30)
 
-                """
                 print(
                     "periodo monthly",
                     frequency,
@@ -80,15 +78,25 @@ class ProcessEventFilters:
                     "data final",
                     date_end,
                 )
-                """
 
             # query baseado no intervalo temporal
             # TODO: adaptar isso ao intervalo weekly e monthly
+            # print("occultation objects", Occultation.objects.values("hash_id"))
             query_occultation = Occultation.objects.filter(
                 date_time__range=[date_start, date_end]
             )
 
             print("total query occultation date", query_occultation.values().count())
+
+            # TODO filtro por nome
+            name = input.get("filter_value", None)
+            print("name", name)
+            if name:
+                query_occultation = query_occultation.filter(name=name)
+            print(
+                "total query occultation name",
+                query_occultation.values().count(),
+            )
 
             # se magmax e magmin foram definidos, filtra por magnitude
             magmax = input.get("magnitude_max", None)
@@ -153,41 +161,48 @@ class ProcessEventFilters:
             # TODO: filtro por geolocation
             # fazer um loop sobre query_occultation chamando a funçõa geolocation
 
-            radius = self.get_filters().values_list("location_radius", flat=True)
+            # radius = self.get_filters().values_list("location_radius", flat=True)
             # print("radius", radius[0])
             # """
             ## array para guardar os eventos filtrados por is_visible
             results = []
+
+            radius = input.get("location_radius", None)  # r  # radius[0]  # 150
+            print("r", radius)
+
             host = settings.SITE_URL.rstrip("/")
-            for r in radius:
-                for event in query_occultation:
-                    # print("query filtered....", events, r)
-                    long = event.occ_path_min_longitude
-                    lat = event.occ_path_min_latitude
+            # for r in radius:
+            for event in query_occultation:
+                # print("query filtered....", events, r)
+                long = event.occ_path_min_longitude
+                lat = event.occ_path_min_latitude
 
-                    radius = r  # radius[0]  # 150
+                is_visible = visibility_from_coeff(
+                    latitude=lat,
+                    longitude=long,
+                    radius=radius,
+                    date_time=date_end,
+                    inputdict=event.occ_path_coeff,
+                    # opcionais
+                    # n_elements= 1500,
+                    # latitudinal= False
+                )
+                # print(
+                #     "lat",
+                #     lat,
+                #     "lon",
+                #     long,
+                #     "radius",
+                #     radius,
+                #     "isvisible",
+                #     is_visible,
+                #     "events.hash_id",
+                #     event.hash_id,
+                # )
 
-                    is_visible = visibility_from_coeff(
-                        latitude=lat,
-                        longitude=long,
-                        radius=radius,
-                        date_time=date_end,
-                        inputdict=event.occ_path_coeff,
-                        # opcionais
-                        # n_elements= 1500,
-                        # latitudinal= False
-                    )
-
-                    if is_visible:
-                        link_event = (
-                            "http:" + host + "/prediction-event-detail/" + event.hash_id
-                        )
-                        print(link_event)
-                        result = OccultationSerializer(event).data
-                        result["link_event"] = link_event
-                        results.append(result)
-
-                    """
+                if is_visible:
+                    # print("entrei no isvisible")
+                    # """
                     print(
                         "lat",
                         lat,
@@ -198,9 +213,25 @@ class ProcessEventFilters:
                         "isvisible",
                         is_visible,
                         "events.hash_id",
-                        events.hash_id,
+                        event.hash_id,
                     )
-                    """
+                    # """
+                    link_event = (
+                        "http:" + host + "/prediction-event-detail/" + event.hash_id
+                    )
+
+                    # print("montando o link....")
+                    # print("vars do event", vars(event))
+                    result = OccultationSerializer(event).data
+                    result["link_event"] = link_event
+
+                    print(link_event)
+
+                    results.append(result)
+
+                    # print("result", result)
+
+            # print("sai do for events....")
             return results
 
         except Exception as e:
@@ -208,55 +239,68 @@ class ProcessEventFilters:
 
     # roda os filtros comparando com as opções definidas no envent_filter
     def run_filter(self, frequency, date_initial):
+        # print("entrei no run_filter....")
+
         # seta caminho para escrever o arquivo
         tmp_path = Path("/archive/newsletter/")
-        print("dir... ", tmp_path)
+        # print("dir... ", tmp_path)
 
-        period = self.get_filters().values_list("frequency", flat=True)
+        # period = self.get_filters().values_list("frequency", flat=True)
 
         date_time = date_initial  # "2024-09-01"  # data inicial da rodada
 
         # frequency 1 == monthly, frequency 2 == weekly
         num_frequency = frequency
 
-        # percorre todas as frequencias do banco
-        for f in period:
-            ## verifica o numero da frequencia para rodar todos de uma vez
-            ## exemplo: roda todos weeklys juntos depois todos monthlys
-            if f == num_frequency:
-                result = self.get_filters()
-                for i, r in enumerate(result):
-                    filter_results = self.query_occultation(r, f, date_time)
+        result = self.get_filters()
+        # print(num_frequency)
 
-                    # chama a função que escreve o .csv
-                    # print("r", result)
-                    name_file = result[i]["filter_name"]
+        for i, r in enumerate(result):
+            # print("entrei no for enumerate....")
+            if result[i]["frequency"] == num_frequency:
+                # print("if dentro do enumerate", result[i]["frequency"])
+                # define o radius
+                radius = self.get_filters().values_list("location_radius", flat=True)[i]
+                print("radius", radius)
+                filter_results = self.query_occultation(r, num_frequency, date_time)
 
-                    count = len(filter_results)
-                    print("run_filter_results csv")
+                # chama a função que escreve o .csv
+                # print("r", result)
+                name_file = result[i]["filter_name"]
+
+                count = len(filter_results)
+
+                if filter_results:
+                    # print("run_filter_results csv")
                     self.create_csv(filter_results, tmp_path, name_file)
+                else:
+                    self.log.info("Events not found....")
 
-                    id = result[i]["id"]
+                ## salvar o status do processo na tabela submission
+                id = result[i]["id"]
+                record = Submission(
+                    eventFilter_id=EventFilter.objects.get(pk=id),
+                    process_date=datetime.now(tz=timezone.utc),
+                    events_count=count,
+                    prepared=True,
+                )
+                # print("gravando registro...")
+                record.save()
 
-                    ## salvar o status do processo na tabela submission
-                    record = Submission(
-                        eventFilter_id=EventFilter.objects.get(pk=id),
-                        process_date=datetime.now(tz=timezone.utc),
-                        events_count=count,
-                        prepared=True,
-                    )
-                    record.save()
+        # print("sai do for enumerate")
 
     ##TODO  escreve os resultados em um .csv
     def create_csv(self, filter_results, tmp_path, name_file):
+        # print("entrei no create csv...")
 
         csv_file = os.path.join(
             tmp_path, name_file + "_results_filter_newsletter.csv"
         ).replace(" ", "_")
 
         if filter_results:
-
+            # print("filter_results", filter_results)
             # monta um dataframe com os resultados
+            # print("monta dataframe...")
             df = pd.DataFrame(
                 filter_results,
                 columns=[
@@ -271,7 +315,7 @@ class ProcessEventFilters:
                     "event_duration",
                     "link_event",
                 ],
-                index=[0],
+                # index=[0],
             )
 
             # Escreve o dataframe em arquivo.
@@ -279,9 +323,9 @@ class ProcessEventFilters:
             self.log.info("An archive was created with the Results.")
 
             # logger.debug("Results File: [%s]" % csv_file)
-            print("escrevendo os resultados...")
+            # print("escrevendo os resultados...")
 
-        else:
-            self.log.info("Events not found....")
-
+        # else:
+        #    self.log.info("Events not found....")
+        # print("sai do create csv...")
         return csv_file
