@@ -283,6 +283,7 @@ class ProcessEventFilters:
                     process_date=datetime.now(tz=timezone.utc),
                     events_count=count,
                     prepared=True,
+                    title=name_file,
                 )
                 # print("gravando registro...")
                 record.save()
