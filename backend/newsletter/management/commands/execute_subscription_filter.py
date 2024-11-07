@@ -34,6 +34,8 @@ class Command(BaseCommand):
 
         task = kwargs["task"]
 
+        # passa o periodo no parametro
+        # 1 para monthly, 2 para weekly
         if task == "run_filter":
             pef.run_filter(frequency=1, date_initial="2024-09-01")
 
