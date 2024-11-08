@@ -22,7 +22,7 @@ class SendEventsMail:
 
     # le o csv gerado e passa os valores para o template
     def get_context_data(self, names):
-        tmp_path = Path("/archive/newsletter/")
+        tmp_path = Path("/archive/public/newsletter/")
 
         data = os.path.join(tmp_path, names + "_results_filter_newsletter.csv")
 
@@ -37,8 +37,13 @@ class SendEventsMail:
             self.log.info("Arquivo não exite.")
             return tabela
 
-    # Função que dispara o envio dos emails com os eventos
-    def exec_send_mail(self):
+            # Função que dispara o envio dos emails com os eventos
+            pef.run_filter(frequency=1, date_initial="2024-09-01")
+
+    def exec_send_mail(self, date_start, date_end):
+        # print("date_initial", date_start)
+        # date_end = date_start + 7
+        # print("date_finish", date_end)
         user_subs_all = len(EventFilter.objects.values_list("user", flat=True))
 
         for u in range(user_subs_all):
@@ -52,8 +57,8 @@ class SendEventsMail:
             csv_name = filter_names.replace(" ", "_")
 
             # le os dados do csv e envia para o email
-            data = self.get_context_data(csv_name)
-            # print(data)
+            data = self.get_context_data(csv_name)[0:9]
+            # print(data[0:3])
             email_user = obj.user.email
             # print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
             self.log.info(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
@@ -83,6 +88,8 @@ class SendEventsMail:
                 send_mail.send_mail_not_found(obj.pk, email=email_user, context=context)
             else:
                 context = [
+                    date_start,
+                    date_end,
                     filter_names,
                     data["date_time"],
                     data["name"],
