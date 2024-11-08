@@ -19,12 +19,12 @@ class Command(BaseCommand):
             action="store_true",
             dest="local",
             default=False,
-            help="Dispara a função que executa os filtros; a função que envia os emails",
+            help="Dispara a função que executa os filtros e a função que envia os emails",
         )
 
         parser.add_argument(
             "task",
-            help="One email addresses to send a test email to.",
+            help="Define qual funçao sera executada.",
         )
 
     def handle(self, *args, **kwargs):
@@ -39,17 +39,5 @@ class Command(BaseCommand):
         if task == "run_filter":
             pef.run_filter(frequency=1, date_start="2024-09-01")
 
-        # if task == "send_mail":
-        #    pef.exec_send_mail()
-
         if task == "send_mail":
             sem.exec_send_mail(date_start="2024-09-01", date_end="2024-10-01")
-
-        # passa o periodo no parametro
-        # 1 para monthly, 2 para weekly
-        # atm.run_filter(1)
-
-        # email = kwargs["email"]
-
-        # função que dispara os emails
-        # atm.exec_send_mail()
