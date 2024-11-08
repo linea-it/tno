@@ -237,16 +237,16 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription time. {e}")
 
     # roda os filtros comparando com as opções definidas no envent_filter
-    def run_filter(self, frequency, date_initial):
+    def run_filter(self, frequency, date_start):
         # print("entrei no run_filter....")
 
         # seta caminho para escrever o arquivo
-        tmp_path = Path("/archive/newsletter/")
+        tmp_path = Path("/archive/public/newsletter/")
         # print("dir... ", tmp_path)
 
         # period = self.get_filters().values_list("frequency", flat=True)
 
-        date_time = date_initial  # "2024-09-01"  # data inicial da rodada
+        # date_time = date_initial  # "2024-09-01"  # data inicial da rodada
 
         # frequency 1 == monthly, frequency 2 == weekly
         num_frequency = frequency
@@ -261,7 +261,7 @@ class ProcessEventFilters:
                 # define o radius
                 radius = self.get_filters().values_list("location_radius", flat=True)[i]
                 print("radius", radius)
-                filter_results = self.query_occultation(r, num_frequency, date_time)
+                filter_results = self.query_occultation(r, num_frequency, date_start)
 
                 # chama a função que escreve o .csv
                 # print("r", result)
