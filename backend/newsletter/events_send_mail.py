@@ -37,49 +37,41 @@ class SendEventsMail:
             self.log.info("Arquivo não exite.")
             return tabela
 
-            # Função que dispara o envio dos emails com os eventos
-            pef.run_filter(frequency=1, date_initial="2024-09-01")
-
+    # le os dados do csv e dispara as funções de envio dos emails
     def exec_send_mail(self, date_start, date_end):
-        # print("date_initial", date_start)
-        # date_end = date_start + 7
-        # print("date_finish", date_end)
         user_subs_all = len(EventFilter.objects.values_list("user", flat=True))
 
         for u in range(user_subs_all):
             user_subs = EventFilter.objects.values_list("user", flat=True)[u]
             filter_names = EventFilter.objects.values_list("filter_name", flat=True)[u]
 
-            # print("user_subs", user_subs)
-            # print("data_all", data_all["filter_names"])
-
             obj = EventFilter.objects.filter(user=user_subs)[0]
             csv_name = filter_names.replace(" ", "_")
 
-            # le os dados do csv e envia para o email
+            # le os dados do csv e envia para o email # delimitando 10 eventos
             data = self.get_context_data(csv_name)[0:9]
-            # print(data[0:3])
+
             email_user = obj.user.email
-            # print(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
             self.log.info(f"Subscription ID: {obj.pk} Email: {obj.user.email}")
 
             # context = data.iloc[0]["name"]  # filter_names
             # 2024 Oct 25 ~20h UT: Chariklo occults mag 16 star (RA: xx xx xx - DEC: xx xx xx - Vel: xx km/s - Duration: xx s)LINK
             #
             id = EventFilter.objects.values_list("id", flat=True)[u]
-            print("data send_mail", id)
+
             count = len(data)
-            print("count", count)
+
+            # gravando status do processo na tabela submission
             record = Submission(
                 eventFilter_id=EventFilter.objects.get(pk=id),
                 process_date=datetime.now(tz=timezone.utc),
                 events_count=count,
-                # prepared=True,
                 sending=True,
-                # sent=True,
                 title=filter_names,
             )
-            print("gravando registro...", record)
+            self.log.info(
+                "atualizando status 'sending' do envio de emails na tabela submission..."
+            )
             record.save()
 
             if data.empty:
@@ -105,10 +97,11 @@ class SendEventsMail:
                 eventFilter_id=EventFilter.objects.get(pk=id),
                 process_date=datetime.now(tz=timezone.utc),
                 events_count=count,
-                # prepared=True,
-                # sending=True,
                 sent=True,
                 title=filter_names,
             )
-            print("gravando registro...", record)
+            self.log.info(
+                "atualizando status 'sent' do envio de emails na tabela submission...",
+                record,
+            )
             record.save()
