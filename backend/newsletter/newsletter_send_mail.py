@@ -72,12 +72,14 @@ class NewsletterSendEmail:
             {
                 "host": settings.SITE_URL.rstrip("/"),
                 # "activation_code": subscription.activation_code,
-                "filter_name": context[0],
-                "date": context[1],
-                "name": context[2],
-                "mag": context[3],
-                "veloc": context[4],
-                "duration": context[5],
+                "date_start": context[0],
+                "date_end": context[1],
+                "filter_name": context[2],
+                "date": context[3],
+                "name": context[4],
+                "mag": context[5],
+                "veloc": context[6],
+                "duration": context[7],
             },
         )
         self.send_newsletter_email(
