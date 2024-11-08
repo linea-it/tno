@@ -271,7 +271,18 @@ class ProcessEventFilters:
 
                 if filter_results:
                     # print("run_filter_results csv")
-                    self.create_csv(filter_results, tmp_path, name_file)
+                    # id = Submission.objects.filter("id")  # [i]['id']
+                    print(
+                        "submission_id....",
+                        Submission.objects.values_list("id", flat=True)[i],
+                    )
+                    id_submission = Submission.objects.values_list("id", flat=True)[i]
+                    self.create_csv(
+                        filter_results,
+                        tmp_path,
+                        name_file,
+                        id_submission,
+                    )
                 else:
                     self.log.warning("Events not found....")
 
@@ -290,7 +301,7 @@ class ProcessEventFilters:
         # print("sai do for enumerate")
 
     ##TODO  escreve os resultados em um .csv
-    def create_csv(self, filter_results, tmp_path, name_file):
+    def create_csv(self, filter_results, tmp_path, name_file, id_submission):
         # print("entrei no create csv...")
 
         csv_file = os.path.join(
@@ -370,10 +381,13 @@ class ProcessEventFilters:
 
             print("Size (In bytes) of '% s':" % csv_file, size)
 
-            file_name = name_file + "_results_filter_newsletter.csv".replace(" ", "_")
+            csv_name = os.path.join(
+                name_file + "_results_filter_newsletter.csv"
+            ).replace(" ", "_")
+            print(csv_name)
             record = Attachment(
-                submission_id=Submission.objects.get(pk=id),
-                file_name=file_name,
+                submission_id=Submission.objects.get(pk=id_submission),
+                filename=csv_name,
                 size=size,
             )
             print("gravando registro...", record)
