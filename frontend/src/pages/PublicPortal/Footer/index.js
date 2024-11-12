@@ -24,7 +24,7 @@ function PublicFooter() {
 
       <Container>
         <Grid container spacing={4} alignItems='center'>
-          <Grid md={5}>
+          <Grid item md={5}>
             <Box className={classes.logoContainer}>
               <a href='https://www.linea.org.br/' target='_blank' rel='noreferrer'>
                 <img src='/img/linea-logo.png' alt='LIneA logo' width={145} height={120} />
@@ -53,7 +53,7 @@ function PublicFooter() {
             <Box className={classes.verticalDivider}></Box>
           </Grid>
 
-          <Grid md={6} className={classes.partnerSection}>
+          <Grid item md={6} className={classes.partnerSection}>
             <Box>
               <Typography variant='body2' className={classes.apoioText}>
                 Support:
