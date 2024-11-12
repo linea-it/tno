@@ -59,9 +59,9 @@ export default function EventFilterForm({ data, onChange }) {
             max={18}
           />*/}
           <MaginitudeSelect
-            value={data.magnitude_max !== null && data.magnitude_max !== undefined ? data.magnitude_max : ''}
-            onChange={(value) => handleChange({ target: { name: 'magnitude_max', value } })}
+            value={data.magnitude_max !== null ? data.magnitude_max : ''}
             name='magnitude_max'
+            onChange={handleChange}
             min={4}
             max={18}
           />
