@@ -40,89 +40,74 @@ export const getUserEventFilters = ({ queryKey }) => {
 
 export const getUserEventFilterbById = ({ id }) => api.get(`/event_filter/${id}`)
 
-export const userEventFilterbCreate = ({ data }) => {
+// Função para transformar dados de evento antes do envio
+const transformEventFilterData = (data) => {
   const newData = { ...data }
 
-  newData.filter_name = data.filter_name
+  // Definir filter_name como string e tratar filter_type
+  newData.filter_name = data.filter_name || ''
+  newData.filter_type = data.filter_type !== undefined ? String(data.filter_type) : ''
 
-  // Filtro por Nome, Dynclass e Base Dynclass
-  if (data.filter_value !== undefined && data.filter_value !== '') {
-    if (data.filter_type === 'name') {
-      newData.filter_value = data.filter_value.map((row) => row.name).join(',')
-    } else {
-      newData.filter_value = data.filter_value
-    }
+  // Ajustar filter_value: usa "" se for null para evitar problemas no backend
+  if (newData.filter_type === '') {
+    newData.filter_value = ''
+  } else if (Array.isArray(data.filter_value)) {
+    newData.filter_value = data.filter_value.map((item) => (typeof item === 'object' && item.name ? item.name : item)).join(',')
+  } else {
+    newData.filter_value = data.filter_value || ''
   }
 
-  // Fix Time format
-  if (data.local_solar_time_after) {
+  // Ajustar formato do tempo (ambos precisam estar definidos pq é um intervalo)
+  if (
+    data.local_solar_time_after &&
+    typeof data.local_solar_time_after.format === 'function' &&
+    data.local_solar_time_before &&
+    typeof data.local_solar_time_before.format === 'function'
+  ) {
+    // Ambos os campos têm valores definidos, então formatamos e salvamos
     newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
-  }
-  if (data.local_solar_time_before) {
     newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
+  } else {
+    // Se algum dos campos não tiver valor definido, ambos serão null
+    newData.local_solar_time_after = null
+    newData.local_solar_time_before = null
   }
 
-  // Filtro por magnitude maxima
-  newData.magnitude_max = data.maginitudeMax
+  // Ajuste de valores para magnitude, duração e aproximação
+  newData.magnitude_max = data.magnitude_max !== undefined ? data.magnitude_max : null
+  newData.magnitude_drop_max = data.magnitude_drop_max !== undefined && data.magnitude_drop_max !== '' ? data.magnitude_drop_max : null
+  newData.event_duration = data.event_duration !== undefined && data.event_duration !== '' ? data.event_duration : null
+  newData.closest_approach_uncertainty_km =
+    data.closest_approach_uncertainty_km !== undefined && data.closest_approach_uncertainty_km !== ''
+      ? data.closest_approach_uncertainty_km
+      : null
 
-  // Filtro por magnitude Drop Maior que
-  if (data.maginitude_drop_max !== undefined && data.maginitude_drop_max !== '') {
-    newData.magnitude_drop_max = data.maginitude_drop_max
-  }
-
-  // Filtro por Event Duration Maior que
-  if (data.event_duration !== undefined && data.event_duration !== '') {
-    newData.event_duration = data.event_duration
-  }
-
-  if (data.closest_approach_uncertainty_km !== undefined && data.closest_approach_uncertainty_km !== '') {
-    newData.closest_approach_uncertainty_km = data.closest_approach_uncertainty_km
-  }
-
-  console.log('data newsletter', newData)
-  return api.post(`/event_filter/`, { ...newData })
+  console.log('Transformed Data:', newData) // Log final para verificar o payload completo
+  return newData
 }
 
+// Função para criar um filtro de evento (POST)
+export const userEventFilterbCreate = ({ data }) => {
+  const newData = transformEventFilterData(data)
+
+  console.log('Transformed data for create:', newData)
+  return api.post(`/event_filter/`, newData).catch((error) => {
+    console.error('Failed to create the filter:', error.response ? error.response.data : error.message)
+    throw error
+  })
+}
+
+// Função para atualizar um filtro de evento (PATCH)
 export const userEventFilterbUpdate = ({ id, data }) => {
-  const newData = { ...data }
+  const newData = transformEventFilterData(data)
 
-  newData.filter_name = data.filter_name
+  console.log('Transformed data for update:', newData)
+  console.log('ID:', id)
 
-  // Filtro por Nome, Dynclass e Base Dynclass
-  if (data.filter_value !== undefined && data.filter_value !== '') {
-    if (data.filter_type === 'name') {
-      newData.filter_value = data.filter_value.map((row) => row.name).join(',')
-    } else {
-      newData.filter_value = data.filter_value
-    }
-  }
-
-  // Fix Time format
-  if (data.local_solar_time_after) {
-    newData.local_solar_time_after = data.local_solar_time_after.format('HH:mm:ss')
-  }
-  if (data.local_solar_time_before) {
-    newData.local_solar_time_before = data.local_solar_time_before.format('HH:mm:ss')
-  }
-
-  // Filtro por magnitude maxima
-  newData.magnitude_max = data.maginitudeMax
-
-  // Filtro por magnitude Drop Maior que
-  if (data.maginitude_drop_max !== undefined && data.maginitude_drop_max !== '') {
-    newData.magnitude_drop_max = data.maginitude_drop_max
-  }
-
-  // Filtro por Event Duration Maior que
-  if (data.event_duration !== undefined && data.event_duration !== '') {
-    newData.event_duration = data.event_duration
-  }
-
-  if (data.closest_approach_uncertainty_km !== undefined && data.closest_approach_uncertainty_km !== '') {
-    newData.closest_approach_uncertainty_km = data.closest_approach_uncertainty_km
-  }
-
-  return api.patch(`/event_filter/${id}/`, { ...newData })
+  return api.patch(`/event_filter/${id}/`, newData).catch((error) => {
+    console.error('Failed to update the filter:', error.response ? error.response.data : error.message)
+    throw error
+  })
 }
 
 export const userEventFilterDelete = ({ id }) => api.delete(`/event_filter/${id}`)

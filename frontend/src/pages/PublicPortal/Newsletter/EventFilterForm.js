@@ -20,6 +20,7 @@ export default function EventFilterForm({ data, onChange }) {
     onChange(newData)
     console.log('form filtertype ', newData.filter_type)
     console.log('form filtervalue ', newData.filter_value)
+    console.log('magnitude_drop_max value:', data.magnitude_drop_max)
   }
   return (
     <Box component='form' autoComplete='off'>
@@ -58,18 +59,18 @@ export default function EventFilterForm({ data, onChange }) {
             max={18}
           />*/}
           <MaginitudeSelect
-            value={data.magnitude_max !== null ? data.magnitude_max : ''}
+            value={data.magnitude_max !== null && data.magnitude_max !== undefined ? data.magnitude_max : ''}
+            onChange={(value) => handleChange({ target: { name: 'magnitude_max', value } })}
             name='magnitude_max'
-            onChange={handleChange}
             min={4}
             max={18}
           />
           <MaginitudeDropSelect
             name='magnitude_drop_max'
-            value={data.magnitude_drop_max !== null ? data.magnitude_drop_max : ''}
+            value={data.magnitude_drop_max !== null && data.magnitude_drop_max !== undefined ? data.magnitude_drop_max : ''}
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_max', value } })}
-            min={4}
-            max={18}
+            min={1} // Valor mínimo original
+            max={24} // Valor máximo original
           />
         </Stack>
         <Divider />

@@ -26,6 +26,10 @@ export const listAllAsteroids = ({ queryKey }) => {
   return api.get(`/asteroids`, { params: { search: name } }).then((res) => res.data)
 }
 
+export const listAllAsteroidsByName = ({ name }) => {
+  return api.get(`/asteroids`, { params: { search: name } }).then((res) => res.data.results)
+}
+
 export const listAllBaseDynClass = () => {
   return api.get(`/asteroids/base_dynclasses/`).then((res) => res.data)
 }

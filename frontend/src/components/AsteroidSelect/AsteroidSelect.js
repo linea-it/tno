@@ -4,6 +4,7 @@ import AsteroidNameSelect from './AsteroidNameSelect'
 import BaseDynclassSelect from './BaseDynclassSelect'
 import DynclassSelect from './DynclassSelect'
 import Grid from '@mui/material/Grid'
+
 function AsteroidSelect({ value, onChange, source, error, required }) {
   return (
     <Grid container>
@@ -22,6 +23,7 @@ function AsteroidSelect({ value, onChange, source, error, required }) {
         {value.filterType === 'name' && (
           <AsteroidNameSelect
             source={source}
+            initialValue={value.filterValue || []} // Passa valor inicial ou array vazio
             onChange={(newValue) => {
               onChange({
                 ...value,

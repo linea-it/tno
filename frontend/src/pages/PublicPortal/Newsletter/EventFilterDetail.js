@@ -13,6 +13,7 @@ import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import EventFilterForm from './EventFilterForm'
 import { getUserEventFilterbById, userEventFilterbUpdate, userEventFilterbCreate } from '../../../services/api/Newsletter'
+import { listAllAsteroidsByName } from '../../../services/api/Asteroid' // Adjust the path if needed
 import { Box } from '../../../../node_modules/@mui/material/index'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -30,12 +31,12 @@ function EventFilterDetail() {
     filter_name: '',
     description: '',
     frequency: 1,
-    magnitude_min: 4,
-    magnitude_max: 18,
-    filter_type: 'name',
-    filter_value: '',
-    magnitude_drop_min: 4,
-    magnitude_drop_max: 18,
+    magnitude_min: null,
+    magnitude_max: null,
+    filter_type: '',
+    filter_value: null,
+    magnitude_drop_min: null,
+    magnitude_drop_max: null,
     solar_time_enabled: false,
     local_solar_time_after: dayjs().set('hour', 18).startOf('hour'),
     local_solar_time_before: dayjs().set('hour', 6).startOf('hour'),
@@ -44,7 +45,7 @@ function EventFilterDetail() {
     diameter_max: undefined,
     latitude: null,
     longitude: null,
-    location_radius: 100,
+    location_radius: null,
     altitude: null
   }
 
@@ -53,12 +54,38 @@ function EventFilterDetail() {
 
   const loadData = (id) => {
     getUserEventFilterbById({ id: id })
-      .then((res) => {
-        setCurrentData(res.data)
-        setinitialData(res.data)
+      .then(async (res) => {
+        const data = res.data
+        if (data.filter_type === 'name' && typeof data.filter_value === 'string') {
+          const asteroidNames = data.filter_value.split(',').map((name) => name.trim())
+          // console.log('Asteroid names:', asteroidNames)
+
+          // Fetch full asteroid data for each name in the array
+          const asteroidObjects = await Promise.all(
+            asteroidNames.map(async (name) => {
+              try {
+                const response = await listAllAsteroidsByName({ name })
+                const asteroidObject = Array.isArray(response) ? response[0] : undefined
+                if (!asteroidObject) {
+                  console.warn(`No valid data found for asteroid: ${name}`)
+                }
+                return asteroidObject
+              } catch (error) {
+                console.error(`Error fetching data for asteroid ${name}:`, error)
+                return undefined
+              }
+            })
+          )
+          // console.log('Asteroid objects:', asteroidObjects)
+
+          // Filter out any undefined values in case of errors
+          data.filter_value = asteroidObjects.filter(Boolean)
+        }
+        setCurrentData(data)
+        setinitialData(data)
       })
-      .catch((res) => {
-        console.log('Failed to load data', res)
+      .catch((error) => {
+        console.error('Failed to load data', error)
       })
   }
 
