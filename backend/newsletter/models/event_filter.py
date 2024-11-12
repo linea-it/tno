@@ -55,6 +55,7 @@ class EventFilter(models.Model):
         max_length=15,
         choices=FILTER_TYPE_CHOICES,
         default="name",
+        blank=True,
     )
 
     filter_value = models.TextField(
