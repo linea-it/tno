@@ -119,6 +119,8 @@ export default function EventFilterForm({ data, onChange }) {
               diameter_min: value.diameterMin,
               diameter_max: value.diameterMax
             }
+            console.log('diameter_min:', value.diameterMin)
+            console.log('diameter_max:', value.diameterMax)
             onChange(newData)
           }}
         />

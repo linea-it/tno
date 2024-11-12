@@ -72,17 +72,25 @@ const transformEventFilterData = (data) => {
     newData.local_solar_time_after = null
     newData.local_solar_time_before = null
   }
-
-  // Ajuste de valores para magnitude, duração e aproximação
+  // Ajuste de valores para magnitude máxima
   newData.magnitude_max = data.magnitude_max !== undefined ? data.magnitude_max : null
+
+  // Ajuste de valores para magnitude drop
   newData.magnitude_drop_max = data.magnitude_drop_max !== undefined && data.magnitude_drop_max !== '' ? data.magnitude_drop_max : null
+
+  // Ajuste de valores de diametro
+  newData.diameter_max = data.diameter_max !== undefined && data.diameter_max !== '' ? data.diameter_max : null
+  newData.diameter_min = data.diameter_min !== undefined && data.diameter_min !== '' ? data.diameter_min : null
+
+  // Ajuste do valor da duração do evento
   newData.event_duration = data.event_duration !== undefined && data.event_duration !== '' ? data.event_duration : null
+
+  // Ajuste do valor da incerteza de aproximação
   newData.closest_approach_uncertainty_km =
     data.closest_approach_uncertainty_km !== undefined && data.closest_approach_uncertainty_km !== ''
       ? data.closest_approach_uncertainty_km
       : null
 
-  console.log('Transformed Data:', newData) // Log final para verificar o payload completo
   return newData
 }
 
@@ -90,7 +98,7 @@ const transformEventFilterData = (data) => {
 export const userEventFilterbCreate = ({ data }) => {
   const newData = transformEventFilterData(data)
 
-  console.log('Transformed data for create:', newData)
+  // console.log('Transformed data for create:', newData)
   return api.post(`/event_filter/`, newData).catch((error) => {
     console.error('Failed to create the filter:', error.response ? error.response.data : error.message)
     throw error
@@ -100,9 +108,6 @@ export const userEventFilterbCreate = ({ data }) => {
 // Função para atualizar um filtro de evento (PATCH)
 export const userEventFilterbUpdate = ({ id, data }) => {
   const newData = transformEventFilterData(data)
-
-  console.log('Transformed data for update:', newData)
-  console.log('ID:', id)
 
   return api.patch(`/event_filter/${id}/`, newData).catch((error) => {
     console.error('Failed to update the filter:', error.response ? error.response.data : error.message)
