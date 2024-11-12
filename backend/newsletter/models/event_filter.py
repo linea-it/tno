@@ -97,7 +97,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    closest_approach_uncertainty_in_km = models.IntegerField(
+    closest_approach_uncertainty_km = models.IntegerField(
         verbose_name="Uncertainty (km)",
         help_text="Uncertainty in geocentric closest approach (km).",
         null=True,

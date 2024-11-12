@@ -31,7 +31,7 @@ class EventFilterAdmin(admin.ModelAdmin):
         "local_solar_time_before",
         "magnitude_drop_max",
         "event_duration",
-        "closest_approach_uncertainty_in_km",
+        "closest_approach_uncertainty_km",
         "diameter_min",
         "diameter_max",
         "latitude",

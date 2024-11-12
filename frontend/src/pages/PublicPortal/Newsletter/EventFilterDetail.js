@@ -43,6 +43,7 @@ function EventFilterDetail() {
     event_duration: undefined,
     diameter_min: undefined,
     diameter_max: undefined,
+    closest_approach_uncertainty_km: undefined,
     latitude: null,
     longitude: null,
     location_radius: null,

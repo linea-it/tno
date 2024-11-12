@@ -132,8 +132,8 @@ export default function EventFilterForm({ data, onChange }) {
             label='Event Duration (seconds)'
           />
           <ClosestApproachUncertaintyField
-            name='closest_approach_uncertainty_in_km'
-            value={data.closest_approach_uncertainty_in_km !== null ? data.closest_approach_uncertainty_in_km : ''}
+            name='closest_approach_uncertainty_km'
+            value={data.closest_approach_uncertainty_km !== null ? data.closest_approach_uncertainty_km : ''}
             onChange={handleChange}
             label='Uncertainty (km)'
           />
