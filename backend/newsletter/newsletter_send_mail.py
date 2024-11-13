@@ -62,16 +62,14 @@ class NewsletterSendEmail:
         )
 
     def send_events_mail(self, subscription: Subscription, email, context):
-        # print("subscription....", subscription)
         """Email enviado com os resultados encontrados.
-        Contem alguns eventos de predição enontrados de acordo com as preferencias do usuario.
+        Contem alguns eventos de predição de ocultações encontrados,
+        de acordo com as preferencias do usuario.
         """
-        # print("context......", context)
         html_content = render_to_string(
             "results.html",
             {
                 "host": settings.SITE_URL.rstrip("/"),
-                # "activation_code": subscription.activation_code,
                 "date_start": context[0],
                 "date_end": context[1],
                 "filter_name": context[2],
@@ -82,27 +80,18 @@ class NewsletterSendEmail:
                 "duration": context[7],
             },
         )
-        self.send_newsletter_email(
-            "Welcome to Solar System Newsletter", html_content, email
-        )
+        self.send_newsletter_email("Occultation predictions found", html_content, email)
 
     def send_mail_not_found(self, subscription: Subscription, email, context):
-        # print("subscription....", subscription)
-        """Email enviado com os resultados encontrados.
-        Contem alguns eventos de predição enontrados de acordo com as preferencias do usuario.
-        """
-        # print("context......", context)
+        """Email enviado quando não há predições encontrados."""
         html_content = render_to_string(
             "results_not_found.html",
             {
                 "host": settings.SITE_URL.rstrip("/"),
-                # "activation_code": subscription.activation_code,
                 "mesage": "Events not Found",
             },
         )
-        self.send_newsletter_email(
-            "Welcome to Solar System Newsletter", html_content, email
-        )
+        self.send_newsletter_email("Events not Found", html_content, email)
 
     def send_newsletter_email(self, subject, body, recipient):
         try:
@@ -112,7 +101,7 @@ class NewsletterSendEmail:
                 settings.EMAIL_NEWSLETTER_NOREPLY,
                 [recipient],
             )
-            body.content_subtype = "html and image"
+            body.content_subtype = "html"
 
             body.send()
             self.log.info(f"Email successfully sent")
