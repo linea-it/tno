@@ -28,18 +28,20 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
-        pef = ProcessEventFilters(stdout=True)
+        # dispara o processamento dos filtros
+        process = ProcessEventFilters(stdout=True)
 
-        sem = SendEventsMail(stdout=True)
+        # dispara o envio dos emails
+        sendmail = SendEventsMail(stdout=True)
 
         task = kwargs["task"]
 
         # passa o periodo no parametro
         # 1 para monthly, 2 para weekly
         if task == "run_filter":
-            pef.run_filter(frequency=1, date_start="2024-11-01 00:00:00-03:00")
+            process.run_filter(frequency=1, date_start="2025-09-12 01:50:39")
 
         if task == "send_mail":
-            sem.exec_send_mail(
+            sendmail.exec_send_mail(
                 date_start="2024-11-01 00:00:00", date_end="2024-12-01 00:00:00"
             )
