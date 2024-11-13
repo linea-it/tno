@@ -25,19 +25,14 @@ function AsteroidNameSelect({ initialValue, onChange, source, error, required })
     staleTime: 1 * 60 * 60 * 1000
   })
 
-  React.useEffect(() => {
-    if (data && initialValue) {
-      setSelectedValue((prev) => [...new Set([...prev, ...initialValue])])
-    }
-  }, [data, initialValue])
-
   return (
     <Autocomplete
       multiple
       options={data?.results || []}
       value={selectedValue}
+      defaultValue={initialValue || []} // Set default value here
       getOptionLabel={(option) => option.name}
-      isOptionEqualToValue={(option, value) => option.id === value.id} // Comparação personalizada
+      isOptionEqualToValue={(option, value) => option.id === value.id}
       loading={isLoading}
       limitTags={1}
       filterSelectedOptions
