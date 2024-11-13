@@ -8,7 +8,6 @@ import pandas as pd
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
-
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -39,6 +38,14 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription filters. {e}")
 
     def query_occultation(self, input, frequency, date_start):
+        """
+        Query the occultation table with the filters defined by the user.
+
+        Parameters:
+        input (dict): The filters defined by the user.
+        frequency (int): The frequency defined by the user. 1 for monthly, 2 for weekly.
+        date_start (str): The start date of the period to be queried.
+        """
 
         try:
 
@@ -77,36 +84,44 @@ class ProcessEventFilters:
                     date_end,
                 )
 
-            # filtro por data
+            # filtro de ocultações por data
             query_occultation = Occultation.objects.filter(
                 date_time__range=[date_start, date_end]
             )
 
             print("total query occultation date", query_occultation.values().count())
 
-            # filtro por nome
-            name = input.get("filter_value", None)
+            # Se houver filtro por nome, classe ou subclasse filtra de acordo
+            filter_type = input.get("filter_type", None)
+            filter_value = input.get("filter_value", None)
+            if filter_type == "name":
+                objects = filter_value.split(",")
+                query_occultation = query_occultation.filter(name__in=objects)
+                # query_occultation = query_occultation.filter(name=filter_value)
+            elif filter_type == "base_dynclass":
+                query_occultation = query_occultation.filter(base_dynclass=filter_value)
+            elif filter_type == "dynclass":
+                query_occultation = query_occultation.filter(dynclass=filter_value)
+            else:
+                pass
 
-            if name:
-                query_occultation = query_occultation.filter(name=name)
             print(
-                "total query occultation name",
+                f"total query after filter type {filter_type}: {filter_value}",
                 query_occultation.values().count(),
             )
 
             # se magmax e magmin foram definidos, filtra por magnitude
             magmax = input.get("magnitude_max", None)
-            magmin = input.get("magnitude_min", None)
-            if magmax and magmin:
-                query_occultation = query_occultation.filter(
-                    g_star__range=[magmin, magmax]
-                )
+            # magmin = input.get("magnitude_min", None)
+            if magmax:
+                query_occultation = query_occultation.filter(g_star__lte=magmax)
             print("total query occultation mag", query_occultation.values().count())
 
             # se local_solar_time foi definido
             local_solar_time_after = input.get("local_solar_time_after", None)
             local_solar_time_before = input.get("local_solar_time_before", None)
 
+            print(local_solar_time_after, local_solar_time_before)
             if local_solar_time_after and local_solar_time_before:
                 # Filtro por Solar Time 18:00 - 06:00
                 after = Q(loc_t__gte=time(18, 0, 0), loc_t__lte=time(23, 59, 59))
@@ -117,7 +132,7 @@ class ProcessEventFilters:
 
             # se event_duration foi definido
             event_duration = input.get("event_duration", None)
-
+            print("event_duration", event_duration)
             if event_duration:
                 query_occultation = query_occultation.filter(
                     event_duration__gte=event_duration
@@ -161,44 +176,38 @@ class ProcessEventFilters:
             host = settings.SITE_URL.rstrip("/")
 
             for event in query_occultation:
-                long = event.occ_path_min_longitude
-                lat = event.occ_path_min_latitude
-
+                long = input.get("longitude", None)
+                lat = input.get("latitude", None)
+                # print('ok')
                 is_visible = visibility_from_coeff(
                     latitude=lat,
                     longitude=long,
                     radius=radius,
-                    date_time=date_end,
+                    date_time=event.date_time,
                     inputdict=event.occ_path_coeff,
                     # opcionais
                     # n_elements= 1500,
                     # latitudinal= False
                 )
-
+                # print('success', is_visible)
                 if is_visible:
                     print(
-                        "lat",
-                        lat,
-                        "lon",
-                        long,
-                        "radius",
-                        radius,
-                        "isvisible",
+                        event.date_time,
+                        event.name,
                         is_visible,
-                        "events.hash_id",
                         event.hash_id,
                     )
 
-                    link_event = (
-                        "http:" + host + "/prediction-event-detail/" + event.hash_id
-                    )
+                    # link_event = (
+                    #     "http:" + host + "/prediction-event-detail/" + event.hash_id
+                    # )
 
-                    result = OccultationSerializer(event).data
-                    result["link_event"] = link_event
+                    # result = OccultationSerializer(event).data
+                    # result["link_event"] = link_event
 
-                    self.log.info("Append result")
+                    # self.log.info("Append result")
 
-                    results.append(result)
+                    # results.append(result)
 
             return results
 

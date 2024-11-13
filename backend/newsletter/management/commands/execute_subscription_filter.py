@@ -37,7 +37,9 @@ class Command(BaseCommand):
         # passa o periodo no parametro
         # 1 para monthly, 2 para weekly
         if task == "run_filter":
-            pef.run_filter(frequency=1, date_start="2024-09-01")
+            pef.run_filter(frequency=1, date_start="2024-11-01 00:00:00-03:00")
 
         if task == "send_mail":
-            sem.exec_send_mail(date_start="2024-09-01", date_end="2024-10-01")
+            sem.exec_send_mail(
+                date_start="2024-11-01 00:00:00", date_end="2024-12-01 00:00:00"
+            )
