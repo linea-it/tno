@@ -8,6 +8,7 @@ import pandas as pd
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
+
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -198,16 +199,16 @@ class ProcessEventFilters:
                         event.hash_id,
                     )
 
-                    # link_event = (
-                    #     "http:" + host + "/prediction-event-detail/" + event.hash_id
-                    # )
+                    link_event = (
+                        "http:" + host + "/prediction-event-detail/" + event.hash_id
+                    )
 
-                    # result = OccultationSerializer(event).data
-                    # result["link_event"] = link_event
+                    result = OccultationSerializer(event).data
+                    result["link_event"] = link_event
 
-                    # self.log.info("Append result")
+                    self.log.info("Append result")
 
-                    # results.append(result)
+                    results.append(result)
 
             return results
 
@@ -219,6 +220,10 @@ class ProcessEventFilters:
         # seta caminho para escrever o arquivo
         tmp_path = Path("/archive/public/newsletter/")
 
+        # cria diretorio se nao existir
+        if not os.path.exists(tmp_path):
+            os.makedirs("/archive/public/newsletter/")
+
         # frequency 1 == monthly, frequency 2 == weekly
         num_frequency = frequency
 
@@ -226,7 +231,7 @@ class ProcessEventFilters:
 
         for i, r in enumerate(result):
             if result[i]["frequency"] == num_frequency:
-                radius = self.get_filters().values_list("location_radius", flat=True)[i]
+                # radius = self.get_filters().values_list("location_radius", flat=True)[i]
 
                 filter_results = self.query_occultation(r, num_frequency, date_start)
 
