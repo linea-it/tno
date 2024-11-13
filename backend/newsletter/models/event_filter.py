@@ -89,7 +89,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    event_duration = models.IntegerField(
+    event_duration = models.FloatField(
         verbose_name="Event Duration",
         help_text="Duraçao da ocorrencia do evento.",
         null=True,
@@ -97,7 +97,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    closest_approach_uncertainty_km = models.IntegerField(
+    closest_approach_uncertainty_km = models.FloatField(
         verbose_name="Uncertainty (km)",
         help_text="Uncertainty in geocentric closest approach (km).",
         null=True,
@@ -105,14 +105,14 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    diameter_min = models.IntegerField(
+    diameter_min = models.FloatField(
         verbose_name="Diameter",
         help_text="Diametro do objeto.",
         null=True,
         blank=True,
         default=None,
     )
-    diameter_max = models.IntegerField(
+    diameter_max = models.FloatField(
         verbose_name="Diameter",
         help_text="Diametro do objeto.",
         null=True,
