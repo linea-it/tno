@@ -82,16 +82,14 @@ class ProcessEventFilters:
                 date_time__range=[date_start, date_end]
             )
 
-            self.log.info(
-                "total query occultation date", query_occultation.values().count()
-            )
+            print("total query occultation date", query_occultation.values().count())
 
             # filtro por nome
             name = input.get("filter_value", None)
 
             if name:
                 query_occultation = query_occultation.filter(name=name)
-            self.log.info(
+            print(
                 "total query occultation name",
                 query_occultation.values().count(),
             )
@@ -103,9 +101,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     g_star__range=[magmin, magmax]
                 )
-            self.log.info(
-                "total query occultation mag", query_occultation.values().count()
-            )
+            print("total query occultation mag", query_occultation.values().count())
 
             # se local_solar_time foi definido
             local_solar_time_after = input.get("local_solar_time_after", None)
@@ -117,9 +113,7 @@ class ProcessEventFilters:
                 before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=time(6, 0, 0))
                 query_occultation = query_occultation.filter(Q(after | before))
 
-            self.log.info(
-                "total query occultation lst", query_occultation.values().count()
-            )
+            print("total query occultation lst", query_occultation.values().count())
 
             # se event_duration foi definido
             event_duration = input.get("event_duration", None)
@@ -128,9 +122,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     event_duration__gte=event_duration
                 )
-            self.log.info(
-                "total query occultation event", query_occultation.values().count()
-            )
+            print("total query occultation event", query_occultation.values().count())
 
             # se diameter_min e diameter_max foram definidos, filtra por diametro
             diameter_err_min = input.get("diameter_err_min", None)
@@ -140,9 +132,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     diameter__range=[diameter_err_min, diameter_err_max]
                 )
-            self.log.info(
-                "total query occultation diam", query_occultation.values().count()
-            )
+            print("total query occultation diam", query_occultation.values().count())
 
             # filtra por geofiltro (latitude, longitude, location_radius)
             occ_path_min_latitude = input.get("occ_path_min_latitude", None)
@@ -151,9 +141,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     occ_path_min_latitude__lte=occ_path_min_latitude
                 )
-            self.log.info(
-                "total query occultation lat", query_occultation.values().count()
-            )
+            print("total query occultation lat", query_occultation.values().count())
 
             occ_path_min_longitude = input.get("occ_path_min_longitude", None)
 
@@ -161,9 +149,7 @@ class ProcessEventFilters:
                 query_occultation = query_occultation.filter(
                     occ_path_min_longitude__lte=occ_path_min_longitude
                 )
-            self.log.info(
-                "total query occultation lon", query_occultation.values().count()
-            )
+            print("total query occultation lon", query_occultation.values().count())
 
             # filtro por geolocation
             ## array para guardar os eventos filtrados por is_visible
@@ -190,7 +176,7 @@ class ProcessEventFilters:
                 )
 
                 if is_visible:
-                    self.log.info(
+                    print(
                         "lat",
                         lat,
                         "lon",
@@ -210,7 +196,7 @@ class ProcessEventFilters:
                     result = OccultationSerializer(event).data
                     result["link_event"] = link_event
 
-                    self.log.info(link_event)
+                    self.log.info("Append result")
 
                     results.append(result)
 
@@ -335,7 +321,7 @@ class ProcessEventFilters:
                 )
                 sys.exit()
 
-            self.log.info("Size (In bytes) of '% s':" % csv_file, size)
+            print(f"Size (In bytes) of '% s':" % csv_file, size)
 
             csv_name = os.path.join(
                 name_file + "_results_filter_newsletter.csv"
@@ -346,7 +332,7 @@ class ProcessEventFilters:
                 filename=csv_name,
                 size=size,
             )
-            self.log.info("Atualizando status do arquivo armazenado...", record)
+            self.log.info("Atualizando status do arquivo armazenado...")
             record.save()
 
         return csv_file

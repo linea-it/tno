@@ -102,6 +102,5 @@ class SendEventsMail:
             )
             self.log.info(
                 "atualizando status 'sent' do envio de emails na tabela submission...",
-                record,
             )
             record.save()
