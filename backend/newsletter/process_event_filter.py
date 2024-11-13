@@ -8,7 +8,6 @@ import pandas as pd
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
-
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
