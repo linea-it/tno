@@ -38,7 +38,7 @@ class NewsletterSendEmail:
         html_content = render_to_string(
             "activate_subscription.html",
             {
-                "host": settings.SITE_URL.rstrip("/"),
+                "host": settings.SITE_URL,
                 "activation_code": subscription.activation_code,
             },
         )
@@ -53,7 +53,7 @@ class NewsletterSendEmail:
         html_content = render_to_string(
             "welcome.html",
             {
-                "host": settings.SITE_URL.rstrip("/"),
+                "host": settings.SITE_URL,
                 "activation_code": subscription.activation_code,
             },
         )
@@ -69,7 +69,7 @@ class NewsletterSendEmail:
         html_content = render_to_string(
             "results.html",
             {
-                "host": settings.SITE_URL.rstrip("/"),
+                "host": settings.SITE_URL,
                 "date_start": context[0],
                 "date_end": context[1],
                 "filter_name": context[2],
@@ -87,7 +87,7 @@ class NewsletterSendEmail:
         html_content = render_to_string(
             "results_not_found.html",
             {
-                "host": settings.SITE_URL.rstrip("/"),
+                "host": settings.SITE_URL,
                 "mesage": "Events not Found",
             },
         )
