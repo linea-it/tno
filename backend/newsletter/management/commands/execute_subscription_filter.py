@@ -21,7 +21,13 @@ class Command(BaseCommand):
             default=False,
             help="Dispara a função que executa os filtros e a função que envia os emails",
         )
-
+        parser.add_argument(
+            "--force_run",
+            action="store_true",
+            dest="force_run",
+            default=False,
+            help="Força a execução do filtro ignorando verificações padrão.",
+        )
         parser.add_argument(
             "task",
             help="Define qual funçao sera executada.",
@@ -35,11 +41,11 @@ class Command(BaseCommand):
         sendmail = SendEventsMail(stdout=True)
 
         task = kwargs["task"]
-
+        force_run = kwargs["force_run"]
         # passa o periodo no parametro
         # 1 para monthly, 2 para weekly
         if task == "run_filter":
-            process.run_filter(frequency=1, date_start="2025-09-12 01:50:39")
+            process.run_filter(force_run=force_run)
 
         if task == "send_mail":
             sendmail.exec_send_mail(
