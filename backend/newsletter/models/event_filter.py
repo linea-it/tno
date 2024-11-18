@@ -5,6 +5,7 @@ from newsletter.models.subscription import Subscription
 FREQUENCY_CHOICES = [
     (1, "Monthly"),
     (2, "Weekly"),
+    (3, "Daily"),
 ]
 
 FILTER_TYPE_CHOICES = [
@@ -38,7 +39,7 @@ class EventFilter(models.Model):
         verbose_name="Frequency",
         choices=FREQUENCY_CHOICES,
         default=1,
-        help_text="Frequencia de recebimento do periodico 1-semanal, 2-mensal.",
+        help_text="Frequencia de recebimento do periodico 1-mensal, 2-semanal, 3-diario.",
     )
 
     magnitude_max = models.IntegerField(
@@ -144,7 +145,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    location_radius = models.IntegerField(
+    location_radius = models.FloatField(
         verbose_name="Radius",
         help_text="Raio em kilometro.",
         null=True,
