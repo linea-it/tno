@@ -16,17 +16,26 @@ import ClosestApproachUncertaintyField from '../../../components/ClosestApproach
 
 export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
-    const newData = { ...data, [e.target.name]: e.target.value }
+    const value = e.target ? e.target.value : e.value
+    const newData = {
+      ...data,
+      [e.target ? e.target.name : e.name]: value === '' ? null : value // Map empty string to null
+    }
     onChange(newData)
-    console.log('form filtertype ', newData.filter_type)
-    console.log('form filtervalue ', newData.filter_value)
-    console.log('magnitude_drop_max value:', data.magnitude_drop_max)
   }
+
   return (
     <Box component='form' autoComplete='off'>
       <Stack spacing={2}>
         <Stack direction='row' spacing={2}>
-          <TextField required name='filter_name' label='Filter Name' value={data.filter_name} onChange={handleChange} fullWidth />
+          <TextField
+            required
+            name='filter_name'
+            label='Filter Name'
+            value={data.filter_name ?? ''} // Set default empty string
+            onChange={handleChange}
+            fullWidth
+          />
           <FrequencyTypeSelect value={data.frequency} onChange={handleChange} name='frequency' />
         </Stack>
         <TextField
@@ -49,6 +58,7 @@ export default function EventFilterForm({ data, onChange }) {
             onChange(newData)
           }}
         />
+
         <Divider />
         <Stack direction='row' spacing={2}>
           {/*<MaginitudeSelect
@@ -67,10 +77,10 @@ export default function EventFilterForm({ data, onChange }) {
           />
           <MaginitudeDropSelect
             name='magnitude_drop_max'
-            value={data.magnitude_drop_max !== null && data.magnitude_drop_max !== undefined ? data.magnitude_drop_max : ''}
+            value={data.magnitude_drop_max ?? ''}
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_max', value } })}
-            min={1} // Valor mínimo original
-            max={24} // Valor máximo original
+            min={1}
+            max={24}
           />
         </Stack>
         <Divider />
@@ -119,8 +129,6 @@ export default function EventFilterForm({ data, onChange }) {
               diameter_min: value.diameterMin,
               diameter_max: value.diameterMax
             }
-            console.log('diameter_min:', value.diameterMin)
-            console.log('diameter_max:', value.diameterMax)
             onChange(newData)
           }}
         />
@@ -133,7 +141,11 @@ export default function EventFilterForm({ data, onChange }) {
           />
           <ClosestApproachUncertaintyField
             name='closest_approach_uncertainty_km'
-            value={data.closest_approach_uncertainty_km !== null ? data.closest_approach_uncertainty_km : ''}
+            value={
+              data.closest_approach_uncertainty_km !== null && data.closest_approach_uncertainty_km !== ''
+                ? parseFloat(data.closest_approach_uncertainty_km)
+                : ''
+            }
             onChange={handleChange}
             label='Uncertainty (km)'
           />
@@ -141,18 +153,18 @@ export default function EventFilterForm({ data, onChange }) {
         <Divider />
         <GeoFilter
           value={{
-            latitude: data.latitude !== null ? data.latitude : '',
-            longitude: data.longitude !== null ? data.longitude : '',
-            radius: data.location_radius !== null ? data.location_radius : '',
-            altitude: data.altitude !== null ? data.altitude : ''
+            latitude: data.latitude ?? '', // Fallback to an empty string for display
+            longitude: data.longitude ?? '',
+            radius: data.location_radius ?? '',
+            altitude: data.altitude ?? ''
           }}
           onChange={(value) => {
             const newData = {
               ...data,
-              latitude: value.latitude,
-              longitude: value.longitude,
-              location_radius: value.radius,
-              altitude: value.altitude
+              latitude: value.latitude !== '' ? value.latitude : undefined,
+              longitude: value.longitude !== '' ? value.longitude : undefined,
+              location_radius: value.radius !== '' ? value.radius : undefined,
+              altitude: value.altitude !== '' ? value.altitude : undefined
             }
             onChange(newData)
           }}
@@ -163,8 +175,9 @@ export default function EventFilterForm({ data, onChange }) {
 }
 
 EventFilterForm.defaultProps = {
-  data: undefined
+  data: {} // Default to an empty object if `data` is not provided
 }
+
 EventFilterForm.propTypes = {
   data: PropTypes.object
 }

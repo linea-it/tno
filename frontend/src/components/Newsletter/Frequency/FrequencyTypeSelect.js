@@ -11,6 +11,7 @@ function FrequencyTypeSelect({ value, onChange, ...props }) {
       <Select id='frequency-type-select' value={value} label='Frequency' onChange={onChange} {...props}>
         <MenuItem value={1}>Monthly</MenuItem>
         <MenuItem value={2}>Weekly</MenuItem>
+        <MenuItem value={3}>Daily</MenuItem>
       </Select>
     </FormControl>
   )

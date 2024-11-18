@@ -18,7 +18,7 @@ function ClosestApproachUncertaintyField({ value, onChange, ...props }) {
       type='number'
       label='Uncertainty (km)'
       variant='outlined'
-      value={value !== undefined ? value : ''}
+      value={value !== null && !isNaN(value) ? parseFloat(value) : ''}
       onChange={onChange}
       fullWidth
       {...props}

@@ -82,6 +82,11 @@ function EventFilterDetail() {
           // Filter out any undefined values in case of errors
           data.filter_value = asteroidObjects.filter(Boolean)
         }
+
+        // Only parse as dayjs objects if values are not null or empty
+        data.local_solar_time_after = data.local_solar_time_after ? dayjs(data.local_solar_time_after, 'HH:mm') : null
+        data.local_solar_time_before = data.local_solar_time_before ? dayjs(data.local_solar_time_before, 'HH:mm') : null
+
         setCurrentData(data)
         setinitialData(data)
       })
@@ -97,7 +102,22 @@ function EventFilterDetail() {
   }, [id])
 
   const handleChange = (newData) => {
-    setCurrentData(newData)
+    console.log('handleChange received newData:', newData) // Log incoming data to handleChange
+    setCurrentData((prevData) => {
+      const updatedData = Object.fromEntries(
+        Object.entries(newData).filter(([key, value]) => {
+          if (['latitude', 'longitude', 'location_radius', 'altitude'].includes(key)) {
+            return true
+          }
+          return value !== undefined
+        })
+      )
+      console.log('Updated data in handleChange:', updatedData) // Log final data before updating state
+      return {
+        ...prevData,
+        ...updatedData
+      }
+    })
   }
 
   const toPreferences = () => {

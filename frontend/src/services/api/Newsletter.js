@@ -73,8 +73,8 @@ const transformEventFilterData = (data) => {
     newData.local_solar_time_before = null
   }
   // Ajuste de valores para magnitude máxima
-  newData.magnitude_max = data.magnitude_max !== undefined ? data.magnitude_max : null
-
+  // newData.magnitude_max = data.magnitude_max !== undefined ? data.magnitude_max : null
+  newData.magnitude_max = data.magnitude_max !== undefined && data.magnitude_max !== '' ? data.magnitude_max : null
   // Ajuste de valores para magnitude drop
   newData.magnitude_drop_max = data.magnitude_drop_max !== undefined && data.magnitude_drop_max !== '' ? data.magnitude_drop_max : null
 
@@ -91,6 +91,8 @@ const transformEventFilterData = (data) => {
       ? data.closest_approach_uncertainty_km
       : null
 
+  // Ajuste do valor da altitude
+  newData.altitude = data.altitude !== undefined && data.altitude !== '' ? data.altitude : null
   return newData
 }
 

@@ -30,7 +30,6 @@ function AsteroidNameSelect({ initialValue, onChange, source, error, required })
       multiple
       options={data?.results || []}
       value={selectedValue}
-      defaultValue={initialValue || []} // Set default value here
       getOptionLabel={(option) => option.name}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       loading={isLoading}
