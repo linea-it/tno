@@ -96,7 +96,7 @@
                                                     Velocity
                                             </td>
                                             <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width: 40px;">
-                                                    Duration
+                                                    CA
                                             </td>
                                             <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width: 40px;">
                                                     Download <br> File
@@ -146,9 +146,9 @@
                                                 {% endfor %}
                                             </td>
                                             <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 40px ;">
-                                                {% if duration != nan or none %}
-                                                    {% for durations in duration %}
-                                                            {{durations  | floatformat:4}} s</div>
+                                                {% if closest_approach != nan or none %}
+                                                    {% for closest_approachs in closest_approach %}
+                                                            {{closest_approachs  | floatformat:4}} s</div>
                                                     {% endfor %}
                                                 {% endif %}
                                             </td>
