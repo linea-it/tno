@@ -48,6 +48,4 @@ class Command(BaseCommand):
             process.run_filter(force_run=force_run)
 
         if task == "send_mail":
-            sendmail.exec_send_mail(
-                date_start="2024-11-01 00:00:00", date_end="2024-12-01 00:00:00"
-            )
+            sendmail.exec_send_mail()
