@@ -10,6 +10,7 @@ from dateutil.relativedelta import SU, relativedelta
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
+
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -242,7 +243,7 @@ class ProcessEventFilters:
                 "process_date"
             ).process_date
         else:
-            # se ainda não existir é devinido como a data e hora atual
+            # se ainda não existir é definido como a data e hora atual
             latest_processing_date = now
 
         self.log.info("Latest processing date: %s", latest_processing_date)
