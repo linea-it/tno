@@ -30,7 +30,7 @@ class Command(BaseCommand):
         )
         parser.add_argument(
             "task",
-            help="Define qual funçao sera executada.",
+            help="Define qual funçao será executada.",
         )
 
     def handle(self, *args, **kwargs):

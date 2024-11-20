@@ -73,7 +73,9 @@ class SendEventsMail:
                 # le os dados do csv e envia para o email # delimitando 10 eventos
                 csv_name = filecsv  # filter_names.replace(" ", "_")
 
-                data = self.get_context_data(csv_name)[0:9]
+                data = self.get_context_data(csv_name)[
+                    0:4
+                ]  # limita linha exibidas no email
                 count = len(data)
                 # print("data", data)
                 if data.empty:
@@ -92,6 +94,7 @@ class SendEventsMail:
                         data["velocity"],
                         # data["event_duration"],
                         data["closest_approach"],
+                        data["gaia_magnitude"],
                     ]
                     self.log.info("Send email: Occultation predictions found ...")
                     send_mail = NewsletterSendEmail()
@@ -100,6 +103,6 @@ class SendEventsMail:
                     )
 
                     self.log.info("Update status to sent")
-                    submission.sent = True
+                    # submission.sent = True
                     # submission.sending_date = datetime.now(tz=timezone.utc)
-                    submission.save()
+                    # submission.save()

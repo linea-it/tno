@@ -70,14 +70,15 @@ class NewsletterSendEmail:
             "results.html",
             {
                 "host": settings.SITE_URL,
-                # "date_start": context[0],
-                # "date_end": context[1],
                 "filter_name": context[0],
                 "date": context[1],
                 "name": context[2],
                 "mag": context[3],
                 "veloc": context[4],
                 "closest_approach": context[5],
+                "gaia_magnitude": context[5],
+                # "ra": context[6],
+                # "dec": context[7],
             },
         )
         self.send_newsletter_email("Occultation predictions found", html_content, email)
