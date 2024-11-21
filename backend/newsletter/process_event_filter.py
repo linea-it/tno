@@ -199,10 +199,12 @@ class ProcessEventFilters:
                         if is_visible:
                             result = OccultationSerializer(prediction).data
                             result["url"] = (
-                                settings.SITE_URL
+                                "http:"
+                                + settings.SITE_URL.rstrip("/")
                                 + "/prediction-event-detail/"
                                 + prediction.hash_id
                             )
+                            print("result url", result)
                             results.append(result)
                             self.log.warning(
                                 "Object %s is visible at %s",
@@ -218,7 +220,8 @@ class ProcessEventFilters:
                 for prediction in occultation_queryset:
                     result = OccultationSerializer(prediction).data
                     result["url"] = (
-                        settings.SITE_URL
+                        "http:"
+                        + settings.SITE_URL.rstrip("/")
                         + "/prediction-event-detail/"
                         + prediction.hash_id
                     )
@@ -352,9 +355,14 @@ class ProcessEventFilters:
         return None
 
     def run_filter(self, force_run=False):
-        tmp_path = Path("/archive/public/newsletter/")
+        print(settings.SITE_URL)
+        path = "newsletter"
+        tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
+        # print(settings.DATA_TMP_DIR)
+        # print(tmp_path)
         if not os.path.exists(tmp_path):
             os.makedirs(tmp_path)
+
         result = self.get_filters()
         _ = [
             self.process_subscription_filter(r, tmp_path, force_run=force_run)
@@ -363,8 +371,12 @@ class ProcessEventFilters:
         return None
 
     def create_csv(self, filter_results, tmp_path, name_file, id_submission):
+        id_str = str(id_submission)
+        print(id_str)
         csv_file = os.path.join(
-            tmp_path, name_file + "_results_filter_newsletter.csv"
+            # tmp_path, id_str + "_" + name_file + "_results_filter_newsletter.csv"
+            tmp_path,
+            id_str + "_" + name_file + ".csv",
         ).replace(" ", "_")
 
         if filter_results:
@@ -420,6 +432,7 @@ class ProcessEventFilters:
             csv_name = os.path.join(
                 name_file + "_results_filter_newsletter.csv"
             ).replace(" ", "_")
+
             record = Attachment(
                 submission_id=Submission.objects.get(pk=id_submission),
                 filename=csv_name,
