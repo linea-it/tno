@@ -5,7 +5,8 @@ from pathlib import Path
 
 import colorlog
 import pandas as pd
-from newsletter.models import EventFilter, Submission
+from django.conf import settings
+from newsletter.models import Attachment, EventFilter, Submission
 from newsletter.newsletter_send_mail import NewsletterSendEmail
 
 
@@ -26,12 +27,17 @@ class SendEventsMail:
     def get_context_data(self, csv_name):
 
         # print("csv_name", csv_name)
-        tmp_path = Path("/archive/public/newsletter/")
+        # tmp_path = Path("/archive/public/newsletter/")
+        path = "newsletter"
+        tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
+        print(tmp_path)
 
         file_csv = os.path.join(
             tmp_path, csv_name
         )  # + "_results_filter_newsletter.csv")
+        # print(file_csv, file_csv)
 
+        print(file_csv)
         self.log.info("file_csv %s", file_csv)
 
         if os.path.isfile(file_csv):
@@ -50,25 +56,36 @@ class SendEventsMail:
     # le os dados do csv e dispara as funções de envio dos emails
     def exec_send_mail(self):
         submission_queryset = Submission.objects.filter(prepared=True, sent=False)
-        u = 0  # contador numero de users
 
         if submission_queryset.exists():
             for submission in submission_queryset:
+                id_str = str(submission.id)
+                # print(id_str)
                 filecsv = os.path.join(
-                    submission.title + "_results_filter_newsletter.csv"
+                    # id_str + "_" + submission.title + "_results_filter_newsletter.csv"
+                    id_str
+                    + "_"
+                    + submission.title
+                    + ".csv"
                 )
 
-                # filter_id = submission.eventFilter_id
+                path = "newsletter"
+                # print(settings.DATA_TMP_DIR)
+                # print(tmp_path)
+                path_link = Path(settings.DATA_TMP_URL).joinpath(path)
+                link = os.path.join(path_link, filecsv)
                 # print("filter_id", filter_id)
+                # print(link)
 
-                user_filter = EventFilter.objects.values_list("user", flat=True)[u]
-                self.log.info("user_filter %d ", user_filter)
-
-                obj = EventFilter.objects.filter(user=user_filter)[0]
-                email_user = obj.user.email
-                self.log.info("Subscription ID: %d Email: %s ", obj.pk, obj.user.email)
-                # print("obj", obj)
-                u = u + 1
+                event_filter = EventFilter.objects.get(pk=submission.eventFilter_id_id)
+                # print(Attachment.objects.filter(submission_id=submission))
+                # self.log.info("event_filter %d ", event_filter)
+                email_user = event_filter.user.email
+                self.log.info(
+                    "Subscription ID: %d Email: %s ",
+                    event_filter.pk,
+                    event_filter.user.email,
+                )
 
                 # le os dados do csv e envia para o email # delimitando 10 eventos
                 csv_name = filecsv  # filter_names.replace(" ", "_")
@@ -79,11 +96,14 @@ class SendEventsMail:
                 count = len(data)
                 # print("data", data)
                 if data.empty:
-                    context = "Events not found"
+                    context = submission.title
                     send_mail = NewsletterSendEmail()
                     send_mail.send_mail_not_found(
-                        obj.pk, email=email_user, context=context
+                        event_filter.pk, email=email_user, context=context
                     )
+                    submission.sent = True
+                    submission.sent_date = datetime.now(tz=timezone.utc)
+                    submission.save()
                     self.log.info("Send email results not found...")
                 else:
                     context = [
@@ -95,11 +115,12 @@ class SendEventsMail:
                         # data["event_duration"],
                         data["closest_approach"],
                         data["gaia_magnitude"],
+                        link,
                     ]
                     self.log.info("Send email: Occultation predictions found ...")
                     send_mail = NewsletterSendEmail()
                     send_mail.send_events_mail(
-                        obj.pk, email=email_user, context=context
+                        event_filter.pk, email=email_user, context=context
                     )
 
                     self.log.info("Update status to sent")
