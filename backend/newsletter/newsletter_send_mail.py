@@ -66,17 +66,20 @@ class NewsletterSendEmail:
         Contem alguns eventos de predição de ocultações encontrados,
         de acordo com as preferencias do usuario.
         """
+        # print(context[7])
         html_content = render_to_string(
             "results.html",
             {
                 "host": settings.SITE_URL,
+                "subscriber": email,
                 "filter_name": context[0],
                 "date": context[1],
                 "name": context[2],
                 "mag": context[3],
                 "veloc": context[4],
                 "closest_approach": context[5],
-                "gaia_magnitude": context[5],
+                "gaia_magnitude": context[6],
+                "link": context[7],
                 # "ra": context[6],
                 # "dec": context[7],
             },
@@ -85,11 +88,14 @@ class NewsletterSendEmail:
 
     def send_mail_not_found(self, subscription: Subscription, email, context):
         """Email enviado quando não há predições encontrados."""
+        # print(context[14:])
         html_content = render_to_string(
             "results_not_found.html",
             {
                 "host": settings.SITE_URL,
                 "mesage": "Events not Found",
+                "subscriber": email,
+                "filter_name": context,
             },
         )
         self.send_newsletter_email("Events not Found", html_content, email)
