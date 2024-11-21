@@ -27,6 +27,13 @@ class Submission(models.Model):
         default=False,
     )
 
+    sending_date = models.DateTimeField(
+        verbose_name="Seding Datte",
+        help_text="Data do envio da submissao.",
+        null=True,
+        blank=True,
+    )
+
     sent = models.BooleanField(
         verbose_name="Sent",
         help_text="Indica se a submissao foi enviada ou nao.",

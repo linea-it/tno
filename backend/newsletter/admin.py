@@ -47,6 +47,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "id",
         "eventFilter_id",
         "process_date",
+        "sending_date",
         "events_count",
         "prepared",
         "sent",
