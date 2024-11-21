@@ -20,7 +20,7 @@
             <tbody>
                 <tr>
                     <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: justify;color: rgb(79, 78, 78);  height: 10px; width:570px; padding: 10px; background-color: #F4F4F4;">Dear,
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: justify;color: rgb(79, 78, 78);  height: 10px; width:570px; padding: 10px; background-color: #F4F4F4;">Dear {{subscriber}},
                         </div>
                     </td>
                 </tr>
@@ -37,7 +37,7 @@
                             We are happy to provide you with your customized occultation predictions for the upcoming period. Besides the partial events listed below, you'll find a CSV file containing comprehensive information about each event.
                             We look forward to further assisting you as you delve into the intricacies of stellar occultation phenomena while exploring the Solar System.
                             <br><br>Should you wish to adjust your filter parameters, you can do so
-                            <a href="#" style="color:#FB1010;text-decoration: none;"  target="_blank">here.</a><br><br>Yours sincerely,<br>
+                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;text-decoration: none;"  target="_blank">here.</a><br><br>Yours sincerely,<br>
                             LIneA Team
                         </div>
                     </td>
@@ -175,7 +175,9 @@
                                 <tbody>
                                     <tr>
                                         <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: right;color:#212121;  height: 10px;  padding: 10px;border-radius:0px; background-color: #F4F4F4;width: 40px;">
-                                            <a style="text-align: right; text-decoration: none;font-size: 11px;" href="{{host}}/archive/newsletter/{{filter_name}}_results_filter_newsletter.csv">Download File</a>
+                                            <a style="text-align: right; text-decoration: none;font-size: 11px;" href="{{link}}">
+                                                Download File
+                                            </a>
                                         </td>
                                     </tr>
                                 </tbody>
