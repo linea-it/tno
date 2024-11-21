@@ -27,12 +27,6 @@ class Submission(models.Model):
         default=False,
     )
 
-    sending = models.BooleanField(
-        verbose_name="Sending",
-        help_text="Indica se a submissao está sendo enviada ou nao.",
-        default=False,
-    )
-
     sent = models.BooleanField(
         verbose_name="Sent",
         help_text="Indica se a submissao foi enviada ou nao.",
