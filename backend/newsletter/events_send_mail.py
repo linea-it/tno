@@ -103,6 +103,6 @@ class SendEventsMail:
                     )
 
                     self.log.info("Update status to sent")
-                    # submission.sent = True
-                    # submission.sending_date = datetime.now(tz=timezone.utc)
-                    # submission.save()
+                    submission.sent = True
+                    submission.sent_date = datetime.now(tz=timezone.utc)
+                    submission.save()
