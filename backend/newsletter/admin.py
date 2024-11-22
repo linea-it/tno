@@ -50,7 +50,6 @@ class SubmissionAdmin(admin.ModelAdmin):
         "events_count",
         "prepared",
         "sent",
-        "title",
         "sent_date",
     )
 

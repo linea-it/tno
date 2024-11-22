@@ -345,7 +345,6 @@ class ProcessEventFilters:
             process_date=datetime.now(tz=timezone.utc),
             events_count=len(results),
             prepared=True,
-            title=filename,
         )
         record.save()
 

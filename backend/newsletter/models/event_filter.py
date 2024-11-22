@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-from newsletter.models.subscription import Subscription
 
 FREQUENCY_CHOICES = [
     (1, "Monthly"),
@@ -23,6 +22,16 @@ class EventFilter(models.Model):
         on_delete=models.CASCADE,
         verbose_name="User",
         related_name="event_filter",
+    )
+
+    attachment = models.ForeignKey(
+        "newsletter.Attachment",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="event_filters",
+        verbose_name="Attachment",
+        help_text="Attachment associated with this event filter.",
     )
 
     filter_name = models.CharField(

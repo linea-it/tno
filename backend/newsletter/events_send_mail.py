@@ -59,15 +59,20 @@ class SendEventsMail:
 
         if submission_queryset.exists():
             for submission in submission_queryset:
-                id_str = str(submission.id)
+                # Retrieve EventFilter and user email
+                event_filter = EventFilter.objects.get(pk=submission.eventFilter_id_id)
+                email_user = event_filter.user.email
+                print("event_filter", event_filter.attachment)
+                # id_str = str(submission.id)
                 # print(id_str)
-                filecsv = os.path.join(
-                    # id_str + "_" + submission.title + "_results_filter_newsletter.csv"
-                    id_str
-                    + "_"
-                    + submission.title
-                    + ".csv"
-                )
+                # filecsv = os.path.join(
+                #    # id_str + "_" + submission.title + "_results_filter_newsletter.csv"
+                #    id_str
+                #    + "_"
+                #    + submission.title
+                #    + ".csv"
+                # )
+                filecsv = event_filter.attachment.filename
 
                 path = "newsletter"
                 # print(settings.DATA_TMP_DIR)
@@ -77,10 +82,10 @@ class SendEventsMail:
                 # print("filter_id", filter_id)
                 # print(link)
 
-                event_filter = EventFilter.objects.get(pk=submission.eventFilter_id_id)
+                # event_filter = EventFilter.objects.get(pk=submission.eventFilter_id_id)
                 # print(Attachment.objects.filter(submission_id=submission))
                 # self.log.info("event_filter %d ", event_filter)
-                email_user = event_filter.user.email
+                # email_user = event_filter.user.email
                 self.log.info(
                     "Subscription ID: %d Email: %s ",
                     event_filter.pk,

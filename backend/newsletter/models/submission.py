@@ -1,12 +1,10 @@
 from django.db import models
-from newsletter.models.event_filter import EventFilter
-from newsletter.models.subscription import Subscription
 
 
 class Submission(models.Model):
 
     eventFilter_id = models.ForeignKey(
-        EventFilter,
+        "newsletter.EventFilter",
         on_delete=models.CASCADE,
     )
 
@@ -31,14 +29,6 @@ class Submission(models.Model):
         verbose_name="Sent",
         help_text="Indica se a submissao foi enviada ou nao.",
         default=False,
-    )
-
-    title = models.TextField(
-        verbose_name="Title",
-        help_text="Titulo da submissao.",
-        default=None,
-        null=True,
-        blank=True,
     )
 
     sent_date = models.DateTimeField(
