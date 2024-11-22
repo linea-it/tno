@@ -10,7 +10,6 @@ from dateutil.relativedelta import SU, relativedelta
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
-
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -331,27 +330,34 @@ class ProcessEventFilters:
 
         results = self.query_occultation(date_start, date_end, filter_set)
 
-        filename = (
-            "_".join(filter_set["filter_name"].strip().lower().split())
-            + "_"
-            + date_start.strftime("%Y%m%d%H%M%S")
-            + "_"
-            + date_end.strftime("%Y%m%d%H%M%S")
-        )
-
         # salvar o status do processo na tabela submission
+        self.log.info("Updating event processing status.")
         record = Submission(
             eventFilter_id=EventFilter.objects.get(pk=filter_set["id"]),
             process_date=datetime.now(tz=timezone.utc),
             events_count=len(results),
             prepared=True,
+            attachment=None,
         )
         record.save()
+        if not results:
+            return None
+        else:
+            filename = (
+                "_".join(filter_set["filter_name"].strip().lower().split())
+                + "_"
+                + str(record.id)
+                + "_"
+                + date_start.strftime("%Y%m%d%H%M%S")
+                + "_"
+                + date_end.strftime("%Y%m%d%H%M%S")
+            )
+            self.log.info("Generating csv.")
+            attachment_id = self.create_csv(results, output_path, filename, record.id)
 
-        self.log.info("Updating event processing status.")
-        self.create_csv(results, output_path, filename, record.id)
-
-        return None
+            record.attachment = Attachment.objects.get(pk=attachment_id)
+            record.save()
+            return None
 
     def run_filter(self, force_run=False):
         print(settings.SITE_URL)
@@ -369,14 +375,7 @@ class ProcessEventFilters:
         ]
         return None
 
-    def create_csv(self, filter_results, tmp_path, name_file, id_submission):
-        id_str = str(id_submission)
-        print(id_str)
-        csv_file = os.path.join(
-            # tmp_path, id_str + "_" + name_file + "_results_filter_newsletter.csv"
-            tmp_path,
-            id_str + "_" + name_file + ".csv",
-        ).replace(" ", "_")
+    def create_csv(self, filter_results, tmp_path, filename, submission_id):
 
         if filter_results:
             df = pd.DataFrame(
@@ -416,6 +415,10 @@ class ProcessEventFilters:
                 },
                 inplace=True,
             )
+
+            csv_file = os.path.join(
+                tmp_path, filename + "_results_filter_newsletter.csv"
+            )
             df.to_csv(csv_file, sep=";", header=True, index=False)
             self.log.info("An archive was created with the Results.")
 
@@ -425,19 +428,16 @@ class ProcessEventFilters:
                 self.log.warning(
                     "Path '%s' does not exist or is inaccessible", csv_file
                 )
-                sys.exit()
+                return None
 
             self.log.info("Size (In bytes) of '%s': %d", csv_file, size)
-            csv_name = os.path.join(
-                name_file + "_results_filter_newsletter.csv"
-            ).replace(" ", "_")
 
             record = Attachment(
-                submission_id=Submission.objects.get(pk=id_submission),
-                filename=csv_name,
+                submission_id=Submission.objects.get(pk=submission_id),
+                filename=filename + "_results_filter_newsletter.csv",
                 size=size,
             )
             self.log.info("Updating status of stored file...")
             record.save()
 
-        return csv_file
+        return record.id

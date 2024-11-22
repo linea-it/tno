@@ -109,8 +109,7 @@ class NewsletterSendEmail:
                 [recipient],
             )
             body.content_subtype = "html"
-
             body.send()
-            self.log.info(f"Email successfully sent")
+
         except Exception as e:
             self.log.error(e)

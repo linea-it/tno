@@ -37,7 +37,6 @@ class SendEventsMail:
         )  # + "_results_filter_newsletter.csv")
         # print(file_csv, file_csv)
 
-        print(file_csv)
         self.log.info("file_csv %s", file_csv)
 
         if os.path.isfile(file_csv):
@@ -55,80 +54,103 @@ class SendEventsMail:
 
     # le os dados do csv e dispara as funções de envio dos emails
     def exec_send_mail(self):
-        submission_queryset = Submission.objects.filter(prepared=True, sent=False)
+        self.log.info("-------< New Subscription Send Email Execution >-------")
+        try:
+            # Retrieve all pending submissions
+            submissions = Submission.objects.filter(prepared=True, sent=False)
 
-        if submission_queryset.exists():
-            for submission in submission_queryset:
-                # Retrieve EventFilter and user email
-                event_filter = EventFilter.objects.get(pk=submission.eventFilter_id_id)
-                email_user = event_filter.user.email
-                print("event_filter", event_filter.attachment)
-                # id_str = str(submission.id)
-                # print(id_str)
-                # filecsv = os.path.join(
-                #    # id_str + "_" + submission.title + "_results_filter_newsletter.csv"
-                #    id_str
-                #    + "_"
-                #    + submission.title
-                #    + ".csv"
-                # )
-                filecsv = event_filter.attachment.filename
+            if not submissions.exists():
+                self.log.info("No submissions found for processing.")
+                return
 
-                path = "newsletter"
-                # print(settings.DATA_TMP_DIR)
-                # print(tmp_path)
-                path_link = Path(settings.DATA_TMP_URL).joinpath(path)
-                link = os.path.join(path_link, filecsv)
-                # print("filter_id", filter_id)
-                # print(link)
-
-                # event_filter = EventFilter.objects.get(pk=submission.eventFilter_id_id)
-                # print(Attachment.objects.filter(submission_id=submission))
-                # self.log.info("event_filter %d ", event_filter)
-                # email_user = event_filter.user.email
-                self.log.info(
-                    "Subscription ID: %d Email: %s ",
-                    event_filter.pk,
-                    event_filter.user.email,
-                )
-
-                # le os dados do csv e envia para o email # delimitando 10 eventos
-                csv_name = filecsv  # filter_names.replace(" ", "_")
-
-                data = self.get_context_data(csv_name)[
-                    0:4
-                ]  # limita linha exibidas no email
-                count = len(data)
-                # print("data", data)
-                if data.empty:
-                    context = submission.title
-                    send_mail = NewsletterSendEmail()
-                    send_mail.send_mail_not_found(
-                        event_filter.pk, email=email_user, context=context
+            for submission in submissions:
+                try:
+                    event_filter = EventFilter.objects.get(
+                        pk=submission.eventFilter_id_id
                     )
+                    attachment = submission.attachment
+                    email_user = event_filter.user.email
+
+                    self.log.info(
+                        "--------- Processing EventFilter ID: %d, Email: %s ---------",
+                        event_filter.pk,
+                        email_user,
+                    )
+                    # if there are attachments, process them and send email
+                    if attachment:
+                        try:
+                            path = "newsletter"
+                            path_link = Path(settings.DATA_TMP_URL).joinpath(path)
+                            link = str(path_link / attachment.filename)
+
+                            self.log.info("Attachment found: %s", attachment.filename)
+                            data = self.get_context_data(attachment.filename)[0:4]
+
+                            # Validate data structure
+                            required_keys = [
+                                "date_time",
+                                "name",
+                                "magnitude_drop",
+                                "velocity",
+                                "closest_approach",
+                                "gaia_magnitude",
+                            ]
+                            if not all(key in data for key in required_keys):
+                                self.log.error(
+                                    "Invalid data structure returned for %s",
+                                    attachment.filename,
+                                )
+                                continue
+
+                            context = [
+                                event_filter.filter_name,
+                                data["date_time"],
+                                data["name"],
+                                data["magnitude_drop"],
+                                data["velocity"],
+                                data["closest_approach"],
+                                data["gaia_magnitude"],
+                                link,
+                            ]
+
+                            # Send email with events
+                            send_mail = NewsletterSendEmail()
+                            send_mail.send_events_mail(
+                                event_filter.pk, email=email_user, context=context
+                            )
+                            self.log.info(
+                                "Email sent successfully for EventFilter ID: %d",
+                                event_filter.pk,
+                            )
+                        except Exception as e:
+                            self.log.error(
+                                "Error while processing attachment: %s", str(e)
+                            )
+                            continue
+                    else:
+                        # Send email indicating no results found
+                        send_mail = NewsletterSendEmail()
+                        send_mail.send_mail_not_found(
+                            event_filter.pk,
+                            email=email_user,
+                            context=event_filter.filter_name,
+                        )
+                        self.log.info(
+                            "Email sent for no results found: EventFilter ID: %d",
+                            event_filter.pk,
+                        )
+
+                    # Update submission status
                     submission.sent = True
                     submission.sent_date = datetime.now(tz=timezone.utc)
                     submission.save()
-                    self.log.info("Send email results not found...")
-                else:
-                    context = [
-                        submission.title,
-                        data["date_time"],
-                        data["name"],
-                        data["magnitude_drop"],
-                        data["velocity"],
-                        # data["event_duration"],
-                        data["closest_approach"],
-                        data["gaia_magnitude"],
-                        link,
-                    ]
-                    self.log.info("Send email: Occultation predictions found ...")
-                    send_mail = NewsletterSendEmail()
-                    send_mail.send_events_mail(
-                        event_filter.pk, email=email_user, context=context
+                    self.log.info(
+                        "Submission status updated to sent: %d", submission.pk
                     )
-
-                    self.log.info("Update status to sent")
-                    submission.sent = True
-                    submission.sent_date = datetime.now(tz=timezone.utc)
-                    submission.save()
+                except Exception as e:
+                    self.log.error(
+                        "Error processing submission ID %d: %s", submission.pk, str(e)
+                    )
+                    continue
+        except Exception as e:
+            self.log.critical("Critical error in exec_send_mail: %s", str(e))
