@@ -10,6 +10,7 @@ from dateutil.relativedelta import SU, relativedelta
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
+
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -30,6 +31,7 @@ class ProcessEventFilters:
 
     def get_filters(self):
         help = "Busca as preferencias do usuario salvas no banco."
+        self.log.info("-------< New Subscription Get Events Filters >-------")
 
         try:
             data = EventFilter.objects.all().values()
@@ -46,6 +48,7 @@ class ProcessEventFilters:
         Query the occultation table with the filters defined by the user.
 
         """
+        self.log.info("-------< Events Filters Execution >-------")
         results = []
         try:
             # filtro de ocultações por data
@@ -236,7 +239,10 @@ class ProcessEventFilters:
             raise Exception(f"Failed to query subscription time. {e}")
 
     def process_subscription_filter(self, filter_set, output_path, force_run=False):
-        self.log.info("Processing subscription filter: %s", filter_set["filter_name"])
+        self.log.info(
+            "-------< Processing subscription filter: %s >-------",
+            filter_set["filter_name"],
+        )
         # preciso da identificacao do usuario e do filtro para calcular o processamento
         submission_queryset = Submission.objects.filter(eventFilter_id=filter_set["id"])
         now = datetime.now().astimezone(tz=timezone.utc)
@@ -360,7 +366,8 @@ class ProcessEventFilters:
             return None
 
     def run_filter(self, force_run=False):
-        print(settings.SITE_URL)
+        self.log.info("-------< Run Filters Execution >-------")
+        # print(settings.SITE_URL)
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
         # print(settings.DATA_TMP_DIR)
@@ -376,7 +383,7 @@ class ProcessEventFilters:
         return None
 
     def create_csv(self, filter_results, tmp_path, filename, submission_id):
-
+        self.log.info("-------< Create csv file >-------")
         if filter_results:
             df = pd.DataFrame(
                 filter_results,
