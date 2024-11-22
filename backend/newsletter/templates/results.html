@@ -57,8 +57,8 @@
                                     <tbody>
                                         <tr>
                                             <td>
-                                                <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: left;color:#E5E5E5;  height: 20px;  padding: 10px;border-radius:0px; background-color: #0076BC;">
-                                                    Occultation predictions found &nbsp -  &nbsp {{filter_name}}
+                                                <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: center;color:#E5E5E5;  height: 20px;  padding: 10px;border-radius:0px; background-color: #0076BC;">
+                                                    Occultation predictions found &nbsp -  &nbsp {{filter_name}} &nbsp&nbsp {{date_start}} - {{date_end}}
                                                 </div>
                                             </td>
                                         </tr>
@@ -144,18 +144,18 @@
                                                 {% endfor %}
                                             </td>
                                             <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 16% ;">
-                                                {% if closest_approach != nan or none %}
-                                                    {% for closest_approachs in closest_approach %}
-                                                            {{closest_approachs  | floatformat:4}} s</div>
+                                                {% for closest_approachs in closest_approach %}
+                                                    {% if closest_approachs != nan or none %}
+                                                            {{closest_approachs}} s <br>
+                                                        {% endif %}
                                                     {% endfor %}
-                                                {% endif %}
                                             </td>
                                             <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 16% ;">
-                                                {% if gaia_magnitude != nan or none %}
-                                                    {% for gaia_magnitudes in gaia_magnitude %}
-                                                            {{gaia_magnitudes}} </div>
+                                                    {% for gaia in gaia_magnitude %}
+                                                        {% if gaia != nan or none %}
+                                                            {{gaia}}
+                                                        {% endif %}
                                                     {% endfor %}
-                                                {% endif %}
                                             </td>
                                     </tbody>
                                 </table>
