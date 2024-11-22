@@ -66,20 +66,22 @@ class NewsletterSendEmail:
         Contem alguns eventos de predição de ocultações encontrados,
         de acordo com as preferencias do usuario.
         """
-        # print(context[7])
+        # print(context[5], context[6])
         html_content = render_to_string(
             "results.html",
             {
                 "host": settings.SITE_URL,
                 "subscriber": email,
                 "filter_name": context[0],
-                "date": context[1],
-                "name": context[2],
-                "mag": context[3],
-                "veloc": context[4],
-                "closest_approach": context[5],
-                "gaia_magnitude": context[6],
-                "link": context[7],
+                "date_start": context[1],
+                "date_end": context[2],
+                "date": context[3],
+                "name": context[4],
+                "mag": context[5],
+                "veloc": context[6],
+                "closest_approach": context[7],
+                "gaia_magnitude": context[8],
+                "link": context[9],
                 # "ra": context[6],
                 # "dec": context[7],
             },

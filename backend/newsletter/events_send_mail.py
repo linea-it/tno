@@ -30,7 +30,7 @@ class SendEventsMail:
         # tmp_path = Path("/archive/public/newsletter/")
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
-        print(tmp_path)
+        # print(tmp_path)
 
         file_csv = os.path.join(
             tmp_path, csv_name
@@ -102,8 +102,19 @@ class SendEventsMail:
                                 )
                                 continue
 
+                            # Nome do arquivo
+                            arquivo = attachment.filename
+                            # print(attachment.filename)
+
+                            # Recorte da data
+                            date_start = arquivo.split("_")[3]  # '20241123000000'
+                            date_end = arquivo.split("_")[4]  # '20241123235959'
+                            # print(f"Data início: {date_start}")
+                            # print(f"Data fim: {date_end}")
                             context = [
                                 event_filter.filter_name,
+                                date_start,
+                                date_end,
                                 data["date_time"],
                                 data["name"],
                                 data["magnitude_drop"],
@@ -141,9 +152,9 @@ class SendEventsMail:
                         )
 
                     # Update submission status
-                    submission.sent = True
+                    # submission.sent = True
                     submission.sent_date = datetime.now(tz=timezone.utc)
-                    submission.save()
+                    # submission.save()
                     self.log.info(
                         "Submission status updated to sent: %d", submission.pk
                     )
