@@ -8,6 +8,16 @@ class Submission(models.Model):
         on_delete=models.CASCADE,
     )
 
+    attachment = models.ForeignKey(
+        "newsletter.Attachment",
+        on_delete=models.SET_NULL,  # Sets to NULL when Attachment is deleted
+        null=True,
+        blank=True,
+        related_name="submission_attachments",
+        verbose_name="Attachment",
+        help_text="Attachment associated with this submission.",
+    )
+
     process_date = models.DateTimeField(
         verbose_name="Process Datte",
         help_text="Data do processamento da submissao.",

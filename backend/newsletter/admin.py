@@ -51,6 +51,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "prepared",
         "sent",
         "sent_date",
+        "attachment",
     )
 
 

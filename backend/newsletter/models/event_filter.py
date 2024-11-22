@@ -24,16 +24,6 @@ class EventFilter(models.Model):
         related_name="event_filter",
     )
 
-    attachment = models.ForeignKey(
-        "newsletter.Attachment",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="event_filters",
-        verbose_name="Attachment",
-        help_text="Attachment associated with this event filter.",
-    )
-
     filter_name = models.CharField(
         verbose_name="Filter Name",
         max_length=100,

@@ -6,6 +6,9 @@ class Attachment(models.Model):
     submission_id = models.ForeignKey(
         "newsletter.Submission",
         on_delete=models.CASCADE,
+        related_name="attachment_submissions",  # Unique related_name to avoid conflict
+        verbose_name="Submission",
+        help_text="Submission associated with this attachment.",
     )
 
     filename = models.CharField(
