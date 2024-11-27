@@ -10,7 +10,6 @@ from dateutil.relativedelta import SU, relativedelta
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
-
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -31,8 +30,6 @@ class ProcessEventFilters:
 
     def get_filters(self):
         help = "Busca as preferencias do usuario salvas no banco."
-        self.log.info("-------< New Subscription Get Events Filters >-------")
-
         try:
             data = EventFilter.objects.all().values()
             if data:
@@ -48,7 +45,7 @@ class ProcessEventFilters:
         Query the occultation table with the filters defined by the user.
 
         """
-        self.log.info("-------< Events Filters Execution >-------")
+        self.log.debug("Querying occultation table:")
         results = []
         try:
             # filtro de ocultações por data
@@ -59,7 +56,7 @@ class ProcessEventFilters:
             if not occultation_queryset.exists():
                 return results
 
-            self.log.info(
+            self.log.debug(
                 "Number of events after applying time range: %d",
                 occultation_queryset.values().count(),
             )
@@ -81,10 +78,10 @@ class ProcessEventFilters:
             else:
                 pass
 
-            self.log.info(
+            self.log.debug(
                 "Filter type applied: %s", "Empty" if filter_type == "" else filter_type
             )
-            self.log.info(
+            self.log.debug(
                 "Number of events after applying filter type: %d",
                 occultation_queryset.values().count(),
             )
@@ -93,7 +90,7 @@ class ProcessEventFilters:
             magmax = filter_set.get("magnitude_max", None)
             if magmax:
                 occultation_queryset = occultation_queryset.filter(g_star__lte=magmax)
-                self.log.info(
+                self.log.debug(
                     "Number of events after applying magnitude filter: %d",
                     occultation_queryset.values().count(),
                 )
@@ -101,7 +98,7 @@ class ProcessEventFilters:
             # se local_solar_time foi definido
             local_solar_time_after = filter_set.get("local_solar_time_after", None)
             local_solar_time_before = filter_set.get("local_solar_time_before", None)
-            self.log.info(
+            self.log.debug(
                 "Local Solar Time: %s - %s",
                 local_solar_time_after,
                 local_solar_time_before,
@@ -122,7 +119,7 @@ class ProcessEventFilters:
                     loc_t__lte=time(before_hour, before_minute, 0),
                 )
                 occultation_queryset = occultation_queryset.filter(Q(after | before))
-                self.log.info(
+                self.log.debug(
                     "Number of events after applying local solar time filter: %d",
                     occultation_queryset.values().count(),
                 )
@@ -133,7 +130,7 @@ class ProcessEventFilters:
                 occultation_queryset = occultation_queryset.filter(
                     event_duration__gte=event_duration
                 )
-                self.log.info(
+                self.log.debug(
                     "Number of events after applying event duration filter: %d",
                     occultation_queryset.values().count(),
                 )
@@ -151,7 +148,7 @@ class ProcessEventFilters:
                     diameter__gte=diameter_min
                 )
             if diameter_max or diameter_min:
-                self.log.info(
+                self.log.debug(
                     "Number of events after applying diameter filter: %d",
                     occultation_queryset.count(),
                 )
@@ -162,7 +159,7 @@ class ProcessEventFilters:
                 occultation_queryset = occultation_queryset.filter(
                     closest_approach_uncertainty_km__lte=uncertainty_km
                 )
-                self.log.info(
+                self.log.debug(
                     "Number of events after applying uncertainty filter: %d",
                     occultation_queryset.values().count(),
                 )
@@ -172,6 +169,12 @@ class ProcessEventFilters:
             longitude = filter_set.get("longitude", None)
             loc_radius = filter_set.get("location_radius", None)
             if latitude and longitude and loc_radius:
+                self.log.debug(
+                    "Geofilter: %s (lat), %s (lon), %s (radius)",
+                    latitude,
+                    longitude,
+                    loc_radius,
+                )
                 # filtar as latitudes
                 occultation_queryset = occultation_queryset.filter(
                     occ_path_min_latitude__lte=latitude,
@@ -179,7 +182,7 @@ class ProcessEventFilters:
                     occ_path_min_longitude__lte=longitude,
                     occ_path_max_longitude__gte=longitude,
                 )
-                self.log.info(
+                self.log.debug(
                     "Number of events after applying latitude and longitude limits: %d",
                     occultation_queryset.values().count(),
                 )
@@ -206,14 +209,13 @@ class ProcessEventFilters:
                                 + "/prediction-event-detail/"
                                 + prediction.hash_id
                             )
-                            print("result url", result)
                             results.append(result)
-                            self.log.warning(
-                                "Object %s is visible at %s",
-                                prediction.name,
-                                prediction.date_time,
-                            )
-                    self.log.info(
+                            # self.log.warning(
+                            #     "Object %s is visible at %s",
+                            #     prediction.name,
+                            #     prediction.date_time,
+                            # )
+                    self.log.debug(
                         "Number of events after applying location visibility filter: %d",
                         len(results),
                     )
@@ -240,8 +242,7 @@ class ProcessEventFilters:
 
     def process_subscription_filter(self, filter_set, output_path, force_run=False):
         self.log.info(
-            "-------< Processing subscription filter: %s >-------",
-            filter_set["filter_name"],
+            f"< Processing Filter: {filter_set['filter_name']}  >".center(52, "-")
         )
         # preciso da identificacao do usuario e do filtro para calcular o processamento
         submission_queryset = Submission.objects.filter(eventFilter_id=filter_set["id"])
@@ -277,6 +278,7 @@ class ProcessEventFilters:
                     date_start + relativedelta(months=1) - relativedelta(microseconds=1)
                 )
             else:
+                self.log.info("No events to process at the time.")
                 return None
 
         # caso semanal, processa até 3 dias antes do final da semana
@@ -304,6 +306,7 @@ class ProcessEventFilters:
                     - relativedelta(microseconds=1)
                 )
             else:
+                self.log.info("No events to process at the time.")
                 return None
 
         # caso diario, processa no intervalo de 24 horas
@@ -326,6 +329,7 @@ class ProcessEventFilters:
                     date_start + relativedelta(days=1) - relativedelta(microseconds=1)
                 )
             else:
+                self.log.info("No events to process at the time.")
                 return None
 
         # garantir objeto time zone aware
@@ -366,7 +370,9 @@ class ProcessEventFilters:
             return None
 
     def run_filter(self, force_run=False):
-        self.log.info("-------< Run Filters Execution >-------")
+        self.log.info("#" + "-" * 50 + "#")
+        self.log.info("|" + "Process Subscription Filters".center(50, " ") + "|")
+        self.log.info("#" + "-" * 50 + "#")
         # print(settings.SITE_URL)
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
@@ -383,7 +389,7 @@ class ProcessEventFilters:
         return None
 
     def create_csv(self, filter_results, tmp_path, filename, submission_id):
-        self.log.info("-------< Create csv file >-------")
+        self.log.info("Creating csv file: ")
         if filter_results:
             df = pd.DataFrame(
                 filter_results,

@@ -54,13 +54,15 @@ class SendEventsMail:
 
     # le os dados do csv e dispara as funções de envio dos emails
     def exec_send_mail(self):
-        self.log.info("-------< New Subscription Send Email Execution >-------")
+        self.log.info("#" + "-" * 50 + "#")
+        self.log.info("|" + "Process Send Subscription Emails".center(50, " ") + "|")
+        self.log.info("#" + "-" * 50 + "#")
         try:
             # Retrieve all pending submissions
             submissions = Submission.objects.filter(prepared=True, sent=False)
 
             if not submissions.exists():
-                self.log.info("No submissions found for processing.")
+                self.log.info("There are no subscription emails to be sent.")
                 return
 
             for submission in submissions:
@@ -72,10 +74,11 @@ class SendEventsMail:
                     email_user = event_filter.user.email
 
                     self.log.info(
-                        "--------- Processing EventFilter ID: %d, Email: %s ---------",
-                        event_filter.pk,
-                        email_user,
+                        f"< Processing Subscripion Filter ID: {event_filter.pk} >".center(
+                            52, "-"
+                        )
                     )
+                    self.log.info("Email: %s", email_user)
                     # if there are attachments, process them and send email
                     if attachment:
                         try:
@@ -129,7 +132,7 @@ class SendEventsMail:
                             send_mail.send_events_mail(
                                 event_filter.pk, email=email_user, context=context
                             )
-                            self.log.info(
+                            self.log.debug(
                                 "Email sent successfully for EventFilter ID: %d",
                                 event_filter.pk,
                             )
@@ -152,9 +155,9 @@ class SendEventsMail:
                         )
 
                     # Update submission status
-                    # submission.sent = True
+                    submission.sent = True
                     submission.sent_date = datetime.now(tz=timezone.utc)
-                    # submission.save()
+                    submission.save()
                     self.log.info(
                         "Submission status updated to sent: %d", submission.pk
                     )
