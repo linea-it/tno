@@ -8,8 +8,10 @@ import { listAllAsteroids } from '../../services/api/Asteroid'
 import CircularProgress from '@mui/material/CircularProgress'
 
 function AsteroidNameSelect({ initialValue, onChange, source, error, required }) {
+  // Garantir que o initialValue seja sempre um array
+  const formattedInitialValue = Array.isArray(initialValue) ? initialValue : initialValue ? [initialValue] : []
   const [inputValue, setInputValue] = React.useState('')
-  const [selectedValue, setSelectedValue] = React.useState(initialValue || [])
+  const [selectedValue, setSelectedValue] = React.useState(formattedInitialValue)
 
   const qKey = source === 'prediction' ? 'asteroidsWithEvents' : 'asteroids'
   const qFn = source === 'prediction' ? listAllAsteroidsWithEvents : listAllAsteroids
@@ -39,8 +41,10 @@ function AsteroidNameSelect({ initialValue, onChange, source, error, required })
         setInputValue(newInputValue)
       }}
       onChange={(event, newValue) => {
-        setSelectedValue(newValue)
-        onChange(newValue)
+        // Garantir que o newValue seja sempre um array
+        const formattedValue = Array.isArray(newValue) ? newValue : []
+        setSelectedValue(formattedValue)
+        onChange(formattedValue)
       }}
       renderInput={(params) => (
         <TextField
@@ -73,7 +77,7 @@ AsteroidNameSelect.defaultProps = {
 }
 
 AsteroidNameSelect.propTypes = {
-  initialValue: PropTypes.array,
+  initialValue: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
   onChange: PropTypes.func.isRequired,
   source: PropTypes.oneOf(['asteroid', 'prediction']),
   error: PropTypes.bool,
