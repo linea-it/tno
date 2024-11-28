@@ -1,6 +1,6 @@
 {% extends "email_base.tpl" %} {% block content %}
     <!-- titulo email -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+    <!-- <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
         <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
             <tbody>
                 <tr>
@@ -12,31 +12,26 @@
                 </tr>
             </tbody>
         </table>
-    </div><!-- Termina titulo email -->
+    </div> -->
+    <!-- Termina titulo email -->
     <!-- Corpo do email -->
-    <!-- Paragrafo agradecimento -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 9px; width:570px; padding: 10px; background-color: #F4F4F4;">Dear {{subscriber}},
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- Termina agradecimento-->
     <!-- paragrafo 1 -->
     <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
         <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
             <tbody>
                 <tr>
                     <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 120px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            We have found no events with your customized occultation predictions for the upcoming period. Should you wish to adjust your filter parameters, you can do so
-                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010; text-decoration: none;"  target="_blank">here.</a><br><br>Yours sincerely,<br>
-                            LIneA Team
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 160px; width:570px; padding: 10px; background-color: #F4F4F4;">
+                            Dear {{subscriber}},
+                            <br><br>
+                            We regret to inform you that no events match your customized occultation predictions for the upcoming period.
+                            <br></br>
+                            If you would like to adjust your filter parameters, please
+                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010; text-decoration: none;"  target="_blank">click here</a> to refine your criteria.
+                            <br><br>
+                            Best regards,
+                            <br>
+                            The LIneA Team
                         </div>
                     </td>
                 </tr>
@@ -50,7 +45,8 @@
                 <tr>
                     <td style="width:100px;">
                         <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:10px;font-style:normal;font-weight:normal;text-align: center;color: rgba(79, 78, 78, 0.618);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">If you no longer wish to receive our emails, click here to <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">unsubscribe.</a>
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            If you wish to unsubscribe or manage your subscription preferences, <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">click here</a>.
                         </div>
                         <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
                     </td>
@@ -59,5 +55,5 @@
         </table>
     </div><!-- termina paragrafo descadastrar -->
     {% include 'footer.html' %}
-{% endblock %} 
+{% endblock %}
 </body>

@@ -1,6 +1,6 @@
 {% extends "email_base.tpl" %} {% block content %}
     <!-- titulo email -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
+    <!-- <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
         <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
             <tbody>
                 <tr>
@@ -12,65 +12,31 @@
                 </tr>
             </tbody>
         </table>
-    </div><!-- Termina titulo email -->
+    </div> -->
+    <!-- Termina titulo email -->
+
     <!-- Corpo do email -->
-    <!-- Paragrafo agradecimento -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: justify;color: rgb(79, 78, 78);  height: 10px; width:570px; padding: 10px; background-color: #F4F4F4;">Dear {{subscriber}},
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table> <!--https://tno-dev.linea.org.br/prediction-event-detail/322829-->
-    </div><!-- Termina agradecimento-->
     <!-- paragrafo 1 -->
     <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto; max-width:600px;">
         <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
             <tbody>
                 <tr>
                     <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 180px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            We are happy to provide you with your customized occultation predictions for the upcoming period. Besides the partial events listed below, you'll find a CSV file containing comprehensive information about each event.
-                            We look forward to further assisting you as you delve into the intricacies of stellar occultation phenomena while exploring the Solar System.
-                            <br><br>Should you wish to adjust your filter parameters, you can do so
-                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;text-decoration: none;"  target="_blank">here.</a><br><br>Yours sincerely,<br>
-                            LIneA Team
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 220px; width:570px; padding: 10px; background-color: #F4F4F4;">
+                            Dear {{subscriber}},
+                            <br><br>We are pleased to provide your customized occultation predictions for the upcoming period. Along with the partial events summarized below, a CSV file is attached containing detailed information about each event.
+                            <br><br>These results were generated based on your filter criteria, <b>{{filter_name}}</b>, for the period spanning <b>{{date_start}}</b> to <b>{{date_end}}</b>.
+                            <br><br>If you would like to modify your filter parameters, please do so by
+                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;text-decoration: none;"  target="_blank">clicking here</a>.
+                            <br><br>
+                            Best regards,<br>
+                            The LIneA Team
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div><!-- termina paragrafo 1 -->
-    <!-- titulo filtro -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td>
-                        <div style="text-align: center;color:#E5E5E5;  height: 30px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:670px;">
-                                <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:rgb(255, 255, 255);width:100%;">
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: center;color:#E5E5E5;  height: 20px;  padding: 10px;border-radius:0px; background-color: #0076BC;">
-                                                    Occultation predictions found &nbsp -  &nbsp {{filter_name}} &nbsp&nbsp {{date_start}} - {{date_end}}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
     <!-- Termina titulo filtro -->
     <!-- Campos -->
     <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
@@ -78,115 +44,135 @@
             <tbody>
                 <tr>
                     <td>
-                        <div style="text-align: center;color:#212121;  height: 30px; width:100%; padding: 10px; background-color: #F4F4F4;">
-                            <table align="center" border="0" cellpadding="1" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:rgb(255, 255, 255);width:100%;">
-                                <tbody>
-                                    <tr>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width: 18%;">
-                                                Date
-                                        </td>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width:16%;">
-                                                Name
-                                        </td>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width:15%;">
-                                                Mag
-                                        </td>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width: 15%;">
-                                                Velocity
-                                        </td>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width:16%;">
-                                                Closest <br> Approach
-                                        </td>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: center;color:#212121;  height: 20px;  padding: 10px;border-radius:0px; background-color: rgb(255, 255, 255);width: 16%;">
-                                                Gaia Magnitude
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div style="background:#F4F4F4; margin:0 auto; width:100%; padding: 10px; font-family: 'Roboto', Helvetica, Arial, sans-serif;">
+                        <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden;">
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
+                            style="width:100%; border-collapse: collapse; table-layout: auto;">
+
+                            <!-- Table Header -->
+                            <thead>
+                                <tr style="background-color: #0076BC; color: #ffffff;">
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Date & Time <br> (UTC)
+                                    </th>
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Object <br> Identifier
+                                    </th>
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Velocity <br> (km/s)
+                                    </th>
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Closest Approach <br> (arcsec)
+                                    </th>
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Closest Approach <br> Uncertainty (km)
+                                    </th>
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Gaia <br> Magnitude
+                                    </th>
+                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
+                                        Link
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <!-- Table Body -->
+                            <tbody>
+                                <tr style="background-color: #ffffff;">
+                                    <td style="text-align:center; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for dates in date %}
+                                            {{ dates }}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td style="text-align:left; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for names in name %}
+                                            {{ names }}<br>
+                                        {% endfor %}
+                                    </td>
+                                    <td style="text-align:center; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for vels in velocity %}
+                                            {% if vels %}
+                                                {{ vels | floatformat:3 }}<br>
+                                            {% else %}
+                                                -<br>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="text-align:center; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for closest_approachs in closest_approach %}
+                                            {% if closest_approachs %}
+                                                {{ closest_approachs | floatformat:3 }}<br>
+                                            {% else %}
+                                                -<br>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="text-align:center; color:#212121; font-size: 12px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for closest_approachs_km in closest_approach_uncertainty_km %}
+                                            {% if closest_approachs_km %}
+                                                {% if closest_approachs_km > 12500 %}
+                                                    Very high<br>
+                                                {% else %}
+                                                    {{ closest_approachs_km | floatformat:0 }}<br>
+                                                {% endif %}
+                                            {% else %}
+                                                -<br>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="text-align:center; color:#212121; font-size: 12px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for gaia in gaia_magnitude %}
+                                            {% if gaia %}
+                                                {{ gaia | floatformat:3}}<br>
+                                            {% else %}
+                                                -<br>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td style="text-align:center; color:#212121; font-size: 13px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
+                                        {% for link_id in id %}
+                                            <a href="{{host}}/prediction-event-detail/{{link_id}}" style="color:#0076BC;text-decoration: none;" target="_blank">[↗]</a><br>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        </div>
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
-    </div>
-    <!-- Termina titulo filtro -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px; font-family:Roboto, Helvetica, Arial, sans-serif;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" rowspacing="1" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:120px;">
-                        <div style="text-align: center;color:#E5E5E5;  height: 86px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                             <table align="center" border="1" cellpadding="1" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:rgb(255, 255, 255); height:20px ;width:100%;">
-                                    <tbody>
-                                        <tr>
-                                            <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 20% ;">
-                                                {% for dates in date %}
-                                                    {{dates}}
-                                                {% endfor %}
-                                            </td>
-                                            <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 14% ;">
-                                                {% for names in name %}
-                                                    {{names}} <br>
-                                                {% endfor %}
-                                            </td>
-                                            <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 14% ;">
-                                               {% for mags in mag %}
-                                                    {% if mags != undefined or nan or none %}
-                                                        {{mags | floatformat:7}}
-                                                    {% else %}
-                                                        ' '
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </td>
-                                            <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 16% ;">
-                                                {% for velocs in veloc %}
-                                                    {{velocs}} km/s <br>
-                                                {% endfor %}
-                                            </td>
-                                            <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 16% ;">
-                                                {% for closest_approachs in closest_approach %}
-                                                    {% if closest_approachs != nan or none %}
-                                                            {{closest_approachs}} s <br>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                            </td>
-                                            <td style="text-align:center ;color:#212121; font-size: 11px;border-color: rgba(0, 0, 0, 0.222); padding-top: 10px;line-height:20px ; width: 16% ;">
-                                                    {% for gaia in gaia_magnitude %}
-                                                        {% if gaia != nan or none %}
-                                                            {{gaia}}
-                                                        {% endif %}
-                                                    {% endfor %}
-                                            </td>
-                                    </tbody>
-                                </table>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <!-- Download Link -->
+    <!-- Download Button Section -->
     <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
             <tbody>
                 <tr>
                     <td>
-                        <div style="text-align: center;color:#212121;  height: 20px; width:100%; padding: 10px; background-color: #F4F4F4;">
-                            <table align="center" border="0" cellpadding="1" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-                                <tbody>
-                                    <tr>
-                                        <td style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:bold;text-align: right;color:#212121;  height: 10px;  padding: 10px;border-radius:0px; background-color: #F4F4F4;width: 40px;">
-                                            <a style="text-align: right; text-decoration: none;font-size: 11px;" href="{{link}}">
-                                                Download File
-                                            </a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div style="background:#F4F4F4; margin:0 auto; width:100%; padding: 10px; font-family: 'Roboto', Helvetica, Arial, sans-serif;">
+                        <div style="background-color: #F4F4F4; border-radius: 8px; overflow: hidden;">
+                        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%; border-collapse: collapse;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; width: 600px;">
+                                    <a href="{{link}}"
+                                    style="display: inline-block; padding: 12px 24px; font-size: 10px; font-weight: normal; color: #FFFFFF; text-decoration: none; background-color: #0076BC; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                                        DOWNLOAD CSV FILE
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                        </table>
+                        </div>
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
+    </div>
+
     <!-- paragrafo descadastrar -->
     <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
@@ -194,7 +180,8 @@
                 <tr>
                     <td style="width:100px;">
                         <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:10px;font-style:normal;font-weight:normal;text-align: center;color: rgba(79, 78, 78, 0.618);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">If you no longer wish to receive our emails, click here to <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">unsubscribe.</a>
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            If you wish to unsubscribe or manage your subscription preferences, <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">click here</a>.
                         </div>
                         <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
                     </td>
