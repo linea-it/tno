@@ -87,16 +87,17 @@ class SendEventsMail:
                             link = str(path_link / attachment.filename)
 
                             self.log.info("Attachment found: %s", attachment.filename)
-                            data = self.get_context_data(attachment.filename)[0:4]
+                            data = self.get_context_data(attachment.filename)[0:15]
 
                             # Validate data structure
                             required_keys = [
                                 "date_time",
                                 "name",
-                                "magnitude_drop",
                                 "velocity",
                                 "closest_approach",
+                                "closest_approach_uncertainty_km",
                                 "gaia_magnitude",
+                                "id",
                             ]
                             if not all(key in data for key in required_keys):
                                 self.log.error(
@@ -110,21 +111,30 @@ class SendEventsMail:
                             # print(attachment.filename)
 
                             # Recorte da data
-                            date_start = arquivo.split("_")[3]  # '20241123000000'
-                            date_end = arquivo.split("_")[4]  # '20241123235959'
-                            # print(f"Data início: {date_start}")
-                            # print(f"Data fim: {date_end}")
+                            start_str = arquivo.split("_")[-5]
+                            end_str = arquivo.split("_")[-4]
+                            # Extract YYYY-MM-DD
+                            date_start = (
+                                f"{start_str[:4]}-{start_str[4:6]}-{start_str[6:8]}"
+                            )
+                            date_end = f"{end_str[:4]}-{end_str[4:6]}-{end_str[6:8]}"
+                            date_time = [
+                                dt[:-1] if dt.endswith("Z") else dt
+                                for dt in data["date_time"]
+                            ]
+
                             context = [
                                 event_filter.filter_name,
                                 date_start,
                                 date_end,
-                                data["date_time"],
+                                date_time,
                                 data["name"],
-                                data["magnitude_drop"],
                                 data["velocity"],
                                 data["closest_approach"],
+                                data["closest_approach_uncertainty_km"],
                                 data["gaia_magnitude"],
                                 link,
+                                data["id"],
                             ]
 
                             # Send email with events

@@ -77,16 +77,20 @@ class NewsletterSendEmail:
                 "date_end": context[2],
                 "date": context[3],
                 "name": context[4],
-                "mag": context[5],
-                "veloc": context[6],
-                "closest_approach": context[7],
+                "velocity": context[5],
+                "closest_approach": context[6],
+                "closest_approach_uncertainty_km": context[7],
                 "gaia_magnitude": context[8],
                 "link": context[9],
-                # "ra": context[6],
-                # "dec": context[7],
+                "id": context[10],
             },
         )
-        self.send_newsletter_email("Occultation predictions found", html_content, email)
+
+        self.send_newsletter_email(
+            f"Upcoming Occultation Predictions for '{context[0]}' ({context[1]} to {context[2]})",
+            html_content,
+            email,
+        )
 
     def send_mail_not_found(self, subscription: Subscription, email, context):
         """Email enviado quando não há predições encontrados."""
@@ -100,7 +104,11 @@ class NewsletterSendEmail:
                 "filter_name": context,
             },
         )
-        self.send_newsletter_email("Events not Found", html_content, email)
+        self.send_newsletter_email(
+            f"No Upcoming Occultation Predictions Found for '{context}'",
+            html_content,
+            email,
+        )
 
     def send_newsletter_email(self, subject, body, recipient):
         try:

@@ -204,8 +204,7 @@ class ProcessEventFilters:
                         if is_visible:
                             result = OccultationSerializer(prediction).data
                             result["url"] = (
-                                "http:"
-                                + settings.SITE_URL.rstrip("/")
+                                settings.SITE_URL.rstrip("/")
                                 + "/prediction-event-detail/"
                                 + prediction.hash_id
                             )
