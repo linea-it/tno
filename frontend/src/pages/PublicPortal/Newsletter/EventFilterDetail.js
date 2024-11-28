@@ -44,10 +44,10 @@ function EventFilterDetail() {
     diameter_min: undefined,
     diameter_max: undefined,
     closest_approach_uncertainty_km: undefined,
-    latitude: null,
-    longitude: null,
-    location_radius: null,
-    altitude: null
+    latitude: undefined,
+    longitude: undefined,
+    location_radius: undefined,
+    altitude: undefined
   }
 
   const [initialData, setinitialData] = useState(default_data)

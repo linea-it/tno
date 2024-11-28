@@ -18,7 +18,7 @@ function ClosestApproachUncertaintyField({ value, onChange, ...props }) {
       type='number'
       label='Uncertainty (km)'
       variant='outlined'
-      value={value !== null && !isNaN(value) ? parseFloat(value) : ''}
+      value={value !== undefined ? value : ''}
       onChange={onChange}
       fullWidth
       {...props}
@@ -30,7 +30,7 @@ ClosestApproachUncertaintyField.defaultProps = {
   value: undefined
 }
 ClosestApproachUncertaintyField.propTypes = {
-  value: PropTypes.number,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func.isRequired
 }
 

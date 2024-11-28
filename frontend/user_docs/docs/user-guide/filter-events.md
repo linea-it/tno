@@ -26,7 +26,7 @@ There are four ways of filtering objects: ''empty'', by name/principal designati
 - **Dynamical subclass**: selects the group of objects that belong to a specific subclass.
 
   Note that Asteroid dynamical classes (and subclasses) are used as defined by Skybot ([more information](https://ssp.imcce.fr/webservices/skybot/)).
-  
+
 ### Local Solar Time
 
 On by default. When activated, it takes a step further in constraining the closest approach instant to a specific local time (in terms of longitude). Selecting a time range from 6 PM to 6 AM will filter out all events whose closest approach instant is not within this range. This helps, for example, to filter out events occurring during dawn, dusk, or less interesting events whose closest approach occurs at daylight. It strictly considers solar time, not to be confused with the local time taking into account timezones.
@@ -38,6 +38,7 @@ On by default, it filters out occultations whose full paths (with uncertainties)
 ### Duration and Size
 
 Provide options to filter events by four parameters:
+
 - **Magnitude drop**: the expected magnitude drop (lower limit).
 - **Event duration**: the total event duration (lower limit, filters only when the object's diameter is defined).
 - **Uncertainty**: the closest approach uncertainty in km.

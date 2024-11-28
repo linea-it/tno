@@ -48,7 +48,7 @@ export default function EventFilterForm({ data, onChange }) {
         />
         <Divider />
         <AsteroidSelect
-          source={'asteroid'}
+          source={data.filter_type === 'name' ? 'asteroid' : 'prediction'}
           value={{
             filterType: data.filter_type,
             filterValue: data.filter_value
