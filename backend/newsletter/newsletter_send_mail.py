@@ -43,7 +43,9 @@ class NewsletterSendEmail:
             },
         )
         self.send_newsletter_email(
-            "Activation Subscription", html_content, subscription.user.email
+            "LIneA Solar System Subscription Activation",
+            html_content,
+            subscription.user.email,
         )
 
     def send_welcome_mail(self, subscription: Subscription):
@@ -58,7 +60,9 @@ class NewsletterSendEmail:
             },
         )
         self.send_newsletter_email(
-            "Welcome to Solar System Newsletter", html_content, subscription.user.email
+            "Welcome to the LIneA Solar System Occultation Prediction Newsletter",
+            html_content,
+            subscription.user.email,
         )
 
     def send_events_mail(self, subscription: Subscription, email, context):
