@@ -1,45 +1,4 @@
-{% load rest_framework %}
-<!doctype html>
-<html>
-
-<head>
-    <title></title><!--[if !mso]>-->
-    <meta http-equiv="X-UA-Compatible" content="IEedge"><!--<![endif]-->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=3Ddevice-width,initial-scale=1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxanium|Roboto:300,400,500,700&display=swap"/>
-</head>
-<body style="background-color:#E5E5E5;">
-    <!-- Baner logo TON -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family: Oxanium;font-weight: 100;font-size:23px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 60px; width:600px; padding: 10px; background-color: #0076BC;"><img style="width: 70px;" src="https://solarsystem.linea.org.br/img/tno_logo_projetos.png" alt="">
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- Termina baner logo TON-->
-    <!-- baner titulo -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family: Oxanium;font-weight: 100;font-size:23px;font-style:normal;font-weight:normal;text-align: center;color:#E5E5E5;  height: 60px; width:600px; padding: 10px; background-color: #0076BC;">LIneA Occultation Prediction Database
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!--  Termina baner titulo-->
-    <!--  Termina baner-->
+{% extends "email_base.tpl" %} {% block content %}
     <!-- blank -->
     <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
         <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
@@ -59,7 +18,8 @@
             <tbody>
                 <tr>
                     <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: left;color: rgb(79, 78, 78);  height: 40px; width:580px; padding: 10px; padding-left: 30px; background-color: #F4F4F4;">Greetings,
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: left;color: rgb(79, 78, 78);  height: 40px; width:580px; padding: 10px; padding-left: 30px; background-color: #F4F4F4;">
+                            Greetings,
                         </div>
                     </td>
                 </tr>
@@ -73,7 +33,8 @@
             <tbody>
                 <tr>
                     <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: center;color: rgb(79, 78, 78);  height: 20px; width:600px; padding: 10px; background-color: #F4F4F4;">Customize your experience with our stellar occultation prediction database!
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: center;color: rgb(79, 78, 78);  height: 20px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            Customize your experience with our stellar occultation prediction database!
                         </div>
                     </td>
                 </tr>
@@ -86,9 +47,11 @@
             <tbody>
                 <tr>
                     <td style="width:95px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 50px; width:570px; padding: 10px; background-color: #F4F4F4;">You can choose specific objects, magnitude limits and many other options aligned with your particular interests and geographic location by
-                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;font-weight: normal; text-decoration: none;" target="_blank">clicking here.</a> <br>
-                            <!--*** Aqui vem print da tela com formulario e instrucoes-->
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 50px; width:570px; padding: 10px; background-color: #F4F4F4;">
+                            You can choose specific objects, magnitude limits and many other options aligned with your particular interests and geographic location by
+                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;font-weight: normal; text-decoration: none;" target="_blank">
+                                clicking here.
+                            </a> <br>
                         </div>
                     </td>
                 </tr>
@@ -102,11 +65,8 @@
                 <tr>
                     <td style="width:100px;">
                         <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:10px;font-style:normal;font-weight:normal;text-align: center;color: rgba(79, 78, 78, 0.618);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            <form action="" method="post">
-                                If you no longer wish to receive our emails, click here to
-                            <button style="border: none;font-family:Roboto, Helvetica, Arial, sans-serif; font-weight:normal; font-size:10px; background-color: #F4F4F4; color: red; cursor: pointer;" type="submit" name="email"><a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">unsubscribe.</a></button>
-                            </form>
+                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
+                            If you wish to unsubscribe or manage your subscription preferences, <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">click here</a>.
                         </div>
                         <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
                     </td>
@@ -114,41 +74,6 @@
             </tbody>
         </table>
     </div><!-- termina paragrafo descadastrar -->
-    <!--  footer -->
-    <!--  supporters -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="text-align: center;color: rgb(79, 78, 78);  height: 76px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            <span style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:13px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78); width:600px; padding: 10px; background-color: #F4F4F4;">LIneA is supported by</span><br>
-                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/capes.png" alt="">
-                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/cnpq.png" alt="">
-                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/faperj.png" alt="">
-                            <img style="width: 90px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/finep.png" alt="">
-                            <img style="width: 50px; padding: 8px;" src="https://solarsystem.linea.org.br/img/supporters/e-universo_square.png" alt="">
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina supporters -->
-    <!-- barra rodapé -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif, 'Arial Narrow', Arial, sans-serif;font-size:16px;font-style:normal;font-weight:bold;text-align: right;color:#E5E5E5;  height: 100%; width:600px; padding: 10px; background-color: #0076BC;">
-                            <span style="display: inline-block; vertical-align: middle;">Powered by</span>
-                            <a style="display: inline-block; vertical-align: middle;" href="http://www.linea.org.br/"><img style="width: 60px;" src="https://solarsystem.linea.org.br/static/media/linea-logo-mini.af872eca151f1ecc55b4.png" alt=""></a>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina barra rodapé -->
-    <script src="script.js"></script>
     </body>
-</html>
+    {% include 'footer.html' %}
+{% endblock %}

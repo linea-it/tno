@@ -1,10 +1,10 @@
 from django.conf import settings
 from django.db import models
-from newsletter.models.subscription import Subscription
 
 FREQUENCY_CHOICES = [
     (1, "Monthly"),
     (2, "Weekly"),
+    (3, "Daily"),
 ]
 
 FILTER_TYPE_CHOICES = [
@@ -38,16 +38,9 @@ class EventFilter(models.Model):
         verbose_name="Frequency",
         choices=FREQUENCY_CHOICES,
         default=1,
-        help_text="Frequencia de recebimento do periodico 1-semanal, 2-mensal.",
+        help_text="Frequencia de recebimento do periodico 1-mensal, 2-semanal, 3-diario.",
     )
 
-    magnitude_min = models.IntegerField(
-        verbose_name="Magnitude min",
-        default=15,
-        help_text="Magnitude do objeto.",
-        null=True,
-        blank=True,
-    )
     magnitude_max = models.IntegerField(
         verbose_name="Magnitude max",
         default=15,
@@ -62,6 +55,7 @@ class EventFilter(models.Model):
         max_length=15,
         choices=FILTER_TYPE_CHOICES,
         default="name",
+        blank=True,
     )
 
     filter_value = models.TextField(
@@ -87,13 +81,6 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    magnitude_drop_min = models.IntegerField(
-        verbose_name="Magnitude Drop min",
-        help_text="Magnitude Drop min.",
-        null=True,
-        blank=True,
-        default=None,
-    )
     magnitude_drop_max = models.IntegerField(
         verbose_name="Magnitude Drop max",
         help_text="Magnitude Drop max.",
@@ -102,7 +89,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    event_duration = models.IntegerField(
+    event_duration = models.FloatField(
         verbose_name="Event Duration",
         help_text="Duraçao da ocorrencia do evento.",
         null=True,
@@ -110,14 +97,22 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    diameter_min = models.IntegerField(
+    closest_approach_uncertainty_km = models.FloatField(
+        verbose_name="Uncertainty (km)",
+        help_text="Uncertainty in geocentric closest approach (km).",
+        null=True,
+        blank=True,
+        default=None,
+    )
+
+    diameter_min = models.FloatField(
         verbose_name="Diameter",
         help_text="Diametro do objeto.",
         null=True,
         blank=True,
         default=None,
     )
-    diameter_max = models.IntegerField(
+    diameter_max = models.FloatField(
         verbose_name="Diameter",
         help_text="Diametro do objeto.",
         null=True,
@@ -149,7 +144,7 @@ class EventFilter(models.Model):
         default=None,
     )
 
-    location_radius = models.IntegerField(
+    location_radius = models.FloatField(
         verbose_name="Radius",
         help_text="Raio em kilometro.",
         null=True,

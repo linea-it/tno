@@ -38,12 +38,14 @@ class NewsletterSendEmail:
         html_content = render_to_string(
             "activate_subscription.html",
             {
-                "host": settings.SITE_URL.rstrip("/"),
+                "host": settings.SITE_URL,
                 "activation_code": subscription.activation_code,
             },
         )
         self.send_newsletter_email(
-            "Activation Subscription", html_content, subscription.user.email
+            "LIneA Solar System Subscription Activation",
+            html_content,
+            subscription.user.email,
         )
 
     def send_welcome_mail(self, subscription: Subscription):
@@ -53,26 +55,64 @@ class NewsletterSendEmail:
         html_content = render_to_string(
             "welcome.html",
             {
-                "host": settings.SITE_URL.rstrip("/"),
+                "host": settings.SITE_URL,
                 "activation_code": subscription.activation_code,
             },
         )
         self.send_newsletter_email(
-            "Welcome to Solar System Newsletter", html_content, subscription.user.email
+            "Welcome to the LIneA Solar System Occultation Prediction Newsletter",
+            html_content,
+            subscription.user.email,
         )
 
-    """
-    def renderHtmlUnsubscribe(request, unsubscribe, recipient_list):
-        if unsubscribe == True:
-            print("Ok")
-        # return #sys.stdout.write(f"Exemplo de como fazer um print ${unsubscribe}")
-        html_content = render_to_string("welcome.html", {"nome": "Josiane"})
-        body = EmailMessage(
-            unsubscribe, html_content, "josianes.silva@gmail.com", recipient_list
+    def send_events_mail(self, subscription: Subscription, email, context):
+        """Email enviado com os resultados encontrados.
+        Contem alguns eventos de predição de ocultações encontrados,
+        de acordo com as preferencias do usuario.
+        """
+        # print(context[5], context[6])
+        html_content = render_to_string(
+            "results.html",
+            {
+                "host": settings.SITE_URL,
+                "subscriber": email,
+                "filter_name": context[0],
+                "date_start": context[1],
+                "date_end": context[2],
+                "date": context[3],
+                "name": context[4],
+                "velocity": context[5],
+                "closest_approach": context[6],
+                "closest_approach_uncertainty_km": context[7],
+                "gaia_magnitude": context[8],
+                "link": context[9],
+                "id": context[10],
+            },
         )
-        body.content_subtype = "html and image"
-        return body.send()
-    """
+
+        self.send_newsletter_email(
+            f"Upcoming Occultation Predictions for '{context[0]}' ({context[1]} to {context[2]})",
+            html_content,
+            email,
+        )
+
+    def send_mail_not_found(self, subscription: Subscription, email, context):
+        """Email enviado quando não há predições encontrados."""
+        # print(context[14:])
+        html_content = render_to_string(
+            "results_not_found.html",
+            {
+                "host": settings.SITE_URL,
+                "mesage": "Events not Found",
+                "subscriber": email,
+                "filter_name": context,
+            },
+        )
+        self.send_newsletter_email(
+            f"No Upcoming Occultation Predictions Found for '{context}'",
+            html_content,
+            email,
+        )
 
     def send_newsletter_email(self, subject, body, recipient):
         try:
@@ -82,9 +122,8 @@ class NewsletterSendEmail:
                 settings.EMAIL_NEWSLETTER_NOREPLY,
                 [recipient],
             )
-            body.content_subtype = "html and image"
-
+            body.content_subtype = "html"
             body.send()
-            self.log.info(f"Email successfully sent")
+
         except Exception as e:
             self.log.error(e)

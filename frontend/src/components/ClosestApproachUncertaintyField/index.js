@@ -1,8 +1,8 @@
 import PropTypes from 'prop-types'
 import TextField from '@mui/material/TextField'
 
-function ClosestApproachUncertaintyField({ value, onChange }) {
-  const handleChange = (e) => {
+function ClosestApproachUncertaintyField({ value, onChange, ...props }) {
+  /*const handleChange = (e) => {
     let newValue = e.target.value
 
     if (newValue === '') {
@@ -11,16 +11,17 @@ function ClosestApproachUncertaintyField({ value, onChange }) {
     if (newValue !== '') {
       onChange(parseFloat(newValue))
     }
-  }
+  }*/
 
   return (
     <TextField
       type='number'
       label='Uncertainty (km)'
       variant='outlined'
-      value={value !== undefined ? parseFloat(value) : ''}
-      onChange={handleChange}
+      value={value !== null && !isNaN(value) ? parseFloat(value) : ''}
+      onChange={onChange}
       fullWidth
+      {...props}
     />
   )
 }

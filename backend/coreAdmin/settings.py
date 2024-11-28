@@ -406,12 +406,14 @@ PASSWORDLESS_AUTH = {
     "PASSWORDLESS_AUTH_TYPES": [
         "EMAIL",
     ],
-    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@solarsystem.linea.org.br",
     "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
     "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
     "PASSWORDLESS_REGISTER_NEW_USERS": False,
+    "PASSWORDLESS_EMAIL_SUBJECT": "LIneA Solar System Portal - Validation Token",
+    "PASSWORDLESS_EMAIL_PLAINTEXT_MESSAGE": "Enter this token to sign in your LIneA Solar System Portal: %s",
+    "PASSWORDLESS_EMAIL_TOKEN_HTML_TEMPLATE_NAME": "validation_token_email_template.html",
 }
-
 
 # NEWSLETTER SUBSCRIPTION
 NEWSLETTER_SUBSCRIPTION_ENABLED = env.bool("NEWSLETTER_SUBSCRIPTION_ENABLED", False)

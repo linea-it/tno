@@ -13,10 +13,12 @@ import CardActions from '@mui/material/CardActions'
 import Button from '@mui/material/Button'
 import EventFilterForm from './EventFilterForm'
 import { getUserEventFilterbById, userEventFilterbUpdate, userEventFilterbCreate } from '../../../services/api/Newsletter'
+import { listAllAsteroidsByName } from '../../../services/api/Asteroid' // Adjust the path if needed
 import { Box } from '../../../../node_modules/@mui/material/index'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import timezone from 'dayjs/plugin/timezone'
+
 dayjs.extend(utc)
 dayjs.extend(timezone)
 
@@ -29,21 +31,22 @@ function EventFilterDetail() {
     filter_name: '',
     description: '',
     frequency: 1,
-    magnitude_min: 4,
-    magnitude_max: 18,
-    filter_type: 'name',
-    filter_value: '',
-    magnitude_drop_min: 4,
-    magnitude_drop_max: 18,
+    magnitude_min: null,
+    magnitude_max: null,
+    filter_type: '',
+    filter_value: null,
+    magnitude_drop_min: null,
+    magnitude_drop_max: null,
     solar_time_enabled: false,
     local_solar_time_after: dayjs().set('hour', 18).startOf('hour'),
     local_solar_time_before: dayjs().set('hour', 6).startOf('hour'),
     event_duration: undefined,
     diameter_min: undefined,
     diameter_max: undefined,
+    closest_approach_uncertainty_km: undefined,
     latitude: null,
     longitude: null,
-    location_radius: 100,
+    location_radius: null,
     altitude: null
   }
 
@@ -52,12 +55,43 @@ function EventFilterDetail() {
 
   const loadData = (id) => {
     getUserEventFilterbById({ id: id })
-      .then((res) => {
-        setCurrentData(res.data)
-        setinitialData(res.data)
+      .then(async (res) => {
+        const data = res.data
+        if (data.filter_type === 'name' && typeof data.filter_value === 'string') {
+          const asteroidNames = data.filter_value.split(',').map((name) => name.trim())
+          // console.log('Asteroid names:', asteroidNames)
+
+          // Fetch full asteroid data for each name in the array
+          const asteroidObjects = await Promise.all(
+            asteroidNames.map(async (name) => {
+              try {
+                const response = await listAllAsteroidsByName({ name })
+                const asteroidObject = Array.isArray(response) ? response[0] : undefined
+                if (!asteroidObject) {
+                  console.warn(`No valid data found for asteroid: ${name}`)
+                }
+                return asteroidObject
+              } catch (error) {
+                console.error(`Error fetching data for asteroid ${name}:`, error)
+                return undefined
+              }
+            })
+          )
+          // console.log('Asteroid objects:', asteroidObjects)
+
+          // Filter out any undefined values in case of errors
+          data.filter_value = asteroidObjects.filter(Boolean)
+        }
+
+        // Only parse as dayjs objects if values are not null or empty
+        data.local_solar_time_after = data.local_solar_time_after ? dayjs(data.local_solar_time_after, 'HH:mm') : null
+        data.local_solar_time_before = data.local_solar_time_before ? dayjs(data.local_solar_time_before, 'HH:mm') : null
+
+        setCurrentData(data)
+        setinitialData(data)
       })
-      .catch((res) => {
-        console.log('Failed to load data', res)
+      .catch((error) => {
+        console.error('Failed to load data', error)
       })
   }
 
@@ -68,7 +102,22 @@ function EventFilterDetail() {
   }, [id])
 
   const handleChange = (newData) => {
-    setCurrentData(newData)
+    console.log('handleChange received newData:', newData) // Log incoming data to handleChange
+    setCurrentData((prevData) => {
+      const updatedData = Object.fromEntries(
+        Object.entries(newData).filter(([key, value]) => {
+          if (['latitude', 'longitude', 'location_radius', 'altitude'].includes(key)) {
+            return true
+          }
+          return value !== undefined
+        })
+      )
+      console.log('Updated data in handleChange:', updatedData) // Log final data before updating state
+      return {
+        ...prevData,
+        ...updatedData
+      }
+    })
   }
 
   const toPreferences = () => {
@@ -123,6 +172,7 @@ function EventFilterDetail() {
               subheader='Please configure the event filter according to your preferences and save the settings.'
             ></CardHeader>
             <CardContent>
+              {console.log('currentdata', currentData)}
               <EventFilterForm data={currentData} onChange={handleChange} />
             </CardContent>
             <CardActions>

@@ -86,7 +86,7 @@ export default function Subscribe() {
           Subscribe
         </Button>
       </Paper>
-      <p>Receive reports in your email with the main star occultation predictions in your region.</p>
+      {/* <p>Receive reports in your email with the main star occultation predictions in your region.</p> */}
       {emailSuccess && (
         <Snackbar
           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}

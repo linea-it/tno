@@ -111,12 +111,13 @@ class OccultationSerializer(serializers.ModelSerializer):
             return obj.id
 
     def get_map_url(self, obj):
-        request = self.context.get("request")
         relative_url = obj.get_map_relative_url()
-        if relative_url == None:
+        if not relative_url:
             return None
-        # Convert to absolute url
-        return request.build_absolute_uri(relative_url)
+
+        # Attempt to use request if available; otherwise, return relative URL
+        request = self.context.get("request")
+        return request.build_absolute_uri(relative_url) if request else relative_url
 
 
 class PredictionJobSerializer(serializers.ModelSerializer):
