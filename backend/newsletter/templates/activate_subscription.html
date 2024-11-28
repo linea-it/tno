@@ -1,38 +1,125 @@
 {% extends "email_base.tpl" %} {% block content %}
-    <!-- blank -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="text-align: center;color:#E5E5E5;  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina blank -->
-    <!-- paragrafo 1 -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: center;color: rgb(79, 78, 78);  height: 55px; width:570px; padding: 20px 10px; background-color: #F4F4F4;">
-                            Thank you for subscribing to the LIneA Occultation Prediction Database. We are excited to have you on board. Before you start receiving customized predictions, we need to activate your account. Please click the button below to proceed.
-                         </div>
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 65px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                           <form action="" method="post">
-                               <button style="font-family:Roboto, Helvetica, Arial, sans-serif; font-weight:normal; font-size:18px;border-radius: 6px; background-color: #0076BC; color: #F4F4F4; cursor: pointer;" type="submit" name="email"><a href={{host}}/api/subscription/activate/?c={{activation_code}} style="color:#F4F4F4;font-weight: normal; text-decoration: none;" target="_blank">Activate Account</a></button>
-                               <br>
+<div
+  style="
+    background: #f4f4f4;
+    background-color: #f4f4f4;
+    margin: 0px auto;
+    max-width: 600px;
+  "
+>
+  <table
+    align="center"
+    border="0"
+    cellpadding="0"
+    cellspacing="0"
+    role="presentation"
+    style="background: #f4f4f4; background-color: #f4f4f4; width: 100%"
+  >
+    <tbody>
+      <tr>
+        <td style="width: 100px">
+          <div
+            style="
+              text-align: center;
+              color: #e5e5e5;
+              height: 10px;
+              width: 600px;
+              padding: 10px;
+              background-color: #f4f4f4;
+            "
+          ></div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
 
-                           </form>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo 1 -->
-    </body>
-    {% include 'footer.html' %}
-{% endblock %}    
+<div
+  style="
+    background: #f4f4f4;
+    background-color: #f4f4f4;
+    margin: 0px auto;
+    max-width: 600px;
+  "
+>
+  <table
+    align="center"
+    border="0"
+    cellpadding="15"
+    cellspacing="0"
+    role="presentation"
+    style="background: #f4f4f4; background-color: #f4f4f4; width: 100%"
+  >
+    <tbody>
+      <tr>
+        <td style="width: 100px">
+          <div
+            style="
+              font-family: Roboto, Helvetica, Arial, sans-serif;
+              font-size: 14px;
+              font-style: normal;
+              text-align: center;
+              color: rgb(79, 78, 78);
+              height: 55px;
+              width: 570px;
+              padding: 20px 10px;
+              background-color: #f4f4f4;
+            "
+          >
+            Thank you for subscribing to the LIneA Occultation Prediction
+            Database. We are excited to have you on board. Before you start
+            receiving customized predictions, we need to activate your account.
+            Please click the button below to proceed.
+          </div>
+          <div style="text-align: center; padding: 10px">
+            <a
+              href="{{host}}/api/subscription/activate/?c={{activation_code}}"
+              style="
+                display: inline-block;
+                font-family: Roboto, Helvetica, Arial, sans-serif;
+                font-weight: normal;
+                font-size: 18px;
+                border-radius: 6px;
+                background-color: #0076bc;
+                color: #f4f4f4;
+                text-decoration: none;
+                padding: 10px 20px;
+                cursor: pointer;
+              "
+              target="_blank"
+            >
+              Activate Account
+            </a>
+          </div>
+          <div
+            style="
+              font-family: Roboto, Helvetica, Arial, sans-serif;
+              font-size: 14px;
+              text-align: center;
+              color: rgb(79, 78, 78);
+              padding: 10px;
+              background-color: #f4f4f4;
+            "
+          >
+            <br />Or copy and paste the following link into your browser to
+            activate your account:
+          </div>
+          <div
+            style="
+              font-family: Roboto, Helvetica, Arial, sans-serif;
+              font-size: 12px;
+              text-align: center;
+              color: rgb(79, 78, 78);
+              word-wrap: break-word;
+              padding: 10px;
+              background-color: #f4f4f4;
+            "
+          >
+            {{host}}/api/subscription/activate/?c={{activation_code}}
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% include 'footer.html' %} {% endblock %}
