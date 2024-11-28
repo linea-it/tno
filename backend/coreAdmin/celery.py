@@ -42,6 +42,12 @@ app.conf.beat_schedule = {
     #     "task": "tno.tasks.predict_jobs_for_upper_end_update",
     #     "schedule": crontab(hour=15, minute=0, day_of_month="10,25"),
     # },
+    # Run Filter and Send Mail every Day at 1:00 AM
+    "run_subscription_filter_and_send_mail": {
+        "task": "tno.tasks.run_subscription_filter_and_send_mail",
+        "schedule": crontab(hour=1, minute=0),
+        "kwargs": {"force_run": False},  # Set to True if needed
+    },
 }
 app.conf.timezone = "UTC"
 

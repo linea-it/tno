@@ -6,7 +6,7 @@ from pathlib import Path
 from time import sleep
 from typing import Optional
 
-from celery import group, shared_task
+from celery import chain, group, shared_task
 from django.conf import settings
 from tno.models import Occultation
 from tno.occviz import occultation_path_coeff, visibility_from_coeff
@@ -221,3 +221,61 @@ def update_asteroid_table():
 
     atm = AsteroidTableManager()
     atm.run_update_asteroid_table()
+
+
+@shared_task
+def run_subscription_filter_task(force_run=False):
+    """
+    Executes the event filters based on user preferences.
+    """
+    from newsletter.process_event_filter import ProcessEventFilters
+
+    logger = logging.getLogger("subscription")
+    logger.info(" Starting Celery run_subscription filter_task ".center(52, "#"))
+    try:
+        process = ProcessEventFilters(stdout=True)
+        process.run_filter(force_run=force_run)
+    except Exception as e:
+        logger.error(f"Error in run_subscription_filter_task: {e}", exc_info=True)
+        raise
+
+
+@shared_task
+def send_mail_subscription_task():
+    """
+    Sends emails based on processed event filters.
+    """
+    from newsletter.events_send_mail import SendEventsMail
+
+    logger = logging.getLogger("subscription")
+    logger.info(" Starting Celery send_mail_subscription_task ".center(52, "#"))
+    try:
+        sendmail = SendEventsMail(stdout=True)
+        sendmail.exec_send_mail()
+        logger.info("send_mail_subscription_task completed successfully")
+    except Exception as e:
+        logger.error(f"Error in send_mail_task: {e}", exc_info=True)
+        raise
+
+
+@shared_task
+def run_subscription_filter_and_send_mail(force_run=False):
+    """
+    Chains run_filter_task and send_mail_task to run sequentially.
+    """
+    logger = logging.getLogger("subscription")
+    logger.info(" Starting subscription task workflow ".center(52, "#"))
+    try:
+        workflow = chain(
+            run_subscription_filter_task.s(force_run=force_run),
+            send_mail_subscription_task.si(),
+        )
+        workflow.apply_async()
+        logger.info(
+            "Chained run_subscription_filter_task and send_mail_subscription_task successfully"
+        )
+    except Exception as e:
+        logger.error(
+            f"Error in run_subscription_filter_and_send_mail: {e}", exc_info=True
+        )
+        raise
