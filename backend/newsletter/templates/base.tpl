@@ -57,9 +57,8 @@
     .header-container {
       background-color: #0076BC;
       color: #ffffff;
-      padding: 20px;
+      padding: 5px;
       font-family: Helvetica, sans-serif;
-      display: flex;
       align-items: center;
       justify-content: center;
     }
@@ -70,24 +69,26 @@
 
     .header-title {
       margin: 0;
-      font-size: 20px;
+      font-size: 22px;
       line-height: 1.5;
       font-weight: normal;
       text-align: center;
     }
 
-  .token {
+    .token {
       font-size: 32px;
       font-weight: bold;
       color: #0076BC;
       text-align: center;
       margin: 20px 0;
+      letter-spacing: 8px; /* Adjust the value as needed */
     }
 
   </style>
 </head>
 
 <body>
+    <br>
     <table style="background-color: #F8F8F8; margin: 0 auto; max-width: 600px; padding: 0px;">
         {% include 'header.html' %}
         {% block content %} {% endblock %}
