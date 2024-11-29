@@ -251,22 +251,22 @@ class ProcessEventFilters:
             ).process_date
         else:
             # se ainda não existir é definido como a data e hora atual
-            latest_processing_date = now
+            latest_processing_date = None
 
         self.log.info("Latest processing date: %s", latest_processing_date)
 
         # definir as datas inicial e final para o processamento a partir da ultima data de processamento
         # caso mensal processa até 7 dias antes do final do mes
         if filter_set["frequency"] == 1:
-            date_start = (latest_processing_date + relativedelta(months=1)).replace(
+            date_start = (now + relativedelta(months=1)).replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0
             )
-            allow_process = (
-                True if (date_start - latest_processing_date).days <= 7 else False
-            )
+            allow_process = True if (date_start - now).days <= 7 else False
             already_processed = (
-                True if (now - latest_processing_date).days < 7 else False
+                latest_processing_date is not None
+                and (date_start - latest_processing_date).days < 7
             )
+
             if force_run:
                 date_end = (
                     date_start + relativedelta(months=1) - relativedelta(microseconds=1)
@@ -282,14 +282,15 @@ class ProcessEventFilters:
         # caso semanal, processa até 3 dias antes do final da semana
         # sempre considera o proximo domingo como inicio da semana
         if filter_set["frequency"] == 2:
-            date_start = (
-                latest_processing_date + relativedelta(weekday=SU(+1))
-            ).replace(hour=0, minute=0, second=0, microsecond=0)
+            date_start = (now + relativedelta(weekday=SU(+1))).replace(
+                hour=0, minute=0, second=0, microsecond=0
+            )
             allow_process = (
-                True if (date_start - latest_processing_date).days <= 3 else False
+                True if (date_start - now).days <= 3 else False
             )  # verifica se deve ser processado
             already_processed = (
-                True if (now - latest_processing_date).days < 3 else False
+                latest_processing_date is not None
+                and (date_start - latest_processing_date).days < 3
             )
             if force_run:
                 date_end = (
@@ -309,14 +310,15 @@ class ProcessEventFilters:
 
         # caso diario, processa no intervalo de 24 horas
         if filter_set["frequency"] == 3:
-            date_start = (latest_processing_date + relativedelta(days=1)).replace(
+            date_start = (now + relativedelta(days=1)).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
-            allow_process = (
-                True if (date_start - latest_processing_date).seconds < 86400 else False
-            )
+
+            allow_process = True if (date_start - now).seconds < 86400 else False
+
             already_processed = (
-                True if (now - latest_processing_date).seconds < 43200 else False
+                latest_processing_date is not None
+                and (date_start - latest_processing_date).seconds < 86400
             )
             if force_run:
                 date_end = (
@@ -352,7 +354,7 @@ class ProcessEventFilters:
             return None
         else:
             filename = (
-                "_".join(filter_set["filter_name"].strip().lower().split())
+                str(filter_set["id"])
                 + "_"
                 + str(record.id)
                 + "_"
@@ -427,9 +429,7 @@ class ProcessEventFilters:
                 inplace=True,
             )
 
-            csv_file = os.path.join(
-                tmp_path, filename + "_results_filter_newsletter.csv"
-            )
+            csv_file = os.path.join(tmp_path, filename + "_subscription_results.csv")
             df.to_csv(csv_file, sep=";", header=True, index=False)
             self.log.info("An archive was created with the Results.")
 
@@ -445,7 +445,7 @@ class ProcessEventFilters:
 
             record = Attachment(
                 submission_id=Submission.objects.get(pk=submission_id),
-                filename=filename + "_results_filter_newsletter.csv",
+                filename=filename + "_subscription_results.csv",
                 size=size,
             )
             self.log.info("Updating status of stored file...")

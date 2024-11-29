@@ -32,10 +32,7 @@ class SendEventsMail:
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
         # print(tmp_path)
 
-        file_csv = os.path.join(
-            tmp_path, csv_name
-        )  # + "_results_filter_newsletter.csv")
-        # print(file_csv, file_csv)
+        file_csv = os.path.join(tmp_path, csv_name)
 
         self.log.info("file_csv %s", file_csv)
 
@@ -89,7 +86,8 @@ class SendEventsMail:
                             )
 
                             self.log.info("Attachment found: %s", attachment.filename)
-                            data = self.get_context_data(attachment.filename)[0:10]
+                            complete_data = self.get_context_data(attachment.filename)
+                            number_of_events = len(complete_data)
 
                             # Validate data structure
                             required_keys = [
@@ -101,6 +99,19 @@ class SendEventsMail:
                                 "gaia_magnitude",
                                 "id",
                             ]
+
+                            # Limit data to the first 10 rows
+                            data = complete_data.head(10)[required_keys]
+                            data["date_time"] = pd.to_datetime(
+                                data["date_time"]
+                            ).dt.strftime("%Y-%m-%d %H:%M")
+                            # data["date_time"] = data["date_time"].apply(
+                            #     lambda dt: dt.replace("T", " ").rstrip("Z")
+                            # )
+
+                            # Convert to JSON
+                            json_data = data.to_dict(orient="records")
+
                             if not all(key in data for key in required_keys):
                                 self.log.error(
                                     "Invalid data structure returned for %s",
@@ -113,30 +124,19 @@ class SendEventsMail:
                             # print(attachment.filename)
 
                             # Recorte da data
-                            start_str = arquivo.split("_")[-5]
-                            end_str = arquivo.split("_")[-4]
+                            start_str = arquivo.split("_")[-4]
+                            end_str = arquivo.split("_")[-3]
                             # Extract YYYY-MM-DD
-                            date_start = (
-                                f"{start_str[:4]}-{start_str[4:6]}-{start_str[6:8]}"
-                            )
-                            date_end = f"{end_str[:4]}-{end_str[4:6]}-{end_str[6:8]}"
-                            date_time = [
-                                dt.replace("T", " ").rstrip("Z")
-                                for dt in data["date_time"]
-                            ]
+                            date_start = datetime.strptime(start_str, "%Y%m%d%H%M%S")
+                            date_end = datetime.strptime(end_str, "%Y%m%d%H%M%S")
 
                             context = [
                                 event_filter.filter_name,
                                 date_start,
                                 date_end,
-                                date_time,
-                                data["name"],
-                                data["velocity"],
-                                data["closest_approach"],
-                                data["closest_approach_uncertainty_km"],
-                                data["gaia_magnitude"],
+                                number_of_events,
                                 link,
-                                data["id"],
+                                json_data,
                             ]
 
                             # Send email with events

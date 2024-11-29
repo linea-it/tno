@@ -84,6 +84,14 @@
       letter-spacing: 8px; /* Adjust the value as needed */
     }
 
+    .clickable-row {
+        transition: background-color 0.5s; /* Smooth color transition */
+    }
+
+    .clickable-row:hover {
+        background-color: #c0d6ef;
+    }
+
   </style>
 </head>
 

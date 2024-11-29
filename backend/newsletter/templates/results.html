@@ -5,9 +5,11 @@
     <td style="padding: 20px;">
         <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6;">
             Dear {{ subscriber }},<br><br>
-            We are pleased to provide your customized occultation predictions for the period spanning
-            <b>{{ date_start }}</b> to <b>{{ date_end }}</b> based on your filter criteria <b>{{ filter_name }}</b>.
-            Below is a list with partial results. A CSV file is available with detailed information about all events.
+
+            We are pleased to provide your customized occultation predictions based on your specified filter criteria,
+            <b>{{filter_name}}</b>, for the period from <b>{{date_start}}</b>, to <b>{{date_end}}</b>. The results
+            include a total of <b>{{number_of_events}}</b> prediction events. Below, you will find a preview
+            of the results, and a detailed CSV file containing all event data is available for your convenience.
         </p>
     </td>
 </tr>
@@ -15,43 +17,43 @@
     <td>
         <!-- Centered and Rounded Table -->
         <div
-            style="margin: 0 auto; max-width: 90%; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
-            <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
-                <thead style="background-color: #2a5ca1; color: #fff;">
+            style="margin: 0 auto; max-width: 90%; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
+            <table width="100%" style="border-collapse: collapse; margin: 0px 0;">
+                <thead style="background-color: #0076BC; color: #fff;">
                     <tr>
-                        <th style="padding: 8px; font-size: 12px; text-align: center;">Date & Time (UTC)</th>
-                        <th style="padding: 8px; font-size: 12px; text-align: center;">Object Identifier</th>
-                        <th style="padding: 8px; font-size: 12px; text-align: center;">Velocity (km/s)</th>
-                        <th style="padding: 8px; font-size: 12px; text-align: center;">Closest Approach (arcsec)</th>
-                        <th style="padding: 8px; font-size: 12px; text-align: center;">Uncertainty (km)</th>
-                        <th style="padding: 8px; font-size: 12px; text-align: center;">Gaia Magnitude</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;">Date Time (UTC)</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;">Object Identifier</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;">Velocity (km/s)</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;">Closest Approach (arcsec)</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;">Uncertainty (km)</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;">Gaia Magnitude</th>
+                        <th style="padding: 5px; font-size: 12px; text-align: center;"></th>
                     </tr>
                 </thead>
                 <tbody style="background-color: #ffffff; color: #0c0c0c;">
                     {% for row in data %}
-                    <tr>
-                        <td style="padding: 8px; font-size: 12px; text-align: center;">
-                            {{ row.date|default:"-" }}
+                    <tr class="clickable-row">
+                        <td style="padding: 10px; font-size: 12px; text-align: center;">
+                            {{ row.date_time|default:"-" }}
                         </td>
-                        <td style="padding: 8px; font-size: 12px; text-align: center;">
-                            <a href="{{ host }}/prediction-event-detail/{{ row.id }}" style="color: #0076BC;">
-                                {{row.name|default:"-" }}</a>
+                        <td style="padding: 6px; font-size: 12px; text-align: center;">
+                            {{row.name|default:"-" }}
                         </td>
-                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                        <td style="padding: 6px; font-size: 12px; text-align: center;">
                             {% if row.velocity %}
-                            {{ row.velocity|floatformat:3 }}
+                            {{ row.velocity|floatformat:1 }}
                             {% else %}
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                        <td style="padding: 6px; font-size: 12px; text-align: center;">
                             {% if row.closest_approach %}
                             {{ row.closest_approach|floatformat:3 }}
                             {% else %}
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                        <td style="padding: 6px; font-size: 12px; text-align: center;">
                             {% if row.closest_approach_uncertainty_km %}
                             {% if row.closest_approach_uncertainty_km > 12500 %}
                             Very High
@@ -62,12 +64,15 @@
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                        <td style="padding: 6px; font-size: 12px; text-align: center;">
                             {% if row.gaia_magnitude %}
-                            {{ row.gaia_magnitude|floatformat:3 }}
+                            {{ row.gaia_magnitude|floatformat:1 }}
                             {% else %}
                             -
                             {% endif %}
+                        </td>
+                        <td style="padding: 8px; font-size: 11px; text-align: center;">
+                            <a href='{{ host }}/prediction-event-detail/{{ row.id }}'>[URL]</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -75,7 +80,7 @@
             </table>
         </div>
         <!-- Download Link -->
-        <div style="text-align: center; margin: 20px 0;">
+        <div style="text-align: center; margin: 30px 0;">
             <a href="{{ link }}" style="
                 display: inline-block;
                 background-color: #0076BC;

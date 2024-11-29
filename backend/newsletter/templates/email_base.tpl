@@ -83,6 +83,14 @@
       text-align: center;
       margin: 20px 0;
     }
+
+    .clickable-row {
+        transition: background-color 0.5s; /* Smooth color transition */
+    }
+
+    .clickable-row:hover {
+        background-color: #c0d6ef;
+    }
   </style>
 </head>
 
