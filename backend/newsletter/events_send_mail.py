@@ -102,9 +102,12 @@ class SendEventsMail:
 
                             # Limit data to the first 10 rows
                             data = complete_data.head(10)[required_keys]
-                            data["date_time"] = data["date_time"].apply(
-                                lambda dt: dt.replace("T", " ").rstrip("Z")
-                            )
+                            data["date_time"] = pd.to_datetime(
+                                data["date_time"]
+                            ).dt.strftime("%Y-%m-%d %H:%M")
+                            # data["date_time"] = data["date_time"].apply(
+                            #     lambda dt: dt.replace("T", " ").rstrip("Z")
+                            # )
 
                             # Convert to JSON
                             json_data = data.to_dict(orient="records")
