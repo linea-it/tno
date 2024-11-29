@@ -70,19 +70,6 @@ class NewsletterSendEmail:
         Contem alguns eventos de predição de ocultações encontrados,
         de acordo com as preferencias do usuario.
         """
-        # print(context[5], context[6])
-        data = {
-            "date": context[3],
-            "name": context[4],
-            "velocity": context[5],
-            "closest_approach": context[6],
-            "closest_approach_uncertainty_km": context[7],
-            "gaia_magnitude": context[8],
-            "id": context[10],
-        }
-        transformed_data = [
-            dict(zip(data.keys(), values)) for values in zip(*data.values())
-        ]
 
         html_content = render_to_string(
             "results.html",
@@ -90,15 +77,18 @@ class NewsletterSendEmail:
                 "host": settings.SITE_URL,
                 "subscriber": email,
                 "filter_name": context[0],
-                "date_start": context[1],
-                "date_end": context[2],
-                "link": context[9],
-                "data": transformed_data,
+                "date_start": context[1].strftime("%B %d, %Y, at %H:%M (UTC)"),
+                "date_end": context[2].strftime("%B %d, %Y, at %H:%M (UTC)"),
+                "number_of_events": context[3],
+                "link": context[4],
+                "data": context[5],
             },
         )
-
+        time_period = (
+            context[1].strftime("%b %d") + " to " + context[2].strftime("%b %d, %y")
+        )
         self.send_newsletter_email(
-            f"Upcoming Occultation Predictions for '{context[0]}' ({context[1]} to {context[2]})",
+            f"Upcoming Occultation Predictions for '{context[0]}' ({time_period})",
             html_content,
             email,
         )

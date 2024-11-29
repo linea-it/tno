@@ -83,6 +83,17 @@
       text-align: center;
       margin: 20px 0;
     }
+
+    .clickable-row {
+        cursor: pointer; /* Changes the cursor to a pointer */
+        transition: background-color 0.5s; /* Smooth color transition */
+    }
+
+    .clickable-row:hover {
+        background-color: #c0d6ef;
+        color: #0076BC;
+    }
+  </style>
   </style>
 </head>
 
