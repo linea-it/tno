@@ -84,10 +84,12 @@ class SendEventsMail:
                         try:
                             path = "newsletter"
                             path_link = Path(settings.DATA_TMP_URL).joinpath(path)
-                            link = str(path_link / attachment.filename)
+                            link = settings.SITE_URL + str(
+                                path_link / attachment.filename
+                            )
 
                             self.log.info("Attachment found: %s", attachment.filename)
-                            data = self.get_context_data(attachment.filename)[0:15]
+                            data = self.get_context_data(attachment.filename)[0:10]
 
                             # Validate data structure
                             required_keys = [
@@ -119,7 +121,7 @@ class SendEventsMail:
                             )
                             date_end = f"{end_str[:4]}-{end_str[4:6]}-{end_str[6:8]}"
                             date_time = [
-                                dt[:-1] if dt.endswith("Z") else dt
+                                dt.replace("T", " ").rstrip("Z")
                                 for dt in data["date_time"]
                             ]
 
