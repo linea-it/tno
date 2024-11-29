@@ -1,194 +1,99 @@
-{% extends "email_base.tpl" %} {% block content %}
-    <!-- titulo email -->
-    <!-- <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: justify;color:#212121;  height: 10px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            Your customized occultation predicitions
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div> -->
-    <!-- Termina titulo email -->
-
-    <!-- Corpo do email -->
-    <!-- paragrafo 1 -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto; max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 220px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            Dear {{subscriber}},
-                            <br><br>We are pleased to provide your customized occultation predictions for the upcoming period. Along with the partial events summarized below, a CSV file is attached containing detailed information about each event.
-                            <br><br>These results were generated based on your filter criteria, <b>{{filter_name}}</b>, for the period spanning <b>{{date_start}}</b> to <b>{{date_end}}</b>.
-                            <br><br>If you would like to modify your filter parameters, please do so by
-                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;text-decoration: none;"  target="_blank">clicking here</a>.
-                            <br><br>
-                            Best regards,<br>
-                            The LIneA Team
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo 1 -->
-    <!-- Termina titulo filtro -->
-    <!-- Campos -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td>
-                        <div style="background:#F4F4F4; margin:0 auto; width:100%; padding: 10px; font-family: 'Roboto', Helvetica, Arial, sans-serif;">
-                        <div style="background-color: #ffffff; border-radius: 8px; overflow: hidden;">
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation"
-                            style="width:100%; border-collapse: collapse; table-layout: auto;">
-
-                            <!-- Table Header -->
-                            <thead>
-                                <tr style="background-color: #0076BC; color: #ffffff;">
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Date & Time <br> (UTC)
-                                    </th>
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Object <br> Identifier
-                                    </th>
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Velocity <br> (km/s)
-                                    </th>
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Closest Approach <br> (arcsec)
-                                    </th>
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Closest Approach <br> Uncertainty (km)
-                                    </th>
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Gaia <br> Magnitude
-                                    </th>
-                                    <th style="font-size:11px; font-weight:normal; text-align: center; padding: 4px; border-bottom: 1px solid #ddd;">
-                                        Link
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <!-- Table Body -->
-                            <tbody>
-                                <tr style="background-color: #ffffff;">
-                                    <td style="text-align:center; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for dates in date %}
-                                            {{ dates }}<br>
-                                        {% endfor %}
-                                    </td>
-                                    <td style="text-align:left; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for names in name %}
-                                            {{ names }}<br>
-                                        {% endfor %}
-                                    </td>
-                                    <td style="text-align:center; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for vels in velocity %}
-                                            {% if vels %}
-                                                {{ vels | floatformat:3 }}<br>
-                                            {% else %}
-                                                -<br>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    <td style="text-align:center; color:#212121; font-size: 11px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for closest_approachs in closest_approach %}
-                                            {% if closest_approachs %}
-                                                {{ closest_approachs | floatformat:3 }}<br>
-                                            {% else %}
-                                                -<br>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    <td style="text-align:center; color:#212121; font-size: 12px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for closest_approachs_km in closest_approach_uncertainty_km %}
-                                            {% if closest_approachs_km %}
-                                                {% if closest_approachs_km > 12500 %}
-                                                    Very high<br>
-                                                {% else %}
-                                                    {{ closest_approachs_km | floatformat:0 }}<br>
-                                                {% endif %}
-                                            {% else %}
-                                                -<br>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    <td style="text-align:center; color:#212121; font-size: 12px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for gaia in gaia_magnitude %}
-                                            {% if gaia %}
-                                                {{ gaia | floatformat:3}}<br>
-                                            {% else %}
-                                                -<br>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </td>
-                                    <td style="text-align:center; color:#212121; font-size: 13px; padding: 4px; line-height: 20px; border-bottom: 1px solid #eee;">
-                                        {% for link_id in id %}
-                                            <a href="{{host}}/prediction-event-detail/{{link_id}}" style="color:#0076BC;text-decoration: none;" target="_blank">[↗]</a><br>
-                                        {% endfor %}
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    <!-- Download Link -->
-    <!-- Download Button Section -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td>
-                        <div style="background:#F4F4F4; margin:0 auto; width:100%; padding: 10px; font-family: 'Roboto', Helvetica, Arial, sans-serif;">
-                        <div style="background-color: #F4F4F4; border-radius: 8px; overflow: hidden;">
-                        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="width:100%; border-collapse: collapse;">
-                        <tbody>
-                            <tr>
-                                <td style="text-align: center; width: 600px;">
-                                    <a href="{{link}}"
-                                    style="display: inline-block; padding: 12px 24px; font-size: 10px; font-weight: normal; color: #FFFFFF; text-decoration: none; background-color: #0076BC; border-radius: 4px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
-                                        DOWNLOAD CSV FILE
-                                    </a>
-                                </td>
-                            </tr>
-                        </tbody>
-                        </table>
-                        </div>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- paragrafo descadastrar -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            If you wish to unsubscribe or manage your subscription preferences, <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">click here</a>.
-                        </div>
-                        <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo descadastrar -->
-    {% include 'footer.html' %}
+{% extends "email_base.tpl" %}{% block content %}
+<!-- Results -->
+<tr>
+<tr>
+    <td style="padding: 20px;">
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6;">
+            Dear {{ subscriber }},<br><br>
+            We are pleased to provide your customized occultation predictions for the period spanning
+            <b>{{ date_start }}</b> to <b>{{ date_end }}</b> based on your filter criteria <b>{{ filter_name }}</b>.
+            Below is a list with partial results. A CSV file is available with detailed information about all events.
+        </p>
+    </td>
+</tr>
+<tr>
+    <td>
+        <!-- Centered and Rounded Table -->
+        <div
+            style="margin: 0 auto; max-width: 90%; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
+            <table width="100%" style="border-collapse: collapse; margin: 20px 0;">
+                <thead style="background-color: #2a5ca1; color: #fff;">
+                    <tr>
+                        <th style="padding: 8px; font-size: 12px; text-align: center;">Date & Time (UTC)</th>
+                        <th style="padding: 8px; font-size: 12px; text-align: center;">Object Identifier</th>
+                        <th style="padding: 8px; font-size: 12px; text-align: center;">Velocity (km/s)</th>
+                        <th style="padding: 8px; font-size: 12px; text-align: center;">Closest Approach (arcsec)</th>
+                        <th style="padding: 8px; font-size: 12px; text-align: center;">Uncertainty (km)</th>
+                        <th style="padding: 8px; font-size: 12px; text-align: center;">Gaia Magnitude</th>
+                    </tr>
+                </thead>
+                <tbody style="background-color: #ffffff; color: #0c0c0c;">
+                    {% for row in data %}
+                    <tr>
+                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                            {{ row.date|default:"-" }}
+                        </td>
+                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                            <a href="{{ host }}/prediction-event-detail/{{ row.id }}" style="color: #0076BC;">
+                                {{row.name|default:"-" }}</a>
+                        </td>
+                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                            {% if row.velocity %}
+                            {{ row.velocity|floatformat:3 }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                            {% if row.closest_approach %}
+                            {{ row.closest_approach|floatformat:3 }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                            {% if row.closest_approach_uncertainty_km %}
+                            {% if row.closest_approach_uncertainty_km > 12500 %}
+                            Very High
+                            {% else %}
+                            {{ row.closest_approach_uncertainty_km|floatformat:0 }}
+                            {% endif %}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                        <td style="padding: 8px; font-size: 12px; text-align: center;">
+                            {% if row.gaia_magnitude %}
+                            {{ row.gaia_magnitude|floatformat:3 }}
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Download Link -->
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="{{ link }}" style="
+                display: inline-block;
+                background-color: #0076BC;
+                color: #fff;
+                text-decoration: none;
+                font-size: 14px;
+                padding: 10px 20px;
+                border-radius: 4px;
+            ">Download CSV</a>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td style="padding: 20px;">
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6; margin: 0;">
+            Best regards,<br>
+            The LIneA Team
+        </p>
+    </td>
+</tr>
 {% endblock %}
-</body>

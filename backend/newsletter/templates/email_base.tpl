@@ -1,41 +1,98 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
-    <title></title><!--[if !mso]>-->
-    <meta http-equiv="X-UA-Compatible" content="IEedge"><!--<![endif]-->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=3Ddevice-width,initial-scale=1">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@200..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Oxanium|Roboto:300,400,500,700&display=swap"/>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sample Email</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Helvetica, sans-serif;
+      color: #0c0c0c;
+    }
+
+    table {
+      border-spacing: 0;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    a {
+      color: #2a5ca1;
+      text-decoration: none;
+    }
+
+    hr {
+      border: 0;
+      height: 1px;
+      background: #949494;
+      margin: 20px 0;
+    }
+
+    @media only screen and (max-width: 600px) {
+      body {
+        font-size: 14px;
+      }
+
+      table {
+        width: 100%;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      p {
+        font-size: 14px;
+      }
+    }
+
+    .header-container {
+      background-color: #0076BC;
+      color: #ffffff;
+      padding: 20px;
+      font-family: Helvetica, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-logo {
+      margin-right: 15px;
+    }
+
+    .header-title {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.5;
+      font-weight: normal;
+      text-align: center;
+    }
+
+    .token {
+      font-size: 32px;
+      font-weight: bold;
+      color: #0076BC;
+      text-align: center;
+      margin: 20px 0;
+    }
+  </style>
 </head>
-<body style="background-color:#E5E5E5;">
-    <!-- Baner logo TON -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family: Oxanium;font-weight: 100;font-size:23px;font-style:normal;font-weight:bold;text-align: center;color:#E5E5E5;  height: 60px; width:600px; padding: 10px; background-color: #0076BC;"><img style="width: 70px;" src="https://solarsystem.linea.org.br/img/tno_logo_projetos.png" alt="">
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- Termina baner logo TON-->
-    <!-- baner titulo -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family: Oxanium;font-weight: 100;font-size:23px;font-style:normal;font-weight:normal;text-align: center;color:#E5E5E5;  height: 60px; width:600px; padding: 10px; background-color: #0076BC;">LIneA Occultation Prediction Database
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!--  Termina baner titulo-->
-{% block content %} {% endblock %}
+
+<body>
+    <table style="background-color: #F8F8F8; margin: 0 auto; max-width: 600px; padding: 0px;">
+        {% include 'header.html' %}
+        {% block content %} {% endblock %}
+        {% include 'unsubscribe_banner.html' %}
+        {% include 'footer.html' %}
+    </table>
+</body>
+
 </html>

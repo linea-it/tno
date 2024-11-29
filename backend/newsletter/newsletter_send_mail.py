@@ -71,6 +71,19 @@ class NewsletterSendEmail:
         de acordo com as preferencias do usuario.
         """
         # print(context[5], context[6])
+        data = {
+            "date": context[3],
+            "name": context[4],
+            "velocity": context[5],
+            "closest_approach": context[6],
+            "closest_approach_uncertainty_km": context[7],
+            "gaia_magnitude": context[8],
+            "id": context[10],
+        }
+        transformed_data = [
+            dict(zip(data.keys(), values)) for values in zip(*data.values())
+        ]
+
         html_content = render_to_string(
             "results.html",
             {
@@ -79,14 +92,8 @@ class NewsletterSendEmail:
                 "filter_name": context[0],
                 "date_start": context[1],
                 "date_end": context[2],
-                "date": context[3],
-                "name": context[4],
-                "velocity": context[5],
-                "closest_approach": context[6],
-                "closest_approach_uncertainty_km": context[7],
-                "gaia_magnitude": context[8],
                 "link": context[9],
-                "id": context[10],
+                "data": transformed_data,
             },
         )
 

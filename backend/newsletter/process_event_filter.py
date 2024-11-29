@@ -223,8 +223,7 @@ class ProcessEventFilters:
                 for prediction in occultation_queryset:
                     result = OccultationSerializer(prediction).data
                     result["url"] = (
-                        "http:"
-                        + settings.SITE_URL.rstrip("/")
+                        settings.SITE_URL.rstrip("/")
                         + "/prediction-event-detail/"
                         + prediction.hash_id
                     )

@@ -1,125 +1,44 @@
 {% extends "email_base.tpl" %} {% block content %}
-<div
-  style="
-    background: #f4f4f4;
-    background-color: #f4f4f4;
-    margin: 0px auto;
-    max-width: 600px;
-  "
->
-  <table
-    align="center"
-    border="0"
-    cellpadding="0"
-    cellspacing="0"
-    role="presentation"
-    style="background: #f4f4f4; background-color: #f4f4f4; width: 100%"
-  >
-    <tbody>
-      <tr>
-        <td style="width: 100px">
-          <div
-            style="
-              text-align: center;
-              color: #e5e5e5;
-              height: 10px;
-              width: 600px;
-              padding: 10px;
-              background-color: #f4f4f4;
-            "
-          ></div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
+<tr>
+  <td style="padding: 20px;">
+    <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+      Thank you for subscribing to the LIneA Occultation Prediction
+      Database. We are excited to have you on board. Before you start
+      receiving customized predictions, we need to activate your account.
+    </p>
+    <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+      Please click the button below to proceed.
+    </p>
+    <div style="text-align: center; padding: 10px">
+      <a href="{{host}}/api/subscription/activate/?c={{activation_code}}" style="
+                      display: inline-block;
+                        background-color: #0076BC;
+                        color: #ffffff;
+                        text-decoration: none;
+                        font-size: 14px;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        line-height: 1.5;
+                    " target="_blank">
+        Activate Account
+      </a>
+    </div>
 
-<div
-  style="
-    background: #f4f4f4;
-    background-color: #f4f4f4;
-    margin: 0px auto;
-    max-width: 600px;
-  "
->
-  <table
-    align="center"
-    border="0"
-    cellpadding="15"
-    cellspacing="0"
-    role="presentation"
-    style="background: #f4f4f4; background-color: #f4f4f4; width: 100%"
-  >
-    <tbody>
-      <tr>
-        <td style="width: 100px">
-          <div
-            style="
-              font-family: Roboto, Helvetica, Arial, sans-serif;
-              font-size: 14px;
-              font-style: normal;
-              text-align: center;
-              color: rgb(79, 78, 78);
-              height: 55px;
-              width: 570px;
-              padding: 20px 10px;
-              background-color: #f4f4f4;
-            "
-          >
-            Thank you for subscribing to the LIneA Occultation Prediction
-            Database. We are excited to have you on board. Before you start
-            receiving customized predictions, we need to activate your account.
-            Please click the button below to proceed.
-          </div>
-          <div style="text-align: center; padding: 10px">
-            <a
-              href="{{host}}/api/subscription/activate/?c={{activation_code}}"
-              style="
-                display: inline-block;
-                font-family: Roboto, Helvetica, Arial, sans-serif;
-                font-weight: normal;
-                font-size: 18px;
-                border-radius: 6px;
-                background-color: #0076bc;
-                color: #f4f4f4;
-                text-decoration: none;
-                padding: 10px 20px;
-                cursor: pointer;
-              "
-              target="_blank"
-            >
-              Activate Account
-            </a>
-          </div>
-          <div
-            style="
-              font-family: Roboto, Helvetica, Arial, sans-serif;
-              font-size: 14px;
-              text-align: center;
-              color: rgb(79, 78, 78);
-              padding: 10px;
-              background-color: #f4f4f4;
-            "
-          >
-            <br />Or copy and paste the following link into your browser to
-            activate your account:
-          </div>
-          <div
-            style="
-              font-family: Roboto, Helvetica, Arial, sans-serif;
-              font-size: 12px;
-              text-align: center;
-              color: rgb(79, 78, 78);
-              word-wrap: break-word;
-              padding: 10px;
-              background-color: #f4f4f4;
-            "
-          >
-            {{host}}/api/subscription/activate/?c={{activation_code}}
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-{% include 'footer.html' %} {% endblock %}
+    <p style="font-size: 14px; color: #5a5c5f; text-align: center; margin: 10px 0; line-height: 1;">
+      Or copy and paste the following link into your browser to activate your account:
+    <div style="
+                  font-size: 12px;
+                  text-align: center;
+                  padding: 10px;
+                  color: #5a5c5f;
+                ">
+      {{host}}/api/subscription/activate/?c={{activation_code}}
+    </div>
+    </p>
+    <p style="font-size: 14px; color: #5a5c5f; text-align: left; margin: 10px 0; line-height: 1.5;">
+      Best regards,<br>
+      The LIneA Team
+    </p>
+  </td>
+</tr>
+{% endblock %}
