@@ -1,79 +1,33 @@
-{% extends "email_base.tpl" %} {% block content %}
-    <!-- blank -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="text-align: center;color:#E5E5E5;  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina blank -->
-    <!-- titulo email -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: left;color: rgb(79, 78, 78);  height: 40px; width:580px; padding: 10px; padding-left: 30px; background-color: #F4F4F4;">
-                            Greetings,
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- Termina titulo email -->
-    <!-- Corpo do email -->
-    <!-- Paragrafo agradecimento -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: center;color: rgb(79, 78, 78);  height: 20px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            Customize your experience with our stellar occultation prediction database!
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table> <!--https://tno-dev.linea.org.br/prediction-event-detail/322829-->
-    </div><!-- Termina agradecimento-->
-    <!-- paragrafo 1 -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:95px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 50px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            You can choose specific objects, magnitude limits and many other options aligned with your particular interests and geographic location by
-                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010;font-weight: normal; text-decoration: none;" target="_blank">
-                                clicking here.
-                            </a> <br>
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo 1 -->
-    <!-- paragrafo descadastrar -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            If you wish to unsubscribe or manage your subscription preferences, <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">click here</a>.
-                        </div>
-                        <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo descadastrar -->
-    </body>
-    {% include 'footer.html' %}
+{% extends "email_base.tpl" %}
+{% block content %}
+<!-- Body -->
+<tr>
+    <td style="padding: 20px;">
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+            Greetings,<br><br>
+            Customize your experience with our stellar occultation prediction database!
+            You can choose specific objects, magnitude limits and many other options aligned with your particular
+            interests and geographic location.
+        </p>
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+            To get started, customize your settings by clicking the button below:
+        </p>
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="{{host}}/newsletter_settings/" style="
+                                display: inline-block;
+                                background-color: #0076BC;
+                                color: #ffffff;
+                                text-decoration: none;
+                                font-size: 14px;
+                                padding: 10px 20px;
+                                border-radius: 4px;
+                                line-height: 1.5;
+                            ">Customize Settings</a>
+        </div>
+        <p style="font-size: 14px; color: #5a5c5f; text-align: left; margin: 10px 0; line-height: 1.5;">
+            Best regards,<br>
+            The LIneA Team
+        </p>
+    </td>
+</tr>
 {% endblock %}

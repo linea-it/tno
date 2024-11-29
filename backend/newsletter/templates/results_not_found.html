@@ -1,59 +1,36 @@
 {% extends "email_base.tpl" %} {% block content %}
-    <!-- titulo email -->
-    <!-- <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;font-weight:normal;text-align: center;color:#212121;  height: 10px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            Your customized occultation predicitions for {{filter_name}}
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div> -->
-    <!-- Termina titulo email -->
-    <!-- Corpo do email -->
-    <!-- paragrafo 1 -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="15" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:14px;font-style:normal;text-align: justify;color: rgb(79, 78, 78);  height: 160px; width:570px; padding: 10px; background-color: #F4F4F4;">
-                            Dear {{subscriber}},
-                            <br><br>
-                            We regret to inform you that no events match your customized occultation predictions for the upcoming period.
-                            <br></br>
-                            If you would like to adjust your filter parameters, please
-                            <a href="{{host}}/newsletter_settings/" style="color:#FB1010; text-decoration: none;"  target="_blank">click here</a> to refine your criteria.
-                            <br><br>
-                            Best regards,
-                            <br>
-                            The LIneA Team
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo 1 -->
-    <!-- paragrafo descadastrar -->
-    <div style="background:#F4F4F4;background-color:#F4F4F4;margin:0px auto;max-width:600px;">
-        <table align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background:#F4F4F4;background-color:#F4F4F4;width:100%;">
-            <tbody>
-                <tr>
-                    <td style="width:100px;">
-                        <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                        <div style="font-family:Roboto, Helvetica, Arial, sans-serif;font-size:11px;font-style:normal;font-weight:normal;text-align: center;color: rgb(79, 78, 78);  height: 10px; width:600px; padding: 10px; background-color: #F4F4F4;">
-                            If you wish to unsubscribe or manage your subscription preferences, <a href={{host}}/login/ style="color:#fb101095;font-weight: normal; text-decoration: none;" target="_blank">click here</a>.
-                        </div>
-                        <hr style="width: 600px; color: rgba(79, 78, 78, 0.618);border-color: rgba(0, 0, 0, 0.222)">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div><!-- termina paragrafo descadastrar -->
-    {% include 'footer.html' %}
+<tr>
+    <td style="padding: 20px;">
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+            Dear {{subscriber}},
+        </p>
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+            We regret to inform you that no events match your customized occultation predictions for the upcoming
+            period.
+            If you would like to adjust your filter parameters, please on the button bellow.
+        </p>
+        <p style="font-size: 14px; color: #5a5c5f; line-height: 1.5;">
+        <div style="text-align: center; padding: 10px">
+            <a href="{{host}}/newsletter_settings/" style="
+                      display: inline-block;
+                        background-color: #0076BC;
+                        color: #ffffff;
+                        text-decoration: none;
+                        font-size: 14px;
+                        padding: 10px 20px;
+                        border-radius: 4px;
+                        line-height: 1.5;
+                    " target="_blank">
+                Edit Filters
+            </a>
+        </div>
+        </p>
+
+
+        <p style="font-size: 14px; color: #5a5c5f; text-align: left; margin: 10px 0; line-height: 1.5;">
+            Best regards,<br>
+            The LIneA Team
+        </p>
+    </td>
+</tr>
 {% endblock %}
-</body>
