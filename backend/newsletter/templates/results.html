@@ -17,7 +17,7 @@
     <td>
         <!-- Centered and Rounded Table -->
         <div
-            style="margin: 0 auto; max-width: 90%; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
+            style="margin: 0 auto; max-width: 95%; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
             <table width="100%" style="border-collapse: collapse; margin: 0px 0;">
                 <thead style="background-color: #0076BC; color: #fff;">
                     <tr>
@@ -33,27 +33,27 @@
                 <tbody style="background-color: #ffffff; color: #0c0c0c;">
                     {% for row in data %}
                     <tr class="clickable-row">
-                        <td style="padding: 10px; font-size: 12px; text-align: center;">
+                        <td style="padding: 3px; font-size: 12px; text-align: center;">
                             {{ row.date_time|default:"-" }}
                         </td>
-                        <td style="padding: 6px; font-size: 12px; text-align: center;">
+                        <td style="padding: 3px; font-size: 12px; text-align: center;">
                             {{row.name|default:"-" }}
                         </td>
-                        <td style="padding: 6px; font-size: 12px; text-align: center;">
+                        <td style="padding: 3px; font-size: 12px; text-align: center;">
                             {% if row.velocity %}
                             {{ row.velocity|floatformat:1 }}
                             {% else %}
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 6px; font-size: 12px; text-align: center;">
+                        <td style="padding: 3px; font-size: 12px; text-align: center;">
                             {% if row.closest_approach %}
                             {{ row.closest_approach|floatformat:3 }}
                             {% else %}
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 6px; font-size: 12px; text-align: center;">
+                        <td style="padding: 3px; font-size: 12px; text-align: center;">
                             {% if row.closest_approach_uncertainty_km %}
                             {% if row.closest_approach_uncertainty_km > 12500 %}
                             Very High
@@ -64,14 +64,14 @@
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 6px; font-size: 12px; text-align: center;">
+                        <td style="padding: 3px; font-size: 12px; text-align: center;">
                             {% if row.gaia_magnitude %}
                             {{ row.gaia_magnitude|floatformat:1 }}
                             {% else %}
                             -
                             {% endif %}
                         </td>
-                        <td style="padding: 8px; font-size: 11px; text-align: center;">
+                        <td style="padding: 3px; font-size: 11px; text-align: center;">
                             <a href='{{ host }}/prediction-event-detail/{{ row.id }}'>[URL]</a>
                         </td>
                     </tr>
