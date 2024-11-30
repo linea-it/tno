@@ -261,17 +261,18 @@ class ProcessEventFilters:
             date_start = (now + relativedelta(months=1)).replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0
             )
-            allow_process = True if (date_start - now).days <= 7 else False
-            already_processed = (
-                latest_processing_date is not None
-                and (date_start - latest_processing_date).days < 7
+            processing_window = True if (date_start - now).days <= 7 else False
+
+            allow_process = (latest_processing_date is None) or not (
+                (date_start - relativedelta(days=7) <= latest_processing_date)
+                and (latest_processing_date <= date_start)
             )
 
             if force_run:
                 date_end = (
                     date_start + relativedelta(months=1) - relativedelta(microseconds=1)
                 )
-            elif allow_process and not already_processed:
+            elif processing_window and allow_process:
                 date_end = (
                     date_start + relativedelta(months=1) - relativedelta(microseconds=1)
                 )
@@ -285,12 +286,14 @@ class ProcessEventFilters:
             date_start = (now + relativedelta(weekday=SU(+1))).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
-            allow_process = (
+
+            processing_window = (
                 True if (date_start - now).days <= 3 else False
             )  # verifica se deve ser processado
-            already_processed = (
-                latest_processing_date is not None
-                and (date_start - latest_processing_date).days < 3
+
+            allow_process = (latest_processing_date is None) or not (
+                (date_start - relativedelta(days=3) <= latest_processing_date)
+                and (latest_processing_date <= date_start)
             )
             if force_run:
                 date_end = (
@@ -298,7 +301,7 @@ class ProcessEventFilters:
                     + relativedelta(weekday=SU(+2))
                     - relativedelta(microseconds=1)
                 )
-            elif allow_process and not already_processed:
+            elif processing_window and allow_process:
                 date_end = (
                     date_start
                     + relativedelta(weekday=SU(+2))
@@ -313,18 +316,19 @@ class ProcessEventFilters:
             date_start = (now + relativedelta(days=1)).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
+            self.log.info("Processing daily filter.")
+            processing_window = True if (date_start - now).seconds < 86400 else False
 
-            allow_process = True if (date_start - now).seconds < 86400 else False
-
-            already_processed = (
-                latest_processing_date is not None
-                and (date_start - latest_processing_date).seconds < 86400
+            allow_process = (latest_processing_date is None) or not (
+                (date_start - relativedelta(days=1) <= latest_processing_date)
+                and (latest_processing_date <= date_start)
             )
+
             if force_run:
                 date_end = (
                     date_start + relativedelta(days=1) - relativedelta(microseconds=1)
                 )
-            elif allow_process and not already_processed:
+            elif processing_window and allow_process:
                 date_end = (
                     date_start + relativedelta(days=1) - relativedelta(microseconds=1)
                 )
