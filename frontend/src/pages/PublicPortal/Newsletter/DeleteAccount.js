@@ -11,16 +11,9 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogTitle from '@mui/material/DialogTitle'
 import { delete_account, logout } from '../../../services/api/Auth'
-import Snackbar from '@mui/material/Snackbar'
 
 export function ConfirmDialog({ open, handleClose }) {
   const [error, setError] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [snackbarOpen, setSnackbarOpen] = useState(false)
-
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false)
-  }
 
   return (
     <>
@@ -36,12 +29,7 @@ export function ConfirmDialog({ open, handleClose }) {
             const email = formJson.email
             delete_account(email)
               .then(() => {
-                setSuccess(true)
-                setSnackbarOpen(true)
-                // Delay para exibir o alerta antes do logout
-                setTimeout(() => {
-                  logout()
-                }, 3000)
+                logout()
               })
               .catch(() => {
                 setError(true)
@@ -78,17 +66,6 @@ export function ConfirmDialog({ open, handleClose }) {
           </Button>
         </DialogActions>
       </Dialog>
-      {/* Snackbar para sucesso */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert onClose={handleSnackbarClose} severity='success' variant='filled'>
-          Account deleted successfully! You will be logged out shortly.
-        </Alert>
-      </Snackbar>
     </>
   )
 }
