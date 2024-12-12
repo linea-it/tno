@@ -48,6 +48,11 @@ app.conf.beat_schedule = {
         "schedule": crontab(hour=9, minute=0),
         "kwargs": {"force_run": False},  # Set to True if needed
     },
+    # # Update asteroid class cache every 6 hours
+    "update_asteroid_class_cache": {
+        "task": "tno.tasks.update_asteroid_class_cache",
+        "schedule": crontab(hour="*/6"),
+    },
 }
 app.conf.timezone = "UTC"
 
