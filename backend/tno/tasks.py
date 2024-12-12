@@ -8,6 +8,7 @@ from typing import Optional
 
 from celery import chain, group, shared_task
 from django.conf import settings
+from django.core.cache import cache
 from tno.models import Occultation
 from tno.occviz import occultation_path_coeff, visibility_from_coeff
 from tno.predict_job import (
@@ -279,3 +280,34 @@ def run_subscription_filter_and_send_mail(force_run=False):
             f"Error in run_subscription_filter_and_send_mail: {e}", exc_info=True
         )
         raise
+
+
+@shared_task
+def update_asteroid_classes_cache():
+    try:
+        update_base_dynclass_cache()
+        update_dynclass_cache()
+    except Exception as e:
+        print(f"Error in update_asteroid_classes_cache: {e}")
+
+
+def update_base_dynclass_cache(self):
+    queryset = Occultation.objects.order_by("base_dynclass").distinct("base_dynclass")
+
+    rows = [x.base_dynclass for x in queryset]
+    result = {"results": rows, "count": len(rows)}
+
+    # Store the data in the cache
+    cache.set("base_dynclass_with_prediction", result, 86400)
+    return None
+
+
+def update_dynclass_cache(self):
+    queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
+
+    rows = [x.dynclass for x in queryset]
+    result = {"results": rows, "count": len(rows)}
+
+    # Store the data in the cache
+    cache.set("dynclass_with_prediction", result, 86400)
+    return None
