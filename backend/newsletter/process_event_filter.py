@@ -10,6 +10,7 @@ from dateutil.relativedelta import SU, relativedelta
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
+
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -377,11 +378,10 @@ class ProcessEventFilters:
         self.log.info("#" + "-" * 50 + "#")
         self.log.info("|" + "Process Subscription Filters".center(50, " ") + "|")
         self.log.info("#" + "-" * 50 + "#")
-        # print(settings.SITE_URL)
+
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
-        # print(settings.DATA_TMP_DIR)
-        # print(tmp_path)
+
         if not os.path.exists(tmp_path):
             os.makedirs(tmp_path)
 

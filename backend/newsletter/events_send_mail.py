@@ -26,21 +26,16 @@ class SendEventsMail:
 
     # le o csv gerado e passa os valores para o template
     def get_context_data(self, csv_name):
-        # print("csv_name", csv_name)
-        # tmp_path = Path("/archive/public/newsletter/")
+
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
-        # print(tmp_path)
 
         file_csv = os.path.join(tmp_path, csv_name)
 
         self.log.info("file_csv %s", file_csv)
 
         if os.path.isfile(file_csv):
-            # print("data", filecsv)
-            # print("pegando  dados do resultado")
             csvtable = pd.read_csv(file_csv, sep=";")
-            # print(csvtable)
             return csvtable
         else:
             csvtable = pd.DataFrame()
@@ -63,7 +58,6 @@ class SendEventsMail:
             subscription_users = SubscriptionSerializer(subscriptions, many=True).data
 
             emails_subscription = [user["email"] for user in subscription_users]
-            print("emails_subscription", emails_subscription)
 
             if not submissions.exists():
                 self.log.info("There are no subscription emails to be sent.")
@@ -78,7 +72,6 @@ class SendEventsMail:
                     email_user = event_filter.user.email
 
                     if email_user in emails_subscription:
-                        print("user", email_user)
 
                         self.log.info(
                             f"< Processing Subscripion Filter ID: {event_filter.pk} >".center(
@@ -135,7 +128,6 @@ class SendEventsMail:
 
                                 # Nome do arquivo
                                 arquivo = attachment.filename
-                                # print(attachment.filename)
 
                                 # Recorte da data
                                 start_str = arquivo.split("_")[-4]
@@ -183,9 +175,9 @@ class SendEventsMail:
                             )
 
                         # Update submission status
-                        # submission.sent = True
-                        # submission.sent_date = datetime.now(tz=timezone.utc)
-                        # submission.save()
+                        submission.sent = True
+                        submission.sent_date = datetime.now(tz=timezone.utc)
+                        submission.save()
                         self.log.info(
                             "Submission status updated to sent: %d", submission.pk
                         )
