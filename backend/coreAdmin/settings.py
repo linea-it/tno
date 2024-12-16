@@ -160,7 +160,7 @@ ENVIRONMENT_NAME = env("DJANGO_ENVIRONMENT_NAME", default="Development")
 
 # Emails
 # Notifications Email
-EMAIL_NEWSLETTER_NOREPLY = "noreplysolarsystem@linea.org.br"
+EMAIL_NEWSLETTER_NOREPLY = "noreply-solarsystem@linea.org.br"
 EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.org.br")
 
 
@@ -410,7 +410,7 @@ PASSWORDLESS_AUTH = {
     "PASSWORDLESS_AUTH_TYPES": [
         "EMAIL",
     ],
-    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@solarsystem.linea.org.br",
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply-solarsystem@linea.org.br",
     "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
     "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
     "PASSWORDLESS_REGISTER_NEW_USERS": False,
