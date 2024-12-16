@@ -67,16 +67,18 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
   // linhas azuis
   const blueOptions = { color: 'blue', weight: '1' }
 
-  const latLonSize = data?.uncertainty_lower_limit_latitude.length
   // monta um array [lat, lon] - linhas vermelhas e azul
-  const lineUpper = data?.uncertainty_upper_limit_latitude?.map((lat, i) => [lat, data.uncertainty_upper_limit_longitude[i]]) || []
-  const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data.central_path_longitude[i]]) || []
-  const lineDown = data?.uncertainty_lower_limit_latitude?.map((lat, i) => [lat, data.uncertainty_lower_limit_longitude[i]]) || []
+  const lineUpper = data?.uncertainty_upper_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_upper_limit_longitude[i]]) || []
+  const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data?.central_path_longitude[i]]) || []
+  const lineDown = data?.uncertainty_lower_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_lower_limit_longitude[i]]) || []
+
+  console.log(lineDown[637])
 
   //arrays das linhas central
   let pointLineCenter = []
 
   // monta um array [lat, lon] para desenhar os pontos menores
+  const latLonSize = data?.uncertainty_lower_limit_latitude.length
   for (let i = 0; i < latLonSize; i += 64) {
     pointLineCenter[i] = [data?.central_path_latitude[i], data?.central_path_longitude[i]]
   }
@@ -88,24 +90,21 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
           <MapContainer
             className={thumbsCard === true ? classes.mapThumbsCard : thumbsList === true ? classes.mapThumbsList : classes.map}
             center={lineUpper[637]}
-            zoomControl={thumbsList === true ? false : true}
-            attributionControl={thumbsList === true ? false : true}
-            zoom={zoomLevel}
+            zoom={thumbsCard === true ? 1 : zoomLevel}
           >
             <TileLayer
               url={`https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en&gl=US&${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`}
               subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
             />
-
             <Polyline pathOptions={traceOptions} positions={lineUpper}></Polyline>
             <Polyline pathOptions={blueOptions} positions={lineCenter}></Polyline>
             <Polyline pathOptions={traceOptions} positions={lineDown}></Polyline>
-            <Marker position={lineCenter[777]} icon={starIcon}>
+            <Marker position={lineCenter[776]} icon={starIcon}>
               <Popup>I am a star </Popup>
             </Marker>
             <Circle center={lineCenter[637]} pathOptions={circleOptions} />
-            {pointLineCenter.map((point) => (
-              <CircleMarker center={point} pathOptions={circleMinOptions} />
+            {pointLineCenter.map((point, index) => (
+              <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
             ))}
           </MapContainer>
         )}
