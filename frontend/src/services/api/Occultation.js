@@ -232,3 +232,13 @@ export const allBaseDynclassWithEvents = () => {
 export const allDynclassWithEvents = () => {
   return api.get(`/occultations/dynclass_with_prediction/`).then((res) => res.data)
 }
+
+export const getOccultationPaths = ({ queryKey }) => {
+  const params = queryKey[1]
+  const { id, force } = params
+  if (!id) {
+    return
+  }
+
+  return api.get(`/occultations/${id}/get_occultation_paths`, { params: { force: force } }).then((res) => res.data)
+}
