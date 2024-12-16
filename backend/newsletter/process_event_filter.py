@@ -258,6 +258,8 @@ class ProcessEventFilters:
         # definir as datas inicial e final para o processamento a partir da ultima data de processamento
         # caso mensal processa até 7 dias antes do final do mes
         if filter_set["frequency"] == 1:
+            now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             date_start = (now + relativedelta(months=1)).replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0
             )
@@ -283,6 +285,8 @@ class ProcessEventFilters:
         # caso semanal, processa até 3 dias antes do final da semana
         # sempre considera o proximo domingo como inicio da semana
         if filter_set["frequency"] == 2:
+            now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             date_start = (now + relativedelta(weekday=SU(+1))).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
@@ -313,6 +317,8 @@ class ProcessEventFilters:
 
         # caso diario, processa no intervalo de 24 horas
         if filter_set["frequency"] == 3:
+            now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             date_start = (now + relativedelta(days=1)).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
@@ -377,11 +383,10 @@ class ProcessEventFilters:
         self.log.info("#" + "-" * 50 + "#")
         self.log.info("|" + "Process Subscription Filters".center(50, " ") + "|")
         self.log.info("#" + "-" * 50 + "#")
-        # print(settings.SITE_URL)
+
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
-        # print(settings.DATA_TMP_DIR)
-        # print(tmp_path)
+
         if not os.path.exists(tmp_path):
             os.makedirs(tmp_path)
 

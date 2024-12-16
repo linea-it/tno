@@ -6,8 +6,9 @@ from pathlib import Path
 import colorlog
 import pandas as pd
 from django.conf import settings
-from newsletter.models import Attachment, EventFilter, Submission
+from newsletter.models import Attachment, EventFilter, Submission, Subscription
 from newsletter.newsletter_send_mail import NewsletterSendEmail
+from newsletter.serializers import SubscriptionSerializer
 
 
 class SendEventsMail:
@@ -26,21 +27,15 @@ class SendEventsMail:
     # le o csv gerado e passa os valores para o template
     def get_context_data(self, csv_name):
 
-        # print("csv_name", csv_name)
-        # tmp_path = Path("/archive/public/newsletter/")
         path = "newsletter"
         tmp_path = Path(settings.DATA_TMP_DIR).joinpath(path)
-        # print(tmp_path)
 
         file_csv = os.path.join(tmp_path, csv_name)
 
         self.log.info("file_csv %s", file_csv)
 
         if os.path.isfile(file_csv):
-            # print("data", filecsv)
-            # print("pegando  dados do resultado")
             csvtable = pd.read_csv(file_csv, sep=";")
-            # print(csvtable)
             return csvtable
         else:
             csvtable = pd.DataFrame()
@@ -57,6 +52,12 @@ class SendEventsMail:
         try:
             # Retrieve all pending submissions
             submissions = Submission.objects.filter(prepared=True, sent=False)
+            subscriptions = Subscription.objects.filter(unsubscribe=False)
+
+            # convertendo formato dos dados para pegar email
+            subscription_users = SubscriptionSerializer(subscriptions, many=True).data
+
+            emails_subscription = [user["email"] for user in subscription_users]
 
             if not submissions.exists():
                 self.log.info("There are no subscription emails to be sent.")
@@ -70,109 +71,116 @@ class SendEventsMail:
                     attachment = submission.attachment
                     email_user = event_filter.user.email
 
-                    self.log.info(
-                        f"< Processing Subscripion Filter ID: {event_filter.pk} >".center(
-                            52, "-"
-                        )
-                    )
-                    self.log.info("Email: %s", email_user)
-                    # if there are attachments, process them and send email
-                    if attachment:
-                        try:
-                            path = "newsletter"
-                            path_link = Path(settings.DATA_TMP_URL).joinpath(path)
-                            link = settings.SITE_URL + str(
-                                path_link / attachment.filename
+                    if email_user in emails_subscription:
+
+                        self.log.info(
+                            f"< Processing Subscripion Filter ID: {event_filter.pk} >".center(
+                                52, "-"
                             )
+                        )
+                        self.log.info("Email: %s", email_user)
+                        # if there are attachments, process them and send email
+                        if attachment:
+                            try:
+                                path = "newsletter"
+                                path_link = Path(settings.DATA_TMP_URL).joinpath(path)
+                                link = settings.SITE_URL + str(
+                                    path_link / attachment.filename
+                                )
 
-                            self.log.info("Attachment found: %s", attachment.filename)
-                            complete_data = self.get_context_data(attachment.filename)
-                            number_of_events = len(complete_data)
+                                self.log.info(
+                                    "Attachment found: %s", attachment.filename
+                                )
+                                complete_data = self.get_context_data(
+                                    attachment.filename
+                                )
+                                number_of_events = len(complete_data)
 
-                            # Validate data structure
-                            required_keys = [
-                                "date_time",
-                                "name",
-                                "velocity",
-                                "closest_approach",
-                                "closest_approach_uncertainty_km",
-                                "gaia_magnitude",
-                                "id",
-                            ]
+                                # Validate data structure
+                                required_keys = [
+                                    "date_time",
+                                    "name",
+                                    "velocity",
+                                    "closest_approach",
+                                    "closest_approach_uncertainty_km",
+                                    "gaia_magnitude",
+                                    "id",
+                                ]
 
-                            # Limit data to the first 10 rows
-                            data = complete_data.head(10)[required_keys]
-                            data["date_time"] = pd.to_datetime(
-                                data["date_time"]
-                            ).dt.strftime("%Y-%m-%d %H:%M")
-                            # data["date_time"] = data["date_time"].apply(
-                            #     lambda dt: dt.replace("T", " ").rstrip("Z")
-                            # )
+                                # Limit data to the first 10 rows
+                                data = complete_data.head(10)[required_keys]
+                                data["date_time"] = pd.to_datetime(
+                                    data["date_time"]
+                                ).dt.strftime("%Y-%m-%d %H:%M")
+                                # data["date_time"] = data["date_time"].apply(
+                                #     lambda dt: dt.replace("T", " ").rstrip("Z")
+                                # )
 
-                            # Convert to JSON
-                            json_data = data.to_dict(orient="records")
+                                # Convert to JSON
+                                json_data = data.to_dict(orient="records")
 
-                            if not all(key in data for key in required_keys):
+                                if not all(key in data for key in required_keys):
+                                    self.log.error(
+                                        "Invalid data structure returned for %s",
+                                        attachment.filename,
+                                    )
+                                    continue
+
+                                # Nome do arquivo
+                                arquivo = attachment.filename
+
+                                # Recorte da data
+                                start_str = arquivo.split("_")[-4]
+                                end_str = arquivo.split("_")[-3]
+                                # Extract YYYY-MM-DD
+                                date_start = datetime.strptime(
+                                    start_str, "%Y%m%d%H%M%S"
+                                )
+                                date_end = datetime.strptime(end_str, "%Y%m%d%H%M%S")
+
+                                context = [
+                                    event_filter.filter_name,
+                                    date_start,
+                                    date_end,
+                                    number_of_events,
+                                    link,
+                                    json_data,
+                                ]
+
+                                # Send email with events
+                                send_mail = NewsletterSendEmail()
+                                send_mail.send_events_mail(
+                                    event_filter.pk, email=email_user, context=context
+                                )
+                                self.log.debug(
+                                    "Email sent successfully for EventFilter ID: %d",
+                                    event_filter.pk,
+                                )
+                            except Exception as e:
                                 self.log.error(
-                                    "Invalid data structure returned for %s",
-                                    attachment.filename,
+                                    "Error while processing attachment: %s", str(e)
                                 )
                                 continue
-
-                            # Nome do arquivo
-                            arquivo = attachment.filename
-                            # print(attachment.filename)
-
-                            # Recorte da data
-                            start_str = arquivo.split("_")[-4]
-                            end_str = arquivo.split("_")[-3]
-                            # Extract YYYY-MM-DD
-                            date_start = datetime.strptime(start_str, "%Y%m%d%H%M%S")
-                            date_end = datetime.strptime(end_str, "%Y%m%d%H%M%S")
-
-                            context = [
-                                event_filter.filter_name,
-                                date_start,
-                                date_end,
-                                number_of_events,
-                                link,
-                                json_data,
-                            ]
-
-                            # Send email with events
+                        else:
+                            # Send email indicating no results found
                             send_mail = NewsletterSendEmail()
-                            send_mail.send_events_mail(
-                                event_filter.pk, email=email_user, context=context
+                            send_mail.send_mail_not_found(
+                                event_filter.pk,
+                                email=email_user,
+                                context=event_filter.filter_name,
                             )
-                            self.log.debug(
-                                "Email sent successfully for EventFilter ID: %d",
+                            self.log.info(
+                                "Email sent for no results found: EventFilter ID: %d",
                                 event_filter.pk,
                             )
-                        except Exception as e:
-                            self.log.error(
-                                "Error while processing attachment: %s", str(e)
-                            )
-                            continue
-                    else:
-                        # Send email indicating no results found
-                        send_mail = NewsletterSendEmail()
-                        send_mail.send_mail_not_found(
-                            event_filter.pk,
-                            email=email_user,
-                            context=event_filter.filter_name,
-                        )
-                        self.log.info(
-                            "Email sent for no results found: EventFilter ID: %d",
-                            event_filter.pk,
-                        )
 
-                    # Update submission status
-                    submission.sent = True
-                    submission.sent_date = datetime.now(tz=timezone.utc)
-                    submission.save()
-                    self.log.info(
-                        "Submission status updated to sent: %d", submission.pk
-                    )
+                        # Update submission status
+                        submission.sent = True
+                        submission.sent_date = datetime.now(tz=timezone.utc)
+                        submission.save()
+                        self.log.info(
+                            "Submission status updated to sent: %d", submission.pk
+                        )
                 except Exception as e:
                     self.log.error(
                         "Error processing submission ID %d: %s", submission.pk, str(e)
