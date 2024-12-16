@@ -10,7 +10,6 @@ from dateutil.relativedelta import SU, relativedelta
 from django.conf import settings
 from django.db.models import Q
 from newsletter.models import Attachment, EventFilter, Submission
-
 from tno.models import Occultation
 from tno.occviz import visibility_from_coeff
 from tno.serializers import OccultationSerializer
@@ -259,6 +258,8 @@ class ProcessEventFilters:
         # definir as datas inicial e final para o processamento a partir da ultima data de processamento
         # caso mensal processa até 7 dias antes do final do mes
         if filter_set["frequency"] == 1:
+            now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             date_start = (now + relativedelta(months=1)).replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0
             )
@@ -284,6 +285,8 @@ class ProcessEventFilters:
         # caso semanal, processa até 3 dias antes do final da semana
         # sempre considera o proximo domingo como inicio da semana
         if filter_set["frequency"] == 2:
+            now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             date_start = (now + relativedelta(weekday=SU(+1))).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
@@ -314,6 +317,8 @@ class ProcessEventFilters:
 
         # caso diario, processa no intervalo de 24 horas
         if filter_set["frequency"] == 3:
+            now = now.replace(hour=0, minute=0, second=0, microsecond=0)
+
             date_start = (now + relativedelta(days=1)).replace(
                 hour=0, minute=0, second=0, microsecond=0
             )
