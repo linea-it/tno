@@ -68,11 +68,15 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
   const blueOptions = { color: 'blue', weight: '1' }
 
   // monta um array [lat, lon] - linhas vermelhas e azul
-  const lineUpper = data?.uncertainty_upper_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_upper_limit_longitude[i]]) || []
+  const lineUpper =
+    //data !== undefined
+    //?
+    data?.uncertainty_upper_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_upper_limit_longitude[i]]) || []
+  //: ''
   const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data?.central_path_longitude[i]]) || []
   const lineDown = data?.uncertainty_lower_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_lower_limit_longitude[i]]) || []
 
-  console.log(lineDown[637])
+  console.log(lineCenter[637])
 
   //arrays das linhas central
   let pointLineCenter = []
@@ -87,25 +91,25 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
     <Card spacing={4}>
       <Box>
         {data !== undefined && (
-          <MapContainer
-            className={thumbsCard === true ? classes.mapThumbsCard : thumbsList === true ? classes.mapThumbsList : classes.map}
-            center={lineUpper[637]}
-            zoom={thumbsCard === true ? 1 : zoomLevel}
-          >
+          <MapContainer className={classes.map} center={lineCenter !== undefined ? lineCenter[637] : ''} zoom={zoomLevel}>
             <TileLayer
               url={`https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en&gl=US&${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`}
               subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
             />
-            <Polyline pathOptions={traceOptions} positions={lineUpper}></Polyline>
-            <Polyline pathOptions={blueOptions} positions={lineCenter}></Polyline>
-            <Polyline pathOptions={traceOptions} positions={lineDown}></Polyline>
-            <Marker position={lineCenter[776]} icon={starIcon}>
-              <Popup>I am a star </Popup>
-            </Marker>
-            <Circle center={lineCenter[637]} pathOptions={circleOptions} />
-            {pointLineCenter.map((point, index) => (
-              <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
-            ))}
+            {lineUpper !== undefined ? <Polyline pathOptions={traceOptions} positions={lineUpper}></Polyline> : ''}
+            {lineCenter !== undefined ? <Polyline pathOptions={blueOptions} positions={lineCenter}></Polyline> : ''}
+            {lineDown !== undefined ? <Polyline pathOptions={traceOptions} positions={lineDown}></Polyline> : ''}
+            {lineUpper !== undefined ? (
+              <Marker position={lineCenter[776]} icon={starIcon}>
+                <Popup>I am a star </Popup>
+              </Marker>
+            ) : (
+              ''
+            )}
+            {lineCenter !== undefined ? <Circle center={lineCenter[637]} pathOptions={circleOptions} /> : ''}
+            {pointLineCenter !== undefined
+              ? pointLineCenter.map((point, index) => <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />)
+              : ''}
           </MapContainer>
         )}
       </Box>
