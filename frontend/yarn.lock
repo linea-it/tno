@@ -2290,10 +2290,10 @@
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
   integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
-"@react-leaflet/core@^3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@react-leaflet/core/-/core-3.0.0.tgz#34ccc280ce7d8ac5c09f2b3d5fffded450bdf1a2"
-  integrity sha512-3EWmekh4Nz+pGcr+xjf0KNyYfC3U2JjnkWsh0zcqaexYqmmB5ZhH37kz41JXGmKzpaMZCnPofBBm64i+YrEvGQ==
+"@react-leaflet/core@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@react-leaflet/core/-/core-2.1.0.tgz#383acd31259d7c9ae8fb1b02d5e18fe613c2a13d"
+  integrity sha512-Qk7Pfu8BSarKGqILj4x7bCSZ1pjuAPZ+qmRwH5S7mDS91VSbVVsJSrW4qA+GPrro8t69gFYVMWb1Zc4yFmPiVg==
 
 "@remix-run/router@1.0.3":
   version "1.0.3"
@@ -6844,6 +6844,13 @@ gensync@^1.0.0-beta.2:
   resolved "https://registry.npmjs.org/gensync/-/gensync-1.0.0-beta.2.tgz"
   integrity sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==
 
+geojson-area@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/geojson-area/-/geojson-area-0.0.1.tgz#112ba74e6f0507995eadf9b421587dd3d89af7f6"
+  integrity sha512-ngS391QLjrcrKnVhT1mIpamBQW44S4xXzsH+Uw7D51KNgqmSlnZGviEXRAVd9L4/acKqSlxeYQIGlURPTz+4Gg==
+  dependencies:
+    wgs84 "0.0.0"
+
 geojson-vt@^3.2.1:
   version "3.2.1"
   resolved "https://registry.npmjs.org/geojson-vt/-/geojson-vt-3.2.1.tgz"
@@ -8886,6 +8893,24 @@ lazy-ass@^1.6.0:
   resolved "https://registry.yarnpkg.com/lazy-ass/-/lazy-ass-1.6.0.tgz#7999655e8646c17f089fdd187d150d3324d54513"
   integrity sha512-cc8oEVoctTvsFZ/Oje/kGnHbpWHYBe8IAJe4C0QNc3t8uM/0Y8+erSz/7Y1ALuXTEZTMvxXwO6YbX1ey3ujiZw==
 
+leaflet-geodesy@0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/leaflet-geodesy/-/leaflet-geodesy-0.2.1.tgz#d849a8add16b5d9b37f9c5f214e6fe7422bb737b"
+  integrity sha512-skC+lpz3zkrbZyOsqmZ6pwGT2q7s2XV/DloZLiWSO5Rb+BR9gptAGRwJ++Y/ewtVME1IxzhdooBN0Fg2mahH7w==
+  dependencies:
+    geojson-area "0.0.1"
+    spherical "0.1.0"
+    wgs84 "0.0.0"
+
+leaflet-terminator@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/leaflet-terminator/-/leaflet-terminator-0.1.0.tgz#5a703ed15435968518ee23f99cf3dafec54042ca"
+  integrity sha512-PqNZvIEreEMeLJyKUWMkMoT6a14rtXrrVpPMtjAs4ivhSjACB/f4lZYuCcV8iF0zPAPvRhh22SJwkuEWk90y3Q==
+  dependencies:
+    leaflet-geodesy "0.2.1"
+    moment "~2.7.0"
+    spherical "0.0.1"
+
 leaflet@^1.9.4:
   version "1.9.4"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.9.4.tgz#23fae724e282fa25745aff82ca4d394748db7d8d"
@@ -9518,6 +9543,11 @@ moment@^2.29.4:
   version "2.29.4"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.4.tgz#3dbe052889fe7c1b2ed966fcb3a77328964ef108"
   integrity sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w==
+
+moment@~2.7.0:
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.7.0.tgz#359a19ec634cda3c706c8709adda54c0329aaec4"
+  integrity sha512-zp8slBaeHVn8VOr7aTVzXYYayoVtEF3XI9gmgimyR3PBZsBk4JlXlFgxmcKxRjBZ1voh9ao77u/qwMGSZVZ9+A==
 
 mouse-change@^1.4.0:
   version "1.4.0"
@@ -11429,12 +11459,12 @@ react-lazyload@3.2.0:
   resolved "https://registry.npmjs.org/react-lazyload/-/react-lazyload-3.2.0.tgz"
   integrity sha512-zJlrG8QyVZz4+xkYZH5v1w3YaP5wEFaYSUWC4CT9UXfK75IfRAIEdnyIUF+dXr3kX2MOtL1lUaZmaQZqrETwgw==
 
-react-leaflet@^5.0.0:
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/react-leaflet/-/react-leaflet-5.0.0.tgz#945d40bad13b69e8606278b19446b00bab57376a"
-  integrity sha512-CWbTpr5vcHw5bt9i4zSlPEVQdTVcML390TjeDG0cK59z1ylexpqC6M1PJFjV8jD7CF+ACBFsLIDs6DRMoLEofw==
+react-leaflet@4:
+  version "4.2.1"
+  resolved "https://registry.yarnpkg.com/react-leaflet/-/react-leaflet-4.2.1.tgz#c300e9eccaf15cb40757552e181200aa10b94780"
+  integrity sha512-p9chkvhcKrWn/H/1FFeVSqLdReGwn2qmiobOQGO3BifX+/vV/39qhY8dGqbdcPh1e6jxh/QHriLXr7a4eLFK4Q==
   dependencies:
-    "@react-leaflet/core" "^3.0.0"
+    "@react-leaflet/core" "^2.1.0"
 
 react-list@^0.8.13:
   version "0.8.17"
@@ -12555,6 +12585,20 @@ spdy@^4.0.2:
     http-deceiver "^1.2.7"
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
+
+spherical@0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/spherical/-/spherical-0.0.1.tgz#67328f57bb629b72ecd9a4f6d5211b6a0ac8b6f1"
+  integrity sha512-JFZDA4LxjbqGNNdwVusfShtaQY1djPjMWpvqiyYt9qDwICz5mQiyvbx7SuGHcUTWxWpsLmj2Gy4DMd0HS/cGWQ==
+  dependencies:
+    wgs84 "0.0.0"
+
+spherical@0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/spherical/-/spherical-0.1.0.tgz#1feacc4b83bcd0dc2d895ef8adb85f8a5ec543c2"
+  integrity sha512-ynowteUxX1Gvzq5otYfy6LZvthbNES2lNWAyWuNZlmmLQxN42G7WORXqLYdEg+G4VWRRKqFw5D+nv773lUh7dQ==
+  dependencies:
+    wgs84 "0.0.0"
 
 sprintf-js@~1.0.2:
   version "1.0.3"
@@ -13937,6 +13981,11 @@ websocket-extensions@>=0.1.1:
   version "0.1.4"
   resolved "https://registry.npmjs.org/websocket-extensions/-/websocket-extensions-0.1.4.tgz"
   integrity sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==
+
+wgs84@0.0.0:
+  version "0.0.0"
+  resolved "https://registry.yarnpkg.com/wgs84/-/wgs84-0.0.0.tgz#34fdc555917b6e57cf2a282ed043710c049cdc76"
+  integrity sha512-ANHlY4Rb5kHw40D0NJ6moaVfOCMrp9Gpd1R/AIQYg2ko4/jzcJ+TVXYYF6kXJqQwITvEZP4yEthjM7U6rYlljQ==
 
 whatwg-encoding@^1.0.5:
   version "1.0.5"
