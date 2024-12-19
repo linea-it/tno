@@ -1,115 +1,271 @@
+// Importações principais de bibliotecas necessárias para o funcionamento do componente
 import React from 'react'
-import { useQuery } from 'react-query'
-import L from 'leaflet'
-import { MapContainer, TileLayer, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet'
-import star from './data/img/estrela-pontiaguda.png'
-import styles from './styles'
-// css do próprio leaflet, sem ele mapa quebra
-import './leaflet.css'
-import { Box, Card } from '@mui/material'
-import { getOccultationPaths } from '../../../../services/api/Occultation'
-/// plugin para desenhar as sobras
-//import { NightRegion } from 'react-leaflet-night-region'
+import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
+import L from 'leaflet' // Biblioteca para manipulação de mapas
+import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
+import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
+import styles from './styles' // Estilos do componente
+import './leaflet.css' // Estilos adicionais do Leaflet
+import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
+import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
+import { Typography } from '@mui/material'
 
+// Componente FlyToMap
+// Responsável por mover progressivamente o mapa para a posição especificada (center) com zoom
+const FlyToMap = ({ center, zoom }) => {
+  const map = useMap() // Obtém a instância do mapa atual
+  React.useEffect(() => {
+    if (center && zoom) {
+      // Verifica se os parâmetros são válidos
+      map.flyTo(center, zoom, { animate: true, duration: 0.5 }) // Move o mapa com animação
+    }
+  }, [center, zoom, map]) // Efeito dispara quando center ou zoom mudam
+  return null
+}
+
+// Componente Legend
+// Adiciona uma legenda dinamicamente ao mapa
+const Legend = ({ hasBodyLimit, hasUncertainty }) => {
+  const map = useMap()
+
+  React.useEffect(() => {
+    const legend = L.control({ position: 'bottomleft' })
+
+    legend.onAdd = () => {
+      const div = L.DomUtil.create('div', 'info legend')
+      div.style.background = 'rgba(255, 255, 255, 0.95)'
+      div.style.borderRadius = '8px'
+      div.style.padding = '5px'
+      div.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.2)'
+
+      // Estrutura fixa da legenda com elementos opcionais para "Body Limits" e "Uncertainty"
+      div.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-around;">
+          <div style="display: flex; align-items: center; margin: 0 15px;">
+            <div style="width: 20px; height: 2px; background: #00468D; margin-right: 8px;"></div> Shadow Path
+          </div>
+          <div style="display: flex; align-items: center; margin: 0 15px;">
+            <div style="width: 10px; height: 10px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> CA Instant
+          </div>
+          <div style="display: flex; align-items: center; margin: 0 15px;">
+            <div style="width: 5px; height: 5px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> 60s steps
+          </div>
+          ${
+            hasBodyLimit
+              ? `
+          <div style="display: flex; align-items: center; margin: 0 15px;">
+            <div style="width: 20px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
+          </div>
+          `
+              : ''
+          }
+          ${
+            hasUncertainty
+              ? `
+          <div style="display: flex; align-items: center; margin: 0 15px;">
+            <div style="width: 20px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
+          </div>
+          `
+              : ''
+          }
+        </div>
+      `
+      return div
+    }
+
+    legend.addTo(map)
+
+    return () => {
+      map.removeControl(legend)
+    }
+  }, [hasBodyLimit, hasUncertainty, map])
+
+  return null
+}
+
+// Função para lidar com descontinuidades em longitude
+const splitByDiscontinuity = (points, threshold = 180) => {
+  const segments = []
+  let currentSegment = []
+
+  for (let i = 0; i < points.length - 1; i++) {
+    currentSegment.push(points[i])
+    const [lat1, lon1] = points[i]
+    const [lat2, lon2] = points[i + 1]
+
+    // Verifica a diferença em longitude para identificar a descontinuidade
+    if (Math.abs(lon2 - lon1) > threshold) {
+      segments.push(currentSegment) // Adiciona o segmento atual
+      currentSegment = [] // Inicia um novo segmento
+    }
+  }
+
+  // Adiciona o último ponto do último segmento
+  if (currentSegment.length > 0) {
+    currentSegment.push(points[points.length - 1])
+    segments.push(currentSegment)
+  }
+
+  return segments
+}
+
+// Adiciona periodicidade aos segmentos (linhas)
+const createPeriodicSegments = (segments, repetitions = 1) => {
+  const periodicSegments = []
+  segments.forEach((segment) => {
+    for (let i = -repetitions; i <= repetitions; i++) {
+      const offsetSegment = segment.map(([lat, lon]) => [lat, lon + i * 360])
+      periodicSegments.push(offsetSegment)
+    }
+  })
+  return periodicSegments
+}
+
+// Adiciona periodicidade aos pontos
+const createPeriodicPoints = (points, repetitions = 1) => {
+  const periodicPoints = []
+  for (let i = -repetitions; i <= repetitions; i++) {
+    points.forEach(([lat, lon]) => {
+      periodicPoints.push([lat, lon + i * 360])
+    })
+  }
+  return periodicPoints
+}
+
+// Componente principal para exibir o mapa de previsões de ocultação
 const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
-  const [force, setForce] = React.useState(false)
-  const classes = styles()
+  const [force, setForce] = React.useState(false) // Estado para forçar a atualização dos dados
+  const classes = styles() // Estilos aplicados ao mapa
 
-  const { data } = useQuery({
-    queryKey: ['getOccultationPaths', { id: occultationId, force: force }],
-    queryFn: getOccultationPaths,
-    keepPreviousData: false,
-    refetchInterval: false,
-    refetchOnmount: false,
-    refetchOnWindowFocus: false,
-    onSuccess: () => {
-      if (force === true) setForce(false)
-    },
-    staleTime: 1 * 60 * 1000
+  const tileLayerUrl = `https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en&gl=US`
+
+  // Consulta os dados de ocultação usando a API
+  const { data, isFetching } = useQuery({
+    queryKey: ['getOccultationPaths', { id: occultationId, force }], // Chave única para consulta
+    queryFn: getOccultationPaths, // Função que realiza a consulta
+    onSuccess: () => setForce(false), // Reseta o estado de força ao concluir
+    staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
 
-  //thumbsCard -> mapas menores dos cards grid ,
-  //thumbsList -> mapas pequenos das linhas da lista
-  //ultima opção se refere à pagina de detalhes
-  let zoomLevel = thumbsCard ? 1 : thumbsList ? -1 : 2.6
+  // Define o nível de zoom com base nos parâmetros
+  const zoomLevel = thumbsCard ? 3 : thumbsList ? 5 : 8
 
-  // opçoes do icone estrela // falta definir posição real
-  const starIcon = L.icon({
-    iconUrl: star,
-    //shadowUrl: leafShadow, //sombra
-    iconSize: [18, 18], // size of the icon
-    shadowSize: [50, 64], // size of the shadow
-    iconAnchor: [22, 94], // point of the icon which will correspond to marker's location
-    shadowAnchor: [4, 62], // the same for the shadow
-    popupAnchor: [-3, -76]
-    //lat: [-47.1729,-10.0068],
-    //lng: [-27.2729,-13.9068],
-  })
+  // Determina dinamicamente o centro do mapa e o nível de zoom inicial
+  const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : null
+  const mapZoom = data ? 4 : zoomLevel
 
-  // opçoes do ponto central
+  // Configurações do ícone personalizado
+  const starIcon = React.useMemo(
+    () =>
+      L.icon({
+        iconUrl: star, // URL do ícone
+        iconSize: [18, 18], // Tamanho do ícone
+        iconAnchor: [22, 94], // Âncora do ícone
+        popupAnchor: [-3, -76] // Posição do popup relativo ao ícone
+      }),
+    [] // Memoriza o ícone para evitar recriação
+  )
+
+  // Configurações dos elementos gráficos do mapa
   const circleOptions = {
-    color: 'blue',
-    weight: thumbsCard === true ? 10 : thumbsList === true ? 5 : 20,
-    radius: thumbsCard === true ? 100 : data?.diameter
+    color: '#00468D', // Cor do círculo principal
+    stroke: 'false', // Desativa a borda
+    weight: thumbsCard === true ? 10 : thumbsList === true ? 5 : 20, // Espessura variável
+    radius: thumbsCard === true ? 100 : data?.diameter // Raio do círculo
   }
 
-  // opçoes dos pontos menores
   const circleMinOptions = {
-    color: 'blue',
-    stroke: 'false', //'true',
-    weight: thumbsCard === true ? 4 : thumbsList === true ? 1 : 8,
-    radius: 1 //thumbsCard === true ? 0.0001 : 1
+    color: '#00468D', // Cor dos círculos menores
+    stroke: 'false', // Desativa a borda
+    weight: thumbsCard === true ? 4 : thumbsList === true ? 1 : 8, // Espessura variável
+    radius: 1 // Raio padrão
   }
 
-  // opções das linhas
-  // linhas vermelhas
-  const traceOptions = { color: 'red', weight: '1', dashArray: '5, 10' }
-  // linhas azuis
-  const blueOptions = { color: 'blue', weight: '1' }
+  const traceOptions = { color: '#D32F2F', weight: 1, dashArray: '15, 10' } // Opções para linhas tracejadas
+  const blueOptions = { color: '#00468D', weight: 1 } // Opções para linhas sólidas
+  const bodyOptions = { color: '#00468D', weight: 2 } // Opções para linhas de limite do corpo
 
-  // monta um array [lat, lon] - linhas vermelhas e azul
-  const lineUpper =
-    //data !== undefined
-    //?
-    data?.uncertainty_upper_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_upper_limit_longitude[i]]) || []
-  //: ''
+  // Extração dos dados para construção dos elementos do mapa
   const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data?.central_path_longitude[i]]) || []
-  const lineDown = data?.uncertainty_lower_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_lower_limit_longitude[i]]) || []
+  const centralPathSteps = data?.central_path_latitude_60s_step?.map((lat, i) => [lat, data?.central_path_longitude_60s_step[i]]) || []
+  const bodyUpper = data?.body_upper_limit_latitude?.map((lat, i) => [lat, data?.body_upper_limit_longitude[i]]) || []
+  const bodyLower = data?.body_lower_limit_latitude?.map((lat, i) => [lat, data?.body_lower_limit_longitude[i]]) || []
+  const uncertaintyUpper = data?.uncertainty_upper_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_upper_limit_longitude[i]]) || []
+  const uncertaintyLower = data?.uncertainty_lower_limit_latitude?.map((lat, i) => [lat, data?.uncertainty_lower_limit_longitude[i]]) || []
 
-  console.log(lineCenter[637])
+  // Divide os dados em segmentos para evitar descontinuidades
+  const lineCenterSegments = splitByDiscontinuity(lineCenter)
+  const bodyUpperSegments = splitByDiscontinuity(bodyUpper)
+  const bodyLowerSegments = splitByDiscontinuity(bodyLower)
+  const uncertaintyUpperSegments = splitByDiscontinuity(uncertaintyUpper)
+  const uncertaintyLowerSegments = splitByDiscontinuity(uncertaintyLower)
 
-  //arrays das linhas central
-  let pointLineCenter = []
+  // Aplica periodicidade nos segmentos
+  const periodicLineCenterSegments = createPeriodicSegments(lineCenterSegments, 2) // 2 repetições para cada lado
+  const periodicBodyUpperSegments = createPeriodicSegments(bodyUpperSegments, 2)
+  const periodicBodyLowerSegments = createPeriodicSegments(bodyLowerSegments, 2)
+  const periodicUncertaintyUpperSegments = createPeriodicSegments(uncertaintyUpperSegments, 2)
+  const periodicUncertaintyLowerSegments = createPeriodicSegments(uncertaintyLowerSegments, 2)
 
-  // monta um array [lat, lon] para desenhar os pontos menores
-  const latLonSize = data?.uncertainty_lower_limit_latitude.length
-  for (let i = 0; i < latLonSize; i += 64) {
-    pointLineCenter[i] = [data?.central_path_latitude[i], data?.central_path_longitude[i]]
-  }
+  // Aplica periodicidade nos pontos
+  const periodicCentralPathSteps = createPeriodicPoints(centralPathSteps, 2)
+
+  // Verifica se os segmentos existem
+  const hasBodyLimit = bodyUpperSegments.length > 0 || bodyLowerSegments.length > 0
+  const hasUncertainty = uncertaintyUpperSegments.length > 0 || uncertaintyLowerSegments.length > 0
 
   return (
     <Card spacing={4}>
       <Box>
-        {data !== undefined && (
-          <MapContainer className={classes.map} center={lineCenter !== undefined ? lineCenter[637] : ''} zoom={zoomLevel}>
-            <TileLayer
-              url={`https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en&gl=US&${process.env.REACT_APP_GOOGLE_MAPS_API_KEY}`}
-              subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
-            />
-            {lineUpper !== undefined ? <Polyline pathOptions={traceOptions} positions={lineUpper}></Polyline> : ''}
-            {lineCenter !== undefined ? <Polyline pathOptions={blueOptions} positions={lineCenter}></Polyline> : ''}
-            {lineDown !== undefined ? <Polyline pathOptions={traceOptions} positions={lineDown}></Polyline> : ''}
-            {lineUpper !== undefined ? (
-              <Marker position={lineCenter[776]} icon={starIcon}>
-                <Popup>I am a star </Popup>
-              </Marker>
-            ) : (
-              ''
-            )}
-            {lineCenter !== undefined ? <Circle center={lineCenter[637]} pathOptions={circleOptions} /> : ''}
-            {pointLineCenter !== undefined
-              ? pointLineCenter.map((point, index) => <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />)
-              : ''}
+        {isFetching && (
+          <Box
+            display='flex'
+            flexDirection='column'
+            justifyContent='center'
+            alignItems='center'
+            height='200px'
+            bgcolor='#f3f4f6'
+            borderRadius='8px'
+            boxShadow='0 4px 10px rgba(0, 0, 0, 0.1)'
+          >
+            <CircularProgress size={50} style={{ marginBottom: '16px' }} />
+            <Typography variant='subtitle1' color='textSecondary'>
+              Loading, please wait...
+            </Typography>
+          </Box>
+        )}
+        {!isFetching && mapCenter && (
+          <MapContainer className={classes.map} center={mapCenter} zoom={zoomLevel}>
+            <TileLayer url={tileLayerUrl} subdomains={['mt0', 'mt1', 'mt2', 'mt3']} />
+            <FlyToMap center={mapCenter} zoom={mapZoom} />
+            <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
+
+            {/* Linha principal do caminho central */}
+            {periodicLineCenterSegments.map((segment, index) => (
+              <Polyline key={index} pathOptions={blueOptions} positions={segment} />
+            ))}
+
+            {/* Pontos do caminho central */}
+            {periodicCentralPathSteps.map((point, index) => (
+              <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
+            ))}
+            <Circle center={mapCenter} pathOptions={circleOptions} />
+
+            {/* Limites superiores e inferiores do corpo */}
+            {periodicBodyUpperSegments.map((segment, index) => (
+              <Polyline key={`upper-${index}`} pathOptions={bodyOptions} positions={segment} />
+            ))}
+            {periodicBodyLowerSegments.map((segment, index) => (
+              <Polyline key={`lower-${index}`} pathOptions={bodyOptions} positions={segment} />
+            ))}
+
+            {/* Limites de incerteza */}
+            {periodicUncertaintyUpperSegments.map((segment, index) => (
+              <Polyline key={`uncertainty-upper-${index}`} pathOptions={traceOptions} positions={segment} />
+            ))}
+            {periodicUncertaintyLowerSegments.map((segment, index) => (
+              <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
+            ))}
           </MapContainer>
         )}
       </Box>
