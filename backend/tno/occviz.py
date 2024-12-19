@@ -12,8 +12,15 @@ from typing import Optional, Union
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
-from astropy.coordinates import (GCRS, ITRS, Angle, EarthLocation, SkyCoord,
-                                 SkyOffsetFrame, get_sun)
+from astropy.coordinates import (
+    GCRS,
+    ITRS,
+    Angle,
+    EarthLocation,
+    SkyCoord,
+    SkyOffsetFrame,
+    get_sun,
+)
 from astropy.time import Time
 from scipy.interpolate import CubicSpline
 
@@ -387,7 +394,7 @@ def _generate_instants_array(vel):
     return dtimes
 
 
-def _generate_60s_instants_array(vel):
+def _generate_stepseconds_instants_array(vel, step=60):
     """
     Generate the array of instants.
 
@@ -401,8 +408,11 @@ def _generate_60s_instants_array(vel):
     numpy.ndarray
         Array of instants.
     """
-    dtimes = np.arange(0, int(6371 / abs(vel.value)), 60)
-    dtimes = np.concatenate([-dtimes[1:][::-1], dtimes])
+    if step > 0:
+        dtimes = np.arange(0, int(6371 / abs(vel.value)), step)
+        dtimes = np.concatenate([-dtimes[1:][::-1], dtimes])
+    else:
+        dtimes = np.arange(0, 1, 1)
     dtimes = dtimes * u.s
     return dtimes
 
@@ -797,12 +807,10 @@ def occultation_path(
     dtimes = _generate_instants_array(vel)
     instants = instant + dtimes
     centers = _create_star_positions_array(star, instants)
-    
-    
-    dtimes_60s = _generate_60s_instants_array(vel)
-    instants_60s = instant +dtimes_60s
+
+    dtimes_60s = _generate_stepseconds_instants_array(vel, step=60)
+    instants_60s = instant + dtimes_60s
     centers_60s = _create_star_positions_array(star, instants_60s)
-    
 
     object_radius = float(object_diameter / 2) if object_diameter is not None else 0
     object_radius_error = (
@@ -833,10 +841,24 @@ def occultation_path(
     }
 
     # # the central position
-    cinstant = np.array([instant])
-    central_pos = _create_star_positions_array(star, cinstant)
-    output["latitude"] = central_pos.lat.value[0]
-    output["longitude"] = central_pos.lon.value[0]    
+    dtimes_0s = _generate_stepseconds_instants_array(vel, step=0)
+    instants_0s = instant + dtimes_0s
+    centers_0s = _create_star_positions_array(star, instants_0s)
+    central_obj_pos = _path_latlon(
+        instants_0s,
+        dtimes_0s,
+        centers_0s,
+        delta,
+        ca,
+        vel,
+        pa,
+        pa_plus,
+        radius=0,
+        interpolate=False,
+    )
+
+    output["latitude"] = central_obj_pos[1][0]
+    output["longitude"] = central_obj_pos[0][0]
 
     # the central path every 60s
     central_path_60s = _path_latlon(
@@ -853,7 +875,7 @@ def occultation_path(
     )
     output["central_path_longitude_60s_step"] = central_path_60s[0]
     output["central_path_latitude_60s_step"] = central_path_60s[1]
-    
+
     # the central path
     central_path = _path_latlon(
         instants,
@@ -884,8 +906,8 @@ def occultation_path(
             radius=object_radius,
             interpolate=interpolate,
         )
-        output["body_upper_limit_latitude"]: body_upper_limit[1]
-        output["body_upper_limit_longitude"]: body_upper_limit[0]
+        output["body_upper_limit_latitude"] = body_upper_limit[1]
+        output["body_upper_limit_longitude"] = body_upper_limit[0]
 
         body_lower_limit = _path_latlon(
             instants,
@@ -899,8 +921,8 @@ def occultation_path(
             radius=-object_radius,
             interpolate=interpolate,
         )
-        output["body_lower_limit_latitude"]: body_lower_limit[1]
-        output["body_lower_limit_longitude"]: body_lower_limit[0]
+        output["body_lower_limit_latitude"] = body_lower_limit[1]
+        output["body_lower_limit_longitude"] = body_lower_limit[0]
 
     # the upper and lower limits for the object radius
     if error_dist_from_center > 0:
