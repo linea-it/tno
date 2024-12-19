@@ -301,7 +301,7 @@ function PredictionEventDetail() {
             <PredictOccultationMap occultationId={occultation.id} />
           </Grid>
         )}
-        <Grid item xs={12} md={5.6} lg={6}>
+        <Grid item xs={12} md={6} lg={6}>
           <Card sx={{ height: '100%' }}>
             <CardHeader
               title='Occultation Prediction Circumstances'
