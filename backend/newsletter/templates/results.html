@@ -1,88 +1,102 @@
 {% extends "email_base.tpl" %}{% block content %}
 <!-- Results -->
+<tr></tr>
 <tr>
-<tr>
-  <td style="padding: 20px;">
-    <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6;">
-      Dear {{ subscriber }},<br><br>
+  <td style="padding: 20px">
+    <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6">
+      Dear {{ subscriber }},<br /><br />
 
-      We are pleased to provide your customized occultation predictions based on your specified filter criteria,
-      <b>{{filter_name}}</b>, for the period from <b>{{date_start}}</b>, to <b>{{date_end}}</b>. The results
-      include a total of <b>{{number_of_events}}</b> prediction events. Below, you will find a preview
-      of the results, and a detailed CSV file containing all event data is available for your convenience.
-      <br><br>
-      If you have doubts or need more information, refer to our <a
-        href="https://solarsystem.linea.org.br/docs/">documentation</a>.
+      We are pleased to provide your customized occultation predictions based on
+      your specified filter criteria,
+      <b>{{filter_name}}</b>, for the period from <b>{{date_start}}</b>, to
+      <b>{{date_end}}</b>. The results include a total of
+      <b>{{number_of_events}}</b> prediction events. Below is a preview of the
+      results, along with a detailed CSV file containing the complete event set
+      data. <br /><br />
+      If you have any questions or need more information, please refer to our
+      <a href="https://solarsystem.linea.org.br/docs/">documentation</a>.
     </p>
-
   </td>
 </tr>
 <tr>
   <td>
     <!-- Centered and Rounded Table -->
     <div
-      style="margin: 0 auto; max-width: 95%; background-color: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);">
-      <table width="100%" style="border-collapse: collapse; margin: 0px 0;">
-        <thead style="background-color: #0076BC; color: #fff;">
+      style="
+        margin: 0 auto;
+        max-width: 95%;
+        background-color: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <table width="100%" style="border-collapse: collapse; margin: 0px 0">
+        <thead style="background-color: #0076bc; color: #fff">
           <tr>
-            <th style="padding: 5px; font-size: 12px; text-align: center;">Date Time (UTC)</th>
-            <th style="padding: 5px; font-size: 12px; text-align: center;">Object Identifier</th>
-            <th style="padding: 5px; font-size: 12px; text-align: center;">Velocity (km/s)</th>
-            <th style="padding: 5px; font-size: 12px; text-align: center;">CA (arcsec)</th>
-            <th style="padding: 5px; font-size: 12px; text-align: center;">Uncertainty (km)</th>
-            <th style="padding: 5px; font-size: 12px; text-align: center;">Gaia Magnitude</th>
-            <th style="padding: 5px; font-size: 12px; text-align: center;"></th>
+            <th style="padding: 5px; font-size: 12px; text-align: center">
+              Date Time (UTC)
+            </th>
+            <th style="padding: 5px; font-size: 12px; text-align: center">
+              Object Identifier
+            </th>
+            <th style="padding: 5px; font-size: 12px; text-align: center">
+              Velocity (km/s)
+            </th>
+            <th style="padding: 5px; font-size: 12px; text-align: center">
+              CA (arcsec)
+            </th>
+            <th style="padding: 5px; font-size: 12px; text-align: center">
+              Uncertainty (km)
+            </th>
+            <th style="padding: 5px; font-size: 12px; text-align: center">
+              Gaia Magnitude
+            </th>
+            <th style="padding: 5px; font-size: 12px; text-align: center"></th>
           </tr>
         </thead>
-        <tbody style="background-color: #ffffff; color: #0c0c0c;">
+        <tbody style="background-color: #ffffff; color: #0c0c0c">
           {% for row in data %}
           <tr class="clickable-row">
-            <td style="padding: 3px; font-size: 12px; text-align: center;">
+            <td style="padding: 3px; font-size: 12px; text-align: center">
               {{ row.date_time|default:"-" }}
             </td>
-            <td style="padding: 3px; font-size: 12px; text-align: center;">
+            <td style="padding: 3px; font-size: 12px; text-align: center">
               {{row.name|default:"-" }}
             </td>
-            <td style="padding: 3px; font-size: 12px; text-align: center;">
-              {% if row.velocity %}
-              {{ row.velocity|floatformat:1 }}
-              {% else %}
-              -
-              {% endif %}
+            <td style="padding: 3px; font-size: 12px; text-align: center">
+              {% if row.velocity %} {{ row.velocity|floatformat:1 }} {% else %}
+              - {% endif %}
             </td>
-            <td style="padding: 3px; font-size: 12px; text-align: center;">
-              {% if row.closest_approach %}
-              {{ row.closest_approach|floatformat:3 }}
-              {% else %}
-              -
-              {% endif %}
+            <td style="padding: 3px; font-size: 12px; text-align: center">
+              {% if row.closest_approach %} {{
+              row.closest_approach|floatformat:3 }} {% else %} - {% endif %}
             </td>
-            <td style="padding: 3px; font-size: 12px; text-align: center;">
-              {% if row.closest_approach_uncertainty_km and row.closest_approach_uncertainty_km != 'nan' %}
-              {% if row.closest_approach_uncertainty_km > 12500 %}
-              Very High
-              {% else %}
-              {{ row.closest_approach_uncertainty_km|floatformat:0 }}
-              {% endif %}
-              {% else %}
-              -
-              {% endif %}
+            <td style="padding: 3px; font-size: 12px; text-align: center">
+              {% if row.closest_approach_uncertainty_km and
+              row.closest_approach_uncertainty_km != 'nan' %} {% if
+              row.closest_approach_uncertainty_km > 12500 %} Very High {% else
+              %} {{ row.closest_approach_uncertainty_km|floatformat:0 }} {%
+              endif %} {% else %} - {% endif %}
             </td>
-            <td style="padding: 3px; font-size: 12px; text-align: center;">
-              {% if row.gaia_magnitude %}
-              {{ row.gaia_magnitude|floatformat:1 }}
-              {% else %}
-              -
-              {% endif %}
+            <td style="padding: 3px; font-size: 12px; text-align: center">
+              {% if row.gaia_magnitude %} {{ row.gaia_magnitude|floatformat:1 }}
+              {% else %} - {% endif %}
             </td>
-            <td style="padding: 6px; font-size: 11px; text-align: center;">
-              <a href="{{ host }}/prediction-event-detail/{{ row.id }}" style="display:inline-block;
-                        background-color: #0076BC;
-                        color: #fff;
-                        text-decoration: none;
-                        font-size: 12;
-                        padding: 4px 6px;
-                        border-radius: 4px;">View</a>
+            <td style="padding: 6px; font-size: 11px; text-align: center">
+              <a
+                href="{{ host }}/prediction-event-detail/{{ row.id }}"
+                style="
+                  display: inline-block;
+                  background-color: #0076bc;
+                  color: #fff;
+                  text-decoration: none;
+                  font-size: 12;
+                  padding: 4px 6px;
+                  border-radius: 4px;
+                "
+                >View</a
+              >
             </td>
           </tr>
           {% endfor %}
@@ -90,23 +104,27 @@
       </table>
     </div>
     <!-- Download Link -->
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="{{ link }}" style="
-                display: inline-block;
-                background-color: #0076BC;
-                color: #fff;
-                text-decoration: none;
-                font-size: 14px;
-                padding: 10px 20px;
-                border-radius: 4px;
-            ">Download CSV</a>
+    <div style="text-align: center; margin: 30px 0">
+      <a
+        href="{{ link }}"
+        style="
+          display: inline-block;
+          background-color: #0076bc;
+          color: #fff;
+          text-decoration: none;
+          font-size: 14px;
+          padding: 10px 20px;
+          border-radius: 4px;
+        "
+        >Download CSV</a
+      >
     </div>
   </td>
 </tr>
 <tr>
-  <td style="padding: 20px;">
-    <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6; margin: 0;">
-      Best regards,<br>
+  <td style="padding: 20px">
+    <p style="font-size: 14px; color: #5a5c5f; line-height: 1.6; margin: 0">
+      Best regards,<br />
       The LIneA Team
     </p>
   </td>

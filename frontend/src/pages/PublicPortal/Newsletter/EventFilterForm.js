@@ -17,10 +17,12 @@ import ClosestApproachUncertaintyField from '../../../components/ClosestApproach
 export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
     const value = e.target ? e.target.value : e.value
+
     const newData = {
       ...data,
-      [e.target ? e.target.name : e.name]: value === '' ? null : value // Map empty string to null
+      [e.target ? e.target.name : e.name]: value === '' || value === undefined ? null : value // Map empty or undefined to null
     }
+
     onChange(newData)
   }
 
@@ -141,19 +143,15 @@ export default function EventFilterForm({ data, onChange }) {
           />
           <ClosestApproachUncertaintyField
             name='closest_approach_uncertainty_km'
-            value={
-              data.closest_approach_uncertainty_km !== null && data.closest_approach_uncertainty_km !== ''
-                ? parseFloat(data.closest_approach_uncertainty_km)
-                : ''
-            }
-            onChange={handleChange}
+            value={data.closest_approach_uncertainty_km ?? undefined} // Use undefined if value is null
+            onChange={(newValue) => handleChange({ target: { name: 'closest_approach_uncertainty_km', value: newValue } })}
             label='Uncertainty (km)'
           />
         </Stack>
         <Divider />
         <GeoFilter
           value={{
-            latitude: data.latitude ?? '', // Fallback to an empty string for display
+            latitude: data.latitude ?? '',
             longitude: data.longitude ?? '',
             radius: data.location_radius ?? '',
             altitude: data.altitude ?? ''
