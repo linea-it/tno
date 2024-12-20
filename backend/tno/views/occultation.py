@@ -16,7 +16,6 @@ from rest_framework import serializers, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
 from tno.db import CatalogDB
 from tno.models import Catalog, Occultation
 from tno.occviz import occultation_path, visibility_from_coeff
@@ -501,7 +500,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             else None
         )
         output["diameter_lower_limit"] = diameter_lower_limit
-        
+
         # output["max_longitude"] = obj.occ_path_coeff["max_longitude"]
         # output["min_longitude"] = obj.occ_path_coeff["min_longitude"]
         # output["max_latitude"] = obj.occ_path_coeff["max_latitude"]
