@@ -5,7 +5,6 @@ import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
-import './leaflet.css' // Estilos adicionais do Leaflet
 import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import { Typography } from '@mui/material'
