@@ -1,13 +1,14 @@
 // Importações principais de bibliotecas necessárias para o funcionamento do componente
 import React from 'react'
-import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
+import { useEffect, useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
 import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
-import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
+//import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
 import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import { Typography } from '@mui/material'
+import NightLayer from './NightTime' // componente que desenha as sombras de acordo com o datetime
 
 // Componente FlyToMap
 // Responsável por mover progressivamente o mapa para a posição especificada (center) com zoom
@@ -154,16 +155,16 @@ const PredictOccultationMap = ({ occultationId }) => {
   const mapZoom = data ? 4 : zoomLevel
 
   // Configurações do ícone personalizado
-  const starIcon = React.useMemo(
-    () =>
-      L.icon({
-        iconUrl: star, // URL do ícone
-        iconSize: [18, 18], // Tamanho do ícone
-        iconAnchor: [22, 94], // Âncora do ícone
-        popupAnchor: [-3, -76] // Posição do popup relativo ao ícone
-      }),
-    [] // Memoriza o ícone para evitar recriação
-  )
+  // const starIcon = React.useMemo(
+  //   () =>
+  //     L.icon({
+  //       iconUrl: star, // URL do ícone
+  //       iconSize: [18, 18], // Tamanho do ícone
+  //       iconAnchor: [22, 94], // Âncora do ícone
+  //       popupAnchor: [-3, -76] // Posição do popup relativo ao ícone
+  //     }),
+  //   [] // Memoriza o ícone para evitar recriação
+  // )
 
   // Configurações dos elementos gráficos do mapa
   const circleOptions = {
@@ -213,6 +214,10 @@ const PredictOccultationMap = ({ occultationId }) => {
   const hasBodyLimit = bodyUpperSegments.length > 0 || bodyLowerSegments.length > 0
   const hasUncertainty = uncertaintyUpperSegments.length > 0 || uncertaintyLowerSegments.length > 0
 
+  //define o time para desenhar as sombras
+  const datetimeString = data?.datetime === undefined ? '' : data?.datetime //'2024-07-21T18:44:08Z' //data?.datetime === undefined ? '' : data?.datetime //'2024-01-21T18:44:08Z' //
+  const datetime = new Date(datetimeString).getTime()
+
   return (
     <Card spacing={4}>
       <Box>
@@ -238,6 +243,9 @@ const PredictOccultationMap = ({ occultationId }) => {
             <TileLayer url={tileLayerUrl} subdomains={['mt0', 'mt1', 'mt2', 'mt3']} />
             <FlyToMap center={mapCenter} zoom={mapZoom} />
             <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
+
+            {/* Chamada do Componente que desenha as sombras */}
+            <NightLayer datetime={datetime} />
 
             {/* Linha principal do caminho central */}
             {periodicLineCenterSegments.map((segment, index) => (
