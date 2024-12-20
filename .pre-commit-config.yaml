@@ -42,7 +42,7 @@ repos:
   #         - eslint-config-react-app@7.0.1
   #         - babel-eslint@6.1.2
   #         - prettier@2.8.0
-  # - repo: local
+  # # - repo: local
   #   hooks:
   #     - id: frontend_lint
   #       name: eslint and prettier (Javascript)
