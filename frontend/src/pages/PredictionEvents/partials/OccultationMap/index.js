@@ -132,7 +132,7 @@ const createPeriodicPoints = (points, repetitions = 1) => {
 }
 
 // Componente principal para exibir o mapa de previsões de ocultação
-const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
+const PredictOccultationMap = ({ occultationId }) => {
   const [force, setForce] = React.useState(false) // Estado para forçar a atualização dos dados
   const classes = styles() // Estilos aplicados ao mapa
 
@@ -147,7 +147,7 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
   })
 
   // Define o nível de zoom com base nos parâmetros
-  const zoomLevel = thumbsCard ? 3 : thumbsList ? 5 : 8
+  const zoomLevel = 8
 
   // Determina dinamicamente o centro do mapa e o nível de zoom inicial
   const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : null
@@ -169,14 +169,14 @@ const PredictOccultationMap = ({ occultationId, thumbsCard, thumbsList }) => {
   const circleOptions = {
     color: '#00468D', // Cor do círculo principal
     stroke: 'false', // Desativa a borda
-    weight: thumbsCard === true ? 10 : thumbsList === true ? 5 : 20, // Espessura variável
-    radius: thumbsCard === true ? 100 : data?.diameter // Raio do círculo
+    weight: 20, // Espessura variável
+    radius: data?.diameter === null ? ' ' : data?.diameter // Raio do círculo
   }
 
   const circleMinOptions = {
     color: '#00468D', // Cor dos círculos menores
     stroke: 'false', // Desativa a borda
-    weight: thumbsCard === true ? 4 : thumbsList === true ? 1 : 8, // Espessura variável
+    weight: 8, // Espessura variável
     radius: 1 // Raio padrão
   }
 
