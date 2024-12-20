@@ -1708,6 +1708,11 @@
     "@types/yargs" "^17.0.8"
     chalk "^4.0.0"
 
+"@joergdietrich/leaflet.terminator@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@joergdietrich/leaflet.terminator/-/leaflet.terminator-1.1.0.tgz#a14a585461877eb891d5c8b10bb0b6d508e448a0"
+  integrity sha512-Bq/dBECmVH6nf8V0zVSS7dUJA4bqe0Czl0DWzV1O1kTl5hMXGGc4EuyhTMft6KMLTU0GTLr4dvEa3YfXJWUUTQ==
+
 "@jridgewell/gen-mapping@^0.1.0":
   version "0.1.1"
   resolved "https://registry.npmjs.org/@jridgewell/gen-mapping/-/gen-mapping-0.1.1.tgz"
@@ -8892,6 +8897,11 @@ lazy-ass@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/lazy-ass/-/lazy-ass-1.6.0.tgz#7999655e8646c17f089fdd187d150d3324d54513"
   integrity sha512-cc8oEVoctTvsFZ/Oje/kGnHbpWHYBe8IAJe4C0QNc3t8uM/0Y8+erSz/7Y1ALuXTEZTMvxXwO6YbX1ey3ujiZw==
+
+leaflet-boundary-canvas@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/leaflet-boundary-canvas/-/leaflet-boundary-canvas-1.0.0.tgz#2b4c2d9f4aac4328e58588f89039d483f7c3fa84"
+  integrity sha512-+0kTmtqOBIKM5iOI8lywAAPHpKVHBSkyjdg/UvPW+M9moc8f1lBWaF7KEL6uc5cL3FAQf5J66bRFtJQ0bxPoLA==
 
 leaflet-geodesy@0.2.1:
   version "0.2.1"
