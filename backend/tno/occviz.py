@@ -394,6 +394,29 @@ def _generate_instants_array(vel):
     return dtimes
 
 
+def _generate_stepseconds_instants_array(vel, step=60):
+    """
+    Generate the array of instants.
+
+    Parameters
+    ----------
+    vel : Quantity
+        Object velocity.
+
+    Returns
+    -------
+    numpy.ndarray
+        Array of instants.
+    """
+    if step > 0:
+        dtimes = np.arange(0, int(6371 / abs(vel.value)), step)
+        dtimes = np.concatenate([-dtimes[1:][::-1], dtimes])
+    else:
+        dtimes = np.arange(0, 1, 1)
+    dtimes = dtimes * u.s
+    return dtimes
+
+
 def _create_star_positions_array(star, instants):
     """
     Create an array of star positions for the GCRS frame.
@@ -782,8 +805,12 @@ def occultation_path(
     )
     pa_plus = _calculate_position_angle(pa)
     dtimes = _generate_instants_array(vel)
-    centers = _create_star_positions_array(star, instant + dtimes)
-    instants = dtimes + instant
+    instants = instant + dtimes
+    centers = _create_star_positions_array(star, instants)
+
+    dtimes_60s = _generate_stepseconds_instants_array(vel, step=60)
+    instants_60s = instant + dtimes_60s
+    centers_60s = _create_star_positions_array(star, instants_60s)
 
     object_radius = float(object_diameter / 2) if object_diameter is not None else 0
     object_radius_error = (
@@ -797,8 +824,10 @@ def occultation_path(
     )
 
     output = {
-        # "central_instant_latitude": [],
-        # "central_instant_longitude": [],
+        "latitude": [],
+        "longitude": [],
+        "central_path_latitude_60s_step": [],
+        "central_path_longitude_60s_step": [],
         "central_path_latitude": [],
         "central_path_longitude": [],
         "body_upper_limit_latitude": [],
@@ -812,21 +841,40 @@ def occultation_path(
     }
 
     # # the central position
-    # central_pos = _create_star_positions_array(star, instant)
-    # instant_path = _path_latlon(
-    #     np.array(instant),
-    #     dtimes = np.zeros(1),
-    #     central_pos,
-    #     delta,
-    #     ca,
-    #     vel,
-    #     pa,
-    #     pa_plus,
-    #     radius=0,
-    #     interpolate=False,
-    # )
-    # output["central_instant_latitude"] = instant_path[1]
-    # output["central_instant_longitude"] = instant_path[0]
+    dtimes_0s = _generate_stepseconds_instants_array(vel, step=0)
+    instants_0s = instant + dtimes_0s
+    centers_0s = _create_star_positions_array(star, instants_0s)
+    central_obj_pos = _path_latlon(
+        instants_0s,
+        dtimes_0s,
+        centers_0s,
+        delta,
+        ca,
+        vel,
+        pa,
+        pa_plus,
+        radius=0,
+        interpolate=False,
+    )
+
+    output["latitude"] = central_obj_pos[1][0]
+    output["longitude"] = central_obj_pos[0][0]
+
+    # the central path every 60s
+    central_path_60s = _path_latlon(
+        instants_60s,
+        dtimes_60s,
+        centers_60s,
+        delta,
+        ca,
+        vel,
+        pa,
+        pa_plus,
+        radius=0,
+        interpolate=False,
+    )
+    output["central_path_longitude_60s_step"] = central_path_60s[0]
+    output["central_path_latitude_60s_step"] = central_path_60s[1]
 
     # the central path
     central_path = _path_latlon(
@@ -839,7 +887,7 @@ def occultation_path(
         pa,
         pa_plus,
         radius=0,
-        interpolate=interpolate,
+        interpolate=False,
     )
     output["central_path_longitude"] = central_path[0]
     output["central_path_latitude"] = central_path[1]
@@ -858,8 +906,8 @@ def occultation_path(
             radius=object_radius,
             interpolate=interpolate,
         )
-        output["body_upper_limit_latitude"]: body_upper_limit[1]
-        output["body_upper_limit_longitude"]: body_upper_limit[0]
+        output["body_upper_limit_latitude"] = body_upper_limit[1]
+        output["body_upper_limit_longitude"] = body_upper_limit[0]
 
         body_lower_limit = _path_latlon(
             instants,
@@ -873,8 +921,8 @@ def occultation_path(
             radius=-object_radius,
             interpolate=interpolate,
         )
-        output["body_lower_limit_latitude"]: body_lower_limit[1]
-        output["body_lower_limit_longitude"]: body_lower_limit[0]
+        output["body_lower_limit_latitude"] = body_lower_limit[1]
+        output["body_lower_limit_longitude"] = body_lower_limit[0]
 
     # the upper and lower limits for the object radius
     if error_dist_from_center > 0:
