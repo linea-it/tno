@@ -63,9 +63,22 @@ function PublicLogin() {
   }
 
   const handleSignin = () => {
-    passwordLessSignIn(email, token).catch(() => {
-      setSigninError(true)
-    })
+    passwordLessSignIn(email, token)
+      .then(() => {
+        console.log('Sign-in successful')
+        // Trigger loggedUser after successful sign-in
+        return loggedUser()
+      })
+      .then((res) => {
+        // console.log('Logged User Response after sign-in:', res)
+        if (res) {
+          window.location.replace('/newsletter_settings/')
+        }
+      })
+      .catch((err) => {
+        console.error('Sign-in or loggedUser failed:', err)
+        setSigninError(true)
+      })
   }
 
   return (
