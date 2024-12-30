@@ -1,6 +1,6 @@
 // Importações principais de bibliotecas necessárias para o funcionamento do componente
-import React from 'react'
-import { useEffect, useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
+import React, { useEffect } from 'react'
+import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
 import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
@@ -9,12 +9,13 @@ import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import { Typography } from '@mui/material'
 import NightLayer from './NightTime' // componente que desenha as sombras de acordo com o datetime
+import Legend from './Legend' // componente que desenha as lellglendas dinamicamente
 
 // Componente FlyToMap
 // Responsável por mover progressivamente o mapa para a posição especificada (center) com zoom
 const FlyToMap = ({ center, zoom }) => {
   const map = useMap() // Obtém a instância do mapa atual
-  React.useEffect(() => {
+  useEffect(() => {
     if (center && zoom) {
       // Verifica se os parâmetros são válidos
       map.flyTo(center, zoom, { animate: true, duration: 0.5 }) // Move o mapa com animação
@@ -23,65 +24,65 @@ const FlyToMap = ({ center, zoom }) => {
   return null
 }
 
-// Componente Legend
-// Adiciona uma legenda dinamicamente ao mapa
-const Legend = ({ hasBodyLimit, hasUncertainty }) => {
-  const map = useMap()
+// // Componente Legend
+// // Adiciona uma legenda dinamicamente ao mapa
+// const Legend = ({ hasBodyLimit, hasUncertainty }) => {
+//   const map = useMap()
 
-  React.useEffect(() => {
-    const legend = L.control({ position: 'bottomleft' })
+//   React.useEffect(() => {
+//     const legend = L.control({ position: 'bottomleft' })
 
-    legend.onAdd = () => {
-      const div = L.DomUtil.create('div', 'info legend')
-      div.style.background = 'rgba(255, 255, 255, 0.95)'
-      div.style.borderRadius = '8px'
-      div.style.padding = '5px'
-      div.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.2)'
+//     legend.onAdd = () => {
+//       const div = L.DomUtil.create('div', 'info legend')
+//       div.style.background = 'rgba(255, 255, 255, 0.95)'
+//       div.style.borderRadius = '8px'
+//       div.style.padding = '5px'
+//       div.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.2)'
 
-      // Estrutura fixa da legenda com elementos opcionais para "Body Limits" e "Uncertainty"
-      div.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-around;">
-          <div style="display: flex; align-items: center; margin: 0 15px;">
-            <div style="width: 20px; height: 2px; background: #00468D; margin-right: 8px;"></div> Shadow Path
-          </div>
-          <div style="display: flex; align-items: center; margin: 0 15px;">
-            <div style="width: 10px; height: 10px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> CA Instant
-          </div>
-          <div style="display: flex; align-items: center; margin: 0 15px;">
-            <div style="width: 5px; height: 5px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> 60s steps
-          </div>
-          ${
-            hasBodyLimit
-              ? `
-          <div style="display: flex; align-items: center; margin: 0 15px;">
-            <div style="width: 20px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
-          </div>
-          `
-              : ''
-          }
-          ${
-            hasUncertainty
-              ? `
-          <div style="display: flex; align-items: center; margin: 0 15px;">
-            <div style="width: 20px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
-          </div>
-          `
-              : ''
-          }
-        </div>
-      `
-      return div
-    }
+//       // Estrutura fixa da legenda com elementos opcionais para "Body Limits" e "Uncertainty"
+//       div.innerHTML = `
+//         <div style="display: flex; align-items: center; justify-content: space-around;">
+//           <div style="display: flex; align-items: center; margin: 0 15px;">
+//             <div style="width: 20px; height: 2px; background: #00468D; margin-right: 8px;"></div> Shadow Path
+//           </div>
+//           <div style="display: flex; align-items: center; margin: 0 15px;">
+//             <div style="width: 10px; height: 10px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> CA Instant
+//           </div>
+//           <div style="display: flex; align-items: center; margin: 0 15px;">
+//             <div style="width: 5px; height: 5px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> 60s steps
+//           </div>
+//           ${
+//             hasBodyLimit
+//               ? `
+//           <div style="display: flex; align-items: center; margin: 0 15px;">
+//             <div style="width: 20px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
+//           </div>
+//           `
+//               : ''
+//           }
+//           ${
+//             hasUncertainty
+//               ? `
+//           <div style="display: flex; align-items: center; margin: 0 15px;">
+//             <div style="width: 20px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
+//           </div>
+//           `
+//               : ''
+//           }
+//         </div>
+//       `
+//       return div
+//     }
 
-    legend.addTo(map)
+//     legend.addTo(map)
 
-    return () => {
-      map.removeControl(legend)
-    }
-  }, [hasBodyLimit, hasUncertainty, map])
+//     return () => {
+//       map.removeControl(legend)
+//     }
+//   }, [hasBodyLimit, hasUncertainty, map])
 
-  return null
-}
+//   return null
+// }
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
