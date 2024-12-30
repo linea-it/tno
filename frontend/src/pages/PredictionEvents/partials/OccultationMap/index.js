@@ -8,9 +8,9 @@ import styles from './styles' // Estilos do componente
 import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import { Typography } from '@mui/material'
-import NightLayer from './NightTime' // componente que desenha as sombras de acordo com o datetime
-import Legend from './Legend' // componente que desenha as lellglendas dinamicamente
-import FlyToMap from './FlyToMap' // componennte que move o mapa para posição especificada
+import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
+import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
+import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
 
 // Componente FlyToMap
 // Responsável por mover progressivamente o mapa para a posição especificada (center) com zoom
