@@ -19,6 +19,9 @@ const NightLayer = ({ datetime }) => {
     nightmask.setTime(time)
   }
   updateMapTime(datetime)
+
+  // Retornar null para indicar que o componente não renderiza elementos visuais
+  return null
 }
 
 export default NightLayer
