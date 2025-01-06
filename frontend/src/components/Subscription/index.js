@@ -53,7 +53,13 @@ export default function Subscribe() {
           mr: 1,
           display: 'flex',
           alignItems: 'center',
-          width: 600
+          //width: 600
+          width: {
+            xs: '100%', // 100% para telas pequenas
+            sm: 600, // 300px para telas médias
+            md: 600 // 400px para telas maiores
+          },
+          maxWidth: '100%' // Limita a largura máxima
         }}
       >
         <InputBase
