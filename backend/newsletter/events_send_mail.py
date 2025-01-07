@@ -35,11 +35,11 @@ class SendEventsMail:
         self.log.info("file_csv %s", file_csv)
 
         if os.path.isfile(file_csv):
-            csvtable = pd.read_csv(file_csv, sep=";")
+            csvtable = pd.read_csv(file_csv, sep=";", nrows=10)
             return csvtable
         else:
             csvtable = pd.DataFrame()
-            self.log.info("File doesnot exist.")
+            self.log.info("File does not exist.")
             return csvtable
 
         # ******************************
@@ -107,18 +107,47 @@ class SendEventsMail:
                                     "id",
                                 ]
 
-                                # Limit data to the first 10 rows
-                                data = complete_data.head(10)[required_keys]
+                                # Limit data to the first 10 rows and convert these values to the proper formated strings
+                                # The formating is taking place here because of errors doing it using django template language inside the templates
+                                data = complete_data[required_keys]
+                                data = (
+                                    data.copy()
+                                )  # This avoids the warning by ensuring you're working with an independent copy of the DataFrame.
+                                # format datetime to Y-m-d H:M
                                 data["date_time"] = pd.to_datetime(
                                     data["date_time"]
                                 ).dt.strftime("%Y-%m-%d %H:%M")
-                                # data["date_time"] = data["date_time"].apply(
-                                #     lambda dt: dt.replace("T", " ").rstrip("Z")
-                                # )
+                                # format velocity .1f and str
+                                data["velocity"] = (
+                                    data["velocity"]
+                                    .astype(str)
+                                    .map(lambda x: "{:.1f}".format(float(x)))
+                                )
+                                # format closest_approach .3f and str
+                                data["closest_approach"] = (
+                                    data["closest_approach"]
+                                    .astype(str)
+                                    .map(lambda x: "{:.3f}".format(float(x)))
+                                )
+                                # format closest_approach_uncertainty_km .0f and str, and replace big values with 'Very High'
+                                data["closest_approach_uncertainty_km"] = (
+                                    data["closest_approach_uncertainty_km"]
+                                    .astype(str)
+                                    .map(lambda x: "{:.0f}".format(float(x)))
+                                    .map(
+                                        lambda y: "Very High" if float(y) > 12500 else y
+                                    )
+                                )
+                                # format gaia_magnitude .1f and str
+                                data["gaia_magnitude"] = (
+                                    data["gaia_magnitude"]
+                                    .astype(str)
+                                    .map(lambda x: "{:.1f}".format(float(x)))
+                                )
+                                data = data.applymap(lambda x: "-" if x == "nan" else x)
 
                                 # Convert to JSON
                                 json_data = data.to_dict(orient="records")
-
                                 if not all(key in data for key in required_keys):
                                     self.log.error(
                                         "Invalid data structure returned for %s",
