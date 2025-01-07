@@ -11,6 +11,7 @@ import { Typography } from '@mui/material'
 import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
 import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
+import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
@@ -75,6 +76,8 @@ const PredictOccultationMap = ({ occultationId }) => {
     onSuccess: () => setForce(false), // Reseta o estado de força ao concluir
     staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
+
+  console.log('data', data)
 
   // Define o nível de zoom com base nos parâmetros
   const zoomLevel = 8
@@ -203,6 +206,12 @@ const PredictOccultationMap = ({ occultationId }) => {
               <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
             ))}
           </MapContainer>
+        )}
+        {/* Download do mapa no formato do Sora */}
+        {!isFetching && mapCenter && (
+          <Box justifyContent='center' alignItems='center' display='flex' flexDirection='column'>
+            <OccultationMapDownload occultationId={occultationId} />
+          </Box>
         )}
       </Box>
     </Card>
