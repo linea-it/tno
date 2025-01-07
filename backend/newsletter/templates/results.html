@@ -8,9 +8,9 @@
 
       We are pleased to provide your customized occultation predictions based on
       your specified filter criteria,
-      <b>{{filter_name}}</b>, for the period from <b>{{date_start}}</b>, to
-      <b>{{date_end}}</b>. The results include a total of
-      <b>{{number_of_events}}</b> prediction events. Below is a preview of the
+      <b>{{ filter_name }}</b>, for the period from <b>{{ date_start }}</b>, to
+      <b>{{ date_end }}</b>. The results include a total of
+      <b>{{ number_of_events }}</b> prediction events. Below is a preview of the
       results, along with a detailed CSV file containing the complete event set
       data. <br /><br />
       If you have any questions or need more information, please refer to our
@@ -59,29 +59,22 @@
           {% for row in data %}
           <tr class="clickable-row">
             <td style="padding: 3px; font-size: 12px; text-align: center">
-              {{ row.date_time|default:"-" }}
+              {{ row.date_time }}
             </td>
             <td style="padding: 3px; font-size: 12px; text-align: center">
-              {{row.name|default:"-" }}
+              {{ row.name }}
             </td>
             <td style="padding: 3px; font-size: 12px; text-align: center">
-              {% if row.velocity %} {{ row.velocity|floatformat:1 }} {% else %}
-              - {% endif %}
+              {{ row.velocity }}
             </td>
             <td style="padding: 3px; font-size: 12px; text-align: center">
-              {% if row.closest_approach %} {{
-              row.closest_approach|floatformat:3 }} {% else %} - {% endif %}
+              {{ row.closest_approach }}
             </td>
             <td style="padding: 3px; font-size: 12px; text-align: center">
-              {% if row.closest_approach_uncertainty_km and
-              row.closest_approach_uncertainty_km != 'nan' %} {% if
-              row.closest_approach_uncertainty_km > 12500 %} Very High {% else
-              %} {{ row.closest_approach_uncertainty_km|floatformat:0 }} {%
-              endif %} {% else %} - {% endif %}
+              {{ row.closest_approach_uncertainty_km }}
             </td>
             <td style="padding: 3px; font-size: 12px; text-align: center">
-              {% if row.gaia_magnitude %} {{ row.gaia_magnitude|floatformat:1 }}
-              {% else %} - {% endif %}
+              {{ row.gaia_magnitude }}
             </td>
             <td style="padding: 6px; font-size: 11px; text-align: center">
               <a
