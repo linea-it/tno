@@ -33,7 +33,7 @@ const OccultationMapDownload = ({ occultationId }) => {
 
   return (
     <Button onClick={downloadFile} style={{ padding: '10px 20px', fontSize: '14px', textAlign: 'center' }}>
-      Download Map SORA
+      Download Map
     </Button>
   )
 }
