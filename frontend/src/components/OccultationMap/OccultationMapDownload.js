@@ -32,8 +32,8 @@ const OccultationMapDownload = ({ occultationId }) => {
   }
 
   return (
-    <Button onClick={downloadFile} style={{ padding: '10px 20px', fontSize: '14px', textAlign: 'center' }}>
-      Download Map
+    <Button variant='outlined' onClick={downloadFile} sx={{ padding: '10px', fontSize: '12px', height: '10px' }}>
+      Download Sora Map
     </Button>
   )
 }
