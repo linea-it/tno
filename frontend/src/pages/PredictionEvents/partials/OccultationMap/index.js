@@ -1,16 +1,16 @@
 // Importações principais de bibliotecas necessárias para o funcionamento do componente
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
 import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
-import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
+import { Box, Card, Typography, Stack, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
-import { Typography } from '@mui/material'
 import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
 import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
+import DownloadButton from '../../../../components/OccultationMap/OccultationKmzDownload'
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
@@ -64,6 +64,7 @@ const createPeriodicPoints = (points, repetitions = 1) => {
 // Componente principal para exibir o mapa de previsões de ocultação
 const PredictOccultationMap = ({ occultationId }) => {
   const [force, setForce] = React.useState(false) // Estado para forçar a atualização dos dados
+
   const classes = styles() // Estilos aplicados ao mapa
 
   const tileLayerUrl = `https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=en&gl=US`
@@ -203,6 +204,31 @@ const PredictOccultationMap = ({ occultationId }) => {
               <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
             ))}
           </MapContainer>
+        )}
+
+        {/* Download arquivo kmz */}
+        {!isFetching && mapCenter && (
+          <Box
+            sx={{
+              height: '60px',
+              direction: 'columm',
+              justifyContent: 'left',
+              alignItems: 'left',
+              display: 'flex',
+              position: 'relative'
+            }}
+          >
+            <Stack sx={{ paddingTop: '20px', paddingLeft: '10px' }}>
+              <DownloadButton
+                id={occultationId}
+                lineCenter={lineCenter}
+                bodyUpper={bodyUpper}
+                bodyLower={bodyLower}
+                uncertaintyUpper={uncertaintyUpper}
+                uncertaintyLower={uncertaintyLower}
+              />
+            </Stack>
+          </Box>
         )}
       </Box>
     </Card>
