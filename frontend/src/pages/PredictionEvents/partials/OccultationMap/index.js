@@ -220,12 +220,14 @@ const PredictOccultationMap = ({ occultationId }) => {
           >
             <Stack sx={{ paddingTop: '20px', paddingLeft: '10px' }}>
               <DownloadButton
-                id={occultationId}
-                lineCenter={lineCenter}
-                bodyUpper={bodyUpper}
-                bodyLower={bodyLower}
-                uncertaintyUpper={uncertaintyUpper}
-                uncertaintyLower={uncertaintyLower}
+                {...{
+                  id: occultationId,
+                  lineCenter: lineCenter,
+                  bodyUpper: bodyUpper,
+                  bodyLower: bodyLower,
+                  uncertaintyUpper: uncertaintyUpper,
+                  uncertaintyLower: uncertaintyLower
+                }}
               />
             </Stack>
           </Box>

@@ -17,15 +17,8 @@ const generateKMZ = (contentString, fileName) => {
   })
 }
 
-const DownloadKMZButton = ({
-  id,
-  lineCenter,
-  bodyUpper,
-  bodyLower,
-  uncertaintyUpper,
-  uncertaintyLower
-  //...params
-}) => {
+const DownloadKMZButton = ({ id, ...params }) => {
+  //console.log('params', params.uncertaintyLower)
   const handleDownload = () => {
     // construindo kml com o desenho das linhas e coordenadas
     let contentString = "<?xml version='1.0' encoding='UTF-8'?>"
@@ -79,7 +72,7 @@ const DownloadKMZButton = ({
     contentString += '<tessellate>1</tessellate>\n'
     contentString += '<altitudeMode>absoluto</altitudeMode>\n'
     contentString += '<coordinates>\n'
-    let myArrayC = lineCenter
+    let myArrayC = params.lineCenter
     for (let i = 0; i < myArrayC.length; i++) {
       //console.log('buttonC', myArrayC[i])
       contentString += myArrayC[i].reverse() + ',0.0\n'
@@ -98,7 +91,7 @@ const DownloadKMZButton = ({
     contentString += '<tessellate>1</tessellate>\n'
     contentString += '<altitudeMode>absoluto</altitudeMode>\n'
     contentString += '<coordinates>\n'
-    let myArrayBU = bodyUpper
+    let myArrayBU = params.bodyUpper
     for (let i = 0; i < myArrayBU.length; i++) {
       //console.log('button', myArrayBU[i])
       contentString += myArrayBU[i].reverse() + ',0.0\n'
@@ -117,7 +110,7 @@ const DownloadKMZButton = ({
     contentString += '<tessellate>1</tessellate>\n'
     contentString += '<altitudeMode>absoluto</altitudeMode>\n'
     contentString += '<coordinates>\n'
-    let myArrayBL = bodyLower
+    let myArrayBL = params.bodyLower
     for (let i = 0; i < myArrayBL.length; i++) {
       //console.log('button', myArrayBL[i])
       contentString += myArrayBL[i].reverse() + ',0.0\n'
@@ -136,7 +129,7 @@ const DownloadKMZButton = ({
     contentString += '<tessellate>1</tessellate>\n'
     contentString += '<altitudeMode>absoluto</altitudeMode>\n'
     contentString += '<coordinates>\n'
-    let myArrayUU = uncertaintyUpper
+    let myArrayUU = params.uncertaintyUpper
     for (let i = 0; i < myArrayUU.length; i++) {
       //console.log('button', myArrayUP[i])
       contentString += myArrayUU[i].reverse() + ',0.0\n'
@@ -154,7 +147,7 @@ const DownloadKMZButton = ({
     contentString += '<tessellate>1</tessellate>\n'
     contentString += '<altitudeMode>absoluto</altitudeMode>\n'
     contentString += '<coordinates>\n'
-    let myArrayUL = uncertaintyLower
+    let myArrayUL = params.uncertaintyLower
     for (let i = 0; i < myArrayUL.length; i++) {
       //console.log('button', myArrayUL[i])
       contentString += myArrayUL[i].reverse() + ',0.0\n'
