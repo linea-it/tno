@@ -83,7 +83,7 @@ const PredictOccultationMap = ({ occultationId }) => {
   // Determina dinamicamente o centro do mapa e o nível de zoom inicial
   const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : null
   const mapZoom = data ? 4 : zoomLevel
-
+  //console.log('mapCenter', mapCenter, data?.diameter)
   // Configurações do ícone personalizado
   // const starIcon = React.useMemo(
   //   () =>
@@ -223,6 +223,7 @@ const PredictOccultationMap = ({ occultationId }) => {
                 {...{
                   id: occultationId,
                   lineCenter: lineCenter,
+                  centralPathSteps: centralPathSteps,
                   bodyUpper: bodyUpper,
                   bodyLower: bodyLower,
                   uncertaintyUpper: uncertaintyUpper,
