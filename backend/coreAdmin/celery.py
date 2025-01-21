@@ -51,7 +51,7 @@ app.conf.beat_schedule = {
     # # Update asteroid class cache every 6 hours
     "update_asteroid_classes_cache": {
         "task": "tno.tasks.update_asteroid_classes_cache",
-        "schedule": crontab(hour="*/6"),
+        "schedule": crontab(hour="*/6", minute=0),
     },
     # Update occultation highlights daily at 00:00 UTC
     "update_occultations_highlights": {
