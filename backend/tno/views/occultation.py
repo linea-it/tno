@@ -17,7 +17,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tno.db import CatalogDB
-from tno.models import Catalog, Occultation
+from tno.models import Catalog, Highlights, Occultation
 from tno.occviz import occultation_path, visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
@@ -298,71 +298,39 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_unique_asteroids(self, request):
-
-        count = Occultation.objects.count()
-
-        unique_asteroids = 0
-        first_datetime = None
-        last_datetime = None
-
-        if count > 0:
-            unique_asteroids = Occultation.objects.values("name").distinct().count()
-            first_datetime = Occultation.objects.earliest("date_time")
-            last_datetime = Occultation.objects.latest("date_time")
-            first_datetime = first_datetime.date_time.isoformat()
-            last_datetime = last_datetime.date_time.isoformat()
+        record = Highlights.objects.last()
 
         return Response(
             {
-                "count": count,
-                "unique_asteroids": unique_asteroids,
-                "earliest": first_datetime,
-                "latest": last_datetime,
+                "count": record.occultations_count,
+                "unique_asteroids": record.unique_asteroids,
+                "earliest": record.earliest_occultation.isoformat(),
+                "latest": record.latest_occultation.isoformat(),
             }
         )
 
     @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_weekly_forecast(self, request):
+        record = Highlights.objects.last()
 
-        today_utc = datetime.utcnow().date()
-        today_events = Occultation.objects.filter(date_time__date=today_utc)
-
-        week_number = today_utc.isocalendar().week
-        next_week_number = week_number + 1
-
-        this_week_count = Occultation.objects.filter(
-            date_time__date__week=week_number
-        ).count()
-        next_week_count = Occultation.objects.filter(
-            date_time__date__week=next_week_number
-        ).count()
         return Response(
             {
-                "today_count": today_events.count(),
-                "week_count": this_week_count,
-                "next_week_count": next_week_count,
+                "today_count": record.day_count,
+                "week_count": record.week_count,
+                "next_week_count": record.next_week_count,
             }
         )
 
     @extend_schema(exclude=True)
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_monthly_forecast(self, request):
-
-        today_utc = datetime.utcnow().date()
-
-        next_month = today_utc + relativedelta(months=1)
-        this_month_count = Occultation.objects.filter(
-            date_time__date__month=today_utc.month
-        ).count()
-        next_month_count = Occultation.objects.filter(
-            date_time__date__month=next_month.month
-        ).count()
+        record = Highlights.objects.last()
 
         return Response(
             {
-                "month_count": this_month_count,
-                "next_month_count": next_month_count,
+                "month_count": record.month_count,
+                "next_month_count": record.next_month_count,
             }
         )
 

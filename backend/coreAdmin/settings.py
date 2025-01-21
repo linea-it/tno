@@ -538,6 +538,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "subscription.log"),
             "formatter": "standard",
         },
+        "occultation_highlights": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "occ_highlights.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -587,6 +595,11 @@ LOGGING = {
         },
         "subscription": {
             "handlers": ["subscription"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "occultation_highlights": {
+            "handlers": ["occultation_highlights"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
