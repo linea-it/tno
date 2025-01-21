@@ -53,6 +53,11 @@ app.conf.beat_schedule = {
         "task": "tno.tasks.update_asteroid_classes_cache",
         "schedule": crontab(hour="*/6"),
     },
+    # Update occultation highlights daily at 00:00 UTC
+    "update_occultations_highlights": {
+        "task": "tno.tasks.update_occultations_highlights",
+        "schedule": crontab(hour=0, minute=0),
+    },
 }
 app.conf.timezone = "UTC"
 
