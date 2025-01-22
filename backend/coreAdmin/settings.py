@@ -143,6 +143,12 @@ DATA_URL = "/data/"
 DATA_TMP_DIR = MEDIA_TMP_DIR
 DATA_TMP_URL = urllib.parse.urljoin(DATA_URL, "tmp/")
 
+
+# Este diretório é utilizado para armazenar os arquivos de entrada para o processamento das predições.
+ASTEROIDS_INPUTS_DIR = Path.joinpath(ARCHIVE_DIR, "asteroids")
+if not ASTEROIDS_INPUTS_DIR.exists():
+    ASTEROIDS_INPUTS_DIR.mkdir(parents=True, exist_ok=False)
+
 PREDICTION_URL = "maps/"
 PREDICTION_MAP_DIR = MEDIA_ROOT.joinpath("maps")
 if not PREDICTION_MAP_DIR.exists():

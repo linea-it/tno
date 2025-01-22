@@ -232,6 +232,20 @@ docker compose build mkdocs
 docker compose build predict_occultation
 ```
 
+Para executar o pipeline de predição é necessário fazer o download dos inputs antes de executar o pipeline.
+O download pode ser feito rodando o comando de dentro do container predict_occultation na pasta /app.
+
+```bash
+docker compose exec predict_occultation bash
+python src/download_bsp_jpl.py -s 2024-01-01 -e 2025-01-01 -t dynclass -v 'Centaur'
+```
+
+Ou com o container rodando executar o comando direto do host:
+
+```bash
+docker compose exec predict_occultation bash --login -c "source /app/src/env.sh && python src/download_bsp_jpl.py -s 2024-01-01 -e 2025-01-01 -t name -v '2015 HB387'"
+```
+
 <!-- TOC --><a name="setup-pipeline-skybot-discovery"></a>
 
 ## Setup Pipeline Skybot Discovery

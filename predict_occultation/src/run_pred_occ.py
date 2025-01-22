@@ -643,7 +643,6 @@ def submit_tasks(jobid: int):
         # Durante o desenvolvimento é util não fazer o download a cada execução
         # No uso normal é recomendado sempre baixar os inputs utilizando valor 0
         inputs_days_to_expire = int(job.get("inputs_days_to_expire", 0))
-        BSP_DAYS_TO_EXPIRE = inputs_days_to_expire
         ORBITAL_ELEMENTS_DAYS_TO_EXPIRE = inputs_days_to_expire
         OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
         DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
@@ -750,6 +749,7 @@ def submit_tasks(jobid: int):
                 # FORCE_REFRESH_INPUTS = TRUE  também serão removidos
                 # Remove Arquivos da execução anterior, inputs, resultados e logs
                 new_run=FORCE_REFRESH_INPUTS,
+                inputs_path=pathlib.Path(os.getenv("PREDICT_INPUTS", "/app/inputs")),
             )
 
             # Remove Previus Results ----------------------------------
@@ -787,9 +787,11 @@ def submit_tasks(jobid: int):
             have_bsp_jpl = a.check_bsp_jpl(
                 start_period=bsp_start_date,
                 end_period=str(PREDICT_END.date()),
-                days_to_expire=BSP_DAYS_TO_EXPIRE,
             )
 
+            # TODO: Duvida se o BSP JPL precisa ser copiado para pasta do Asteroid.
+            # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a 
+            # compatibilidade com versão anterior
             if have_bsp_jpl is False:
                 log.warning(
                     "Asteroid [%s] Ignored for not having BSP JPL." % asteroid["name"]
