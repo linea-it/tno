@@ -1,11 +1,6 @@
 import PropTypes from 'prop-types'
 import TextField from '@mui/material/TextField'
 import { useEffect, useState } from 'react'
-import InputLabel from '@mui/material/InputLabel'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem'
-import { geoFilterIsValid } from '../../../services/api/Occultation'
 import Stack from '@mui/material/Stack'
 import Button from '@mui/material/Button'
 import LocationOnIcon from '@mui/icons-material/LocationOn'
@@ -13,33 +8,34 @@ import LocationOffIcon from '@mui/icons-material/LocationOff'
 import AltitudeField from '../AltitudeField/index'
 
 function GeoFilter({ value, onChange }) {
-  const [error, setError] = useState(false)
-
-  const options1 = Array.from({ length: 10 }, (_, i) => i * 10 + 10) // 10-100
-  const options2 = Array.from({ length: 18 }, (_, i) => i * 50 + 150) // 150-1000
-  const options3 = Array.from({ length: 6 }, (_, i) => i * 250 + 1250) // 1250-2500
-  const options4 = Array.from({ length: 5 }, (_, i) => i * 500 + 3000) // 3000-5000
-
-  const options = options1.concat(options2).concat(options3).concat(options4)
+  const [error, setError] = useState({ latitude: false, longitude: false, radius: false })
+  const [partialWarning, setPartialWarning] = useState(false)
 
   const setUserLocation = () => {
-    const newValue = value
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        const latitude = position.coords.latitude
-        const longitude = position.coords.longitude
-        // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-        newValue.latitude = latitude.toFixed(4)
-        newValue.longitude = longitude.toFixed(4)
-        onChange(newValue)
-      })
+      console.time('Geolocation Response Time') // Start measuring time
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          console.timeEnd('Geolocation Response Time') // End measuring time and log
+
+          const latitude = position.coords.latitude.toFixed(6)
+          const longitude = position.coords.longitude.toFixed(6)
+          const newValue = { ...value, latitude, longitude, radius: 100 }
+          onChange(newValue)
+        },
+        (error) => {
+          console.timeEnd('Geolocation Response Time') // Log time even if there’s an error
+          console.error('Geolocation error:', error.message)
+        }
+      )
+    } else {
+      console.error('Geolocation is not supported by this browser.')
     }
   }
 
   const handleClearLocation = () => {
-    const newValue = value
-    newValue.latitude = undefined
-    newValue.longitude = undefined
+    const newValue = { latitude: null, longitude: null, radius: null, altitude: null }
     onChange(newValue)
   }
 
@@ -48,8 +44,20 @@ function GeoFilter({ value, onChange }) {
   }
 
   useEffect(() => {
-    setError(!geoFilterIsValid(value))
-  }, [value.latitude, value.longitude, value])
+    setError({
+      latitude: value.latitude < -90 || value.latitude > 90,
+      longitude: value.longitude < -180 || value.longitude > 180,
+      radius: value.radius !== undefined && value.radius !== '' && value.radius <= 0
+    })
+  }, [value])
+
+  useEffect(() => {
+    const latitudeValid = value.latitude !== undefined && value.latitude !== '' && !error.latitude
+    const longitudeValid = value.longitude !== undefined && value.longitude !== '' && !error.longitude
+    const radiusValid = value.radius !== undefined && value.radius !== '' && !error.radius
+
+    setPartialWarning((latitudeValid || longitudeValid || radiusValid) && !(latitudeValid && longitudeValid && radiusValid))
+  }, [value, error])
 
   return (
     <Stack spacing={2}>
@@ -70,16 +78,12 @@ function GeoFilter({ value, onChange }) {
           variant='outlined'
           required
           value={value.latitude === undefined ? '' : value.latitude}
-          min={-90}
-          max={90}
           onChange={(event) => {
-            handleChange({
-              ...value,
-              latitude: event.target.value
-            })
+            const latitude = event.target.value
+            handleChange({ ...value, latitude })
           }}
-          error={error}
-          helperText={error ? 'must be a value between -90 and 90' : ''}
+          error={error.latitude}
+          helperText={error.latitude ? 'Latitude must be between -90 and 90 degrees.' : ''}
           fullWidth
         />
         <TextField
@@ -88,55 +92,38 @@ function GeoFilter({ value, onChange }) {
           variant='outlined'
           required
           value={value.longitude === undefined ? '' : value.longitude}
-          min={-180}
-          max={180}
           onChange={(event) => {
-            handleChange({
-              ...value,
-              longitude: event.target.value
-            })
+            const longitude = event.target.value
+            handleChange({ ...value, longitude })
           }}
-          error={error}
-          helperText={error ? 'must be a value between -180 and 180' : ''}
+          error={error.longitude}
+          helperText={error.longitude ? 'Longitude must be between -180 and 180 degrees.' : ''}
           fullWidth
         />
       </Stack>
       <Stack direction='row' spacing={2}>
-        <FormControl fullWidth>
-          <InputLabel id='radius-select-label'>Loc. Radius (Km)</InputLabel>
-          <Select
-            labelId='radius-select--label'
-            variant='outlined'
-            id='radius-select'
-            value={value.radius === undefined ? '' : value.radius}
-            label='Loc. Radius (Km)'
-            onChange={(event) => {
-              handleChange({
-                ...value,
-                radius: event.target.value
-              })
-            }}
-          >
-            {options.map((row) => {
-              return (
-                <MenuItem key={row} value={row}>
-                  {row}
-                </MenuItem>
-              )
-            })}
-          </Select>
-        </FormControl>
-        <AltitudeField
-          name='altitude'
-          value={value.altitude === undefined ? '' : value.altitude}
-          onChange={(v) => {
-            handleChange({
-              ...value,
-              altitude: v
-            })
+        <TextField
+          type='number'
+          label='Radius (km)'
+          variant='outlined'
+          required
+          value={value.radius === undefined ? '' : value.radius}
+          onChange={(event) => {
+            const radius = event.target.value
+            handleChange({ ...value, radius })
           }}
+          error={error.radius}
+          helperText={error.radius ? 'Radius must be greater than 0.' : ''}
+          fullWidth
         />
+        <AltitudeField value={value.altitude} onChange={(altitude) => handleChange({ ...value, altitude })} />
       </Stack>
+
+      {partialWarning && (
+        <div style={{ color: '#d32f2f', fontSize: '1em' }}>
+          For the location filter to function properly, please ensure that Latitude, Longitude, and Radius are all filled in.
+        </div>
+      )}
     </Stack>
   )
 }
@@ -151,7 +138,12 @@ GeoFilter.defaultProps = {
 }
 
 GeoFilter.propTypes = {
-  value: PropTypes.object.isRequired,
+  value: PropTypes.shape({
+    latitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    longitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    radius: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    altitude: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+  }).isRequired,
   onChange: PropTypes.func.isRequired
 }
 

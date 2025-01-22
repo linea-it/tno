@@ -12,17 +12,32 @@ import EventDurationField from '../../../components/EventDurationField/index'
 import MaginitudeDropSelect from '../../../components/MaginitudeDropSelect/index'
 import ObjectDiameterFilter from '../../../components/ObjectDiameterFilter/index'
 import GeoFilter from '../../../components/Newsletter/GeoFilter/index'
+import ClosestApproachUncertaintyField from '../../../components/ClosestApproachUncertaintyField/index'
 
 export default function EventFilterForm({ data, onChange }) {
   const handleChange = (e) => {
-    const newData = { ...data, [e.target.name]: e.target.value }
+    const value = e.target ? e.target.value : e.value
+
+    const newData = {
+      ...data,
+      [e.target ? e.target.name : e.name]: value === '' || value === undefined ? null : value // Map empty or undefined to null
+    }
+
     onChange(newData)
   }
+
   return (
     <Box component='form' autoComplete='off'>
       <Stack spacing={2}>
         <Stack direction='row' spacing={2}>
-          <TextField required name='filter_name' label='Filter Name' value={data.filter_name} onChange={handleChange} fullWidth />
+          <TextField
+            required
+            name='filter_name'
+            label='Filter Name'
+            value={data.filter_name ?? ''} // Set default empty string
+            onChange={handleChange}
+            fullWidth
+          />
           <FrequencyTypeSelect value={data.frequency} onChange={handleChange} name='frequency' />
         </Stack>
         <TextField
@@ -35,31 +50,39 @@ export default function EventFilterForm({ data, onChange }) {
         />
         <Divider />
         <AsteroidSelect
-          source={'asteroid'}
+          source={data.filter_type === 'name' ? 'asteroid' : 'prediction'}
           value={{
             filterType: data.filter_type,
             filterValue: data.filter_value
           }}
           onChange={(value) => {
-            const newData = { ...data, filter_value: value.filterValue }
+            const newData = { ...data, filter_type: value.filterType, filter_value: value.filterValue }
             onChange(newData)
           }}
         />
+
         <Divider />
         <Stack direction='row' spacing={2}>
-          <MaginitudeSelect
+          {/*<MaginitudeSelect
             value={data.magnitude_min !== null ? data.magnitude_min : ''}
             name='magnitude_min'
             onChange={handleChange}
             min={4}
             max={18}
-          />
+          />*/}
           <MaginitudeSelect
             value={data.magnitude_max !== null ? data.magnitude_max : ''}
             name='magnitude_max'
             onChange={handleChange}
             min={4}
             max={18}
+          />
+          <MaginitudeDropSelect
+            name='magnitude_drop_max'
+            value={data.magnitude_drop_max ?? ''}
+            onChange={(value) => handleChange({ target: { name: 'magnitude_drop_max', value } })}
+            min={1}
+            max={24}
           />
         </Stack>
         <Divider />
@@ -82,7 +105,7 @@ export default function EventFilterForm({ data, onChange }) {
         />
         <Divider />
         <Stack direction='row' spacing={2}>
-          <MaginitudeDropSelect
+          {/*<MaginitudeDropSelect
             name='magnitude_drop_min'
             value={data.magnitude_drop_min !== null ? data.magnitude_drop_min : ''}
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_min', value } })}
@@ -95,7 +118,7 @@ export default function EventFilterForm({ data, onChange }) {
             onChange={(value) => handleChange({ target: { name: 'magnitude_drop_max', value } })}
             min={4}
             max={18}
-          />
+          />*/}
         </Stack>
         <ObjectDiameterFilter
           value={{
@@ -111,27 +134,35 @@ export default function EventFilterForm({ data, onChange }) {
             onChange(newData)
           }}
         />
-        <EventDurationField
-          name='event_duration'
-          value={data.event_duration !== null ? data.event_duration : ''}
-          onChange={handleChange}
-          label='Event Duration (seconds)'
-        />
+        <Stack direction='row' spacing={2}>
+          <EventDurationField
+            name='event_duration'
+            value={data.event_duration !== null ? data.event_duration : ''}
+            onChange={handleChange}
+            label='Event Duration (seconds)'
+          />
+          <ClosestApproachUncertaintyField
+            name='closest_approach_uncertainty_km'
+            value={data.closest_approach_uncertainty_km ?? undefined} // Use undefined if value is null
+            onChange={(newValue) => handleChange({ target: { name: 'closest_approach_uncertainty_km', value: newValue } })}
+            label='Uncertainty (km)'
+          />
+        </Stack>
         <Divider />
         <GeoFilter
           value={{
-            latitude: data.latitude !== null ? data.latitude : '',
-            longitude: data.longitude !== null ? data.longitude : '',
-            radius: data.location_radius !== null ? data.location_radius : '',
-            altitude: data.altitude !== null ? data.altitude : ''
+            latitude: data.latitude ?? '',
+            longitude: data.longitude ?? '',
+            radius: data.location_radius ?? '',
+            altitude: data.altitude ?? ''
           }}
           onChange={(value) => {
             const newData = {
               ...data,
-              latitude: value.latitude,
-              longitude: value.longitude,
-              location_radius: value.radius,
-              altitude: value.altitude
+              latitude: value.latitude !== '' ? value.latitude : undefined,
+              longitude: value.longitude !== '' ? value.longitude : undefined,
+              location_radius: value.radius !== '' ? value.radius : undefined,
+              altitude: value.altitude !== '' ? value.altitude : undefined
             }
             onChange(newData)
           }}
@@ -142,8 +173,9 @@ export default function EventFilterForm({ data, onChange }) {
 }
 
 EventFilterForm.defaultProps = {
-  data: undefined
+  data: {} // Default to an empty object if `data` is not provided
 }
+
 EventFilterForm.propTypes = {
   data: PropTypes.object
 }

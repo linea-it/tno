@@ -42,6 +42,22 @@ app.conf.beat_schedule = {
     #     "task": "tno.tasks.predict_jobs_for_upper_end_update",
     #     "schedule": crontab(hour=15, minute=0, day_of_month="10,25"),
     # },
+    # Run Filter and Send Mail every Day at 9:00 AM UTC/ 06:00 AM BRT
+    "run_subscription_filter_and_send_mail": {
+        "task": "tno.tasks.run_subscription_filter_and_send_mail",
+        "schedule": crontab(hour=9, minute=0),
+        "kwargs": {"force_run": False},  # Set to True if needed
+    },
+    # # Update asteroid class cache every 6 hours
+    "update_asteroid_classes_cache": {
+        "task": "tno.tasks.update_asteroid_classes_cache",
+        "schedule": crontab(hour="*/6", minute=0),
+    },
+    # Update occultation highlights daily at 00:00 UTC
+    "update_occultations_highlights": {
+        "task": "tno.tasks.update_occultations_highlights",
+        "schedule": crontab(hour=0, minute=0),
+    },
 }
 app.conf.timezone = "UTC"
 

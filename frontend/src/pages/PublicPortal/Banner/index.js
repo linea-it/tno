@@ -28,15 +28,16 @@ function PublicBanner() {
           <h1 className={classes.title}>LIneA Occultation Prediction Database</h1>
         </Grid>
         <Grid item xs={12} container className={classes.bannerWrapper}>
-          <Box className='container textBanner' sx={{ borderRadius: '6px', width: '45vw', textAlign: 'center' }}>
+          <Box className='container textBanner' sx={{ borderRadius: '4px', width: '45vw', textAlign: 'center' }}>
             <Grid item xs={12} className={classes.textOcultatiom}>
               <label>
-                This is a database of predictions for stellar occultations by small Solar System objects, calculated from the legacy
-                positions provided by the Dark Energy Survey (DES) and the constantly updated positions from the Minor Planet Center (MPC).
-                These predictions are regularly updated. Use our advanced filters to refine your search and find more suitable events.
+                This database features predictions for stellar occultations by small Solar System objects, updated regularly. Use the
+                advanced filters to refine your search. Subscribe and set up customized updates.
               </label>
             </Grid>
           </Box>
+        </Grid>
+        <Grid item xs={12} container className={classes.bannerWrapper}>
           <Grid item xs={12}>
             {envSettings.NEWSLETTER_SUBSCRIPTION_ENABLED && <Subscribe />}
           </Grid>

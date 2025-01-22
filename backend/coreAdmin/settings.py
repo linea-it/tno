@@ -166,7 +166,7 @@ ENVIRONMENT_NAME = env("DJANGO_ENVIRONMENT_NAME", default="Development")
 
 # Emails
 # Notifications Email
-EMAIL_NEWSLETTER_NOREPLY = "noreplysolarsystem@linea.org.br"
+EMAIL_NEWSLETTER_NOREPLY = "noreply-solarsystem@linea.org.br"
 EMAIL_NOTIFICATION = os.environ.get("EMAIL_NOTIFICATION", "sso-portal@linea.org.br")
 
 
@@ -235,7 +235,11 @@ ROOT_URLCONF = "coreAdmin.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR, os.path.join(BASE_DIR, "templates")],
+        "DIRS": [
+            BASE_DIR,
+            os.path.join(BASE_DIR, "templates"),
+            os.path.join(BASE_DIR, "newsletter/templates"),
+        ],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -412,12 +416,14 @@ PASSWORDLESS_AUTH = {
     "PASSWORDLESS_AUTH_TYPES": [
         "EMAIL",
     ],
-    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply@example.com",
+    "PASSWORDLESS_EMAIL_NOREPLY_ADDRESS": "noreply-solarsystem@linea.org.br",
     "PASSWORDLESS_AUTH_PREFIX": "api/pwl/auth/",
     "PASSWORDLESS_VERIFY_PREFIX": "api/pwl/auth/verify/",
     "PASSWORDLESS_REGISTER_NEW_USERS": False,
+    "PASSWORDLESS_EMAIL_SUBJECT": "LIneA Solar System Portal - Validation Token",
+    "PASSWORDLESS_EMAIL_PLAINTEXT_MESSAGE": "Enter this token to sign in your LIneA Solar System Portal: %s",
+    "PASSWORDLESS_EMAIL_TOKEN_HTML_TEMPLATE_NAME": "validation_token_email_template.html",
 }
-
 
 # NEWSLETTER SUBSCRIPTION
 NEWSLETTER_SUBSCRIPTION_ENABLED = env.bool("NEWSLETTER_SUBSCRIPTION_ENABLED", False)
@@ -538,6 +544,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "subscription.log"),
             "formatter": "standard",
         },
+        "occultation_highlights": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "occ_highlights.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -587,6 +601,11 @@ LOGGING = {
         },
         "subscription": {
             "handlers": ["subscription"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "occultation_highlights": {
+            "handlers": ["occultation_highlights"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

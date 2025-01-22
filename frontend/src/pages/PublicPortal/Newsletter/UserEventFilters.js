@@ -104,7 +104,12 @@ export default function UserEventFilters() {
         headerName: 'Frequency',
         width: 110,
         valueFormatter: (params) => {
-          return params.value === 1 ? 'Monthly' : 'Weekly'
+          const frequencyMap = {
+            1: 'Monthly',
+            2: 'Weekly',
+            3: 'Daily'
+          }
+          return frequencyMap[params.value] || 'Unknown'
         }
       },
       {

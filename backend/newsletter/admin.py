@@ -22,15 +22,16 @@ class EventFilterAdmin(admin.ModelAdmin):
         "id",
         "user",
         "filter_name",
+        "description",
         "frequency",
-        "magnitude_min",
         "magnitude_max",
         "filter_type",
+        "filter_value",
         "local_solar_time_after",
         "local_solar_time_before",
-        "magnitude_drop_min",
         "magnitude_drop_max",
         "event_duration",
+        "closest_approach_uncertainty_km",
         "diameter_min",
         "diameter_max",
         "latitude",
@@ -44,15 +45,13 @@ class EventFilterAdmin(admin.ModelAdmin):
 class SubmissionAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "subscription_id",
         "eventFilter_id",
         "process_date",
         "events_count",
         "prepared",
-        "sending",
         "sent",
-        "title",
         "sent_date",
+        "attachment",
     )
 
 

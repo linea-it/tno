@@ -9,43 +9,41 @@ from django.shortcuts import redirect
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from tno.models import Highlights
+from tno.tasks import update_occultations_highlights
 
 
 @api_view(["GET"])
 def teste(request):
     if request.method == "GET":
+        result = {"success": True}
+        return Response(result)
 
-        from datetime import datetime, timezone
 
-        import pandas as pd
-        from tno.models import Occultation
-        from tno.occviz import visibility_from_coeff
+@api_view(["GET"])
+def healthcheck(request):
+    if request.method == "GET":
+        result = {"success": True}
+        return Response(result)
 
-        lat = -22.90278
-        long = -43.2075
-        radius = 50
 
-        events = Occultation.objects.filter(
-            date_time__date="2023-08-01", have_path_coeff=True
-        )
-
-        rows = []
-        ids = []
-        for e in events:
-            is_visible = visibility_from_coeff(
-                latitude=float(lat),
-                longitude=float(long),
-                radius=float(radius),
-                date_time=e.date_time.isoformat(),
-                inputdict=e.occultation_path_coeff,
-            )
-
-            # print(f"Occ ID: {e.id} - {e.date_time.isoformat()} - {e.name} IS Visible: [ {is_visible} ] Info: [{info}]")
-            if is_visible:
-                rows.append(e)
-                ids.append(e.id)
-
-        result = {"success": True, "rows": len(rows), "ids": ids}
+@api_view(["GET"])
+def update_occultations_highlihts(request):
+    if request.method == "GET":
+        highlight_id = update_occultations_highlights()
+        record = Highlights.objects.get(pk=highlight_id)
+        result = {
+            "id": record.id,
+            "month_count": record.month_count,
+            "next_month_count": record.next_month_count,
+            "week_count": record.week_count,
+            "next_week_count": record.next_week_count,
+            "day_count": record.day_count,
+            "unique_asteroids": record.unique_asteroids,
+            "occultations_count": record.occultations_count,
+            "earliest_occultation": record.earliest_occultation,
+            "latest_occultation": record.latest_occultation,
+        }
 
         return Response(result)
 

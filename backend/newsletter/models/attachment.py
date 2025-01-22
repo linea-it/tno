@@ -1,12 +1,14 @@
 from django.db import models
-from newsletter.models.submission import Submission
 
 
 class Attachment(models.Model):
 
     submission_id = models.ForeignKey(
-        Submission,
+        "newsletter.Submission",
         on_delete=models.CASCADE,
+        related_name="attachment_submissions",  # Unique related_name to avoid conflict
+        verbose_name="Submission",
+        help_text="Submission associated with this attachment.",
     )
 
     filename = models.CharField(

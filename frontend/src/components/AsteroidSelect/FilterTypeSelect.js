@@ -5,6 +5,7 @@ import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
 
 function FilterTypeSelect({ value, onChange }) {
+  console.log('typeselect', value)
   return (
     <FormControl size='normal' fullWidth>
       <InputLabel id='fiter-type-select-label'>Filter Type</InputLabel>

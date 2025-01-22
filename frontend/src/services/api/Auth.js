@@ -43,5 +43,8 @@ export const passwordLessSignIn = (email, token) =>
     })
 
     // Redireciona para Home
-    window.location.replace(window.location.origin)
+    // window.location.replace(window.location.origin)
+
+    // Retorna a resposta (o redirecionamento e feito na pagina de autenticacao)
+    return res.data // Return the response data for further handling
   })

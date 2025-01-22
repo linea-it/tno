@@ -14,6 +14,7 @@ import { delete_account, logout } from '../../../services/api/Auth'
 
 export function ConfirmDialog({ open, handleClose }) {
   const [error, setError] = useState(false)
+
   return (
     <>
       <Dialog
@@ -75,6 +76,7 @@ export default function DeleteAccount() {
   const handleConfirm = (e) => {
     e.preventDefault()
     setIsOpen(true)
+    return
   }
   return (
     <>
