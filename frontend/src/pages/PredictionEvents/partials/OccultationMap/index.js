@@ -222,6 +222,8 @@ const PredictOccultationMap = ({ occultationId }) => {
               <DownloadButton
                 {...{
                   id: occultationId,
+                  mapCenter,
+                  diameter: data?.diameter,
                   lineCenter: lineCenter,
                   centralPathSteps: centralPathSteps,
                   bodyUpper: bodyUpper,
