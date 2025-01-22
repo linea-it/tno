@@ -231,7 +231,7 @@ def run_occultation_path_coeff(
             else:
                 # tenta calcular a partir de h e g do bsp e só funciona para asteroides em geral
                 if (
-                    obj_data["h"] < 99
+                    obj_data["h"] is not None and obj_data["h"] < 99
                 ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
                     ast_vis_mag = asteroid_visual_magnitude(
                         obj_data["bsp_jpl"]["filename"],
@@ -453,7 +453,7 @@ def run_occultation_path_coeff(
             df[column] = obj_data.get(column)
 
         # Correcao de valores nao validos para H (magnitude absoluta do asteroide)
-        if obj_data["h"] > 99:
+        if obj_data["h"] is not None and obj_data["h"] > 99:
             df["h"] = None
 
         # -------------------------------------------------
@@ -497,7 +497,13 @@ def run_occultation_path_coeff(
 
         # Gera um hash unico para cada evento de predicao
         df["hash_id"] = df.apply(
-            lambda x: generate_hash(x["name"], x["gaia_source_id"], x["date_time"]),
+            lambda x: generate_hash(
+                x["name"],
+                x["gaia_source_id"],
+                x["date_time"],
+                x["ra_star_candidate"],
+                x["dec_star_candidate"],
+            ),
             axis=1,
         )
 
