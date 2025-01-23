@@ -285,14 +285,12 @@ def run_subscription_filter_and_send_mail(force_run=False):
 
 @shared_task
 def update_asteroid_classes_cache():
-    try:
-        update_base_dynclass_cache()
-        update_dynclass_cache()
-    except Exception as e:
-        print(f"Error in update_asteroid_classes_cache: {e}")
+
+    update_base_dynclass_cache()
+    update_dynclass_cache()
 
 
-def update_base_dynclass_cache(self):
+def update_base_dynclass_cache():
     queryset = Occultation.objects.order_by("base_dynclass").distinct("base_dynclass")
 
     rows = [x.base_dynclass for x in queryset]
@@ -303,7 +301,7 @@ def update_base_dynclass_cache(self):
     return None
 
 
-def update_dynclass_cache(self):
+def update_dynclass_cache():
     queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
 
     rows = [x.dynclass for x in queryset]
