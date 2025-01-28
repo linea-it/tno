@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import L from 'leaflet'
 import { useMap } from 'react-leaflet' // Componentes do React para integração com Leaflet
 // plugins do leaflet para desenhar as sombras
@@ -8,19 +8,27 @@ import 'leaflet-boundary-canvas'
 const NightLayer = ({ datetime }) => {
   const map = useMap()
 
-  // função que atualiza as sombra de acordo com o datetime
-  const updateMapTime = (time) => {
+  useEffect(() => {
     const nightmask = terminator({
       fillColor: 'gray',
       weight: 1
       //color: 'black'
     }).addTo(map)
+    console.log('executei Nighttime...')
+    nightmask.setTime(datetime)
 
-    nightmask.setTime(time)
-  }
-  updateMapTime(datetime)
+    // Remove a camada ao desmontar ou ao atualizar
+    return () => {
+      if (map.hasLayer(nightmask)) {
+        map.removeLayer(nightmask)
+      }
+    }
+  }, [map, datetime]) // Executa sempre que `map` ou `datetime` mudar
 
-  // Retornar null para indicar que o componente não renderiza elementos visuais
+  // função que atualiza as sombra de acordo com o datetime
+  // const updateMapTime = (time) => {}
+  // updateMapTime(datetime)
+
   return null
 }
 
