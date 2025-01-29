@@ -32,7 +32,13 @@ def normalize_to_nearest_hour(dt):
     return normalized_dt
 
 
-def generate_hash(name: str, source_id: int, date_time: datetime):
+def generate_hash(
+    name: str,
+    source_id: int,
+    date_time: datetime,
+    ra_star_candidate: str,
+    dec_star_candidate: str,
+):
     """
     Generates a hash based on the given parameters.
 
@@ -40,6 +46,8 @@ def generate_hash(name: str, source_id: int, date_time: datetime):
         name (str): The name parameter.
         source_id (int): The source ID parameter.
         date_time (datetime): The date and time parameter.
+        ra_star_candidate (str): The right ascension of the star candidate.
+        dec_star_candidate (str): The declination of the star candidate.
 
     Returns:
         str: The generated hash.
@@ -48,7 +56,7 @@ def generate_hash(name: str, source_id: int, date_time: datetime):
     # Convert date and time of event to the nearest hour
     nearest_hour = normalize_to_nearest_hour(date_time)
     # Generate the identifier string with asteroid name, star gaia source id, and nearest hour
-    identifier = f"{name} {source_id} {nearest_hour.strftime('%Y-%m-%d %H:%M:%S')}"
+    identifier = f"{name} {source_id} {nearest_hour.strftime('%Y-%m-%d %H:%M:%S')} {ra_star_candidate} {dec_star_candidate}"
     md5 = hashlib.md5(identifier.encode("utf-8")).digest()
     hash = base64.urlsafe_b64encode(md5).decode("utf-8").rstrip("=")
     return hash

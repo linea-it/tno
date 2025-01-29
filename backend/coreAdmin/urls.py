@@ -104,6 +104,18 @@ urlpatterns = [
     path("", include("drfpasswordless.urls")),
     re_path(r"^api/which_environment", common_views.which_environment),
     re_path(r"^api/environment_settings", common_views.environment_settings),
+    re_path(
+        r"^api/update_occultations_highlihts",
+        common_views.update_occultations_highlihts,
+    ),
+    re_path(
+        r"^api/healthcheck",
+        common_views.healthcheck,
+    ),
+    # re_path(
+    #     r"^api/teste",
+    #     common_views.teste,
+    # ),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "api/docs/",
