@@ -4,6 +4,7 @@ from tno.models import (
     AsteroidJob,
     BspPlanetary,
     Catalog,
+    Highlights,
     JohnstonArchive,
     LeapSecond,
     Occultation,
@@ -165,4 +166,20 @@ class PredictionJobStatusAdmin(admin.ModelAdmin):
         "time_estimate",
         "success",
         "failures",
+    )
+
+
+@admin.register(Highlights)
+class PredictionJobStatusAdmin(admin.ModelAdmin):
+    list_display = (
+        "month_count",
+        "next_month_count",
+        "week_count",
+        "next_week_count",
+        "day_count",
+        "unique_asteroids",
+        "occultations_count",
+        "earliest_occultation",
+        "latest_occultation",
+        "created_at",
     )

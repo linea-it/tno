@@ -2,6 +2,7 @@ from .asteroid import Asteroid
 from .asteroid_job import AsteroidJob
 from .bsp_planetary import BspPlanetary
 from .catalog import Catalog
+from .highlights import Highlights
 from .johnston_archive import JohnstonArchive
 from .leadp_seconds import LeapSecond
 from .occultation import Occultation
