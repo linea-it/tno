@@ -74,14 +74,15 @@ const PredictOccultationMap = ({ occultationId }) => {
   const { data, isFetching } = useQuery({
     queryKey: ['getOccultationPaths', { id: occultationId, force }], // Chave única para consulta
     queryFn: getOccultationPaths, // Função que realiza a consulta
-    onSuccess: () => setForce(false), // Reseta o estado de força ao concluir
-    staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
+    refetchOnWindowFocus: false, // Disable refetching on tab change for this component
+    onSuccess: () => setForce(false) // Reseta o estado de força ao concluir
+    // staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
 
   console.log('data', data)
 
   // Define o nível de zoom com base nos parâmetros
-  const zoomLevel = 8
+  const zoomLevel = 3
 
   // Determina dinamicamente o centro do mapa e o nível de zoom inicial
   const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : null
@@ -174,7 +175,7 @@ const PredictOccultationMap = ({ occultationId }) => {
         {!isFetching && mapCenter && (
           <MapContainer className={classes.map} center={mapCenter} zoom={zoomLevel}>
             <TileLayer url={tileLayerUrl} subdomains={['mt0', 'mt1', 'mt2', 'mt3']} />
-            <FlyToMap center={mapCenter} zoom={mapZoom} />
+            {/* <FlyToMap center={mapCenter} zoom={mapZoom} /> */}
             <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
 
             {/* Chamada do Componente que desenha as sombras */}

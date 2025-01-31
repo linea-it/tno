@@ -2,7 +2,7 @@ import { makeStyles } from '@mui/styles'
 
 const styles = makeStyles((theme) => ({
   map: {
-    height: '80vh ',
+    height: '70vh',
     width: '100% ',
     borderRadius: '10px '
   },
