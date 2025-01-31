@@ -70,10 +70,10 @@ const DownloadKMZButton = ({ id, ...params }) => {
     contentString += '<name></name>\n'
 
     const styles = [
-      { id: 'Rings', lineColor: 'ff999999', width: 3, polyColor: '' },
-      { id: 'Center', lineColor: 'ff0000ff', width: 3, polyColor: 'ff00ff00' },
+      { id: 'Uncertainty', lineColor: 'ff2f2fd3', width: 1, polyColor: '' },
+      { id: 'Center', lineColor: 'ff8d4600', width: 3, polyColor: 'ff8d4600' },
       { id: 'Other', lineColor: 'ffbbbbff', width: 1, polyColor: 'ffbbbbff' },
-      { id: 'Body', lineColor: 'ff00ff00', width: 3, polyColor: 'ff00ff00' }
+      { id: 'Body', lineColor: 'ff8d4600', width: 2, polyColor: 'ff8d4600' }
       // { id: 'Points', lineColor: 'ff0000ff', width: 28, polyColor: 'ff0000ff' },
       // { id: 'CentralPoint', lineColor: 'ff0000ff', width: 48, polyColor: ' ' }
     ]
@@ -95,11 +95,11 @@ const DownloadKMZButton = ({ id, ...params }) => {
 
     // Dados para as diferentes partes
     const sections = [
-      { name: 'Center of shadow', style: '#Center', coordinates: params.lineCenter },
-      { name: 'Body shadow limit Upper', style: '#Body', coordinates: params.bodyUpper },
-      { name: 'Body shadow limit Lower', style: '#Body', coordinates: params.bodyLower },
-      { name: 'Uncertainty Upper', style: '#Rings', coordinates: params.uncertaintyUpper },
-      { name: 'Uncertainty Lower', style: '#Rings', coordinates: params.uncertaintyLower }
+      { name: 'Shadow Central Path', style: '#Center', coordinates: params.lineCenter },
+      { name: 'Body Size Upper Limit', style: '#Body', coordinates: params.bodyUpper },
+      { name: 'Body Size Lower Limit', style: '#Body', coordinates: params.bodyLower },
+      { name: 'Uncertainty Upper Limit', style: '#Uncertainty', coordinates: params.uncertaintyUpper },
+      { name: 'Uncertainty Lower Limit', style: '#Uncertainty', coordinates: params.uncertaintyLower }
       // //{ name: 'Points', style: '#Points', coordinates: pointsCoordinates },
       // ...pointsCoordinates.map((coords, index) => ({
       //   name: `Points ${index + 1}`,
@@ -134,44 +134,14 @@ const DownloadKMZButton = ({ id, ...params }) => {
       }
     })
 
-    // pontos menores
-    for (let c = 0; c < pointsCoordinates.length; c++) {
-      //console.log('contentstring', circleCoordinates[c])
-      let myArrayC = pointsCoordinates[c]
-      contentString += '<Placemark>\n'
-      contentString += '<name>Points</name>\n'
-      contentString += '<Style>\n'
-      //contentString += `<Style id='Points'>\n`
-      contentString += '<LineStyle>\n'
-      contentString += '  <color>ff0000ff</color>\n'
-      contentString += '  <width>28</width>\n'
-      contentString += '</LineStyle>\n'
-      // contentString += '<PolyStyle>\n'
-      // // contentString += '<color>ff007cf5</color>\n'
-      // contentString += '<color></color>\n'
-      // contentString += '</PolyStyle>\n'
-      contentString += '  </Style>\n'
-      contentString += '  <LineString>\n'
-      contentString += '<tessellate>1</tessellate>\n'
-      contentString += '<coordinates>\n'
-      for (let i = 0; i < myArrayC.length; i++) {
-        //for (let i = 0; i < 30; i++) {
-        contentString += myArrayC[i] + ',0.0\n' //[i]
-        console.log(myArrayC[i])
-      }
-      contentString += '</coordinates>\n'
-      contentString += '  </LineString>\n'
-      contentString += '</Placemark>\n'
-    }
-
     //ponto central
     contentString += '<Placemark>\n'
-    contentString += '<name>Central Point</name>\n'
+    contentString += '<name>CA Instant</name>\n'
     contentString += '<Style>\n'
     //contentString += `<Style id='Points'>\n`
     contentString += '<LineStyle>\n'
-    contentString += '  <color>ff0000ff</color>\n'
-    contentString += '  <width>48</width>\n'
+    contentString += '  <color>ff8d4600</color>\n'
+    contentString += '  <width>36</width>\n'
     contentString += '</LineStyle>\n'
     // contentString += '<PolyStyle>\n'
     // contentString += '<color>ff007cf5</color>\n'
@@ -190,6 +160,36 @@ const DownloadKMZButton = ({ id, ...params }) => {
     contentString += '</coordinates>\n'
     contentString += '  </LineString>\n'
     contentString += '</Placemark>\n'
+
+    // pontos menores
+    for (let c = 0; c < pointsCoordinates.length; c++) {
+      //console.log('contentstring', circleCoordinates[c])
+      let myArrayC = pointsCoordinates[c]
+      contentString += '<Placemark>\n'
+      contentString += '<name>60 sec step</name>\n'
+      contentString += '<Style>\n'
+      //contentString += `<Style id='Points'>\n`
+      contentString += '<LineStyle>\n'
+      contentString += '  <color>ff8d4600</color>\n'
+      contentString += '  <width>16</width>\n'
+      contentString += '</LineStyle>\n'
+      // contentString += '<PolyStyle>\n'
+      // // contentString += '<color>ff007cf5</color>\n'
+      // contentString += '<color></color>\n'
+      // contentString += '</PolyStyle>\n'
+      contentString += '  </Style>\n'
+      contentString += '  <LineString>\n'
+      contentString += '<tessellate>1</tessellate>\n'
+      contentString += '<coordinates>\n'
+      for (let i = 0; i < myArrayC.length; i++) {
+        //for (let i = 0; i < 30; i++) {
+        contentString += myArrayC[i] + ',0.0\n' //[i]
+        console.log(myArrayC[i])
+      }
+      contentString += '</coordinates>\n'
+      contentString += '  </LineString>\n'
+      contentString += '</Placemark>\n'
+    }
 
     contentString += '</Document> </kml>\n'
 
