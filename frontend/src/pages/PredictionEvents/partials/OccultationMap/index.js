@@ -5,12 +5,13 @@ import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
-import { Box, Card, CircularProgress, Stack, Typography } from '@mui/material' // Componentes de UI do Material-UI
+import { Box, Card, CircularProgress, Stack, Typography, Button } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
 import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
 import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
+import DownloadButton from '../../../../components/OccultationMap/OccultationKmzDownload'
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
@@ -206,19 +207,35 @@ const PredictOccultationMap = ({ occultationId }) => {
             ))}
           </MapContainer>
         )}
-        {/* Download do mapa no formato do Sora */}
+        {/* Contêiner dos botões de download */}
         {!isFetching && mapCenter && (
           <Box
             sx={{
-              height: '60px',
-              direction: 'columm',
-              justifyContent: 'right',
-              alignItems: 'right',
               display: 'flex',
-              position: 'relative'
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '5px 5px'
             }}
           >
-            <Stack sx={{ paddingTop: '20px', paddingRight: '10px' }}>
+            {/* Botão de Download do arquivo KMZ */}
+            <Stack>
+              <DownloadButton
+                {...{
+                  id: occultationId,
+                  mapCenter,
+                  diameter: data?.diameter,
+                  lineCenter: lineCenter,
+                  centralPathSteps: centralPathSteps,
+                  bodyUpper: bodyUpper,
+                  bodyLower: bodyLower,
+                  uncertaintyUpper: uncertaintyUpper,
+                  uncertaintyLower: uncertaintyLower
+                }}
+              />
+            </Stack>
+
+            {/* Botão de Download do mapa no formato do Sora */}
+            <Stack>
               <OccultationMapDownload occultationId={occultationId} />
             </Stack>
           </Box>
