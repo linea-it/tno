@@ -12,7 +12,6 @@ const DayLayer = ({ datetime }) => {
       fillColor: '#FFFACD',
       fillOpacity: 0.65,
       daytime: true
-      //color: 'black'
     }).addTo(map)
     console.log('executei Nighttime...')
     daymask.setTime(datetime)
