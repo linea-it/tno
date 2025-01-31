@@ -5,12 +5,12 @@ import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
-import { Box, Card, CircularProgress } from '@mui/material' // Componentes de UI do Material-UI
+import { Box, Card, CircularProgress, Stack, Typography } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
-import { Typography } from '@mui/material'
 import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
 import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
+import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
@@ -75,6 +75,8 @@ const PredictOccultationMap = ({ occultationId }) => {
     onSuccess: () => setForce(false), // Reseta o estado de força ao concluir
     staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
+
+  console.log('data', data)
 
   // Define o nível de zoom com base nos parâmetros
   const zoomLevel = 8
@@ -203,6 +205,23 @@ const PredictOccultationMap = ({ occultationId }) => {
               <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
             ))}
           </MapContainer>
+        )}
+        {/* Download do mapa no formato do Sora */}
+        {!isFetching && mapCenter && (
+          <Box
+            sx={{
+              height: '60px',
+              direction: 'columm',
+              justifyContent: 'right',
+              alignItems: 'right',
+              display: 'flex',
+              position: 'relative'
+            }}
+          >
+            <Stack sx={{ paddingTop: '20px', paddingRight: '10px' }}>
+              <OccultationMapDownload occultationId={occultationId} />
+            </Stack>
+          </Box>
         )}
       </Box>
     </Card>
