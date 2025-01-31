@@ -20,6 +20,7 @@ nav:
       - Occultation Predictions Table: 'user-guide/occultation-predictions-table.md'
       - API: 'user-guide/api.md'
       - Python Module: 'user-guide/python_module.md'
+      - Subscription Guide: 'user-guide/subscription-guide.md'
       - Citations: 'user-guide/citations.md'
   - FAQ: 'faq.md'
   # - About: 'about.md'
