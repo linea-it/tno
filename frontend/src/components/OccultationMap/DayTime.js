@@ -1,27 +1,26 @@
 import React, { useEffect } from 'react'
-import L from 'leaflet'
 import { useMap } from 'react-leaflet' // Componentes do React para integração com Leaflet
 // plugins do leaflet para desenhar as sombras
-// import terminator from '@joergdietrich/leaflet.terminator'
 import terminator from './Terminator'
 import 'leaflet-boundary-canvas'
 
-const NightLayer = ({ datetime }) => {
+const DayLayer = ({ datetime }) => {
   const map = useMap()
 
   useEffect(() => {
-    const nightmask = terminator({
-      fillColor: 'gray',
-      weight: 1
+    const daymask = terminator({
+      fillColor: '#FFFACD',
+      fillOpacity: 0.65,
+      daytime: true
       //color: 'black'
     }).addTo(map)
     console.log('executei Nighttime...')
-    nightmask.setTime(datetime)
+    daymask.setTime(datetime)
 
     // Remove a camada ao desmontar ou ao atualizar
     return () => {
-      if (map.hasLayer(nightmask)) {
-        map.removeLayer(nightmask)
+      if (map.hasLayer(daymask)) {
+        map.removeLayer(daymask)
       }
     }
   }, [map, datetime]) // Executa sempre que `map` ou `datetime` mudar
@@ -33,4 +32,4 @@ const NightLayer = ({ datetime }) => {
   return null
 }
 
-export default NightLayer
+export default DayLayer

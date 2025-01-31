@@ -8,6 +8,7 @@ import styles from './styles' // Estilos do componente
 import { Box, Card, CircularProgress, Stack, Typography, Button } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
+import DayLayer from '../../../../components/OccultationMap/DayTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
 import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
 import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
@@ -177,7 +178,8 @@ const PredictOccultationMap = ({ occultationId }) => {
             <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
 
             {/* Chamada do Componente que desenha as sombras */}
-            <NightLayer datetime={datetime} />
+            {/* <NightLayer datetime={datetime} /> */}
+            <DayLayer datetime={datetime} />
 
             {/* Linha principal do caminho central */}
             {periodicLineCenterSegments.map((segment, index) => (
