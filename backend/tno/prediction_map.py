@@ -248,7 +248,7 @@ def sora_occultation_map(
         ptcolor="#00468D",
         ercolor="#D32F2F",
         outcolor="#D3D3D3",
-        # labels = False,
+        labels=True,
     )
 
     if not filepath.exists():
@@ -350,3 +350,64 @@ def maps_folder_stats():
         )
 
     return result
+
+
+def sora_occultation_thumbnail(
+    name: str,
+    diameter: Optional[float],
+    ra_star_candidate: str,
+    dec_star_candidate: str,
+    date_time: Union[datetime, str],
+    closest_approach: float,
+    position_angle: float,
+    velocity: float,
+    delta: float,
+    g: float,
+    long: float,
+    filepath: Union[Path, str],
+    dpi: int = 10,
+    error: Optional[float] = None,
+) -> str:
+
+    if isinstance(filepath, str):
+        filepath = Path(filepath)
+    if isinstance(date_time, str):
+        date_time = datetime.fromisoformat(date_time)
+
+    filename = filepath.name
+    fname, fmt = filename.split(".")
+    path = filepath.parent
+
+    radius = float(diameter / 2) if diameter != None else 0
+    coord = f"{ra_star_candidate}{dec_star_candidate}"
+    # Time format is isoformat in UTC withou +00:00
+    # ex: 2023-09-26T00:54:13.683590Z
+    time = date_time.isoformat().replace("+00:00", "Z")
+    plot_occ_map(
+        name=name,
+        radius=radius,
+        coord=coord,
+        time=time,
+        ca=closest_approach,
+        pa=position_angle,
+        vel=velocity,
+        dist=delta,
+        mag=g,
+        longi=long,
+        dpi=dpi,
+        nameimg=fname,
+        path=path,
+        fmt=fmt,
+        error=error,
+        lncolor="#00468D",
+        ptcolor="#00468D",
+        ercolor="#D32F2F",
+        outcolor="#D3D3D3",
+        labels=False,
+        arrow=False,
+    )
+
+    if not filepath.exists():
+        raise Exception(f"Map file was not generated. {filepath}")
+
+    return str(filename)

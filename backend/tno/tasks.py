@@ -19,6 +19,7 @@ from tno.predict_job import (
 from tno.prediction_map import (
     garbage_collector_maps,
     sora_occultation_map,
+    sora_occultation_thumbnail,
     upcoming_events_to_create_maps,
 )
 
@@ -76,8 +77,19 @@ def create_occ_map_task(**kwargs):
 
 
 @shared_task
+def create_thumbnail_map_task(**kwargs):
+    return create_thumbnail_maps(**kwargs)
+
+
+@shared_task
 def prediction_maps_log_error(request, exc, traceback):
     logger = logging.getLogger("predict_maps")
+    logger.error(f"{request.id} {exc} {traceback}")
+
+
+@shared_task
+def thumbnail_maps_log_error(request, exc, traceback):
+    logger = logging.getLogger("thumbnail_maps")
     logger.error(f"{request.id} {exc} {traceback}")
 
 
@@ -97,6 +109,43 @@ def create_prediction_maps():
 
     # Celery tasks signature
     header = [create_occ_map_task.s(**i) for i in to_run]
+    job = group(header)
+    job.link_error(prediction_maps_log_error.s())
+
+    job.apply_async()
+
+    logger.info(f"All subtasks are submited.")
+
+    # Util em desenvolvimento para acompanhar as tasks
+    # # Submete as tasks aos workers
+    # result = job.apply_async()
+
+    # # Aguarda todas as subtasks terminarem
+    # while result.ready() == False:
+    #     print(f"Completed: {result.completed_count()}")
+    #     sleep(3)
+
+    # t2 = datetime.now()
+    # dt = t2 - t0
+    # logger.info(f"All {len(to_run)} tasks completed in {humanize.naturaldelta(dt)}")
+
+
+@shared_task
+def create_thumbnail_maps():
+    # Exemplo de como executar a task manualmente pelo bash do container
+    # python manage.py shell -c "from tno.tasks import create_prediction_maps;create_prediction_maps.delay()"
+    logger = logging.getLogger("thumbnail_maps")
+    logger.info("---------------------------------")
+    logger.info("Start of creating thumbnails maps")
+
+    t0 = datetime.now()
+
+    to_run = upcoming_events_to_create_maps()
+
+    logger.info(f"Tasks to be executed in this block: [{len(to_run)}].")
+
+    # Celery tasks signature
+    header = [create_thumbnail_map_task.s(**i) for i in to_run]
     job = group(header)
     job.link_error(prediction_maps_log_error.s())
 
