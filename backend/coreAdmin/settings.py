@@ -546,6 +546,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "occ_highlights.log"),
             "formatter": "standard",
         },
+        "thumbnail_maps": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "thumbnail_maps.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
