@@ -83,20 +83,20 @@ Put your email on the text box and click on <<*SEND CODE*>> button. It will send
 
 Once you are logged in, three new icons will be available on the top right corner on the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/):
 
-- [<img src="gear_icon.png" width="20px" height="20px" /> **User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/)
-- [<img src="dashboard_icon.png" width="20px" height="20px" /> **Dashboard**](https://solarsystem.linea.org.br/dashboard/)
-- <img src="account_circle_icon.png" width="20px" height="20px" /> **User Info**
+- [ <img src="gear_icon.png" width="20px" height="20px" /> ] [**User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/)
+- [ <img src="dashboard_icon.png" width="20px" height="20px" />] [**Dashboard**](https://solarsystem.linea.org.br/dashboard/)
+- [ <img src="account_circle_icon.png" width="20px" height="20px" /> ] **User Info**
 
 
 ### <a name="newsletter"></a>User NEWSLetter Preferences
 
-By clicking on the [<img src="gear_icon.png" width="20px" height="20px" /> **User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon, the user can access the NEWSLetter preferences.
+By clicking on the [ <img src="gear_icon.png" width="20px" height="20px" /> ] [**User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon, the user can access the NEWSLetter preferences.
 
 Here it is possible for the user to create filters in order to select occultations events, configure and adjust preferences on those filters, enable or disable email notifications, and delete your account.
 
 ### <a name="dashboard"></a>Dashboard
 
-By clicking on the [<img src="dashboard_icon.png" width="20px" height="20px" /> **Dashboard**](https://solarsystem.linea.org.br/dashboard/) icon, the user can access the Dashboard options.
+By clicking on the [ <img src="dashboard_icon.png" width="20px" height="20px" /> ] [**Dashboard**](https://solarsystem.linea.org.br/dashboard/) icon, the user can access the Dashboard options.
 
 Here users will access the [Dashboard](https://solarsystem.linea.org.br/dashboard/) (https://solarsystem.linea.org.br/dashboard/) page which contains three main tools: [Statistics](https://solarsystem.linea.org.br/dashboard/stats), [Prediction of Occultation](https://solarsystem.linea.org.br/dashboard/prediction-of-occultation), and [Occultation](https://solarsystem.linea.org.br/dashboard/occultation).
 
@@ -104,12 +104,12 @@ There is also important information about LIneA, its contact info, social medias
 
 
 ### <a name="user_info"></a>User Info
-By clicking on <img src="account_circle_icon.png" width="20px" height="20px" /> **User Info** icon, the user can access the NEWSLetter preferences (same as in [<img src="gear_icon.png" width="20px" height="20px" /> **User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon) or log out.
+By clicking on [ <img src="account_circle_icon.png" width="20px" height="20px" /> ] **User Info** icon, the user can access the NEWSLetter preferences (same as in [ <img src="gear_icon.png" width="20px" height="20px" /> ] [**User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon) or log out.
 
 
 ## <a name="side_menu"></a>[Dashboard] Side menu
 
-Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> icon icon located on the top left corner.
+Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the [ <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> ] icon located on the top left corner.
 
 On the side menu it is possible to access five different options:
 - **Dashboard** = go to the dashboard [statistics](https://solarsystem.linea.org.br/dashboard/stats) page
@@ -125,7 +125,7 @@ This is the page where users may find statistics about the prediction of stellar
 
 It is presented three main statistics tabs: the "TOTAL FORECAST" section (with the total number of occultations predicted on the portal, the number of objects, and the earliest and latest prediction times), the "EVENTS TODAY" section (with the number of occultations predicted for the current day, week, and following week), and the "UPCOMING THIS MONTH" (with the number of occultations predicted for the current month and the next).
 
-In the top left corner it is located the <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the [ <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> ] icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
 ## <a name="occ_run"></a>[Dashboard] Predict Occultation Run
 
@@ -140,11 +140,11 @@ This is the page where users may use the filters in order to run their own predi
 - **CLEAR** Button: reset all the filter parameters.
 - **EXECUTE** button: Start the prediction run with the selected filters.
 
-Users may also follow up the run information on the table at the bottom of the page. Each line presented at the table is a process. Columns are, by default: **Detail** (user may view a summary of the process by clicking on the [info icon] icon), **ID** (status identification number), **Status** (Success, Failed, Running, Iddle), **Execution Date** (start time of the process), **Execution Time** (duration of the process), **Asteroids** (number of objects), **Ast WO** (number of asteroids with occultation prediction), **Occultations** (total number of occultation), **Success** (number of success object prediction), **Failures** (number of failure object prediction), **Average Execution Time** (average time per object), **Owner** (user who initiated the process/job).
+Users may also follow up the run information on the table at the bottom of the page. Each line presented at the table is a process. Columns are, by default: **Detail** (user may view a summary of the process by clicking on the [ <img src="info_icon.png" width="20px" height="20px" /> ] icon), **ID** (status identification number), **Status** (Success, Failed, Running, Iddle), **Execution Date** (start time of the process), **Execution Time** (duration of the process), **Asteroids** (number of objects), **Ast WO** (number of asteroids with occultation prediction), **Occultations** (total number of occultation), **Success** (number of success object prediction), **Failures** (number of failure object prediction), **Average Execution Time** (average time per object), **Owner** (user who initiated the process/job).
 
-User may click on the [3 dots ico] and then on *Manage columns* in order to show or hide any of the mentioned columns. It is possible to sort (up or down) using any of the columns.
+User may click on the [ <img src="three_dots_vertical_icon.png" width="20px" height="20px" /> ] icon and then on *Manage columns* in order to show or hide any of the mentioned columns. It is possible to sort (up or down) using any of the columns.
 
-In the top left corner it is located the [<img src="three_line_horizontal_icon.png" width="20px" height="20px" />](https://solarsystem.linea.org.br/dashboard/) icon button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the [ <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> ] [**Dashboard**](https://solarsystem.linea.org.br/dashboard/) icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
 ## <a name="occ"></a>[Dashboard] Occultation
 
@@ -152,13 +152,13 @@ This is the page where users may filter the occultation prediction results. It i
 
 See more details about filtering events in the [Documentation page](https://solarsystem.linea.org.br/docs/user-guide/filter-events/).
 
-In the top left corner it is located the [<img src="three_line_horizontal_icon.png" width="20px" height="20px" />](https://solarsystem.linea.org.br/dashboard/) icon button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the [ <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> ] [**Dashboard**](https://solarsystem.linea.org.br/dashboard/) icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
 ## <a name="jobs"></a>[Dashboard] Asteroid Jobs
 
-This is the page where users may find a table with information about the processes (jobs) requested to update the asteroid list and parameters. Each line represents a process that can be followed up through the columns: **ID** (user may view a summary of the process by clicking on the [info icon] icon - *not yet implemented*), **Status** (Success, Failed, Running, Iddle), **Start** and **End** (start and end time of the process), **Exec Time** (total execution time), **Before** (total number of occultations *before* the run), **After** (total number of occultations *after* the run), **New Records** (number of new occultation registered = *after-before*), **Error** (information error).
+This is the page where users may find a table with information about the processes (jobs) requested to update the asteroid list and parameters. Each line represents a process that can be followed up through the columns: **ID** (user may view a summary of the process by clicking on the [ <img src="info_icon.png" width="20px" height="20px" /> ] icon - *not yet implemented*), **Status** (Success, Failed, Running, Iddle), **Start** and **End** (start and end time of the process), **Exec Time** (total execution time), **Before** (total number of occultations *before* the run), **After** (total number of occultations *after* the run), **New Records** (number of new occultation registered = *after-before*), **Error** (information error).
 
-User may click on the [3 dots ico] and then on *Manage columns* in order to show or hide any of the mentioned columns. It is possible to sort (up or down) using any of the columns.
+User may click on the [ <img src="three_dots_vertical_icon.png" width="20px" height="20px" /> ] icon and then on *Manage columns* in order to show or hide any of the mentioned columns. It is possible to sort (up or down) using any of the columns.
 
 ## <a name="news_filter"></a>NEWSLetter Filter Configuring
 
