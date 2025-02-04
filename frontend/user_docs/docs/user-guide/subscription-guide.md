@@ -1,14 +1,13 @@
 # Welcome to LIneA SS-OPD User Guide
 
-This is the **LIneA Solar System Occultation Prediction Database Portal User Guide**. Here users will find a few information on how to register, login, and use the filters to customize your search results for a stellar occultation prediction.
+This is the **LIneA Solar System Occultation Prediction Database Portal User Guide**. This database features predictions for stellar occultations by small Solar System objects, updated regularly.
 
-This database features predictions for stellar occultations by small Solar System objects, updated regularly. Use the **advanced filters** to refine your search. **Subscribe** and set up customized updates.
-
+Here users will find a few information on how to **register**, **login**, and use the **advanced filters** to refine and customize your search results for a stellar occultation prediction. **Subscribe** and also set up customized updates within the newsletter.
 
 
 ## Register / Subscribe
 
-User subscription is not necessary in order to preview and obtain occultation results, the portal is free to anyone to use and visualize millions of occultation prediction by small bodies in the solar system. However, it is necessary to subscribe in the portal if you want to be informed with new updates in your interest predictions and have periodically new predictions.
+User subscription is not necessary in order to preview and obtain occultation results, the portal is **free** to anyone to use and visualize millions of occultation prediction by small bodies in the solar system. However, it is necessary to **subscribe** in the portal if you want to be informed with new updates in your interest predictions and have periodically new predictions.
 
 The subscription is very simple. On the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/), right below the main title there is a text box where you can put your e-mail ant then click on the **SUBSCRIBE** button. You will receive an e-mail in order to activate your account with the following text:
 
@@ -58,13 +57,12 @@ If it is your first time accessing the page, and you don't have an account, clic
 Put your email on the text box and click on <<*SEND CODE*>> button. It will send you a 6-character code to your e-mail. The code expires shortly, so please enter it soon. Check the number on your e-mail, put it on the text box on the login page, and click on <<*SIGNIN*>>.
 
 
-
 ## Registered User Tools and Options
 
 Once you are logged in, three new icons will be available on the top right corner on the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/):
-
-- [ico engrenagem] **User Preferences**
-- [ico quadrado] **Dashboard**
+☰
+- [⚙️] **User Preferences**
+- [ico quadrado] **Dashboard** 👤
 - [ico user] **User Info**
 
 ### User NEWSLetter Preferences
