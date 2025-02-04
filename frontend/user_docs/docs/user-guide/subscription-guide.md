@@ -1,11 +1,33 @@
-# Welcome to LIneA SS-OPD User Guide
+# <a name="welcome"></a>Welcome to LIneA SS-OPD User Guide
 
 This is the **LIneA Solar System Occultation Prediction Database Portal User Guide**. This database features predictions for stellar occultations by small Solar System objects, updated regularly.
 
 Here users will find a few information on how to **register**, **login**, and use the **advanced filters** to refine and customize your search results for a stellar occultation prediction. **Subscribe** and also set up customized updates within the newsletter.
 
 
-## Register / Subscribe
+## <a name="main_page"></a>Main Page
+
+This is the **LIneA Solar System Occultation Prediction Database Portal** (LIneA OPD). This database features predictions for stellar occultations by small Solar System objects, updated regularly.
+
+At the top left of the page, user may find the folowing options:
+
+- [Home](https://solarsystem.linea.org.br/): Redirects to the LIneA OPD home page.
+- [About](https://solarsystem.linea.org.br/about-us): Redirects to a page with information about LIneA and the OPD.
+- [Documentation](https://solarsystem.linea.org.br/docs/): Redirects to the documentation page.
+- [Contact](https://solarsystem.linea.org.br/contact-us): Redirects to a page with information about LIneA's contact info, social medias and supporters
+
+User may find in the front page three pannels. At the top pannel, three boards presents the total number of predictions and small objects (TOTAL FORECAST), the predictions happening within the next 24h, this week and next week (EVENTS TODAY), and the upcoming occultations in the next month (UPCOMING THIS MONTH).
+
+Below, on the second pannel, user may find a pannel for filtering events. For details in how to use it, please check the [Filter Events Documentation](https://solarsystem.linea.org.br/docs/user-guide/filter-events/) page.
+
+The third pannel contains the prediction maps. For more information, please check the [Occultation Details Documentation](https://solarsystem.linea.org.br/docs/user-guide/occultation-details-page/) page.
+
+At the bottom of the page, there is also important information about LIneA, its contact info, social medias and supporters.
+
+
+
+
+## <a name="register"></a>Register / Subscribe
 
 User subscription is not necessary in order to preview and obtain occultation results, the portal is **free** to anyone to use and visualize millions of occultation prediction by small bodies in the solar system. However, it is necessary to **subscribe** in the portal if you want to be informed with new updates in your interest predictions and have periodically new predictions.
 
@@ -48,7 +70,7 @@ Now you will be able to customize your Newsletter Settings.
 
 
 
-## LogIn
+## <a name="login"></a>LogIn
 
 Go to the top right corner and click on **LOGIN**. You will be redirected to a page where you must inform your email.
 
@@ -57,54 +79,57 @@ If it is your first time accessing the page, and you don't have an account, clic
 Put your email on the text box and click on <<*SEND CODE*>> button. It will send you a 6-character code to your e-mail. The code expires shortly, so please enter it soon. Check the number on your e-mail, put it on the text box on the login page, and click on <<*SIGNIN*>>.
 
 
-## Registered User Tools and Options
+## <a name="options"></a>Registered User Tools and Options
 
 Once you are logged in, three new icons will be available on the top right corner on the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/):
 
-- <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/gear_icon.png" width="20px" height="20px" /> **User Preferences**
-- <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/dashboard_icon.png" width="20px" height="20px" /> **Dashboard** 
-- <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/account_circle_icon.png" width="20px" height="20px" /> **User Info**
+- [<img src="gear_icon.png" width="20px" height="20px" /> **User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/)
+- [<img src="dashboard_icon.png" width="20px" height="20px" /> **Dashboard**](https://solarsystem.linea.org.br/dashboard/)
+- <img src="account_circle_icon.png" width="20px" height="20px" /> **User Info**
 
 
-### User NEWSLetter Preferences
+### <a name="newsletter"></a>User NEWSLetter Preferences
+
+By clicking on the [<img src="gear_icon.png" width="20px" height="20px" /> **User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon, the user can access the NEWSLetter preferences.
 
 Here it is possible for the user to create filters in order to select occultations events, configure and adjust preferences on those filters, enable or disable email notifications, and delete your account.
 
-### Dashboard
+### <a name="dashboard"></a>Dashboard
+
+By clicking on the [<img src="dashboard_icon.png" width="20px" height="20px" /> **Dashboard**](https://solarsystem.linea.org.br/dashboard/) icon, the user can access the Dashboard options.
 
 Here users will access the [Dashboard](https://solarsystem.linea.org.br/dashboard/) (https://solarsystem.linea.org.br/dashboard/) page which contains three main tools: [Statistics](https://solarsystem.linea.org.br/dashboard/stats), [Prediction of Occultation](https://solarsystem.linea.org.br/dashboard/prediction-of-occultation), and [Occultation](https://solarsystem.linea.org.br/dashboard/occultation).
 
-Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the ☰ icon located in the top left corner.
+There is also important information about LIneA, its contact info, social medias and supporters.
 
 
-### User Info
+### <a name="user_info"></a>User Info
+By clicking on <img src="account_circle_icon.png" width="20px" height="20px" /> **User Info** icon, the user can access the NEWSLetter preferences (same as in [<img src="gear_icon.png" width="20px" height="20px" /> **User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon) or log out.
 
-Here you can set your user preferences or log out.
 
+## <a name="side_menu"></a>[Dashboard] Side menu
 
-## [Dashboard] Side menu
-
-Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the  <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon located on the top left corner.
+Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> icon icon located on the top left corner.
 
 On the side menu it is possible to access five different options:
-- **Dashboard = go to the dashboard [statistics](https://solarsystem.linea.org.br/dashboard/stats) page
+- **Dashboard** = go to the dashboard [statistics](https://solarsystem.linea.org.br/dashboard/stats) page
 - **Predict Occultation** = go to the [Predict Occultation Run](https://solarsystem.linea.org.br/dashboard/prediction-of-occultation) page
 - **Occultation** = go to the [Occultation](https://solarsystem.linea.org.br/dashboard/occultation) page
 - **Asteroid Jobs** = go to the [asteroid job runs](https://solarsystem.linea.org.br/dashboard/asteroid_job) table information
 - **Public Page** = go to the main page [LIneA OPD](https://solarsystem.linea.org.br/)
 
 
-## [Dashboard] Statistics
+## <a name="stats"></a>[Dashboard] Statistics
 
 This is the page where users may find statistics about the prediction of stellar occultations.
 
 It is presented three main statistics tabs: the "TOTAL FORECAST" section (with the total number of occultations predicted on the portal, the number of objects, and the earliest and latest prediction times), the "EVENTS TODAY" section (with the number of occultations predicted for the current day, week, and following week), and the "UPCOMING THIS MONTH" (with the number of occultations predicted for the current month and the next).
 
-In the top left corner is located the <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the <img src="three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
-## [Dashboard] Predict Occultation Run
+## <a name="occ_run"></a>[Dashboard] Predict Occultation Run
 
-This is the page where users may run its own prediction using the following refining options:
+This is the page where users may use the filters in order to run their own prediction by using the following refining options:
 - The **initial** and **final date** using the format DAY/MONTH/YEAR (with a few pre-set options below, e.g., "1st quarter" and "6 months", setting the predictions to start on 01/JAN/2025 until 01/JUL/2025).
 - **Filter Type**: selecting object name (e.g. 2002 KX14 - you may select more than one object), dynamic class (e.g. Centaur), or dynamic class with subclasses (e.g. NEA>Apollo)
 - **Ephemeris Step**: select the time step to perform the prediction. Default time is 60 seconds.
@@ -115,23 +140,26 @@ This is the page where users may run its own prediction using the following refi
 - **CLEAR** Button: reset all the filter parameters.
 - **EXECUTE** button: Start the prediction run with the selected filters.
 
-The user may also follow up the run information on the table at the bottom of the page.
+Users may also follow up the run information on the table at the bottom of the page. Each line presented at the table is a process. Columns are, by default: **Detail** (user may view a summary of the process by clicking on the [info icon] icon), **ID** (status identification number), **Status** (Success, Failed, Running, Iddle), **Execution Date** (start time of the process), **Execution Time** (duration of the process), **Asteroids** (number of objects), **Ast WO** (number of asteroids with occultation prediction), **Occultations** (total number of occultation), **Success** (number of success object prediction), **Failures** (number of failure object prediction), **Average Execution Time** (average time per object), **Owner** (user who initiated the process/job).
 
-In the top left corner it is located the <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
+User may click on the [3 dots ico] and then on *Manage columns* in order to show or hide any of the mentioned columns. It is possible to sort (up or down) using any of the columns.
 
-## [Dashboard] Occultation
+In the top left corner it is located the [<img src="three_line_horizontal_icon.png" width="20px" height="20px" />](https://solarsystem.linea.org.br/dashboard/) icon button where it is possible to access the other Dashboard options, or return to the main public page.
+
+## <a name="occ"></a>[Dashboard] Occultation
 
 This is the page where users may filter the occultation prediction results. It is presented all the predictions that are available for the selected filters. It shows the same information as in the main page.
 
 See more details about filtering events in the [Documentation page](https://solarsystem.linea.org.br/docs/user-guide/filter-events/).
 
-In the top left corner it is located the <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the [<img src="three_line_horizontal_icon.png" width="20px" height="20px" />](https://solarsystem.linea.org.br/dashboard/) icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
-## [Dashboard] Asteroid Jobs
+## <a name="jobs"></a>[Dashboard] Asteroid Jobs
 
-This is the page where users may find a table with information about ... Under Construction. Please return later!
+This is the page where users may find a table with information about the processes (jobs) requested to update the asteroid list and parameters. Each line represents a process that can be followed up through the columns: **ID** (user may view a summary of the process by clicking on the [info icon] icon - *not yet implemented*), **Status** (Success, Failed, Running, Iddle), **Start** and **End** (start and end time of the process), **Exec Time** (total execution time), **Before** (total number of occultations *before* the run), **After** (total number of occultations *after* the run), **New Records** (number of new occultation registered = *after-before*), **Error** (information error).
 
+User may click on the [3 dots ico] and then on *Manage columns* in order to show or hide any of the mentioned columns. It is possible to sort (up or down) using any of the columns.
 
-## NEWSLetter Filter Configuring
+## <a name="news_filter"></a>NEWSLetter Filter Configuring
 
 Under Construction. Please return later!
