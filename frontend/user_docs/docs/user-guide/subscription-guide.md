@@ -60,10 +60,11 @@ Put your email on the text box and click on <<*SEND CODE*>> button. It will send
 ## Registered User Tools and Options
 
 Once you are logged in, three new icons will be available on the top right corner on the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/):
-☰
-- [⚙️] **User Preferences**
-- [ico quadrado] **Dashboard** 👤
-- [ico user] **User Info**
+
+- <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/gear_icon.png" width="20px" height="20px" /> **User Preferences**
+- <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/dashboard_icon.png" width="20px" height="20px" /> **Dashboard** 
+- <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/account_circle_icon.png" width="20px" height="20px" /> **User Info**
+
 
 ### User NEWSLetter Preferences
 
@@ -73,7 +74,7 @@ Here it is possible for the user to create filters in order to select occultatio
 
 Here users will access the [Dashboard](https://solarsystem.linea.org.br/dashboard/) (https://solarsystem.linea.org.br/dashboard/) page which contains three main tools: [Statistics](https://solarsystem.linea.org.br/dashboard/stats), [Prediction of Occultation](https://solarsystem.linea.org.br/dashboard/prediction-of-occultation), and [Occultation](https://solarsystem.linea.org.br/dashboard/occultation).
 
-Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the [ico] located in the top left corner. 
+Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the ☰ icon located in the top left corner.
 
 
 ### User Info
@@ -83,7 +84,7 @@ Here you can set your user preferences or log out.
 
 ## [Dashboard] Side menu
 
-Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the [ico] located on the top left corner.
+Once the user select one of the three main options in the [dashboard](https://solarsystem.linea.org.br/dashboard/) page, it is possible to access a side menu by clicking on the  <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon located on the top left corner.
 
 On the side menu it is possible to access five different options:
 - **Dashboard = go to the dashboard [statistics](https://solarsystem.linea.org.br/dashboard/stats) page
@@ -99,7 +100,7 @@ This is the page where users may find statistics about the prediction of stellar
 
 It is presented three main statistics tabs: the "TOTAL FORECAST" section (with the total number of occultations predicted on the portal, the number of objects, and the earliest and latest prediction times), the "EVENTS TODAY" section (with the number of occultations predicted for the current day, week, and following week), and the "UPCOMING THIS MONTH" (with the number of occultations predicted for the current month and the next).
 
-In the top left corner is located the [ico] button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner is located the <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
 ## [Dashboard] Predict Occultation Run
 
@@ -116,7 +117,7 @@ This is the page where users may run its own prediction using the following refi
 
 The user may also follow up the run information on the table at the bottom of the page.
 
-In the top left corner it is located the [ico] button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
 ## [Dashboard] Occultation
 
@@ -124,11 +125,12 @@ This is the page where users may filter the occultation prediction results. It i
 
 See more details about filtering events in the [Documentation page](https://solarsystem.linea.org.br/docs/user-guide/filter-events/).
 
-In the top left corner it is located the [ico] button where it is possible to access the other Dashboard options, or return to the main public page.
+In the top left corner it is located the <img src="https://github.com/linea-it/tno/blob/1128-documentacao-subscription/frontend/user_docs/docs/user-guide/three_line_horizontal_icon.png" width="20px" height="20px" /> icon button where it is possible to access the other Dashboard options, or return to the main public page.
 
 ## [Dashboard] Asteroid Jobs
 
-This is the page where users may find a table with information about ...
+This is the page where users may find a table with information about ... Under Construction. Please return later!
+
 
 ## NEWSLetter Filter Configuring
 
