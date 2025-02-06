@@ -41,7 +41,7 @@ const OccultationMapDownload = ({ occultationId }) => {
           Generating... <CircularProgress size={20} style={{ marginLeft: 8 }} />
         </>
       ) : (
-        'Download Map (SORA)'
+        'Download Map'
       )}
     </Button>
   )

@@ -72,7 +72,7 @@ def predict_jobs_for_upper_end_update(**kwargs):
 
 @shared_task
 def create_occ_map_task(**kwargs):
-    return sora_occultation_map(**kwargs)
+    sora_occultation_map(**kwargs)
 
 
 @shared_task
@@ -82,17 +82,12 @@ def prediction_maps_log_error(request, exc, traceback):
 
 
 @shared_task
-def create_prediction_maps():
-    # Exemplo de como executar a task manualmente pelo bash do container
-    # python manage.py shell -c "from tno.tasks import create_prediction_maps;create_prediction_maps.delay()"
+def create_thumbnail_maps():
     logger = logging.getLogger("predict_maps")
-    logger.info("---------------------------------")
-    logger.info("Start of creating prediction maps")
+    logger.info("Starting create_thumbnail_maps task")
 
-    t0 = datetime.now()
-
+    # Get upcoming events
     to_run = upcoming_events_to_create_maps()
-
     logger.info(f"Tasks to be executed in this block: [{len(to_run)}].")
 
     # Celery tasks signature
@@ -100,9 +95,8 @@ def create_prediction_maps():
     job = group(header)
     job.link_error(prediction_maps_log_error.s())
 
-    job.apply_async()
-
-    logger.info(f"All subtasks are submited.")
+    results = job.apply_async()
+    logger.info(f"All [{len(results)}] subtasks are submited.")
 
     # Util em desenvolvimento para acompanhar as tasks
     # # Submete as tasks aos workers

@@ -916,8 +916,9 @@ class Occultation(models.Model):
     def get_alias(self) -> str:
         return self.alias
 
+    # thumbnail logic
     def get_map_filename(self) -> str:
-        return f"{self.hash_id}.png"
+        return f"{self.hash_id}.webp"
 
     def get_map_filepath(self) -> Path:
         dt = self.date_time.strftime("%Y-%m-%d")
@@ -947,6 +948,27 @@ class Occultation(models.Model):
             self.get_map_filepath().stat().st_ctime
         ).astimezone(timezone.utc)
         return map_date_time > self.created_at
+
+    # sora map logic
+    def get_sora_map_filename(self) -> str:
+        return f"{self.hash_id}.png"
+
+    def get_sora_map_filepath(self) -> Path:
+        base_path = Path(settings.SORA_MAP_DIR)
+        # base_path.mkdir(parents=True, exist_ok=True)
+        return base_path.joinpath(self.get_sora_map_filename())
+
+    def sora_map_exists(self) -> bool:
+        return self.get_sora_map_filepath().exists()
+
+    def get_sora_map_relative_url(self) -> Optional[str]:
+        if self.sora_map_exists():
+            relative_path = Path(settings.SORA_MAP_URL).joinpath(
+                self.get_sora_map_filename()
+            )
+            return str(relative_path)
+        else:
+            return None
 
     class Meta:
         indexes = [

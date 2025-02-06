@@ -13,17 +13,8 @@ class Command(BaseCommand):
     help = "Create Occultation Maps by Period."
 
     def add_arguments(self, parser):
-        # Named (optional) arguments
-        parser.add_argument(
-            "start",
-            help="Start Data in format YYYY-MM-DD",
-        )
-        parser.add_argument(
-            "--end",
-            default=None,
-            help="End Data in format YYYY-MM-DD",
-        )
-
+        parser.add_argument("start", help="Start Date in format YYYY-MM-DD")
+        parser.add_argument("--end", default=None, help="End Date in format YYYY-MM-DD")
         parser.add_argument(
             "--limit",
             default=1000,
@@ -32,7 +23,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-
         start = datetime.strptime(options["start"], "%Y-%m-%d").astimezone(
             tz=timezone.utc
         )
@@ -40,12 +30,12 @@ class Command(BaseCommand):
             datetime.strptime(options.get("end"), "%Y-%m-%d")
             .replace(hour=23, minute=59, second=59)
             .astimezone(tz=timezone.utc)
-            if options.get("end", None) != None
+            if options.get("end", None) is not None
             else None
         )
         limit = options["limit"]
 
-        if end == None:
+        if end is None:
             self.stdout.write(
                 f"Submitting background tasks to create occultation maps for date {start}"
             )
