@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext.js'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { PredictionEventsProvider } from './contexts/PredictionContext'
 import './assets/css/index.css'
+import './assets/css/leaflet.css'
 
 const queryClient = new QueryClient()
 

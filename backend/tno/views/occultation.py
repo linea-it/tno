@@ -454,6 +454,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             interpolate=True,
         )
         output = {}
+        output["datetime"] = obj.date_time
         output["diameter"] = object_diameter if object_diameter > 0 else None
         diameter_upper_limit = (
             (object_diameter + object_diameter_error_max)
@@ -467,10 +468,11 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             else None
         )
         output["diameter_lower_limit"] = diameter_lower_limit
-        output["max_longitude"] = obj.occ_path_coeff["max_longitude"]
-        output["min_longitude"] = obj.occ_path_coeff["min_longitude"]
-        output["max_latitude"] = obj.occ_path_coeff["max_latitude"]
-        output["min_latitude"] = obj.occ_path_coeff["min_latitude"]
+
+        # output["max_longitude"] = obj.occ_path_coeff["max_longitude"]
+        # output["min_longitude"] = obj.occ_path_coeff["min_longitude"]
+        # output["max_latitude"] = obj.occ_path_coeff["max_latitude"]
+        # output["min_latitude"] = obj.occ_path_coeff["min_latitude"]
 
         for key, value in paths.items():
             output[key] = value
