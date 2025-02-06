@@ -1,10 +1,15 @@
+import logging
 import os
 
+import django
 from celery import Celery
 from celery.schedules import crontab
 
-# Set the default Django settings module for the 'celery' program.
+# Set the default Django settings module for Celery workers
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "coreAdmin.settings")
+
+# Ensure Django initializes before Celery starts
+django.setup()
 
 app = Celery("tno")
 
@@ -12,7 +17,17 @@ app = Celery("tno")
 # the configuration object to child processes.
 # - namespace='CELERY' means all celery-related configuration keys
 #   should have a `CELERY_` prefix.
+# Load Celery config from Django settings
 app.config_from_object("django.conf:settings", namespace="CELERY")
+
+
+# Ensure logging works inside Celery workers
+logging.basicConfig(
+    level=logging.DEBUG,  # Capture ALL log levels (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[logging.StreamHandler()],
+)
+
 
 # https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html
 app.conf.beat_schedule = {
@@ -22,7 +37,7 @@ app.conf.beat_schedule = {
         # 'schedule': 30.0
     },
     "prediction-map-every-30-minutes": {
-        "task": "tno.tasks.create_prediction_maps",
+        "task": "tno.tasks.create_thumbnail_maps",
         # a job is scheduled to run for every first minute of every hour
         # "schedule": crontab(hour="*", minute=1),
         "schedule": crontab(minute="*/30"),
