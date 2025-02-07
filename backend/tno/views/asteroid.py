@@ -21,7 +21,7 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 from tno.dao.asteroids import AsteroidDao
-from tno.models import Asteroid, Occultation, PredictionJobResult
+from tno.models import Asteroid, AsteroidCache, Occultation, PredictionJobResult
 from tno.serializers import AsteroidSerializer
 
 
@@ -124,10 +124,15 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         """
         filtro = self.request.query_params.get("name", None)
 
-        queryset = Occultation.objects.order_by("name").distinct("name")
+        queryset = AsteroidCache.objects.order_by("name")
 
         if filtro:
             queryset = queryset.filter(name__icontains=filtro)
+            # TODO: para filtrar por outros identificadores basta adicionar novos filtros
+            # e Para filtrar pelo Number é preciso alterar a tabela para tipo string
+            # queryset = queryset.filter(
+            #     name__icontains=filtro, principal_designation__icontains=filtro
+            # )
 
         paginator = PageNumberPagination()
         paginator.page_size = 25

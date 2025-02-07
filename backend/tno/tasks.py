@@ -1,11 +1,13 @@
 # Create your tasks here
 import json
 import logging
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 from time import sleep
 from typing import Optional
 
+import pandas as pd
 from celery import chain, group, shared_task
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -381,3 +383,50 @@ def update_occultations_highlights():
     highlights.refresh_from_db()
     logger.info(f"Highlights saved successfully with the following id: {highlights.id}")
     return highlights.id
+
+
+@shared_task
+def update_unique_asteroids():
+
+    logger = logging.getLogger("asteroid_cache")
+    logger.info("---------------------------------------")
+    logger.info("Starting Unique Asteroids queries")
+
+    from tno.dao.asteroid_cache import AsteroidCacheDao
+    from tno.dao.occultation import OccultationDao
+
+    occ_dao = OccultationDao(pool=False)
+    ast_dao = AsteroidCacheDao(pool=False)
+    logger.info("Counting the distinct asteroid names")
+    count_asteroids = occ_dao.count_distict_asteroid_name()
+    logger.info(f"Distinct asteroid names: {count_asteroids}")
+
+    page = 0
+    limit = 10000
+    offset = 0
+    current_count = 0
+    total_pages = math.ceil(count_asteroids / limit)
+
+    logger.info(f"Total pages: {total_pages}")
+
+    while page < total_pages:
+        logger.info(f"Querying page: {page} of {total_pages}")
+        rows = occ_dao.distinct_asteroid_name(limit=limit, offset=offset)
+        logger.info(f"Query returned {len(rows)} rows.")
+
+        df = pd.DataFrame(
+            rows,
+            columns=["distinct_1", "number", "principal_designation", "alias"],
+        )
+        df = df.rename(columns={"distinct_1": "name"})
+
+        logger.info(f"Upinserting {len(df)} rows")
+        row_affected = ast_dao.upinsert(df)
+        logger.info(f"Upinserted {row_affected} rows")
+
+        current_count += row_affected
+        page += 1
+        offset += limit
+
+    logger.info(f"Finished updating the unique asteroids. Total: {current_count}")
+    return current_count

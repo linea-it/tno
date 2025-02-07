@@ -551,6 +551,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "occ_highlights.log"),
             "formatter": "standard",
         },
+        "asteroid_cache": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "asteroid_cache.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -605,6 +613,11 @@ LOGGING = {
         },
         "occultation_highlights": {
             "handlers": ["occultation_highlights"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "asteroid_cache": {
+            "handlers": ["asteroid_cache"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

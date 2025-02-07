@@ -23,6 +23,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+
         start = datetime.strptime(options["start"], "%Y-%m-%d").astimezone(
             tz=timezone.utc
         )
