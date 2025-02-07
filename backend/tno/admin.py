@@ -1,6 +1,7 @@
 from django.contrib import admin
 from tno.models import (
     Asteroid,
+    AsteroidCache,
     AsteroidJob,
     BspPlanetary,
     Catalog,
@@ -53,6 +54,15 @@ class AsteroidAdmin(admin.ModelAdmin):
         "name",
         "number",
     )
+
+
+# @admin.register(AsteroidCache)
+# class AsteroidCacheAdmin(admin.ModelAdmin):
+#     list_display = ("id", "name", "number", "principal_designation", "alias")
+#     search_fields = (
+#         "name",
+#         "number",
+#     )
 
 
 @admin.register(Occultation)
