@@ -1054,10 +1054,35 @@ class Occultation(models.Model):
                     "occ_path_is_nightside",
                 ]
             ),
+            models.Index(
+                fields=[
+                    "loc_t",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "magnitude_drop",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "event_duration",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "closest_approach_uncertainty_km",
+                ]
+            ),
             # Asteroid indexes
             models.Index(
                 fields=[
                     "g",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "diameter",
                 ]
             ),
             # Provenance indexes
