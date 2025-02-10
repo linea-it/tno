@@ -3,6 +3,7 @@ from datetime import datetime
 
 import humanize
 from des.models import Observation
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -127,12 +128,15 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         queryset = AsteroidCache.objects.order_by("name")
 
         if filtro:
-            queryset = queryset.filter(name__icontains=filtro)
-            # TODO: para filtrar por outros identificadores basta adicionar novos filtros
-            # e Para filtrar pelo Number é preciso alterar a tabela para tipo string
-            # queryset = queryset.filter(
-            #     name__icontains=filtro, principal_designation__icontains=filtro
-            # )
+            # OBS: number está usando startswith. ao meu ver faz mais sentido.
+            # Já os campos nomes utilizam icontains que é  o Like %valor% do SQL procura pela
+            # palavra em qualquer parte do campo.
+            queryset = queryset.filter(
+                Q(name__icontains=filtro)
+                | Q(principal_designation__icontains=filtro)
+                | Q(number__startswith=filtro)
+            )
+            # print(queryset.query)
 
         paginator = PageNumberPagination()
         paginator.page_size = 25

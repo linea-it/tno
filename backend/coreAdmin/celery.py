@@ -73,6 +73,16 @@ app.conf.beat_schedule = {
         "task": "tno.tasks.update_occultations_highlights",
         "schedule": crontab(hour=0, minute=0),
     },
+    # Update Unique Asteroid cache table every 6 hours
+    "update_unique_asteroid_cache": {
+        "task": "tno.tasks.update_unique_asteroids",
+        "schedule": crontab(hour="*/6", minute=0),
+    },
+    # Update Unique Dynclass cache table every 6:15 hours
+    "update_unique_dynclass_cache": {
+        "task": "tno.tasks.update_unique_dynclass",
+        "schedule": crontab(hour="*/6", minute=15),
+    },
 }
 app.conf.timezone = "UTC"
 

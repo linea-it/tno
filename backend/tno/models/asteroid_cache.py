@@ -12,10 +12,9 @@ class AsteroidCache(models.Model):
         help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
     )
 
-    number = models.PositiveBigIntegerField(
-        default=None,
-        null=True,
-        blank=True,
+    number = models.CharField(
+        max_length=35,
+        default="",
         verbose_name="Number",
         db_index=True,
         help_text="(ucd=“meta.id;meta.number”) Object number (not all objects have numbers assigned).",

@@ -15,7 +15,7 @@ from django.core.cache import cache
 from tno.dao.asteroid_cache import AsteroidCacheDao
 from tno.dao.dynclass_cache import DynclassCacheDao
 from tno.dao.occultation import OccultationDao
-from tno.models import Highlights, Occultation
+from tno.models import DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path_coeff, visibility_from_coeff
 from tno.predict_job import (
     run_predicition_for_upper_end_update,
@@ -290,9 +290,9 @@ def update_asteroid_classes_cache():
 
 
 def update_base_dynclass_cache():
-    queryset = Occultation.objects.order_by("base_dynclass").distinct("base_dynclass")
+    queryset = DynclassCache.objects.order_by("skybot_dynbaseclass")
 
-    rows = [x.base_dynclass for x in queryset]
+    rows = [x.skybot_dynbaseclass for x in queryset]
     result = {"results": rows, "count": len(rows)}
 
     # Store the data in the cache
@@ -301,9 +301,9 @@ def update_base_dynclass_cache():
 
 
 def update_dynclass_cache():
-    queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
+    queryset = DynclassCache.objects.order_by("skybot_dynsubclass")
 
-    rows = [x.dynclass for x in queryset]
+    rows = [x.skybot_dynsubclass for x in queryset]
     result = {"results": rows, "count": len(rows)}
 
     # Store the data in the cache
@@ -419,6 +419,12 @@ def update_unique_asteroids():
             columns=["distinct_1", "number", "principal_designation", "alias"],
         )
         df = df.rename(columns={"distinct_1": "name"})
+
+        # Tratamento dos valores nulos
+        df["number"] = df["number"].fillna(0)
+        df["number"] = df["number"].astype(int)
+        df["number"] = df["number"].astype(str)
+        df["number"] = df["number"].replace("0", "")
 
         # 1. Criar uma coluna com a contagem de valores preenchidos em cada linha
         df["non_null_count"] = df.notna().sum(axis=1)
