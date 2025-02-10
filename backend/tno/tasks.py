@@ -420,6 +420,13 @@ def update_unique_asteroids():
         )
         df = df.rename(columns={"distinct_1": "name"})
 
+        # 1. Criar uma coluna com a contagem de valores preenchidos em cada linha
+        df["non_null_count"] = df.notna().sum(axis=1)
+        # 2. Para cada valor duplicado em 'principal_designation', selecionar o índice da linha com a maior contagem
+        idx = df.groupby("principal_designation")["non_null_count"].idxmax()
+        # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
+        df = df.loc[idx].drop(columns="non_null_count")
+
         # Tratamento dos valores nulos
         df["number"] = df["number"].fillna(0)
         df["number"] = df["number"].astype(int)
