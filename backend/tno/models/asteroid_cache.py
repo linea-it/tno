@@ -39,3 +39,29 @@ class AsteroidCache(models.Model):
         blank=True,
         default=None,
     )
+
+    class Meta:
+        verbose_name = "Asteroid Cache"
+        verbose_name_plural = "Asteroid Cache"
+        indexes = [
+            models.Index(
+                fields=[
+                    "name",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "number",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "principal_designation",
+                ]
+            ),
+            models.Index(
+                fields=[
+                    "alias",
+                ]
+            ),
+        ]

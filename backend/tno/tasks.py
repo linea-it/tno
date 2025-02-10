@@ -12,6 +12,9 @@ from celery import chain, group, shared_task
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.cache import cache
+from tno.dao.asteroid_cache import AsteroidCacheDao
+from tno.dao.dynclass_cache import DynclassCacheDao
+from tno.dao.occultation import OccultationDao
 from tno.models import Highlights, Occultation
 from tno.occviz import occultation_path_coeff, visibility_from_coeff
 from tno.predict_job import (
@@ -392,9 +395,6 @@ def update_unique_asteroids():
     logger.info("---------------------------------------")
     logger.info("Starting Unique Asteroids queries")
 
-    from tno.dao.asteroid_cache import AsteroidCacheDao
-    from tno.dao.occultation import OccultationDao
-
     occ_dao = OccultationDao(pool=False)
     ast_dao = AsteroidCacheDao(pool=False)
     logger.info("Counting the distinct asteroid names")
@@ -420,6 +420,13 @@ def update_unique_asteroids():
         )
         df = df.rename(columns={"distinct_1": "name"})
 
+        # 1. Criar uma coluna com a contagem de valores preenchidos em cada linha
+        df["non_null_count"] = df.notna().sum(axis=1)
+        # 2. Para cada valor duplicado em 'principal_designation', selecionar o índice da linha com a maior contagem
+        idx = df.groupby("principal_designation")["non_null_count"].idxmax()
+        # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
+        df = df.loc[idx].drop(columns="non_null_count")
+
         logger.info(f"Upinserting {len(df)} rows")
         row_affected = ast_dao.upinsert(df)
         logger.info(f"Upinserted {row_affected} rows")
@@ -430,3 +437,36 @@ def update_unique_asteroids():
 
     logger.info(f"Finished updating the unique asteroids. Total: {current_count}")
     return current_count
+
+
+@shared_task
+def update_unique_dynclass():
+
+    logger = logging.getLogger("asteroid_cache")
+    logger.info("---------------------------------------")
+    logger.info("Starting Unique Dynclass queries")
+
+    occ_dao = OccultationDao(pool=False)
+    dyc_dao = DynclassCacheDao(pool=False)
+
+    # OBS: Esta query em produção pode demorar mais de 1 minuto para ser executada
+    rows = occ_dao.distinct_dynclass()
+    logger.info(f"Query returned {len(rows)} rows.")
+
+    df = pd.DataFrame(
+        rows,
+        columns=["distinct_1", "base_dynclass"],
+    )
+    df = df.rename(
+        columns={
+            "distinct_1": "skybot_dynsubclass",
+            "base_dynclass": "skybot_dynbaseclass",
+        }
+    )
+
+    logger.info(f"Upinserting {len(df)} rows")
+    row_affected = dyc_dao.upinsert(df)
+    logger.info(f"Upinserted {row_affected} rows")
+
+    logger.info(f"Finished updating the unique asteroids. Total: {row_affected}")
+    return row_affected

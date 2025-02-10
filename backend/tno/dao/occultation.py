@@ -56,3 +56,19 @@ class OccultationDao(DBBase):
         rows = self.fetch_all_dict(stm)
 
         return rows
+
+    def distinct_dynclass(self, limit=None, offset=None):
+        """Distinct dynclass and basedynclass in occultation table."""
+        tbl = self.get_tbl()
+
+        stm = select(
+            [
+                func.distinct(tbl.c.dynclass),
+                tbl.c.base_dynclass,
+            ]
+        )
+
+        self.debug_query(stm, True)
+        rows = self.fetch_all_dict(stm)
+
+        return rows

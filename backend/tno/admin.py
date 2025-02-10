@@ -5,6 +5,7 @@ from tno.models import (
     AsteroidJob,
     BspPlanetary,
     Catalog,
+    DynclassCache,
     Highlights,
     JohnstonArchive,
     LeapSecond,
@@ -56,13 +57,23 @@ class AsteroidAdmin(admin.ModelAdmin):
     )
 
 
-# @admin.register(AsteroidCache)
-# class AsteroidCacheAdmin(admin.ModelAdmin):
-#     list_display = ("id", "name", "number", "principal_designation", "alias")
-#     search_fields = (
-#         "name",
-#         "number",
-#     )
+@admin.register(AsteroidCache)
+class AsteroidCacheAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "number", "principal_designation", "alias")
+    search_fields = ("name", "number", "principal_designation")
+
+
+@admin.register(DynclassCache)
+class DynclassCacheCacheAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "skybot_dynbaseclass",
+        "skybot_dynsubclass",
+    )
+    search_fields = (
+        "skybot_dynbaseclass",
+        "skybot_dynsubclass",
+    )
 
 
 @admin.register(Occultation)
