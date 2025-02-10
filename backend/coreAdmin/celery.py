@@ -63,15 +63,25 @@ app.conf.beat_schedule = {
         "schedule": crontab(hour=9, minute=0),
         "kwargs": {"force_run": False},  # Set to True if needed
     },
-    # # Update asteroid class cache every 6 hours
-    "update_asteroid_classes_cache": {
-        "task": "tno.tasks.update_asteroid_classes_cache",
-        "schedule": crontab(hour="*/6", minute=0),
-    },
     # Update occultation highlights daily at 00:00 UTC
     "update_occultations_highlights": {
         "task": "tno.tasks.update_occultations_highlights",
         "schedule": crontab(hour=0, minute=0),
+    },
+    # Update Unique Asteroid cache table every 6 hours
+    "update_unique_asteroid_cache": {
+        "task": "tno.tasks.update_unique_asteroids",
+        "schedule": crontab(hour="*/6", minute=0),
+    },
+    # Update Unique Dynclass cache table every 6:15 hours
+    "update_unique_dynclass_cache": {
+        "task": "tno.tasks.update_unique_dynclass",
+        "schedule": crontab(hour="*/6", minute=15),
+    },
+    # Update asteroid class cache memcached every 3 hours
+    "update_asteroid_classes_cache": {
+        "task": "tno.tasks.update_asteroid_classes_cache",
+        "schedule": crontab(hour="*/3", minute=0),
     },
 }
 app.conf.timezone = "UTC"

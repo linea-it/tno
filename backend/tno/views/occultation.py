@@ -17,7 +17,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tno.db import CatalogDB
-from tno.models import Catalog, Highlights, Occultation
+from tno.models import AsteroidCache, Catalog, DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path, visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
@@ -513,11 +513,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         if data is not None:
             return Response(data)
 
-        queryset = Occultation.objects.order_by("base_dynclass").distinct(
-            "base_dynclass"
-        )
+        queryset = DynclassCache.objects.order_by("skybot_dynbaseclass")
 
-        rows = [x.base_dynclass for x in queryset]
+        rows = [x.skybot_dynbaseclass for x in queryset]
         result = {"results": rows, "count": len(rows)}
 
         # Store the data in the cache
@@ -551,9 +549,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         if data is not None:
             return Response(data)
 
-        queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
+        queryset = DynclassCache.objects.order_by("skybot_dynsubclass")
 
-        rows = [x.dynclass for x in queryset]
+        rows = [x.skybot_dynsubclass for x in queryset]
         result = {"results": rows, "count": len(rows)}
 
         # Store the data in the cache
@@ -580,7 +578,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         Não paginada
         """
-        queryset = Occultation.objects.order_by("name").distinct("name")
+        queryset = AsteroidCache.objects.order_by("name")
 
         rows = [x.name for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))

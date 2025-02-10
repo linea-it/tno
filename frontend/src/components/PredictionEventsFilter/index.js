@@ -31,8 +31,9 @@ function PredictionEventsFilter() {
               <Grid item xs={12} sm={5} md={4}>
                 <DateTimePicker
                   slotProps={{ textField: { fullWidth: true } }}
-                  label='Date Start'
+                  label='Date Start (local)'
                   name='date_time_after'
+                  format='YYYY-MM-DD hh:mm A'
                   value={queryOptions.filters.dt_after_local}
                   onChange={(value) => {
                     setQueryOptions((prev) => {
@@ -51,8 +52,9 @@ function PredictionEventsFilter() {
               <Grid item xs={12} sm={5} md={4}>
                 <DateTimePicker
                   slotProps={{ textField: { fullWidth: true } }}
-                  label='Date End'
+                  label='Date End (local)'
                   name='date_time_before'
+                  format='YYYY-MM-DD hh:mm A'
                   value={queryOptions.filters.dt_before_local}
                   onChange={(value) => {
                     setQueryOptions((prev) => {
@@ -249,7 +251,7 @@ function PredictionEventsFilter() {
           <Grid item container xs={12} spacing={2} alignItems='center'>
             <Grid item>
               <Button variant='outlined' onClick={clearFilter}>
-                Clear
+                Reset
               </Button>
             </Grid>
             <Grid item xs />

@@ -32,7 +32,7 @@ function AsteroidNameSelect({ initialValue, onChange, source, error, required })
       multiple
       options={data?.results || []}
       value={selectedValue}
-      getOptionLabel={(option) => option.name}
+      getOptionLabel={(option) => (option.number !== '' && option.number !== null ? `${option.name} (${option.number})` : option.name)}
       isOptionEqualToValue={(option, value) => option.id === value.id}
       loading={isLoading}
       limitTags={1}
@@ -49,7 +49,7 @@ function AsteroidNameSelect({ initialValue, onChange, source, error, required })
       renderInput={(params) => (
         <TextField
           {...params}
-          label='Asteroid Name'
+          label='Asteroid Identifier'
           variant='outlined'
           fullWidth
           InputProps={{

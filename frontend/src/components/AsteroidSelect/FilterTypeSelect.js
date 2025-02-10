@@ -11,7 +11,7 @@ function FilterTypeSelect({ value, onChange }) {
       <InputLabel id='fiter-type-select-label'>Filter Type</InputLabel>
       <Select labelId='fiter-type-select-label' id='fiter-type-select' value={value} label='Filter Type' onChange={onChange}>
         <MenuItem value=''>Empty</MenuItem>
-        <MenuItem value={'name'}>Object name</MenuItem>
+        <MenuItem value={'name'}>Object identifier</MenuItem>
         <MenuItem value={'base_dynclass'}>Dynamic class</MenuItem>
         <MenuItem value={'dynclass'}>Dynamic class (with subclasses)</MenuItem>
       </Select>
