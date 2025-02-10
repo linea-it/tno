@@ -144,7 +144,7 @@ def upcoming_events_to_create_maps(
         date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
 
     next_events = Occultation.objects.filter(date_time__gte=date_start).order_by(
-        "date_time"
+        "g_star"
     )
 
     if isinstance(date_end, str):
