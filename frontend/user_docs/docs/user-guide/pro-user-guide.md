@@ -53,9 +53,9 @@ After clicking on the <<*Activate Account*>> button, you will be redirected to a
 Check again your mail box. there must be an e-mail with the following content:
 
 > *Greetings,*
-> 
+>
 > *Customize your experience with our stellar occultation prediction database! You can choose specific objects, magnitude limits and many other options aligned with your particular interests and geographic location.*
-> 
+>
 > *To get started, customize your settings by clicking the button below:*
 >
 > <<*Customize Settings>>
@@ -164,7 +164,7 @@ User may click on the [ <img src="three_dots_vertical_icon.png" width="20px" hei
 
 Once the user access the NEWSLetter settings, on the main page it will be available 4 pannels: **Filter Settings**, **Email Filters**, **Email Subscription**, and **Delete Account**.
 
-The <ins>first pannel</ins>, **Filter Filters**, is only informative. 
+The <ins>first pannel</ins>, **Filter Filters**, is only informative.
 
 On the <ins>second pannel</ins>, **Email Filters**, user can create and edit email filters to receive occultation predictions. In order to create a new filter, just click on the '+ new filter' button on the top right of the pannel and then follow the instructions on the respective section below. After creating one or more filters, a table will be available in which user can sort by Name, Frequency or Description. Each line represent a filter where user can edit or delete, bu clicking on the pencil or the trash icon, respectively. If user choose to delete a filter, after clicking on the trash icon, the following message will pop up:
 
