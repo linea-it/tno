@@ -430,7 +430,7 @@ def update_unique_asteroids():
         # save table with unique asteroids
         from django.conf import settings
 
-        tmp_path = Path(settings.DATA_TMP_DIR).joinpath(unique_asteroids.csv)
+        tmp_path = Path(settings.DATA_TMP_DIR).joinpath("unique_asteroids.csv")
         df.to_csv(tmp_path, index=False)
 
         # Tratamento dos valores nulos
