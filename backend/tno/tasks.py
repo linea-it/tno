@@ -12,16 +12,20 @@ from celery import chain, group, shared_task
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.cache import cache
-
 from tno.dao.asteroid_cache import AsteroidCacheDao
 from tno.dao.dynclass_cache import DynclassCacheDao
 from tno.dao.occultation import OccultationDao
 from tno.models import DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path_coeff, visibility_from_coeff
-from tno.predict_job import (run_predicition_for_upper_end_update,
-                             run_prediction_for_updated_asteroids)
-from tno.prediction_map import (garbage_collector_maps, sora_occultation_map,
-                                upcoming_events_to_create_maps)
+from tno.predict_job import (
+    run_predicition_for_upper_end_update,
+    run_prediction_for_updated_asteroids,
+)
+from tno.prediction_map import (
+    garbage_collector_maps,
+    sora_occultation_map,
+    upcoming_events_to_create_maps,
+)
 
 
 @shared_task
@@ -422,7 +426,7 @@ def update_unique_asteroids():
         idx = df.groupby("principal_designation")["non_null_count"].idxmax()
         # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
         df = df.loc[idx].drop(columns="non_null_count")
-        
+
         df.to_csv("/tmp/unique_asteroids.csv", index=False)
 
         # Tratamento dos valores nulos
