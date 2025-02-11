@@ -1,8 +1,8 @@
 <!-- 03-2024-ca-uncertainties-release.md -->
 
-# Predictions with CA Uncertainties
+# Dynamic Maps
 
-Release date: September 5th, 2024.
+Release date: February 11th, 2025.
 
 Main updates include dynamic maps in the occultation detail page the introduction of a subscription service.
 
@@ -15,7 +15,7 @@ Below are the description of the main input sources and the outputs produced in 
 
 | Description                                            | Value                                                                 |
 | ------------------------------------------------------ | --------------------------------------------------------------------- |
-| Number of asteroids with predictions (at release date) | 33673                                                                 |
+| Number of asteroids with predictions (at release date) | 33,673                                                                |
 | Number of events (at release date)                     | 33,582,132                                                            |
 | Earliest prediction (at release date)                  | Jan, 1st 2024                                                         |
 | Latest prediction (at release date)                    | Mar, 31st 2026                                                        |

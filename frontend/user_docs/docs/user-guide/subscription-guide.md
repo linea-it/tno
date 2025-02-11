@@ -1,148 +1,139 @@
-# <a name="welcome"></a>Welcome to LIneA SS-OPD User Guide
+# <a name="subscription_guide"></a>Subscription Guide
 
-This is the **LIneA Solar System Occultation Prediction Database Portal User Guide**. This database features predictions for stellar occultations by small Solar System objects, updated regularly.
+This guide provides instructions for subscribing and setting up customized newsletter updates for the LIneA Solar System Occultation Prediction Database Portal. It explains how to register, log in, and adjust your subscription preferences for stellar occultation predictions.
 
-Here users will find a few information on how to **register**, **login**, and use the **advanced filters** to refine and customize your search results for a stellar occultation prediction. **Subscribe** and also set up customized updates within the newsletter.
+## <a name="main_page"></a>Overview
 
-
-## <a name="main_page"></a>Main Page
-
-This is the **LIneA Solar System Occultation Prediction Database Portal** (LIneA OPD). This database features predictions for stellar occultations by small Solar System objects, updated regularly.
-
-At the top left of the page, user may find the folowing options:
+At the top left of the page, users may find the following options:
 
 - [Home](https://solarsystem.linea.org.br/): Redirects to the LIneA OPD home page.
 - [About](https://solarsystem.linea.org.br/about-us): Redirects to a page with information about LIneA and the OPD.
 - [Documentation](https://solarsystem.linea.org.br/docs/): Redirects to the documentation page.
-- [Contact](https://solarsystem.linea.org.br/contact-us): Redirects to a page with information about LIneA's contact info, social medias and supporters
+- [Contact](https://solarsystem.linea.org.br/contact-us): Redirects to a page with information about LIneA's contact info, social media, and supporters.
 
-User may find in the front page three pannels. At the top pannel, three boards presents the total number of predictions and small objects (TOTAL FORECAST), the predictions happening within the next 24h, this week and next week (EVENTS TODAY), and the upcoming occultations in the next month (UPCOMING THIS MONTH).
+Users may find three panels on the front page. At the top panel, three boards present the total number of predictions and small objects (TOTAL FORECAST), the predictions happening within the next 24h, this week, and next week (EVENTS TODAY), and the upcoming occultations in the next month (UPCOMING THIS MONTH).
 
-Below, on the second pannel, user may find a pannel for filtering events. For details in how to use it, please check the [Filter Events Documentation](https://solarsystem.linea.org.br/docs/user-guide/filter-events/) page.
+Below, on the second panel, users may find a panel for filtering events. For details on how to use it, please check the [Filter Events Documentation](https://solarsystem.linea.org.br/docs/user-guide/filter-events/) page.
 
-The third pannel contains the prediction maps. For more information, please check the [Occultation Details Documentation](https://solarsystem.linea.org.br/docs/user-guide/occultation-details-page/) page.
+The third panel contains the prediction maps. For more information, please check the [Occultation Details Documentation](https://solarsystem.linea.org.br/docs/user-guide/occultation-details-page/) page.
 
-At the bottom of the page, there is also important information about LIneA, its contact info, social medias and supporters.
-
-
-
+At the bottom of the page, there is also important information about LIneA, its contact info, social media, and supporters.
 
 ## <a name="register"></a>Register / Subscribe
 
-User subscription is not necessary in order to preview and obtain occultation results, the portal is **free** to anyone to use and visualize millions of occultation prediction by small bodies in the solar system. However, it is necessary to **subscribe** in the portal if you want to be informed with new updates in your interest predictions and have periodically new predictions.
+User subscription is not necessary to preview and obtain occultation results; the portal is **free** for anyone to use and visualize millions of occultation predictions by small bodies in the solar system. However, it is necessary to **subscribe** to the portal if you want to be informed of new updates in your interest predictions and receive periodic new predictions.
 
-The subscription is very simple. On the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/), right below the main title there is a text box where you can put your e-mail ant then click on the **SUBSCRIBE** button. You will receive an e-mail in order to activate your account with the following text:
+The subscription is very simple. On the [main page](https://solarsystem.linea.org.br/), right below the main title, there is a text box where you can enter your email and then click on the **SUBSCRIBE** button. You will receive an email to activate your account with the following text:
 
-> *Thank you for subscribing to the LIneA Occultation Prediction Database. We are excited to have you on board. Before you start receiving customized predictions, we need to activate your account.*
+> _Thank you for subscribing to the LIneA Occultation Prediction Database. We are excited to have you on board. Before you start receiving customized predictions, we need to activate your account._
 >
-> *Please click the button below to proceed.*
+> _Please click the button below to proceed._
 >
->  <<*Activate Account*>>
-*Or copy and paste the following link into your browser to activate your account:*
+> <<_Activate Account_>>
+> _Or copy and paste the following link into your browser to activate your account:_
 >
->  <<*https:// solarsystem. linea. org. br/api/subscription/activate/ <web-address*>>
-> *Best regards,
-The LIneA Team*
+> <<_https://solarsystem.linea.org.br/api/subscription/activate/<web-address_>>>
+> _Best regards,
+> The LIneA Team_
 
-After clicking on the <<*Activate Account*>> button, you will be redirected to a page having the following text:
+After clicking on the <<_Activate Account_>> button, you will be redirected to a page with the following text:
 
-> *Thanks! You have successfully activated your subscription.*
+> _Thanks! You have successfully activated your subscription._
 >
->*Please, check your email inbox.*
+> _Please, check your email inbox._
 
-Check again your mail box. there must be an e-mail with the following content:
+Check your mailbox again. There must be an email with the following content:
 
-> *Greetings,*
-> 
-> *Customize your experience with our stellar occultation prediction database! You can choose specific objects, magnitude limits and many other options aligned with your particular interests and geographic location.*
-> 
-> *To get started, customize your settings by clicking the button below:*
+> _Greetings,_
 >
-> <<*Customize Settings>>
-Best regards,
-The LIneA Team*
+> _Customize your experience with our stellar occultation prediction database! You can choose specific objects, magnitude limits, and many other options aligned with your particular interests and geographic location._
+>
+> _To get started, customize your settings by clicking the button below:_
+>
+> <<_Customize Settings_>>
+> _Best regards,
+> The LIneA Team_
 
-The <<*Customize Settings*>> button will redirect you to the login page. Put your email on the textbox and click on <<*SEND CODE*>> button. It will send you a 6-character code to your e-mail. The code expires shortly, so please enter it soon. Check the number on your e-mail, put it on the text box on the login page, and click on <<*SIGNIN*>>.
+The <<_Customize Settings_>> button will redirect you to the login page. Enter your email in the textbox and click on the <<_SEND CODE_>> button. It will send you a 6-character code to your email. The code expires shortly, so please enter it soon. Check the number in your email, enter it in the textbox on the login page, and click on <<_SIGNIN_>>.
 
 Now you will be able to customize your Newsletter Settings.
 
-
-
-
-
 ## <a name="login"></a>LogIn
 
-Go to the top right corner and click on **LOGIN**. You will be redirected to a page where you must inform your email.
+Go to the top right corner and click on **LOGIN**. You will be redirected to a page where you must enter your email.
 
-If it is your first time accessing the page, and you don't have an account, click on the **Subscribe now** link (and follow the steps presented above on the **Register/Subscribe** section)
+If it is your first time accessing the page and you don't have an account, click on the **Subscribe now** link (and follow the steps presented above in the **Register/Subscribe** section).
 
-Put your email on the text box and click on <<*SEND CODE*>> button. It will send you a 6-character code to your e-mail. The code expires shortly, so please enter it soon. Check the number on your e-mail, put it on the text box on the login page, and click on <<*SIGNIN*>>.
-
+Enter your email in the textbox and click on the <<_SEND CODE_>> button. It will send you a 6-character code to your email. The code expires shortly, so please enter it soon. Check the number in your email, enter it in the textbox on the login page, and click on <<_SIGNIN_>>.
 
 ## <a name="options"></a>Registered User Tools and Options
 
-Once you are logged in, two new icons will be available on the top right corner on the [main page](https://solarsystem.linea.org.br/) (https://solarsystem.linea.org.br/):
+Once you are logged in, two new icons will be available at the top right corner of the [main page](https://solarsystem.linea.org.br/):
 
-- [ <img src="gear_icon.png" width="20px" height="20px" /> ] [**User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/)
-- [ <img src="account_circle_icon.png" width="20px" height="20px" /> ] **User Info**
+- ![Text](../static/user-info.svg) **User Preferences**
+- ![Text](../static/gear-icon.svg) **Subscription Settings**
 
+Clicking either icon grants access to the subscription settings area.
 
-### <a name="newsletter"></a>User NEWSLetter Preferences
+Within this section, users can configure filters for selecting occultation events, adjust filter preferences, enable or disable email notifications, and delete their registered account.
 
-By clicking on the [ <img src="gear_icon.png" width="20px" height="20px" /> ] [**User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon, the user can access the NEWSLetter preferences.
+## <a name="news_filter"></a>Configuring Filters
 
-Here it is possible for the user to create filters in order to select occultations events, configure and adjust preferences on those filters, enable or disable email notifications, and delete your account.
+Upon accessing the Newsletter settings, the main page will display four panels: **Filter Settings**, **Email Filters**, **Email Subscription**, and **Delete Account**.
 
+The first panel, **Filter Settings**, is for informational purposes only.
 
-### <a name="user_info"></a>User Info
-By clicking on [ <img src="account_circle_icon.png" width="20px" height="20px" /> ] **User Info** icon, the user can access the NEWSLetter preferences (same as in [ <img src="gear_icon.png" width="20px" height="20px" /> ] [**User Preferences**](https://solarsystem.linea.org.br/newsletter_settings/) icon) or log out.
+In the second panel, **Email Filters**, users can create and manage filters to receive occultation predictions. To add a new filter, click the **+ New Filter** button located at the top-right corner of the panel, then follow the instructions provided in the section below.
 
+Once filters are created, a table will display them, allowing users to sort by **Name**, **Frequency**, or **Description**. Each row represents an individual filter, with options to edit or delete by clicking the pencil or trash icons, respectively.
 
-## <a name="news_filter"></a>NEWSLetter Filter Configuring
+When deleting a filter, clicking the trash icon will trigger the following confirmation message:
 
-Once the user access the NEWSLetter settings, on the main page it will be available 4 pannels: **Filter Settings**, **Email Filters**, **Email Subscription**, and **Delete Account**.
+> _Delete this filter?_
+> _This action cannot be undone._
 
-The <ins>first pannel</ins>, **Filter Filters**, is only informative. 
+Click **DELETE** to confirm removal or **CANCEL** to abort the operation.
 
-On the <ins>second pannel</ins>, **Email Filters**, user can create and edit email filters to receive occultation predictions. In order to create a new filter, just click on the '+ new filter' button on the top right of the pannel and then follow the instructions on the respective section below. After creating one or more filters, a table will be available in which user can sort by Name, Frequency or Description. Each line represent a filter where user can edit or delete, bu clicking on the pencil or the trash icon, respectively. If user choose to delete a filter, after clicking on the trash icon, the following message will pop up:
+In the third panel, **Email Subscription**, users can enable or disable email notifications by toggling the switch.
 
-> *Delete this filter?*
-> *This action cannot be undone.*
+If notifications are **enabled** (active), the switch will be highlighted, and the following message will appear in green:
 
-Click on DELETE to remove the filter or CANCEL to cancel the operation.
+> _Your subscription is active, and you will receive emails based on your filter settings._
 
-On the <ins>third pannel</ins>, **Email Subscription**, user can enable or disable email notifications by clicking on the switch. If notifications are **enabled** (active), the switch will be colored, and the following message will be displayed in green:
-> *Your subscription is active, and you will receive emails based on your filter settings.*
+If notifications are **disabled**, the switch will appear gray, and the following message will appear in yellow/orange:
 
-If notifications are **disabled**, the switch will have a gray appearance, and the following message will be displayed in yellow/orange:
+> _Your subscription is inactive, and you won't receive any emails._
 
-> *Your subscription is inactive, and you won't receive any emails.*
+In the fourth and final panel, **Delete Account**, users can click the **DELETE YOUR ACCOUNT** button to permanently delete their account.
 
-
-On the <ins>fourth and last pannel</ins>, **Delete Account**, user can click on the 'DELETE YOUR ACCOUNT' button in order to delete the account. Please note: Deleting your account is permanent and cannot be undone. It will erase all filters and preferences. Make sure this is what you want to do before proceeding.
+> **Note:** Deleting your account is irreversible and will erase all filters and preferences. Ensure this is your intended action before proceeding.
 
 ## <a name="create_filter"></a>Create New Filter
 
-After clicking on the '+ new filter' button on the top right of the second pannel, a new page will be opened to create a new email preference for a NEWSLetter. Some of the filters are required -- **Filter Name**, **Frequency**, and **Geo Location (Latitude, Longitude and Radius)** -- while others are optional.
+After clicking the **+ New Filter** button at the top-right corner of the second panel, a new page will open, allowing users to create an email preference for the Newsletter. Some filters are required—**Filter Name**, **Frequency**, and **Geo Location** (Latitude, Longitude, and Radius)—while others are optional.
 
-First, choose a name for the filter and its **Frequency** (Daily, Weekly, or Monthly). User may include a short **Description** about the filter (e.g. a specific object or orbital class, the frequency, etc.).
+First, choose a **Filter Name** and select its **Frequency** (Daily, Weekly, or Monthly). Users may also add a brief **Description** of the filter (e.g., referencing a specific object, orbital class, or frequency).
 
-Right below the filter description box, optional filters are available on the **Filter type** dropdown. Here it is possible to select an object name, dynamic class, or dynamic class with subclasses. After choosing it, a new dropdown pannel will appear on the right with the respective options. User can choose a specific object, class or subclass. User can also select more than one object, but only one class or class and subclass.
+Below the description box, optional filters can be set via the **Filter Type** dropdown. Users can select an object name, dynamic class, or dynamic class with subclasses. Once a selection is made, a corresponding dropdown will appear on the right with relevant options. Users can select multiple objects but only one class or subclass.
 
-The following filter is to select star **Magnitude limit**. No occultations will be visible for stars with higher magnitudes (fainter stars). On the right, user may choose a **Magnitude drop**. No occultations will be visible with higher magnitude drop.
+The next filter allows users to set a **Star Magnitude Limit**. Occultations of stars exceeding this magnitude (i.e., fainter stars) will not be included. To the right, users can specify a **Magnitude Drop** limit, excluding occultations with larger magnitude drops.
 
-On the following filters user may choose the time interval for **events start** and **end**.
+Subsequent filters allow users to define the time interval for **Event Start** and **Event End**.
 
-It is also possible to limit the occultation alerts for **minimum** and **maximum object diameter**, the **event duration**, or the **uncertainty**.
+Users can further refine alerts by setting limits for the **Minimum** and **Maximum Object Diameter**, **Event Duration**, and **Uncertainty**.
 
-The lower pannel user may include the Geo Location, with Latitude (North positive, South negative) and Longitude (East positive, West negative) in degrees, the Radius (put 'zero' for a fixed location or the distance, in km, that it is possible to travel for an observation) and altitude.
+In the lower section, users must input the **Geo Location** details, including:
 
-By clicking on 'MY LOCATION' button, user need to allow the browser to get the position and will automatically include the coordinates. The 'CLEAR LOCATION' button will clear all the Geo location fields.
+- **Latitude** (positive for North, negative for South)
+- **Longitude** (positive for East, negative for West)
+- **Radius** (enter '0' for a fixed location or specify the travel distance in km for observations)
+- **Altitude**
 
-To cancel the creation of the filter, click on 'DISCARD CHANGES' button.
+Clicking the **MY LOCATION** button prompts the browser to retrieve the user's coordinates, which will automatically populate the fields. The **CLEAR LOCATION** button will reset all Geo Location fields.
 
-After setting all filter preferences, click on 'SAVE FILTER' button at the bottom of the page. User will be redirected to the **User Preferences** page.
+To cancel filter creation, click the **DISCARD CHANGES** button.
 
+Once all preferences are set, click the **SAVE FILTER** button at the bottom of the page. Users will be redirected to the **User Preferences** page.
 
 ## Filter Options
 
