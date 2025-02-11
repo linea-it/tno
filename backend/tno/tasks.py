@@ -427,11 +427,13 @@ def update_unique_asteroids():
         # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
         df = df.loc[idx].drop(columns="non_null_count")
 
-        # save table with unique asteroids
-        from django.conf import settings
+        # # save table with unique asteroids
+        # from django.conf import settings
 
-        tmp_path = Path(settings.DATA_TMP_DIR).joinpath("unique_asteroids.csv")
-        df.to_csv(tmp_path, index=False)
+        # tmp_path = Path(settings.DATA_TMP_DIR).joinpath(
+        #     "unique_asteroids_after_fix.csv"
+        # )
+        # df.to_csv(tmp_path, index=False)
 
         # Tratamento dos valores nulos
         df["number"] = df["number"].fillna(0)
