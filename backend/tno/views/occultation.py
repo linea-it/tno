@@ -513,7 +513,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         if data is not None:
             return Response(data)
 
-        queryset = DynclassCache.objects.order_by("skybot_dynbaseclass")
+        queryset = DynclassCache.objects.order_by("skybot_dynbaseclass").distinct(
+            "skybot_dynbaseclass"
+        )
 
         rows = [x.skybot_dynbaseclass for x in queryset]
         result = {"results": rows, "count": len(rows)}
@@ -549,7 +551,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         if data is not None:
             return Response(data)
 
-        queryset = DynclassCache.objects.order_by("skybot_dynsubclass")
+        queryset = DynclassCache.objects.order_by("skybot_dynsubclass").distinct(
+            "skybot_dynsubclass"
+        )
 
         rows = [x.skybot_dynsubclass for x in queryset]
         result = {"results": rows, "count": len(rows)}
