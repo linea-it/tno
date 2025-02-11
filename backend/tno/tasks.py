@@ -427,7 +427,7 @@ def update_unique_asteroids():
         # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
         df = df.loc[idx].drop(columns="non_null_count")
 
-        df.to_csv("/tmp/unique_asteroids.csv", index=False)
+        df.to_csv("/data/tmp/unique_asteroids.csv", index=False)
 
         # Tratamento dos valores nulos
         df["number"] = df["number"].fillna(0)
