@@ -290,7 +290,9 @@ def update_asteroid_classes_cache():
 
 
 def update_base_dynclass_cache():
-    queryset = DynclassCache.objects.order_by("skybot_dynbaseclass")
+    queryset = DynclassCache.objects.order_by("skybot_dynbaseclass").distinct(
+        "skybot_dynbaseclass"
+    )
 
     rows = [x.skybot_dynbaseclass for x in queryset]
     result = {"results": rows, "count": len(rows)}
