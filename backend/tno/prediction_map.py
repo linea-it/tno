@@ -140,16 +140,17 @@ def upcoming_events_to_create_maps(
 
     if date_start == None:
         date_start = datetime.now(timezone.utc)  # Corrected UTC handling
+
     if isinstance(date_start, str):
         date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
 
-    next_events = Occultation.objects.filter(date_time__gte=date_start).order_by(
-        "g_star"
-    )
+    next_events = Occultation.objects.filter(date_time__gte=date_start)
 
     if isinstance(date_end, str):
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
         next_events = next_events.filter(date_time__lte=date_end)
+
+    next_events = next_events.order_by("g_star")
 
     logger.info(f"Next events count: {next_events.count()}")
     logger.info(f"Query: {next_events.query}")
