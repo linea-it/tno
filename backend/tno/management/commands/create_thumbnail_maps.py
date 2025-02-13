@@ -31,13 +31,7 @@ class Command(BaseCommand):
         if end_date:
             end_date = end_date + " 23:59:59.999"
         limit = options.get("limit", 1000)
-        self.stdout.write(
-            f"upcoming_events_to_create_maps started processing at {datetime.now(timezone.utc).isoformat()}"
-        )
         to_run = upcoming_events_to_create_maps(start_date, end_date, limit)
-        self.stdout.write(
-            f"upcoming_events_to_create_maps finished processing at {datetime.now(timezone.utc).isoformat()}"
-        )
         self.stdout.write(f"Tasks to be executed in this block: [{len(to_run)}].")
 
         # Celery tasks signature
