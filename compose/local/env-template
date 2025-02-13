@@ -60,6 +60,7 @@ PREDICTION_JOB_AUTO_UPDATE=False
 # -------------------------------------
 PARSL_ENV=local
 PREDICT_OUTPUTS=/app/outputs/predict_occultations
+PREDICT_INPUTS=/app/inputs/
 # DATABASE used Predict Occultation container
 # A configuração é diferente por que o container precisa de rede do tipo host, então ele não reconhece o database.
 # A porta do banco de dados precisa estar exposta para o host.

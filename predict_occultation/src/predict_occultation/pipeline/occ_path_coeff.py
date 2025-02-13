@@ -9,20 +9,13 @@ import pandas as pd
 import spiceypy as spice
 from astropy.time import Time
 from occviz import occultation_path_coeff
+
 from predict_occultation.pipeline.library import (
-    asteroid_visual_magnitude,
-    compute_magnitude_drop,
-    dec_hms_to_deg,
-    generate_hash,
-    get_apparent_diameter,
-    get_closest_approach_uncertainty,
-    get_event_duration,
-    get_instant_uncertainty,
-    get_mag_ra_dec_uncertainties_interpolator,
-    get_moon_and_sun_separation,
-    get_moon_illuminated_fraction,
-    ra_hms_to_deg,
-)
+    asteroid_visual_magnitude, compute_magnitude_drop, dec_hms_to_deg,
+    generate_hash, get_apparent_diameter, get_closest_approach_uncertainty,
+    get_event_duration, get_instant_uncertainty,
+    get_mag_ra_dec_uncertainties_interpolator, get_moon_and_sun_separation,
+    get_moon_illuminated_fraction, ra_hms_to_deg)
 
 
 def run_occultation_path_coeff(
@@ -231,7 +224,7 @@ def run_occultation_path_coeff(
             else:
                 # tenta calcular a partir de h e g do bsp e só funciona para asteroides em geral
                 if (
-                    obj_data["h"] is not None and obj_data["h"] < 99
+                    obj_data["h"] < 99
                 ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
                     ast_vis_mag = asteroid_visual_magnitude(
                         obj_data["bsp_jpl"]["filename"],
