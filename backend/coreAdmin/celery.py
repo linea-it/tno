@@ -36,22 +36,22 @@ app.conf.beat_schedule = {
         "schedule": crontab(minute=0, hour="*/3"),
         # 'schedule': 30.0
     },
-    "prediction-map-every-30-minutes": {
-        "task": "tno.tasks.create_thumbnail_maps",
-        # a job is scheduled to run for every first minute of every hour
-        # "schedule": crontab(hour="*", minute=1),
-        "schedule": crontab(minute="*/30"),
-    },
+    # "prediction-map-every-30-minutes": {
+    #     "task": "tno.tasks.create_thumbnail_maps",
+    #     # a job is scheduled to run for every first minute of every hour
+    #     # "schedule": crontab(hour="*", minute=1),
+    #     "schedule": crontab(minute="*/30"),
+    # },
     # Executes every Monday morning at 2:00 a.m.
-    "update_asteroid_table-every-monday": {
-        "task": "tno.tasks.update_asteroid_table",
-        "schedule": crontab(hour=2, minute=0, day_of_week=1),
-    },
+    # "update_asteroid_table-every-monday": {
+    #     "task": "tno.tasks.update_asteroid_table",
+    #     "schedule": crontab(hour=2, minute=0, day_of_week=1),
+    # },
     # Executes every Day at 5:00 a.m.
-    "predict_job_for_updated_asteroids": {
-        "task": "tno.tasks.predict_jobs_by_updated_asteroids",
-        "schedule": crontab(hour=5, minute=0),
-    },
+    # "predict_job_for_updated_asteroids": {
+    #     "task": "tno.tasks.predict_jobs_by_updated_asteroids",
+    #     "schedule": crontab(hour=5, minute=0),
+    # },
     # # Executes every 10th and 25th day of every month.
     # "predict_job_for_upper_end_update": {
     #     "task": "tno.tasks.predict_jobs_for_upper_end_update",
