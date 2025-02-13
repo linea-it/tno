@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime, time, timezone
+from datetime import datetime, timedelta, timezone
 from itertools import groupby
 from operator import itemgetter
 from pathlib import Path
@@ -113,7 +113,6 @@ def upcoming_events_to_create_maps(
     date_start: Optional[str] = None,
     date_end: Optional[str] = None,
     limit: Optional[int] = None,
-    magnitude_limit: Optional[int] = 15,
 ) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
@@ -140,25 +139,43 @@ def upcoming_events_to_create_maps(
 
     if date_start == None:
         date_start = datetime.now(timezone.utc)  # Corrected UTC handling
+    if date_end == None:
+        date_end = date_start + timedelta(days=1)
 
     if isinstance(date_start, str):
         date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
 
-    next_events = Occultation.objects.filter(date_time__gte=date_start)
-
     if isinstance(date_end, str):
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
-        next_events = next_events.filter(date_time__lte=date_end)
 
-    next_events = next_events.order_by("g_star")
+    next_events = (
+        Occultation.objects.filter(date_time__range=(date_start, date_end))
+        .order_by("g_star")
+        .only(
+            "name",
+            "diameter",
+            "ra_star_candidate",
+            "dec_star_candidate",
+            "date_time",
+            "closest_approach",
+            "position_angle",
+            "velocity",
+            "delta",
+            "g_star",
+            "long",
+            "closest_approach_uncertainty",
+        )
+    )
 
-    logger.info(f"Next events count: {next_events.count()}")
-    logger.info(f"Query: {next_events.query}")
+    number_of_events = next_events.count()
+    logger.info(f"Next events count: {number_of_events}")
+    block_size = min(block_size, number_of_events)
+    # logger.info(f"Query: {next_events.query}")
 
     # lets avoid bring all data
     reached_block_size = False
     i = 0
-    while not reached_block_size:
+    while not reached_block_size and (i * block_size) < number_of_events:
 
         event_data = next_events[i * block_size : (i + 1) * block_size]
 
