@@ -734,9 +734,11 @@ def submit_tasks(jobid: int):
 
         step1_count = len(asteroids)
 
+        dao_job_result = PredictOccultationJobResultDao()
+
         for asteroid in asteroids:
             log.info(
-                "---------------< Running: %s / %s >---------------"
+                "---------------< Submiting: %s / %s >---------------"
                 % (current_idx + 1, step1_count)
             )
             log.info("Asteroid: [%s]" % asteroid["name"])
@@ -745,6 +747,8 @@ def submit_tasks(jobid: int):
             if is_abort:
                 raise AbortError("Job ID %s aborted!" % str(jobid), -1)
 
+            # Ao instanciar a Classe Asteroid, o diretório do asteroid será criado
+            # e um arquivo json com as informações do asteroid será criado.
             a = Asteroid(
                 name=asteroid["name"],
                 base_path=ASTEROID_PATH,
@@ -755,10 +759,9 @@ def submit_tasks(jobid: int):
                 inputs_path=pathlib.Path(os.getenv("PREDICT_INPUTS", "/app/inputs")),
             )
 
-            # Remove Previus Results ----------------------------------
-            # Arquivos da execução anterior, resultados e logs por exemplo
-            # caso FORCE_REFRESH_INPUTS = TRUE os inputs também serão removidos
-            # a.remove_previus_results(remove_inputs=FORCE_REFRESH_INPUTS)
+            a.set_job_id(int(jobid))
+
+            # ========================= Download dos Inputs Externos ============================
 
             # Dates File ----------------------------------------------------
             log.info(f"Copying dates.txt file to asteroid directory.")
@@ -766,26 +769,11 @@ def submit_tasks(jobid: int):
             shutil.copy(dates_filepath, ast_dates_file)
             log.debug(f"Asteorid Date file: [{ast_dates_file}].")
 
-            # ========================= Download dos Inputs Externos ============================
-            # Observações do DES ----------------------------------
-            # Se o objeto não tiver observações no DES
-            # ele pode ser executado normalmente mas
-            # a etapa de refinamento de orbita será ignorada.
-            # TODO: Temporariamente desligado por que o NIMA esta fora do pipeline.
-            have_des_obs = False
-            # have_des_obs = a.check_des_observations(
-            #     days_to_expire=DES_OBSERVATIONS_DAYS_TO_EXPIRE
-            # )
-            # have_des_obs = True
-
             # BSP JPL -------------------------------------------------------
             # Caso HAJA posições para o DES o BSP precisará ter um periodo inicial que contenham o periodo do DES
             # Para isso basta deixar o bsp_start_date = None e o periodo será setado na hora do download.
             # Se NÃO tiver posições no DES o BSP tera como inicio a data solicitada para predição.
             bsp_start_date = str(PREDICT_START.date())
-
-            if have_des_obs is True:
-                bsp_start_date = None
 
             have_bsp_jpl = a.check_bsp_jpl(
                 start_period=bsp_start_date,
@@ -793,7 +781,7 @@ def submit_tasks(jobid: int):
             )
 
             # TODO: Duvida se o BSP JPL precisa ser copiado para pasta do Asteroid.
-            # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a 
+            # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a
             # compatibilidade com versão anterior
             if have_bsp_jpl is False:
                 log.warning(
@@ -806,42 +794,7 @@ def submit_tasks(jobid: int):
                 # Ignora as proximas etapas para este asteroid.
                 continue
 
-            # ORBITAL ELEMENTS ----------------------------------------------
-            # Use ignore=False ou omita para que aos elementos orbitais sejam baixados.
-            # have_orb_ele = a.check_orbital_elements(days_to_expire=ORBITAL_ELEMENTS_DAYS_TO_EXPIRE)
-            have_orb_ele = a.check_orbital_elements(
-                days_to_expire=ORBITAL_ELEMENTS_DAYS_TO_EXPIRE, ignore=True
-            )
-
-            if have_orb_ele is False:
-                log.warning(
-                    "Asteroid [%s] Ignored for not having Orbital Elements."
-                    % asteroid["name"]
-                )
-                # TODO: guardar informações dos asteroids ignorados e os motivos.
-                current_idx += 1
-                step1_failures += 1
-                # Ignora as proximas etapas para este asteroid.
-                continue
-
-            # Observations --------------------------------------------------
-            # Use ignore=False ou omita para que as observações AstDys ou MPC sejam baixadas
-            # have_obs = a.check_observations(days_to_expire=OBSERVATIONS_DAYS_TO_EXPIRE)
-            have_obs = a.check_observations(
-                days_to_expire=OBSERVATIONS_DAYS_TO_EXPIRE, ignore=True
-            )
-
-            if have_obs is False:
-                log.warning(
-                    "Asteroid [%s] Ignored for not having Observations."
-                    % asteroid["name"]
-                )
-                # TODO: guardar informações dos asteroids ignorados e os motivos.
-
-                current_idx += 1
-                step1_failures += 1
-                # Ignora as proximas etapas para este asteroid.
-                continue
+                # TODO: Registrar na tabela results que o asteroid foi ignorado.
 
             # STAR CATALOG
             a.set_star_catalog(**STAR_CATALOG)
@@ -861,8 +814,28 @@ def submit_tasks(jobid: int):
             )
 
             # ======================= Submeter o Job por asteroide ==========================
-            log.debug("Submitting the Job. [%s]" % str(a.get_path()))
+            log.debug("-------------------------------------------------------------")
+            log.debug("Teste de Submissão de Job")
+            # Adicionar os asteroids a tabela job result ( que agora passa a representar as job tasks.)
+            # Cada asteroid será adicionado com status queued e depois atualizado para running e depois para completed.
+            # Cada asteroid terá um job_id que será o job_id do job principal.
+            task_id = dao_job_result.insert(
+                {
+                    "name": a.name,
+                    "number": a.number,
+                    "base_dynclass": a.base_dynclass,
+                    "dynclass": a.dynclass,
+                    "status": 3,  # Queued
+                    "job_id": jobid,
+                }
+            )
+            a.set_task_id(task_id)
 
+            log.debug(f"Task ID:  {task_id}")
+
+            log.debug("-------------------------------------------------------------")
+
+            log.debug("Submitting the Job. [%s]" % str(a.get_path()))
             start_date = str(PREDICT_START.date())
             end_date = str(PREDICT_END.date())
             name = a.alias
@@ -958,7 +931,7 @@ def submit_tasks(jobid: int):
 
                     if status:
                         step2_failures += 1
-                        log.warn(
+                        log.warning(
                             "Asteroid [%s] - Bash exit with code %s"
                             % (proc["name"], str(status))
                         )
@@ -971,7 +944,9 @@ def submit_tasks(jobid: int):
                         end_date = str(
                             PREDICT_END.replace(hour=23, minute=59, second=59)
                         )
-
+                        log.info(
+                            "Registering Occultations for Asteroid: [%s]" % ast_obj.name
+                        )
                         ingested_occ_count = ast_obj.register_occultations(
                             start_date, end_date, jobid
                         )
@@ -1135,6 +1110,9 @@ def submit_tasks(jobid: int):
 
 
 def consolidate_job_results(consolidated, job_path, log):
+
+    raise Exception("Teste de Submissão de Job")
+
     log.info("Consolidating Job Results.")
     df_result = pd.DataFrame(
         consolidated,

@@ -35,3 +35,15 @@ class PredictOccultationJobResultDao(DBBase):
             rows = con.execute(stm)
 
             return rows
+
+    def insert(self, data):
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            result = con.execute(self.tbl.insert(), data)
+            return result.inserted_primary_key[0]
+
+    def update(self, id, data):
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            result = con.execute(self.tbl.update().where(self.tbl.c.id == id), data)
+            return result.rowcount

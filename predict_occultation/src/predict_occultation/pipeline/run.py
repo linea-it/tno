@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
-from dao import GaiaDao
+from dao import GaiaDao, PredictOccultationJobResultDao
 from library import (
     check_bsp_object,
     count_lines,
@@ -135,6 +135,11 @@ if __name__ == "__main__":
         # Se não existir sera um dicionario vazio onde serão colocados esses dados e depois salvo como asteroidename.json
         obj_data = read_asteroid_json(name)
 
+        # Alterar o status da task para 4-running
+        print("Updating task status to 4-running")
+        dao_job_result = PredictOccultationJobResultDao()
+        dao_job_result.update(id=obj_data["task_id"], data={"status": 4})
+
         inputs_dir = Path(os.getenv("PREDICT_INPUTS")).joinpath(obj_data["alias"])
 
         GAIA_NAME = obj_data["star_catalog"]["display_name"]
@@ -212,8 +217,8 @@ if __name__ == "__main__":
         if bsp_object_filename is None:
             bsp_object_filename = obj_data["bsp_jpl"]["filename"]
 
-        # Procura o arquivo bsp_jpl primeiro no diretório de inputs. 
-        # Depois no diretório do asteroid. 
+        # Procura o arquivo bsp_jpl primeiro no diretório de inputs.
+        # Depois no diretório do asteroid.
         bsp_jpl_filepath = inputs_dir.joinpath(bsp_object_filename)
         if not bsp_jpl_filepath.exists():
             # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
@@ -221,10 +226,13 @@ if __name__ == "__main__":
         print("BSP JPL FILE PATH: [%s]" % bsp_jpl_filepath)
 
         bsp_object = check_bsp_object(
-            filepath=bsp_jpl_filepath, filename=bsp_object_filename)
+            filepath=bsp_jpl_filepath, filename=bsp_object_filename
+        )
 
         # uncertainty file
-        mag_and_uncert_path = inputs_dir.joinpath(obj_data["bsp_jpl"]["mag_and_uncert_file"])
+        mag_and_uncert_path = inputs_dir.joinpath(
+            obj_data["bsp_jpl"]["mag_and_uncert_file"]
+        )
         if not mag_and_uncert_path.exists():
             # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
             mag_and_uncert_path = Path(data_dir).joinpath(
@@ -310,10 +318,17 @@ if __name__ == "__main__":
         # Escreve os dados da execução no arquivo json do objeto.
         write_asteroid_json(name, obj_data, callback_path)
 
+        # Alterar o status da task para 1-success
+        dao_job_result.update(id=obj_data["task_id"], data={"status": 1})
+        print("Updated task status to 1-success")
+
     except Exception as e:
         print(e)
         traceback.print_exc()
 
+        # TODO: Alterar o status da task para 2-failed
+        # dao_job_result.update(id=3335, data={"status": 2})
+        # print("Updated task status to 2-failed")
     finally:
 
         # Volta para o diretório original

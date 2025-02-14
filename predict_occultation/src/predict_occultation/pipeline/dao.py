@@ -15,23 +15,16 @@ class MissingDBURIException(Exception):
 
 
 class Dao:
-
     engine = None
 
     def get_db_uri(self):
-
-        # DB_USER, DB_PASS, DB_HOST, DB_PORT, DB_NAME
-        # db_uri = "postgresql+psycopg2://%s:%s@%s:%s/%s" % (
-        #     "postgres", "postgres", "172.18.0.2", "5432", "tno_v2")
-
-        # DB_CATALOG_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME
         try:
-            db_uri = os.environ["DB_CATALOG_URI"]
+            db_uri = os.environ["DB_ADMIN_URI"]
             return db_uri
         except:
             raise MissingDBURIException(
-                "Required environment variable with URI to access the database where GAIA DR2 is."
-                "example DB_CATALOG_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
+                "Required environment variable with URI to access the portal admin database."
+                "example DB_ADMIN_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
             )
 
     def get_db_engine(self):
@@ -73,7 +66,30 @@ class Dao:
                 return None
 
 
+class PredictOccultationJobResultDao(Dao):
+    def __init__(self):
+        super(PredictOccultationJobResultDao, self).__init__()
+
+        self.tbl = self.get_table("tno_predictionjobresult")
+
+    def update(self, id, data):
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            result = con.execute(self.tbl.update().where(self.tbl.c.id == id), data)
+            return result.rowcount
+
+
 class GaiaDao(Dao):
+    def get_db_uri(self):
+        try:
+            db_uri = os.environ["DB_CATALOG_URI"]
+            return db_uri
+        except:
+            raise MissingDBURIException(
+                "Required environment variable with URI to access the database where GAIA DR2 is."
+                "example DB_CATALOG_URI=postgresql+psycopg2://USER:PASS@HOST:PORT/DB_NAME"
+            )
+
     # Para alterar o catalogo GAIA para DR3 por exemplo criar uma nova classe igual a essa
     # e alterar os atributos do catalogo.
     # e na hora de usar criar um parametro para escolher qual classe instanciar.
@@ -290,21 +306,26 @@ class GaiaDao(Dao):
             raise (Exception("Gaia Catalog file not generated. [%s]" % output))
 
 
-# if __name__ == "__main__":
+if __name__ == "__main__":
+    print("-----------------------")
+    dao = PredictOccultationJobResultDao()
+    print(dao.tbl.c)
 
-#     dao = GaiaDao()
+    print(dao.update(id=3335, data={"status": 4}))
 
-#     print("Teste")
+    # dao = GaiaDao()
 
-#     import csv
+    # print("Teste")
 
-#     positions = []
-#     with open('/data/centers_deg.csv', 'r') as csvfile:
-#         reader = csv.DictReader(csvfile)
-#         for row in reader:
-#             positions.append([row['ra'], row['dec']])
+    # import csv
 
-#     df_catalog = dao.catalog_by_positions(positions, radius=0.15)
+    # positions = []
+    # with open('/data/centers_deg.csv', 'r') as csvfile:
+    #     reader = csv.DictReader(csvfile)
+    #     for row in reader:
+    #         positions.append([row['ra'], row['dec']])
 
-#     print(df_catalog.shape[0])
-#     print(df_catalog.head().to_dict('records'))
+    # df_catalog = dao.catalog_by_positions(positions, radius=0.15)
+
+    # print(df_catalog.shape[0])
+    # print(df_catalog.head().to_dict('records'))

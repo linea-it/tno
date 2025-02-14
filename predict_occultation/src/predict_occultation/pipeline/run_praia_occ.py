@@ -6,6 +6,7 @@ import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
+
 from dao import GaiaDao, MissingDBURIException
 from generate_dates import generate_dates_file
 from generate_ephemeris import centers_positions_to_deg, generate_ephemeris, run_elimina
@@ -124,17 +125,19 @@ def start_praia_occ(
     print("BSP Planetary: [%s]" % bsp_planetary)
 
     # Checa o arquivo bsp_object
-    # Procura o arquivo bsp_jpl primeiro no diretório de inputs. 
-    # Depois no diretório do asteroid. 
-    bsp_jpl_filepath = os.path.join(os.getenv("PREDICT_INPUTS"), obj_data["alias"], bsp_object_filename)
+    # Procura o arquivo bsp_jpl primeiro no diretório de inputs.
+    # Depois no diretório do asteroid.
+    bsp_jpl_filepath = os.path.join(
+        os.getenv("PREDICT_INPUTS"), obj_data["alias"], bsp_object_filename
+    )
     if not os.path.exists(bsp_jpl_filepath):
         # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
-        bsp_jpl_filepath = Path(data_dir).joinpath(bsp_object_filename)       
+        bsp_jpl_filepath = Path(data_dir).joinpath(bsp_object_filename)
         print("BSP JPL FILE PATH: [%s]" % bsp_jpl_filepath)
 
-
     bsp_object = check_bsp_object(
-        filepath=bsp_jpl_filepath, filename=bsp_object_filename)
+        filepath=bsp_jpl_filepath, filename=bsp_object_filename
+    )
 
     print("BSP Object: [%s]" % bsp_object)
 
@@ -220,6 +223,8 @@ def start_praia_occ(
     )
 
     print("Occultation CSV Table: [%s]" % occultation_file)
+
+    # TODO: Inserir no banco de dados os resultados da execução.
 
     sys.stdout = orig_stdout
     f.close()

@@ -849,25 +849,25 @@ class Occultation(models.Model):
         help_text="Asteroid Bsp ephemeris data source. for example JPL.",
     )
 
-    # Indica a Origem das Observations pode ser AstDys ou MPC
-    obs_source = models.CharField(
-        max_length=10,
-        null=True,
-        blank=True,
-        default="MPC",
-        verbose_name="Observation Source",
-        help_text="Observation data source, AstDys or MPC.",
-    )
+    # # Indica a Origem das Observations pode ser AstDys ou MPC
+    # obs_source = models.CharField(
+    #     max_length=10,
+    #     null=True,
+    #     blank=True,
+    #     default="MPC",
+    #     verbose_name="Observation Source",
+    #     help_text="Observation data source, AstDys or MPC.",
+    # )
 
-    # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
-    orb_ele_source = models.CharField(
-        max_length=10,
-        null=True,
-        blank=True,
-        default="MPC",
-        verbose_name="Orbital Elements Source",
-        help_text="Orbital Elements data source, AstDys or MPC.",
-    )
+    # # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
+    # orb_ele_source = models.CharField(
+    #     max_length=10,
+    #     null=True,
+    #     blank=True,
+    #     default="MPC",
+    #     verbose_name="Orbital Elements Source",
+    #     help_text="Orbital Elements data source, AstDys or MPC.",
+    # )
 
     bsp_planetary = models.CharField(
         max_length=10,

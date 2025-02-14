@@ -9,13 +9,20 @@ import pandas as pd
 import spiceypy as spice
 from astropy.time import Time
 from occviz import occultation_path_coeff
-
 from predict_occultation.pipeline.library import (
-    asteroid_visual_magnitude, compute_magnitude_drop, dec_hms_to_deg,
-    generate_hash, get_apparent_diameter, get_closest_approach_uncertainty,
-    get_event_duration, get_instant_uncertainty,
-    get_mag_ra_dec_uncertainties_interpolator, get_moon_and_sun_separation,
-    get_moon_illuminated_fraction, ra_hms_to_deg)
+    asteroid_visual_magnitude,
+    compute_magnitude_drop,
+    dec_hms_to_deg,
+    generate_hash,
+    get_apparent_diameter,
+    get_closest_approach_uncertainty,
+    get_event_duration,
+    get_instant_uncertainty,
+    get_mag_ra_dec_uncertainties_interpolator,
+    get_moon_and_sun_separation,
+    get_moon_illuminated_fraction,
+    ra_hms_to_deg,
+)
 
 
 def run_occultation_path_coeff(
@@ -456,8 +463,6 @@ def run_occultation_path_coeff(
         df["catalog"] = obj_data["predict_occultation"]["catalog"]
         df["predict_step"] = obj_data["predict_occultation"]["predict_step"]
         df["bsp_source"] = obj_data["bsp_jpl"]["source"]
-        df["obs_source"] = obj_data["observations"]["source"]
-        df["orb_ele_source"] = obj_data["orbital_elements"]["source"]
         df["bsp_planetary"] = obj_data["predict_occultation"]["bsp_planetary"]
         df["leap_seconds"] = obj_data["predict_occultation"]["leap_seconds"]
         df["nima"] = obj_data["predict_occultation"]["nima"]
@@ -571,8 +576,6 @@ def run_occultation_path_coeff(
                 "job_id",
                 "leap_seconds",
                 "nima",
-                "obs_source",
-                "orb_ele_source",
                 "predict_step",
                 "albedo",
                 "albedo_err_max",

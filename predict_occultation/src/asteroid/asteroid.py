@@ -52,6 +52,8 @@ class Asteroid:
     # 1 = Success
     # 2 = Failure
     status: int
+    job_id: int
+    task_id: int
 
     # spkid = None
     name: str
@@ -111,6 +113,10 @@ class Asteroid:
         # a criacao do dataframe de predicoes.
         self.__ast_data_columns = list(ast_data.keys())
         # self.__log.debug(self.__ast_data_columns)
+
+        # Setando atributos de identificação do job
+        self.job_id = None
+        self.task_id = None
 
         # Setando os astributos de identificação do asteroid.
         self.name = ast_data["name"]
@@ -239,6 +245,14 @@ class Asteroid:
 
     def get_star_catalog(self):
         return self.star_catalog
+
+    def set_job_id(self, job_id):
+        self.job_id = int(job_id)
+        self.write_asteroid_json()
+
+    def set_task_id(self, task_id):
+        self.task_id = int(task_id)
+        self.write_asteroid_json()
 
     def read_asteroid_json(self):
         filename = "{}.json".format(self.alias)
@@ -452,10 +466,8 @@ class Asteroid:
             # Atualiza o Json do Asteroid
             tp1 = dt.now(tz=timezone.utc)
 
-            if 'filename' not in self.bsp_jpl:
-                self.bsp_jpl.update(
-                    {"message": "BSP JPL file was not found."}
-                )
+            if "filename" not in self.bsp_jpl:
+                self.bsp_jpl.update({"message": "BSP JPL file was not found."})
 
             self.bsp_jpl.update(
                 {"tp_start": tp0.isoformat(), "tp_finish": tp1.isoformat()}
@@ -946,8 +958,8 @@ class Asteroid:
                     "job_id",
                     "leap_seconds",
                     "nima",
-                    "obs_source",
-                    "orb_ele_source",
+                    # "obs_source",
+                    # "orb_ele_source",
                     "predict_step",
                     "albedo",
                     "albedo_err_max",
