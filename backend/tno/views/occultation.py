@@ -268,7 +268,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         # Aplica os fitros da classe OccultationFilter
         # Mas não calcula a visibilidade
         queryset = self.filter_queryset(self.get_queryset())
-        # logger.debug(queryset.query)
+        logger.debug(queryset.query)
         logger.info(f"Results after filters in the database: [{queryset.count()}]")
 
         # Recupera os parametros da requisição
