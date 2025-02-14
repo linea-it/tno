@@ -1,6 +1,6 @@
 import logging
 import os
-from datetime import datetime, time, timezone
+from datetime import datetime, timedelta, timezone
 from itertools import groupby
 from operator import itemgetter
 from pathlib import Path
@@ -113,7 +113,6 @@ def upcoming_events_to_create_maps(
     date_start: Optional[str] = None,
     date_end: Optional[str] = None,
     limit: Optional[int] = None,
-    magnitude_limit: Optional[int] = 15,
 ) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
@@ -139,61 +138,97 @@ def upcoming_events_to_create_maps(
         block_size = int(limit)
 
     if date_start == None:
-        date_start = datetime.utcnow()
+        date_start = datetime.now(timezone.utc)  # Corrected UTC handling
+    if date_end == None:
+        date_end = date_start + timedelta(days=1)
+
     if isinstance(date_start, str):
         date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
 
-    next_events = Occultation.objects.filter(date_time__gte=date_start).order_by(
-        "date_time"
-    )
-
     if isinstance(date_end, str):
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
-        next_events = next_events.filter(date_time__lte=date_end)
 
-    # Filtro por magnitude
-    next_events = next_events.filter(g_star__lte=magnitude_limit)
-
-    # Filtro por Solar Time 18:00 - 06:00
-    after = Q(loc_t__gte=time(18, 0, 0), loc_t__lte=time(23, 59, 59))
-    before = Q(loc_t__gte=time(0, 0, 0), loc_t__lte=time(6, 0, 0))
-    next_events = next_events.filter(Q(after | before))
-
-    logger.info(f"Next events count: {next_events.count()}")
-    logger.info(f"Query: {next_events.query}")
-    for obj in next_events:
-        # Verifica se existe mapa já criado e se esta atualizado
-        if obj.map_is_updated():
-            # logger.debug(
-            #     f"Predict event {obj.id} ignored because the map is already updated.")
-            continue
-
-        events.append(
-            {
-                "name": obj.name,
-                "diameter": obj.diameter,
-                "ra_star_candidate": obj.ra_star_candidate,
-                "dec_star_candidate": obj.dec_star_candidate,
-                "date_time": obj.date_time.isoformat(),
-                "closest_approach": obj.closest_approach,
-                "position_angle": obj.position_angle,
-                "velocity": obj.velocity,
-                "delta": obj.delta,
-                "g": obj.g_star,
-                "long": obj.long,
-                "error": (
-                    None
-                    if obj.closest_approach_uncertainty is None
-                    else obj.closest_approach_uncertainty * 1000
-                ),  # it is multiplied by 1000 because sora need the value in miliarcsec
-                "filepath": str(obj.get_map_filepath()),
-            }
+    next_events = (
+        Occultation.objects.filter(date_time__range=(date_start, date_end))
+        .order_by("g_star")
+        .only(
+            "name",
+            "diameter",
+            "ra_star_candidate",
+            "dec_star_candidate",
+            "date_time",
+            "closest_approach",
+            "position_angle",
+            "velocity",
+            "delta",
+            "g_star",
+            "long",
+            "closest_approach_uncertainty",
         )
+    )
 
-        if len(events) == block_size:
+    number_of_events = next_events.count()
+    logger.info(f"Next events count: {number_of_events}")
+    block_size = min(block_size, number_of_events)
+    # logger.info(f"Query: {next_events.query}")
+
+    # lets avoid bring all data
+    reached_block_size = False
+    i = 0
+    while not reached_block_size and (i * block_size) < number_of_events:
+
+        event_data = next_events[i * block_size : (i + 1) * block_size]
+
+        # iterate over the first block
+        for obj in event_data:
+
+            # Verifica se existe mapa já criado e se esta atualizado
+            if obj.map_is_updated():
+                # logger.debug(
+                #     f"Predict event {obj.id} ignored because the map is already updated.")
+                continue
+
+            events.append(
+                {
+                    "name": obj.name,
+                    "diameter": obj.diameter,
+                    "ra_star_candidate": obj.ra_star_candidate,
+                    "dec_star_candidate": obj.dec_star_candidate,
+                    "date_time": obj.date_time.isoformat(),
+                    "closest_approach": obj.closest_approach,
+                    "position_angle": obj.position_angle,
+                    "velocity": obj.velocity,
+                    "delta": obj.delta,
+                    "g": obj.g_star,
+                    "long": obj.long,
+                    "error": (
+                        None
+                        if obj.closest_approach_uncertainty is None
+                        else obj.closest_approach_uncertainty * 1000
+                    ),  # it is multiplied by 1000 because sora need the value in miliarcsec
+                    "filepath": str(obj.get_map_filepath()),
+                    "labels": False,
+                    "mapstyle": 2,
+                    "arrow": False,
+                    "dpi": 16,
+                    "resolution": 3,
+                    "zoom": 1,
+                }
+            )
+
+            # if block size was reached break imediately
+            if len(events) == block_size:
+                break
+
+        if len(events) >= block_size:
+            reached_block_size = True
             break
+        else:
+            i += 1
 
+    events = events[:block_size]
     logger.debug(f"Events in this block: {len(events)}.")
+
     return events
 
 
@@ -210,8 +245,13 @@ def sora_occultation_map(
     g: float,
     long: float,
     filepath: Union[Path, str],
-    dpi: int = 150,
+    dpi: Optional[int] = 200,
     error: Optional[float] = None,
+    labels: Optional[bool] = True,
+    arrow: Optional[bool] = True,
+    mapstyle: Optional[int] = 1,
+    resolution: Optional[int] = 2,
+    zoom: Optional[int] = 1,
 ) -> str:
 
     if isinstance(filepath, str):
@@ -222,6 +262,9 @@ def sora_occultation_map(
     filename = filepath.name
     fname, fmt = filename.split(".")
     path = filepath.parent
+    path.mkdir(parents=True, exist_ok=True)
+
+    logger = logging.getLogger("predict_maps")
 
     radius = float(diameter / 2) if diameter != None else 0
     coord = f"{ra_star_candidate}{dec_star_candidate}"
@@ -248,7 +291,11 @@ def sora_occultation_map(
         ptcolor="#00468D",
         ercolor="#D32F2F",
         outcolor="#D3D3D3",
-        # labels = False,
+        labels=labels,
+        mapstyle=mapstyle,
+        arrow=arrow,
+        resolution=resolution,
+        zoom=zoom,
     )
 
     if not filepath.exists():

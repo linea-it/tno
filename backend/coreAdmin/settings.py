@@ -156,11 +156,16 @@ if not PREDICTION_MAP_DIR.exists():
 
 PREDICTION_MAP_URL = urllib.parse.urljoin(DATA_URL, PREDICTION_URL)
 # Tamanho maximo em MB do diretório de mapas.
-PREDICTION_MAP_MAX_FOLDER_SIZE = 500
+PREDICTION_MAP_MAX_FOLDER_SIZE = 50
 # Determina a quantidade de mapas/subtasks submetidos a cada execução da task
 # Em desenvolvimento um numero muito alto pode incomodo devido ao consumo de processamento.
 PREDICTION_MAP_BLOCK_SIZE = 100
 
+# sora map url and dir
+SORA_MAP_DIR = MEDIA_ROOT.joinpath("tmp/maps")
+if not SORA_MAP_DIR.exists():
+    SORA_MAP_DIR.mkdir(parents=True, exist_ok=False)
+SORA_MAP_URL = urllib.parse.urljoin(DATA_URL, "tmp/maps")
 
 ENVIRONMENT_NAME = env("DJANGO_ENVIRONMENT_NAME", default="Development")
 
@@ -390,10 +395,10 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-time-limit
 # TODO: set to whatever value is adequate in your circumstances
-CELERY_TASK_TIME_LIMIT = 5 * 60
+CELERY_TASK_TIME_LIMIT = 600
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-soft-time-limit
 # TODO: set to whatever value is adequate in your circumstances
-CELERY_TASK_SOFT_TIME_LIMIT = 120
+CELERY_TASK_SOFT_TIME_LIMIT = 580
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#beat-scheduler
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#worker-send-task-events
@@ -552,6 +557,14 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "occ_highlights.log"),
             "formatter": "standard",
         },
+        "asteroid_cache": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "asteroid_cache.log"),
+            "formatter": "standard",
+        },
     },
     "loggers": {
         "django": {
@@ -606,6 +619,11 @@ LOGGING = {
         },
         "occultation_highlights": {
             "handlers": ["occultation_highlights"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "asteroid_cache": {
+            "handlers": ["asteroid_cache"],
             "level": LOGGING_LEVEL,
             "propagate": False,
         },

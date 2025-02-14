@@ -1,16 +1,21 @@
 # Create your tasks here
 import json
 import logging
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 from time import sleep
 from typing import Optional
 
+import pandas as pd
 from celery import chain, group, shared_task
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.core.cache import cache
-from tno.models import Highlights, Occultation
+from tno.dao.asteroid_cache import AsteroidCacheDao
+from tno.dao.dynclass_cache import DynclassCacheDao
+from tno.dao.occultation import OccultationDao
+from tno.models import DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path_coeff, visibility_from_coeff
 from tno.predict_job import (
     run_predicition_for_upper_end_update,
@@ -72,7 +77,7 @@ def predict_jobs_for_upper_end_update(**kwargs):
 
 @shared_task
 def create_occ_map_task(**kwargs):
-    return sora_occultation_map(**kwargs)
+    sora_occultation_map(**kwargs)
 
 
 @shared_task
@@ -82,17 +87,12 @@ def prediction_maps_log_error(request, exc, traceback):
 
 
 @shared_task
-def create_prediction_maps():
-    # Exemplo de como executar a task manualmente pelo bash do container
-    # python manage.py shell -c "from tno.tasks import create_prediction_maps;create_prediction_maps.delay()"
+def create_thumbnail_maps():
     logger = logging.getLogger("predict_maps")
-    logger.info("---------------------------------")
-    logger.info("Start of creating prediction maps")
+    logger.info("Starting create_thumbnail_maps task")
 
-    t0 = datetime.now()
-
+    # Get upcoming events
     to_run = upcoming_events_to_create_maps()
-
     logger.info(f"Tasks to be executed in this block: [{len(to_run)}].")
 
     # Celery tasks signature
@@ -100,9 +100,8 @@ def create_prediction_maps():
     job = group(header)
     job.link_error(prediction_maps_log_error.s())
 
-    job.apply_async()
-
-    logger.info(f"All subtasks are submited.")
+    results = job.apply_async()
+    logger.info(f"All [{len(results)}] subtasks are submited.")
 
     # Util em desenvolvimento para acompanhar as tasks
     # # Submete as tasks aos workers
@@ -291,9 +290,11 @@ def update_asteroid_classes_cache():
 
 
 def update_base_dynclass_cache():
-    queryset = Occultation.objects.order_by("base_dynclass").distinct("base_dynclass")
+    queryset = DynclassCache.objects.order_by("skybot_dynbaseclass").distinct(
+        "skybot_dynbaseclass"
+    )
 
-    rows = [x.base_dynclass for x in queryset]
+    rows = [x.skybot_dynbaseclass for x in queryset]
     result = {"results": rows, "count": len(rows)}
 
     # Store the data in the cache
@@ -302,9 +303,9 @@ def update_base_dynclass_cache():
 
 
 def update_dynclass_cache():
-    queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
+    queryset = DynclassCache.objects.order_by("skybot_dynsubclass")
 
-    rows = [x.dynclass for x in queryset]
+    rows = [x.skybot_dynsubclass for x in queryset]
     result = {"results": rows, "count": len(rows)}
 
     # Store the data in the cache
@@ -387,3 +388,108 @@ def update_occultations_highlights():
     highlights.refresh_from_db()
     logger.info(f"Highlights saved successfully with the following id: {highlights.id}")
     return highlights.id
+
+
+@shared_task
+def update_unique_asteroids():
+
+    logger = logging.getLogger("asteroid_cache")
+    logger.info("---------------------------------------")
+    logger.info("Starting Unique Asteroids queries")
+
+    occ_dao = OccultationDao(pool=False)
+    ast_dao = AsteroidCacheDao(pool=False)
+    logger.info("Counting the distinct asteroid names")
+    count_asteroids = occ_dao.count_distict_asteroid_name()
+    logger.info(f"Distinct asteroid names: {count_asteroids}")
+
+    page = 0
+    limit = 10000
+    offset = 0
+    current_count = 0
+    total_pages = math.ceil(count_asteroids / limit)
+
+    logger.info(f"Total pages: {total_pages}")
+
+    while page < total_pages:
+        logger.info(f"Querying page: {page} of {total_pages}")
+        rows = occ_dao.distinct_asteroid_name(limit=limit, offset=offset)
+        logger.info(f"Query returned {len(rows)} rows.")
+
+        df = pd.DataFrame(
+            rows,
+            columns=["distinct_1", "number", "principal_designation", "alias"],
+        )
+        df = df.rename(columns={"distinct_1": "name"})
+
+        # 1. Criar uma coluna com a contagem de valores preenchidos em cada linha
+        df["non_null_count"] = df.notna().sum(axis=1)
+        # 2. Para cada valor duplicado em 'principal_designation', selecionar o índice da linha com a maior contagem
+        idx = df.groupby("principal_designation")["non_null_count"].idxmax()
+        # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
+        df = df.loc[idx].drop(columns="non_null_count")
+
+        # # save table with unique asteroids
+        # from django.conf import settings
+
+        # tmp_path = Path(settings.DATA_TMP_DIR).joinpath(
+        #     "unique_asteroids_after_fix.csv"
+        # )
+        # df.to_csv(tmp_path, index=False)
+
+        # Tratamento dos valores nulos
+        df["number"] = df["number"].fillna(0)
+        df["number"] = df["number"].astype(int)
+        df["number"] = df["number"].astype(str)
+        df["number"] = df["number"].replace("0", "")
+
+        # 1. Criar uma coluna com a contagem de valores preenchidos em cada linha
+        df["non_null_count"] = df.notna().sum(axis=1)
+        # 2. Para cada valor duplicado em 'principal_designation', selecionar o índice da linha com a maior contagem
+        idx = df.groupby("principal_designation")["non_null_count"].idxmax()
+        # 3. Filtrar o DataFrame mantendo apenas as linhas selecionadas e remover a coluna auxiliar
+        df = df.loc[idx].drop(columns="non_null_count")
+
+        logger.info(f"Upinserting {len(df)} rows")
+        row_affected = ast_dao.upinsert(df)
+        logger.info(f"Upinserted {row_affected} rows")
+
+        current_count += row_affected
+        page += 1
+        offset += limit
+
+    logger.info(f"Finished updating the unique asteroids. Total: {current_count}")
+    return current_count
+
+
+@shared_task
+def update_unique_dynclass():
+
+    logger = logging.getLogger("asteroid_cache")
+    logger.info("---------------------------------------")
+    logger.info("Starting Unique Dynclass queries")
+
+    occ_dao = OccultationDao(pool=False)
+    dyc_dao = DynclassCacheDao(pool=False)
+
+    # OBS: Esta query em produção pode demorar mais de 1 minuto para ser executada
+    rows = occ_dao.distinct_dynclass()
+    logger.info(f"Query returned {len(rows)} rows.")
+
+    df = pd.DataFrame(
+        rows,
+        columns=["distinct_1", "base_dynclass"],
+    )
+    df = df.rename(
+        columns={
+            "distinct_1": "skybot_dynsubclass",
+            "base_dynclass": "skybot_dynbaseclass",
+        }
+    )
+
+    logger.info(f"Upinserting {len(df)} rows")
+    row_affected = dyc_dao.upinsert(df)
+    logger.info(f"Upinserted {row_affected} rows")
+
+    logger.info(f"Finished updating the unique asteroids. Total: {row_affected}")
+    return row_affected

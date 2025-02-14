@@ -17,7 +17,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from tno.db import CatalogDB
-from tno.models import Catalog, Highlights, Occultation
+from tno.models import AsteroidCache, Catalog, DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path, visibility_from_coeff
 from tno.prediction_map import maps_folder_stats
 from tno.serializers import OccultationSerializer
@@ -364,9 +364,16 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         se existir apenas retorna os dados do mapa e a url.
         se não exisitir cria o mapa, a criação pode demorar alguns segundos e seu timeout será de 180s.
         """
-        obj = self.get_object()
+        logger = logging.getLogger("predict_maps")
+        logger.info(f"------------------------------------------------")
+        logger.info(f"SORA map generation requested")
 
-        filepath = obj.get_map_filepath()
+        obj = self.get_object()
+        logger.info(f"Occultation ID: {obj.id}")
+
+        # mudar essa linha com o path novo
+        filepath = obj.get_sora_map_filepath()
+        logger.debug(f"Filepath: {filepath}")
 
         filepath.parent.mkdir(parents=True, exist_ok=True)
 
@@ -396,12 +403,13 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                     else obj.closest_approach_uncertainty * 1000
                 ),  # it is multiplied by 1000 because sora need the value in miliarcsec
                 filepath=str(filepath),
-                dpi=50,
+                dpi=150,
             )
         if filepath.exists():
+            logger.debug(f"URL: {obj.get_sora_map_relative_url()}")
             return Response(
-                {
-                    "url": request.build_absolute_uri(obj.get_map_relative_url()),
+                {  # mudar essa linha com o path novo
+                    "url": request.build_absolute_uri(obj.get_sora_map_relative_url()),
                     "occultation": obj.id,
                     "name": obj.name,
                     "date_time": obj.date_time.isoformat(),
@@ -505,11 +513,11 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         if data is not None:
             return Response(data)
 
-        queryset = Occultation.objects.order_by("base_dynclass").distinct(
-            "base_dynclass"
+        queryset = DynclassCache.objects.order_by("skybot_dynbaseclass").distinct(
+            "skybot_dynbaseclass"
         )
 
-        rows = [x.base_dynclass for x in queryset]
+        rows = [x.skybot_dynbaseclass for x in queryset]
         result = {"results": rows, "count": len(rows)}
 
         # Store the data in the cache
@@ -543,9 +551,11 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         if data is not None:
             return Response(data)
 
-        queryset = Occultation.objects.order_by("dynclass").distinct("dynclass")
+        queryset = DynclassCache.objects.order_by("skybot_dynsubclass").distinct(
+            "skybot_dynsubclass"
+        )
 
-        rows = [x.dynclass for x in queryset]
+        rows = [x.skybot_dynsubclass for x in queryset]
         result = {"results": rows, "count": len(rows)}
 
         # Store the data in the cache
@@ -572,7 +582,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
 
         Não paginada
         """
-        queryset = Occultation.objects.order_by("name").distinct("name")
+        queryset = AsteroidCache.objects.order_by("name")
 
         rows = [x.name for x in queryset]
         return Response(dict({"results": rows, "count": len(rows)}))

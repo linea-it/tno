@@ -51,7 +51,7 @@ def update_occultations_highlihts(request):
 @api_view(["GET"])
 def test_background_task(request):
     # from tno.tasks import teste_api_task
-    # from tno.tasks import create_prediction_maps
+    # from tno.tasks import create_thumbnail_maps
     # from tno.tasks import garbage_collector
     if request.method == "GET":
         # teste_api_task.delay()

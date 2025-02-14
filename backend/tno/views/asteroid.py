@@ -3,6 +3,7 @@ from datetime import datetime
 
 import humanize
 from des.models import Observation
+from django.db.models import Q
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import (
@@ -21,7 +22,7 @@ from rest_framework.permissions import (
 )
 from rest_framework.response import Response
 from tno.dao.asteroids import AsteroidDao
-from tno.models import Asteroid, Occultation, PredictionJobResult
+from tno.models import Asteroid, AsteroidCache, Occultation, PredictionJobResult
 from tno.serializers import AsteroidSerializer
 
 
@@ -124,10 +125,18 @@ class AsteroidViewSet(viewsets.ReadOnlyModelViewSet):
         """
         filtro = self.request.query_params.get("name", None)
 
-        queryset = Occultation.objects.order_by("name").distinct("name")
+        queryset = AsteroidCache.objects.order_by("name")
 
         if filtro:
-            queryset = queryset.filter(name__icontains=filtro)
+            # OBS: number está usando startswith. ao meu ver faz mais sentido.
+            # Já os campos nomes utilizam icontains que é  o Like %valor% do SQL procura pela
+            # palavra em qualquer parte do campo.
+            queryset = queryset.filter(
+                Q(name__icontains=filtro)
+                | Q(principal_designation__icontains=filtro)
+                | Q(number__startswith=filtro)
+            )
+            # print(queryset.query)
 
         paginator = PageNumberPagination()
         paginator.page_size = 25
