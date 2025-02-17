@@ -1,5 +1,6 @@
 import json
 import logging
+import os
 import shutil
 import sys
 import traceback
@@ -9,7 +10,7 @@ import colorlog
 import pandas as pd
 from asteroid import Asteroid
 from dao.occultation import OccultationDao
-import os
+
 # log = logging.getLogger("teste")
 # log.setLevel(logging.DEBUG)
 # consoleFormatter = logging.Formatter("[%(levelname)s] %(message)s")
@@ -29,36 +30,45 @@ log.info("------- Asteroid Class -------")
 base_path = Path("/app/outputs/predict_occultations/41/asteroids/")
 inputs_path = Path(os.getenv("INPUTS_PATH", "/app/inputs"))
 
-try:
-    a = Asteroid(
-        name="2015 HB387",
-        base_path=base_path,
-        log=log,
-        # new_run=False
-        inputs_path=inputs_path
-    )
+a = Asteroid(
+    name="2003 FH133",
+    base_path="/app/outputs/predict_occultations/53/asteroids/",
+    path="/app/outputs/predict_occultations/53/asteroids/2003FH133/",
+)
 
-    # a.check_des_observations(0)
-    a.download_jpl_bsp(
-        start_period="2024-01-01",
-        end_period="2025-01-01",
-    )
-    # have_bsp_jpl = a.check_bsp_jpl(
-    #     start_period="2024-01-01",
-    #     end_period=str("2024-01-31"),
-    # )
-    # have_orb_ele = a.check_orbital_elements(days_to_expire=0)
+ingested = a.register_occultations()
+print(ingested)
 
-    # a.have_obs = a.check_observations(days_to_expire=0)
-    # raise Exception("shdshds")
-    # start_date = "2024-08-21 00:00:00"
-    # end_date = "2024-09-22 23:59:59"
-    # jobid = 5
-    # a.register_occultations(start_date, end_date, jobid)
+# try:
+#     a = Asteroid(
+#         name="2015 HB387",
+#         base_path=base_path,
+#         log=log,
+#         # new_run=False
+#         inputs_path=inputs_path
+#     )
 
-except Exception as e:
-    log.error(traceback.format_exc())
-    log.error(e)
+#     # a.check_des_observations(0)
+#     a.download_jpl_bsp(
+#         start_period="2024-01-01",
+#         end_period="2025-01-01",
+#     )
+#     # have_bsp_jpl = a.check_bsp_jpl(
+#     #     start_period="2024-01-01",
+#     #     end_period=str("2024-01-31"),
+#     # )
+#     # have_orb_ele = a.check_orbital_elements(days_to_expire=0)
+
+#     # a.have_obs = a.check_observations(days_to_expire=0)
+#     # raise Exception("shdshds")
+#     # start_date = "2024-08-21 00:00:00"
+#     # end_date = "2024-09-22 23:59:59"
+#     # jobid = 5
+#     # a.register_occultations(start_date, end_date, jobid)
+
+# except Exception as e:
+#     log.error(traceback.format_exc())
+#     log.error(e)
 
 # import base64
 # import hashlib
@@ -179,4 +189,3 @@ except Exception as e:
 # obj_dict = json.load(base_path.joinpath("2006BK86.json").open())
 # mag_and_uncert = base_path.joinpath("apmag_and_uncertainties.json")
 # run_occultation_path_coeff(pred_table, obj_dict, mag_and_uncert)
-

@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 import spiceypy as spice
 from astropy.time import Time
-from occviz import occultation_path_coeff
-from predict_occultation.pipeline.library import (
+from pipeline.library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
@@ -23,10 +22,13 @@ from predict_occultation.pipeline.library import (
     get_moon_illuminated_fraction,
     ra_hms_to_deg,
 )
+from pipeline.occviz import occultation_path_coeff
 
 
 def run_occultation_path_coeff(
-    predict_table_path: Path, obj_data: dict, mag_and_uncert_path: Path
+    predict_table_path: Path,
+    obj_data: dict,
+    mag_and_uncert_path: Path,
 ) -> dict:
 
     calculate_path_coeff = {}
@@ -618,6 +620,7 @@ def run_occultation_path_coeff(
         )
 
         # ATENCAO! Sobrescreve o arquivo occultation_table.csv
+        print(f"Writing occultation table to file: {predict_table_path}")
         df.to_csv(predict_table_path, index=False, sep=";")
         del df
 

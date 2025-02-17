@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from dao.db_base import DBBase
 from sqlalchemy.sql import and_, delete
 
@@ -43,6 +45,18 @@ class PredictOccultationJobResultDao(DBBase):
             return result.inserted_primary_key[0]
 
     def update(self, id, data):
+
+        if "exec_time" in data:
+            data["exec_time"] = timedelta(seconds=data["exec_time"])
+        if "pre_occ_exec_time" in data:
+            data["pre_occ_exec_time"] = timedelta(seconds=data["pre_occ_exec_time"])
+        if "calc_path_coeff_exec_time" in data:
+            data["calc_path_coeff_exec_time"] = timedelta(
+                seconds=data["calc_path_coeff_exec_time"]
+            )
+        if "ing_occ_exec_time" in data:
+            data["ing_occ_exec_time"] = timedelta(seconds=data["ing_occ_exec_time"])
+
         engine = self.get_db_engine()
         with engine.connect() as con:
             result = con.execute(self.tbl.update().where(self.tbl.c.id == id), data)

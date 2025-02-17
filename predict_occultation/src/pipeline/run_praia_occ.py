@@ -1,51 +1,27 @@
-#!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
 import argparse
 import os
+import shutil
 import sys
 import traceback
 from datetime import datetime
 from pathlib import Path
 
 from dao import GaiaDao, MissingDBURIException
-from generate_dates import generate_dates_file
-from generate_ephemeris import centers_positions_to_deg, generate_ephemeris, run_elimina
-from library import (
+from pipeline.generate_dates import generate_dates_file
+from pipeline.generate_ephemeris import (
+    centers_positions_to_deg,
+    generate_ephemeris,
+    run_elimina,
+)
+from pipeline.library import (
     check_bsp_object,
     check_bsp_planetary,
     check_leapsec,
     clear_for_rerun,
     read_asteroid_json,
 )
-from search_candidates import search_candidates
-
-parser = argparse.ArgumentParser()
-parser.add_argument("name", help="Object name without spaces")
-parser.add_argument("start_date", help="Initial date. example '2018-JAN-01'")
-parser.add_argument("final_date", help="Final date. example '2018-DEC-31 23:59:01'")
-parser.add_argument("step", help="steps in seconds. Example 60")
-parser.add_argument(
-    "--leap_sec",
-    default="naif0012.tls",
-    help="Name of the Leap Seconds file, it must be in the directory /data. example naif0012.tls",
-)
-parser.add_argument(
-    "--bsp_planetary",
-    default="de435.bsp",
-    help="Name of the BSP Planetary file, it must be in the directory /data. example de435.bsp",
-)
-parser.add_argument(
-    "--bsp_object",
-    default=None,
-    help="Name of the Asteroid BSP file, it must be in the directory /data. example Eris.bsp. default <name>.bsp",
-)
-parser.add_argument(
-    "-p",
-    "--path",
-    default=None,
-    required=False,
-    help="Path where the inputs are and where the outputs will be. must be the path as it is mounted on the volume, should be used when it is not possible to mount the volume as /data. example the inputs are in /archive/asteroids/Eris and this path is mounted inside the container the parameter --path must have this value --path /archive/asteroids/Eris, the program will create a link from this path to /data.",
-)
+from pipeline.search_candidates import search_candidates
 
 
 def start_praia_occ(
@@ -79,6 +55,7 @@ def start_praia_occ(
     gaia_cat_filename = "gaia_catalog.cat"
     gaia_csv_filename = "gaia_catalog.csv"
     occultation_table_filename = "occultation_table.csv"
+    praia_occultation_table_filename = "praia_occultation_table.csv"
 
     # Inputs/Outputs do PRAIA Occ Star Search,
     # IMPORTANTE! esses filenames são HARDCODED na função praia_occ_input_file
@@ -155,18 +132,6 @@ def start_praia_occ(
 
     print("Ephemeris File: [%s]" % eph_file)
 
-    # # TODO: Verificar se é mesmo necessário!
-    # # Gerar aquivo de posições
-    # positions_file = generate_positions(
-    #     eph_filename, positions_filename)
-
-    # print("Positions File: [%s]" % positions_file)
-
-    # TODO: Gerar plot Orbit in Sky se for necessário
-    # plotOrbit(object_name, footprint, ecliptic_galactic,
-    #         positions, orbit_in_sky)
-    # os.chmod(orbit_in_sky, 0776)
-
     # Executar o Elimina e gerar o Centers.txt
     centers_file = run_elimina(eph_filename, centers_filename)
     print("Centers File: [%s]" % centers_file)
@@ -224,7 +189,11 @@ def start_praia_occ(
 
     print("Occultation CSV Table: [%s]" % occultation_file)
 
-    # TODO: Inserir no banco de dados os resultados da execução.
+    # COPY file to keep orinal praia csv for debug
+    praia_occultation_table_filepath = Path(data_dir).joinpath(
+        praia_occultation_table_filename
+    )
+    shutil.copy(occultation_file, praia_occultation_table_filepath)
 
     sys.stdout = orig_stdout
     f.close()

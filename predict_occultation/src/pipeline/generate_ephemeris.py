@@ -7,7 +7,7 @@ import os
 import subprocess
 
 import spiceypy as spice
-from library import HMS2deg
+from pipeline.library import HMS2deg
 
 
 def findIDSPK(n, key):

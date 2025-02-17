@@ -25,8 +25,8 @@ from dao import (
 )
 
 try:
+    from app import run_pipeline
     from parsl_config import get_config
-    from predict_occultation.app import run_pipeline
 except Exception as error:
     print("Error: %s" % str(error))
     raise Exception("Predict Occultation pipeline not installed!")
@@ -730,7 +730,8 @@ def submit_tasks(jobid: int):
         hb_t0 = datetime.now(tz=timezone.utc)
 
         jobs_asteroids = []
-        workdir = os.getenv("PIPELINE_PATH")
+
+        workdir = os.getenv("PIPELINE_ROOT")
 
         step1_count = len(asteroids)
 
@@ -843,6 +844,8 @@ def submit_tasks(jobid: int):
             path = str(a.get_path())
 
             try:
+                # TODO: Passar como parametro apenas o path e o nome do arquivo json.
+                # Demais parametros devem ser lidos do arquivo json.
                 proc = run_pipeline(
                     (
                         workdir,
@@ -938,34 +941,35 @@ def submit_tasks(jobid: int):
                     else:
                         step2_success += 1
 
-                        start_date = str(
-                            PREDICT_START.replace(hour=0, minute=0, second=0)
-                        )
-                        end_date = str(
-                            PREDICT_END.replace(hour=23, minute=59, second=59)
-                        )
-                        log.info(
-                            "Registering Occultations for Asteroid: [%s]" % ast_obj.name
-                        )
-                        ingested_occ_count = ast_obj.register_occultations(
-                            start_date, end_date, jobid
-                        )
+                        # TODO: Registro das prediçoes foi levado para o pipeline.
+                        # start_date = str(
+                        #     PREDICT_START.replace(hour=0, minute=0, second=0)
+                        # )
+                        # end_date = str(
+                        #     PREDICT_END.replace(hour=23, minute=59, second=59)
+                        # )
+                        # log.info(
+                        #     "Registering Occultations for Asteroid: [%s]" % ast_obj.name
+                        # )
+                        # ingested_occ_count = ast_obj.register_occultations(
+                        #     start_date, end_date, jobid
+                        # )
 
-                        update_progress_status(
-                            jobid,
-                            step=2,
-                            status=2,
-                            count=len(jobs_asteroids),
-                            current=step2_current_idx,
-                            success=step2_success,
-                            failures=step2_failures,
-                            t0=hb_t0,
-                        )
+                        # update_progress_status(
+                        #     jobid,
+                        #     step=2,
+                        #     status=2,
+                        #     count=len(jobs_asteroids),
+                        #     current=step2_current_idx,
+                        #     success=step2_success,
+                        #     failures=step2_failures,
+                        #     t0=hb_t0,
+                        # )
 
-                        log.info(
-                            "Asteroid: [%s] Occultations: [%s]"
-                            % (ast_obj.name, str(ingested_occ_count))
-                        )
+                        # log.info(
+                        #     "Asteroid: [%s] Occultations: [%s]"
+                        #     % (ast_obj.name, str(ingested_occ_count))
+                        # )
 
                 is_done.append(proc.get("done"))
             # log.debug(
@@ -1064,45 +1068,47 @@ def submit_tasks(jobid: int):
             t0=hb_t0,
         )
     finally:
-        l_consolidated = []
 
-        asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
-        consolid_current_idx = 1
+        # l_consolidated = []
 
-        for asteroid in asteroids:
-            log.info(
-                "---------------< Consolidated: %s / %s >---------------"
-                % (consolid_current_idx, job["count_asteroids"])
-            )
-            log.info("Asteroid: [%s]" % asteroid["name"])
+        # asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
+        # consolid_current_idx = 1
 
-            current_path = pathlib.Path(job.get("path"))
-            ASTEROID_PATH = current_path.joinpath("asteroids")
+        # for asteroid in asteroids:
+        #     log.info(
+        #         "---------------< Consolidated: %s / %s >---------------"
+        #         % (consolid_current_idx, job["count_asteroids"])
+        #     )
+        #     log.info("Asteroid: [%s]" % asteroid["name"])
 
-            ast_obj = Asteroid(name=asteroid["name"], base_path=ASTEROID_PATH, log=log)
+        #     current_path = pathlib.Path(job.get("path"))
+        #     ASTEROID_PATH = current_path.joinpath("asteroids")
 
-            consolid_current_idx += 1
+        #     ast_obj = Asteroid(name=asteroid["name"], base_path=ASTEROID_PATH, log=log)
 
-            consolidated = ast_obj.consiladate()
+        #     consolid_current_idx += 1
 
-            l_consolidated.append(consolidated)
+        #     consolidated = ast_obj.consiladate()
 
+        #     l_consolidated.append(consolidated)
+
+        log.debug("-----------------------------------------------")
         log.debug("Job completed - Update Progress bar step2")
 
         job.update({"submited_all_jobs": True, "condor_job_submited": len(asteroids)})
         update_job(job)
 
-        # ========================= Consolidando resultados ============================
-        if len(l_consolidated) > 0:
-            consolidate_job_results(l_consolidated, current_path, log)
+        # # ========================= Consolidando resultados ============================
+        # if len(l_consolidated) > 0:
+        #     consolidate_job_results(l_consolidated, current_path, log)
 
-            log.info("Ingest Predict Occultation Job Results in database")
-            count_results_ingested = ingest_job_results(current_path, jobid)
-            log.debug(
-                "Predict Occultation Job Results ingested: %s" % count_results_ingested
-            )
+        #     log.info("Ingest Predict Occultation Job Results in database")
+        #     count_results_ingested = ingest_job_results(current_path, jobid)
+        #     log.debug(
+        #         "Predict Occultation Job Results ingested: %s" % count_results_ingested
+        #     )
 
-        complete_job(job, log, job.get("status", "Completed"))
+        # complete_job(job, log, job.get("status", "Completed"))
 
         os.chdir(original_path)
         parsl.clear()
@@ -1110,8 +1116,6 @@ def submit_tasks(jobid: int):
 
 
 def consolidate_job_results(consolidated, job_path, log):
-
-    raise Exception("Teste de Submissão de Job")
 
     log.info("Consolidating Job Results.")
     df_result = pd.DataFrame(

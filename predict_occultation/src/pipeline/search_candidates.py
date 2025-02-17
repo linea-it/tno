@@ -6,7 +6,7 @@ import subprocess
 from datetime import datetime
 
 import numpy as np
-from library import HMS2deg
+from pipeline.library import HMS2deg
 
 
 def get_best_projected_search_radius(object_ephemeris, object_diameter):

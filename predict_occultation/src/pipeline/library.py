@@ -127,7 +127,9 @@ def check_bsp_object(filepath, filename):
         os.symlink(filepath, dest)
         return filename
     else:
-        raise (Exception("BSP Object %s file does not exist. %s" % (filename, filepath)))
+        raise (
+            Exception("BSP Object %s file does not exist. %s" % (filename, filepath))
+        )
 
 
 def HMS2deg(ra="", dec=""):
@@ -192,11 +194,12 @@ def read_asteroid_json(asteroid_name):
     filepath = os.path.join(path, filename)
 
     if os.path.exists(filepath):
+        print("Reading json file: ", filepath)
         with open(filepath) as json_file:
             data = json.load(json_file)
             return data
     else:
-        return dict({})
+        raise Exception("Asteroid Json File not found: ", filepath)
 
 
 def write_asteroid_json(asteroid_name, data, callback_path=None):

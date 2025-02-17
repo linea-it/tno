@@ -4,10 +4,11 @@ import json
 import logging
 import os
 import pathlib
+import sys
 from datetime import datetime as dt
-from datetime import timezone
+from datetime import timedelta, timezone
 from io import StringIO
-from typing import Optional
+from typing import List, Optional
 
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
@@ -65,32 +66,32 @@ class Asteroid:
     dynclass: str
     path: pathlib.Path
 
-    ot_query_ccds: dict
-    ot_theo_pos: dict
-    ot_ing_obs: dict
-
+    # External Inputs
     star_catalog: dict = {}
-    des_observations: dict
     bsp_jpl: dict
-    observations: dict
-    orbital_elements: dict
-    refine_orbit: dict
-    predict_occultation: dict
+    # Pipeline Steps Status
+    predict_occultation: dict  # Representa os resultados da execuçao do praia_occ
     calculate_path_coeff: dict
     ingest_occultations: dict
 
-    messages: list
+    messages: List
     exec_time: float
 
-    def __init__(self, name, base_path, log, inputs_path=None, new_run=False):
+    def __init__(
+        self, name, base_path, log=None, inputs_path=None, new_run=False, path=None
+    ):
+        self.set_log(log)
+
+        # A classe pode ser instanciada de duas formas
+        # Usando base_path ira criar um diretório para o asteroid
+        # Fazer a consulta no banco de dados e criar o Json.
+        # TODO: Usando path ira carregar o arquivo json existente.
 
         self.__BASE_PATH = base_path
 
         if inputs_path is None:
             inputs_path = base_path
         self.__INPUTS_PATH = inputs_path
-
-        self.set_log(log)
 
         # Status
         # 0 = undefined
@@ -104,6 +105,11 @@ class Asteroid:
         # Query asteroid mpc data from tno portal asteroid table.
         self.__log.debug("Querying asteroid data in the portal tno_asteroid table.")
         ast_data = self.__dao.get_by_name(name)
+
+        if ast_data is None:
+            message = f"Asteroid not found in the portal database. {name}"
+            self.__log.error(message)
+            raise Exception(message)
         # self.__log.debug(ast_data)
 
         # Remove o atributo ID (interno do portal)
@@ -131,19 +137,24 @@ class Asteroid:
         # Como atributos da instancia dessa classe.
         self.__dict__.update(ast_data)
 
+        # External Inputs
         self.star_catalog = {}
-        self.des_observations = {}
         self.bsp_jpl = {}
-        self.observations = {}
-        self.orbital_elements = {}
-        self.refine_orbit = {}
+
+        # Pipeline Stages Status
         self.predict_occultation = {}
         self.ingest_occultations = {}
         self.calculate_path_coeff = {}
         self.messages = []
 
         # Verifica se existe diretório/json file para este asteroid.
-        self.path = self.get_or_create_dir()
+        if path is None:
+            self.path = self.get_or_create_dir()
+        else:
+            self.path = path
+
+        # Se for uma nova execução remove os arquivos anteriores.
+        # Utilizado em dev quando se está rodando o mesmo processo varias vezes.
         if new_run:
             self.remove_previus_results(remove_inputs=True)
 
@@ -174,6 +185,10 @@ class Asteroid:
         elif isinstance(logname, logging.Logger):
             self.__logname = logname.name
             self.__log = logname
+        elif logname is None:
+            self.__logname = "Asteroid"
+            self.__log = logging.getLogger("Asteroid")
+            self.__log.addHandler(logging.StreamHandler(sys.stdout))
 
     def get_log(self):
         if self.__log is None:
@@ -252,6 +267,14 @@ class Asteroid:
 
     def set_task_id(self, task_id):
         self.task_id = int(task_id)
+        self.write_asteroid_json()
+
+    def set_predict_occultation(self, data):
+        self.predict_occultation = data
+        self.write_asteroid_json()
+
+    def set_calculate_path_coeff(self, data):
+        self.calculate_path_coeff = data
         self.write_asteroid_json()
 
     def read_asteroid_json(self):
@@ -475,335 +498,6 @@ class Asteroid:
 
             self.write_asteroid_json()
 
-    def check_orbital_elements(self, days_to_expire=None, ignore=False):
-        log = self.get_log()
-
-        tp0 = dt.now(tz=timezone.utc)
-
-        try:
-            log.debug("Checking Orbital Elements")
-
-            aei = AsteroidExternalInputs(
-                name=self.name,
-                number=self.number,
-                asteroid_path=self.path,
-                logname=self.__logname,
-            )
-
-            if days_to_expire is None:
-                days_to_expire = aei.MPC_DAYS_TO_EXPIRE
-
-            orb_ele = {}
-
-            # Verificar insformações sobre Orbital Elements no Json
-            if self.orbital_elements and "filename" in self.orbital_elements:
-                # Já existe Informações de Orbital Elements
-
-                # Path para o arquivo
-                orb_path = pathlib.Path.joinpath(
-                    pathlib.Path(self.path), self.orbital_elements["filename"]
-                )
-
-                # Verificar se o arquivo Orbital Elements existe
-                if orb_path.exists():
-                    # Arquivo Existe Verificar se está na validade usando da data de criação do arquivo
-                    dt_creation = dt.fromtimestamp(orb_path.stat().st_mtime)
-
-                    if not has_expired(dt_creation, days_to_expire):
-                        # O Arquivo existe e esta na validade não será necessário um novo Download.
-                        orb_ele = self.orbital_elements
-                        orb_ele["downloaded_in_this_run"] = False
-                        log.info(
-                            "Pre-existing Orbital Elements is still valid and will be reused."
-                        )
-
-            if ignore:
-                msg = "The download of orbital elements was skipped."
-                orb_ele = {
-                    "source": None,
-                    "filename": "",
-                    "size": 0,
-                    "dw_start": None,
-                    "dw_finish": None,
-                    "dw_time": 0,
-                    "downloaded_in_this_run": False,
-                    "tp_start": None,
-                    "tp_finish": None,
-                }
-                log.warning("%s" % (msg))
-            else:
-                if not orb_ele:
-                    # Fazer um novo Download
-                    # Tenta primeiro vindo do AstDys
-                    orb_ele = aei.download_astdys_orbital_elements(force=True)
-
-                    if not orb_ele:
-                        # Tenta no MPC
-                        orb_ele = aei.download_mpc_orbital_elements(force=True)
-
-            if orb_ele:
-                # Atualiza os dados
-                self.orbital_elements = orb_ele
-
-                return True
-            else:
-                msg = "Orbital Elements file was not created."
-                self.orbital_elements = dict({"message": msg})
-
-                log.warning("Asteroid [%s] %s" % (self.name, msg))
-
-                return False
-
-        except Exception as e:
-            msg = "Failed in the Orbital Elements stage. Error: %s" % e
-
-            self.orbital_elements = dict({"message": msg})
-            log.error("Asteroid [%s] %s" % (self.name, msg))
-
-            return False
-
-        finally:
-            # Atualiza o Json do Asteroid
-
-            tp1 = dt.now(tz=timezone.utc)
-
-            self.orbital_elements.update(
-                {"tp_start": tp0.isoformat(), "tp_finish": tp1.isoformat()}
-            )
-
-            self.write_asteroid_json()
-
-    def check_observations(self, days_to_expire=None, ignore=False):
-        log = self.get_log()
-
-        tp0 = dt.now(tz=timezone.utc)
-
-        try:
-            log.debug("Checking Observations")
-
-            aei = AsteroidExternalInputs(
-                name=self.name,
-                number=self.number,
-                asteroid_path=self.path,
-                logname=self.__logname,
-            )
-
-            if days_to_expire is None:
-                days_to_expire = aei.MPC_DAYS_TO_EXPIRE
-
-            observations = {}
-
-            # Verificar insformações sobre Observations no Json
-            if self.observations and "filename" in self.observations:
-                # Já existe Informações
-
-                # Path para o arquivo
-                obs_path = pathlib.Path.joinpath(
-                    pathlib.Path(self.path), self.observations["filename"]
-                )
-
-                # Verificar se o arquivo Observations existe
-                if obs_path.exists():
-                    # Arquivo Existe Verificar se está na validade usando da data de criação do arquivo
-                    dt_creation = dt.fromtimestamp(obs_path.stat().st_mtime)
-
-                    if not has_expired(dt_creation, days_to_expire):
-                        # O Arquivo existe e esta na validade não será necessário um novo Download.
-                        observations = self.observations
-                        observations["downloaded_in_this_run"] = False
-                        log.info(
-                            "Pre-existing Observations is still valid and will be reused."
-                        )
-
-            if ignore:
-                msg = "The download of observations was skipped."
-                observations = {
-                    "source": None,
-                    "filename": "",
-                    "size": 0,
-                    "dw_start": dt.now(),
-                    "dw_finish": dt.now(),
-                    "dw_time": 0,
-                    "downloaded_in_this_run": False,
-                }
-                log.warning("%s" % (msg))
-            else:
-                if not observations:
-                    # Fazer um novo Download
-                    # Tenta primeiro vindo do AstDys
-                    observations = aei.download_astdys_observations(force=True)
-
-                    if not observations:
-                        # Tenta no MPC
-                        observations = aei.download_mpc_orbital_elements(force=True)
-
-            if observations:
-                # Atualiza os dados
-                self.observations = observations
-
-                return True
-            else:
-                msg = "Observations file was not created."
-                self.observations = dict({"message": msg})
-
-                log.warning("Asteroid [%s] %s" % (self.name, msg))
-
-                return False
-
-        except Exception as e:
-            msg = "Failed in the Observations stage. Error: %s" % e
-
-            self.observations = dict({"message": msg})
-            log.error("Asteroid [%s] %s" % (self.name, msg))
-
-            return False
-
-        finally:
-            # Atualiza o Json do Asteroid
-
-            tp1 = dt.now(tz=timezone.utc)
-
-            self.observations.update(
-                {"tp_start": tp0.isoformat(), "tp_finish": tp1.isoformat()}
-            )
-
-            self.write_asteroid_json()
-
-    def get_des_observations_path(self):
-        filename = "{}.txt".format(self.alias)
-
-        return pathlib.Path.joinpath(pathlib.Path(self.path), filename)
-
-    def retrieve_des_observations(self, force=False):
-        log = self.get_log()
-        log.info("Retriving DES Observations started")
-
-        fpath = self.get_des_observations_path()
-        if fpath.exists() and force is True:
-            fpath.unlink()
-
-        t0 = dt.now(tz=timezone.utc)
-
-        # TODO: Verificar primeiro se existe o arquivo de observações criado
-        # Pela etapa Orbit Trace. ai evita a query no banco.
-
-        # Se for a primeira vez ou o arquivo tiver expirado
-        # Executa a query na tabela de observações.
-        dao = ObservationDao()
-        observations = dao.get_observations_by_name(self.name)
-        del dao
-
-        rows = ""
-        rows_count = len(observations)
-        for obs in observations:
-            row = dict(
-                {
-                    "ra": ra2HMS(obs["ra"], 4).ljust(15),
-                    "dec": dec2DMS(obs["dec"], 3).ljust(16),
-                    "mag": "{:.3f}".format(obs["mag_psf"]).ljust(8),
-                    "mjd": "{:.8f}".format(float(obs["date_jd"])).ljust(18),
-                    "obs": "W84".ljust(5),
-                    "cat": "V",
-                }
-            )
-
-            rows += "{ra}{dec}{mag}{mjd}{obs}{cat}\n".format(**row)
-
-        log.debug("Creating DES observations file.")
-        with open(fpath, "w") as f:
-            f.write(rows)
-
-        t1 = dt.now(tz=timezone.utc)
-        tdelta = t1 - t0
-
-        if fpath.exists():
-            log.info(
-                "DES observations Count [%s] File. [%s]" % (rows_count, str(fpath))
-            )
-
-            return dict(
-                {
-                    "filename": fpath.name,
-                    "size": fpath.stat().st_size,
-                    "count": int(rows_count),
-                    "start": t0.isoformat(),
-                    "finish": t1.isoformat(),
-                    "exec_time": tdelta.total_seconds(),
-                    "generated_in_this_run": True,
-                }
-            )
-
-        else:
-            return None
-
-    def check_des_observations(self, days_to_expire=90):
-        log = self.get_log()
-
-        tp0 = dt.now(tz=timezone.utc)
-
-        try:
-            log.info("Checking DES Observations")
-
-            observations = {}
-            # Verificar insformações sobre DES Observations no Json
-            if self.des_observations and "filename" in self.des_observations:
-                # Já existe Informações
-
-                # Path para o arquivo
-                obs_path = pathlib.Path.joinpath(
-                    pathlib.Path(self.path), self.des_observations["filename"]
-                )
-
-                # Verificar se o arquivo DES Observations existe
-                if obs_path.exists():
-                    # Arquivo Existe Verificar se está na validade usando da data de criação do arquivo
-                    dt_creation = dt.fromtimestamp(obs_path.stat().st_mtime)
-
-                    if not has_expired(dt_creation, days_to_expire):
-                        # O Arquivo existe e esta na validade não será necessário uma novo consulta.
-                        observations = self.des_observations
-                        observations["generated_in_this_run"] = False
-                        log.info(
-                            "Pre-existing DES Observations is still valid and will be reused."
-                        )
-
-            if not observations:
-                # Fazer uma nova Consulta
-                observations = self.retrieve_des_observations(force=True)
-
-            if not observations:
-                # Atualiza os dados
-                self.des_observations = observations
-
-                if self.des_observations["count"] > 0:
-                    return True
-                else:
-                    return False
-
-            else:
-                msg = "DES Observations file was not created."
-                self.des_observations = dict({"message": msg})
-                # log.warning("Asteroid [%s] %s" % (self.name, msg))
-                return False
-
-        except Exception as e:
-            msg = "Failed in the DES Observations stage. Error: %s" % e
-
-            self.des_observations = dict({"message": msg})
-            log.error("Asteroid [%s] %s" % (self.name, msg))
-
-            return False
-
-        finally:
-            tp1 = dt.now(tz=timezone.utc)
-
-            self.des_observations.update(
-                {"tp_start": tp0.isoformat(), "tp_finish": tp1.isoformat()}
-            )
-
-            # Atualiza o Json do Asteroid
-            self.write_asteroid_json()
-
     def remove_previus_results(self, remove_inputs=False):
         log = self.get_log()
         log.debug("Removing previous results.")
@@ -828,10 +522,10 @@ class Asteroid:
             ignore_files = []
 
             # Ao remover os arquivos de input limpa tb os metadados sobre os arquivos
-            self.des_observations = {}
+            # self.des_observations = {}
             self.bsp_jpl = {}
-            self.observations = {}
-            self.orbital_elements = {}
+            # self.observations = {}
+            # self.orbital_elements = {}
 
         path = pathlib.Path(self.path)
         for f in path.iterdir():
@@ -841,7 +535,6 @@ class Asteroid:
                 f.unlink()
 
         # Limpa os metadados das etapas de resultado
-        self.refine_orbit = {}
         self.predict_occultation = {}
         self.ingest_occultations = {}
 
@@ -854,24 +547,27 @@ class Asteroid:
         # log.debug("Removed Files: [%s]" % ", ".join(removed_files))
         log.info("Removed [%s] files in %s" % (len(removed_files), tdelta))
 
-    def register_occultations(self, start_period: str, end_period: str, jobid: int):
+    def register_occultations(self):
         log = self.get_log()
         t0 = dt.now(tz=timezone.utc)
 
+        jobid = int(self.job_id)
         try:
             dao = OccultationDao(log=log)
 
+            # Não executou a etapa de predição.
+            # Não há arquivo com os resultados.
             if "filename" not in self.predict_occultation:
                 log.warning("There is no file with the predictions.")
-                # Nao executou a etapa de predicao.
                 return 0
 
             predict_table_path = pathlib.Path(
                 self.path, self.predict_occultation["filename"]
             )
 
+            # Arquivo com resultados da predicao nao foi criado
+            # Foi executado mais não gerou resultados.
             if not predict_table_path.exists():
-                # Arquivo com resultados da predicao nao foi criado
                 return 0
 
             # Le o arquivo occultation table e cria um dataframe
@@ -1047,28 +743,6 @@ class Asteroid:
         try:
             exec_time = 0
 
-            if self.des_observations:
-                if "message" in self.des_observations:
-                    # self.messages.append(self.des_observations["message"])
-                    # self.set_failure()
-                    pass
-                else:
-                    a.update(
-                        {
-                            "des_obs": self.des_observations["count"],
-                            "des_obs_start": self.des_observations["start"],
-                            "des_obs_finish": self.des_observations["finish"],
-                            "des_obs_exec_time": self.des_observations["exec_time"],
-                            "des_obs_gen_run": self.des_observations.get(
-                                "generated_in_this_run", False
-                            ),
-                            "des_obs_tp_start": self.des_observations["tp_start"],
-                            "des_obs_tp_finish": self.des_observations["tp_finish"],
-                        }
-                    )
-
-                    exec_time += float(self.des_observations["exec_time"])
-
             if self.bsp_jpl:
                 if "message" in self.bsp_jpl:
                     self.messages.append(self.bsp_jpl["message"])
@@ -1090,64 +764,6 @@ class Asteroid:
 
                     exec_time += float(self.bsp_jpl["dw_time"])
 
-            if self.observations:
-                if "message" in self.observations:
-                    self.messages.append(self.observations["message"])
-                    self.set_failure()
-                else:
-                    a.update(
-                        {
-                            "obs_source": self.observations["source"],
-                            "obs_start": self.observations["dw_start"],
-                            "obs_finish": self.observations["dw_finish"],
-                            "obs_dw_time": self.observations["dw_time"],
-                            "obs_dw_run": self.observations.get(
-                                "downloaded_in_this_run", False
-                            ),
-                            "obs_tp_start": self.observations["tp_start"],
-                            "obs_tp_finish": self.observations["tp_finish"],
-                        }
-                    )
-
-                    exec_time += float(self.observations["dw_time"])
-
-            if self.orbital_elements:
-                if "message" in self.orbital_elements:
-                    self.messages.append(self.orbital_elements["message"])
-                    self.set_failure()
-                else:
-                    a.update(
-                        {
-                            "orb_ele_source": self.orbital_elements["source"],
-                            "orb_ele_start": self.orbital_elements["dw_start"],
-                            "orb_ele_finish": self.orbital_elements["dw_finish"],
-                            "orb_ele_dw_time": self.orbital_elements["dw_time"],
-                            "orb_ele_dw_run": self.orbital_elements.get(
-                                "downloaded_in_this_run", False
-                            ),
-                            "orb_ele_tp_start": self.orbital_elements["tp_start"],
-                            "orb_ele_tp_finish": self.orbital_elements["tp_finish"],
-                        }
-                    )
-
-                    exec_time += float(self.orbital_elements["dw_time"])
-
-            if self.refine_orbit:
-                if "message" in self.refine_orbit:
-                    # TODO: Temporariamente nao adicionar essa mensagem pois o nima esta fora do pipeline.
-                    # self.messages.append(self.refine_orbit["message"])
-                    pass
-                else:
-                    a.update(
-                        {
-                            "ref_orb_start": self.refine_orbit["start"],
-                            "ref_orb_finish": self.refine_orbit["finish"],
-                            "ref_orb_exec_time": self.refine_orbit["exec_time"],
-                        }
-                    )
-
-                    exec_time += float(self.refine_orbit["exec_time"])
-
             if self.predict_occultation:
                 if "message" in self.predict_occultation:
                     self.messages.append(self.predict_occultation["message"])
@@ -1155,7 +771,8 @@ class Asteroid:
                 else:
                     a.update(
                         {
-                            "pre_occ_count": int(self.predict_occultation["count"]),
+                            "occultations": int(self.predict_occultation["count"]),
+                            "stars": int(self.predict_occultation["stars"]),
                             "pre_occ_start": self.predict_occultation["start"],
                             "pre_occ_finish": self.predict_occultation["finish"],
                             "pre_occ_exec_time": self.predict_occultation["exec_time"],
@@ -1248,6 +865,7 @@ class Asteroid:
             "diff_nima_jpl_RA.png",
             "omc_sep_recent.png",
             "omc_sep_all.png",
+            "praia_occultation_table.csv",
             "occultation_table.csv",
         ]
 
@@ -1262,61 +880,6 @@ class Asteroid:
 
         # log.debug("Removed Files: [%s]" % ", ".join(removed_files))
         log.info("Removed [%s] files in %s" % (len(removed_files), tdelta))
-
-    def retrieve_ccds(self, leap_second):
-        log = self.get_log()
-
-        # Limpa o cache de resultados anteriores, esta etapa
-        # Para esta etapa sempre será executada uma query nova.
-        self.ot_query_ccds = {}
-
-        tp0 = dt.now(tz=timezone.utc)
-
-        try:
-            # log.info("Retriving CCDs")
-
-            dao = AsteroidDao()
-            ccds = dao.ccds_by_asteroid(self.name)
-
-            for ccd in ccds:
-                # Correção no path dos ccds, para ficar igual ao ambiente do linea
-                path = ccd["path"].replace("OPS/", "")
-                path = path.replace("/red/immask", "/cat")
-                filename = ccd["filename"].replace("immasked.fits", "red-fullcat.fits")
-                # print(str(ccd["date_obs"].astimezone(timezone.utc)))
-                ccd.update(
-                    {
-                        "date_obs": str(ccd["date_obs"].astimezone(timezone.utc)),
-                        "date_jd": date_to_jd(
-                            str(ccd["date_obs"].astimezone(timezone.utc)).strip(),
-                            ccd["exptime"],
-                            leap_second,
-                        ),
-                        "path": path,
-                        "filename": filename,
-                    }
-                )
-
-            self.ot_query_ccds.update({"count": len(ccds)})
-
-            return ccds
-
-        except Exception as e:
-            msg = "Failed in the Retriving CCDs stage. Error: %s" % e
-
-            self.ot_query_ccds = dict({"message": msg})
-            log.error("Asteroid [%s] %s" % (self.name, msg))
-
-        finally:
-            # Atualiza o Json do Asteroid
-
-            tp1 = dt.now(tz=timezone.utc)
-
-            self.ot_query_ccds.update(
-                {"tp_start": tp0.isoformat(), "tp_finish": tp1.isoformat()}
-            )
-
-            self.write_asteroid_json()
 
     def get_spkid(self):
         log = self.get_log()

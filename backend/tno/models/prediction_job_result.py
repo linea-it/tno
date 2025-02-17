@@ -64,23 +64,14 @@ class PredictionJobResult(models.Model):
         blank=True,
     )
 
-    # # Indica a Origem das Observations pode ser AstDys ou MPC
-    # obs_source = models.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     verbose_name="Observation Source",
-    #     help_text="Observation data source, AstDys or MPC.",
-    # )
-
-    # # Indica a Origem dos Orbital Elements pode ser AstDys ou MPC
-    # orb_ele_source = models.CharField(
-    #     max_length=100,
-    #     null=True,
-    #     blank=True,
-    #     verbose_name="Orbital Elements Source",
-    #     help_text="Orbital Elements data source, AstDys or MPC.",
-    # )
+    # Total de Estrelas processadas para este asteroid.
+    stars = models.IntegerField(
+        verbose_name="Stars",
+        help_text="Number of stars processed for this asteroid.",
+        default=0,
+        null=True,
+        blank=True,
+    )
 
     # Tempo de execução para um unico asteroid.
     # Não considera o tempo em que job ficou em idle nem o tempo de consolidação do job.
@@ -100,128 +91,6 @@ class PredictionJobResult(models.Model):
         blank=True,
         default=None,
     )
-
-    # TODO: REVER ESTES CAMPOS que seriam usados só no time profile
-
-    # # Etapa DES Observations
-    # des_obs_start = models.DateTimeField(
-    #     verbose_name="DES Observations Start",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="Start of the execution of the DES Observations step",
-    # )
-
-    # des_obs_finish = models.DateTimeField(
-    #     verbose_name="DES Observations Finish",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="End of the DES Observations stage",
-    # )
-
-    # des_obs_exec_time = models.DurationField(
-    #     verbose_name="DES Observations Execution Time",
-    #     null=True,
-    #     blank=True,
-    #     help_text="DES Observations step execution time in seconds.",
-    # )
-
-    # # Etapa Download BSP from JPL
-    # bsp_jpl_start = models.DateTimeField(
-    #     verbose_name="BSP JPL start",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="Beginning of the JPL BSP Download step.",
-    # )
-
-    # bsp_jpl_finish = models.DateTimeField(
-    #     verbose_name="BSP JPL finish",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="End of the Dwonload stage of the JPL BSP.",
-    # )
-
-    # bsp_jpl_dw_time = models.DurationField(
-    #     verbose_name="BSP JPL download time",
-    #     null=True,
-    #     blank=True,
-    #     help_text="BSP download time from JPL.",
-    # )
-
-    # # Etapa Download Observations from AstDys or MPC
-    # obs_start = models.DateTimeField(
-    #     verbose_name="Observations Download Start",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="Beginning of the Download stage of observations.",
-    # )
-
-    # obs_finish = models.DateTimeField(
-    #     verbose_name="Observations Download Finish",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="End of the Download stage of the observations.",
-    # )
-
-    # obs_dw_time = models.DurationField(
-    #     verbose_name="Observations Download Time",
-    #     null=True,
-    #     blank=True,
-    #     help_text="Observations download time.",
-    # )
-
-    # # Etapa Orbital Elements from AstDys or MPC
-    # orb_ele_start = models.DateTimeField(
-    #     verbose_name="Orbital Elements Start",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="Beginning of the Orbtial Elements Download stage.",
-    # )
-
-    # orb_ele_finish = models.DateTimeField(
-    #     verbose_name="Orbital Elements Finish",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="End of Orbital Elements Download step.",
-    # )
-
-    # orb_ele_dw_time = models.DurationField(
-    #     verbose_name="Orbital Elements Download Time",
-    #     null=True,
-    #     blank=True,
-    #     help_text="Orbital Elements download time.",
-    # )
-
-    # # Etapa Refinamento de Orbita (NIMA)
-    # ref_orb_start = models.DateTimeField(
-    #     verbose_name="Refine Orbit Start",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="Start of the Refine Orbit step.",
-    # )
-
-    # ref_orb_finish = models.DateTimeField(
-    #     verbose_name="Refine Orbit Finish",
-    #     auto_now_add=False,
-    #     null=True,
-    #     blank=True,
-    #     help_text="End of the Refine Orbit step.",
-    # )
-
-    # ref_orb_exec_time = models.DurationField(
-    #     verbose_name="Refine Orbit execution time",
-    #     null=True,
-    #     blank=True,
-    #     help_text="Refine Orbit runtime.",
-    # )
 
     # Etapa Predict Occultation (PRAIA Occ)
     pre_occ_start = models.DateTimeField(
