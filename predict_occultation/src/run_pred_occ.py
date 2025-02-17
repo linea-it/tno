@@ -622,7 +622,7 @@ def submit_tasks(jobid: int):
             }
         )
 
-        PREDICT_STEP = int(job.get("predict_step", 600))
+        PREDICT_STEP = int(job.get("predict_step", 60))
         log.debug("Predict Step: [%s]" % PREDICT_STEP)
 
         # Utilizar os parametros de BSP_PLanetary e LEAP Second do job.json.
@@ -636,20 +636,22 @@ def submit_tasks(jobid: int):
         STAR_CATALOG = job["star_catalog"]
         log.debug("STAR_CATALOG: [%s]" % STAR_CATALOG["display_name"])
 
-        # Remove resultados e inputs de execuções anteriores
-        # Durante o desenvolvimento é util não remover os inputs pois acelera o processamento
-        # No uso normal é recomendado sempre regerar os inputs
-        FORCE_REFRESH_INPUTS = bool(job.get("force_refresh_inputs", True))
-        log.debug("Force Refresh Inputs: %s" % FORCE_REFRESH_INPUTS)
+        # TODO: Remover não está sendo utilizado.
+        # # Remove resultados e inputs de execuções anteriores
+        # # Durante o desenvolvimento é util não remover os inputs pois acelera o processamento
+        # # No uso normal é recomendado sempre regerar os inputs
+        # FORCE_REFRESH_INPUTS = bool(job.get("force_refresh_inputs", True))
+        # log.debug("Force Refresh Inputs: %s" % FORCE_REFRESH_INPUTS)
 
-        # Determina a validade dos arquivos de inputs.
-        # Durante o desenvolvimento é util não fazer o download a cada execução
-        # No uso normal é recomendado sempre baixar os inputs utilizando valor 0
-        inputs_days_to_expire = int(job.get("inputs_days_to_expire", 0))
-        ORBITAL_ELEMENTS_DAYS_TO_EXPIRE = inputs_days_to_expire
-        OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
-        DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
-        log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
+        # TODO: Remover não está sendo utilizado.
+        # # Determina a validade dos arquivos de inputs.
+        # # Durante o desenvolvimento é util não fazer o download a cada execução
+        # # No uso normal é recomendado sempre baixar os inputs utilizando valor 0
+        # inputs_days_to_expire = int(job.get("inputs_days_to_expire", 0))
+        # ORBITAL_ELEMENTS_DAYS_TO_EXPIRE = inputs_days_to_expire
+        # OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
+        # DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
+        # log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
 
         # =========================== Parsl ===========================
         log.info("Settings Parsl configurations")
@@ -689,7 +691,7 @@ def submit_tasks(jobid: int):
 
         asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
 
-        # asteroids = asteroids[0:5]
+        asteroids = asteroids[0:10]
 
         step_t1 = datetime.now(tz=timezone.utc)
         step_tdelta = step_t1 - step_t0
@@ -713,19 +715,6 @@ def submit_tasks(jobid: int):
                 "No asteroid satisfying the criteria %s and %s. There is nothing to run."
                 % (job["filter_type"], job["filter_value"])
             )
-
-        # Lista de Jobs do Condor.
-        # htc_jobs = []
-
-        # Diretório para armazenar os jobs que foram submetidos no HTCondor.
-        # Cada job vai gerar um arquivo neste diretório
-        # Que depois vai ser verificado pela segunda etapa.
-        # Esses arquivos é que fazem a ligação entre as 2 etapas do pipeline.
-        HTC_JOBS_PATH = current_path.joinpath("jobs")
-        HTC_JOBS_PATH.mkdir(parents=True, exist_ok=False)
-
-        JOBS_CALLBACK_PATH = current_path.joinpath("callback")
-        JOBS_CALLBACK_PATH.mkdir(parents=True, exist_ok=False)
 
         hb_t0 = datetime.now(tz=timezone.utc)
 
@@ -754,9 +743,9 @@ def submit_tasks(jobid: int):
                 name=asteroid["name"],
                 base_path=ASTEROID_PATH,
                 log=log,
-                # FORCE_REFRESH_INPUTS = TRUE  também serão removidos
                 # Remove Arquivos da execução anterior, inputs, resultados e logs
-                new_run=FORCE_REFRESH_INPUTS,
+                # Necessário em dev quando se está usando rerun
+                new_run=True,
                 inputs_path=pathlib.Path(os.getenv("PREDICT_INPUTS", "/app/inputs")),
             )
 
@@ -788,14 +777,25 @@ def submit_tasks(jobid: int):
                 log.warning(
                     "Asteroid [%s] Ignored for not having BSP JPL." % asteroid["name"]
                 )
-                # TODO: guardar informações dos asteroids ignorados e os motivos.
 
                 current_idx += 1
                 step1_failures += 1
+
+                # Registra na tabela results que o asteroid foi ignorado.
+                dao_job_result.insert(
+                    {
+                        "name": a.name,
+                        "number": a.number,
+                        "base_dynclass": a.base_dynclass,
+                        "dynclass": a.dynclass,
+                        "status": 2,  # Failed
+                        "job_id": jobid,
+                        "messages": "Asteroid Ignored for not having BSP JPL.",
+                    }
+                )
+
                 # Ignora as proximas etapas para este asteroid.
                 continue
-
-                # TODO: Registrar na tabela results que o asteroid foi ignorado.
 
             # STAR CATALOG
             a.set_star_catalog(**STAR_CATALOG)
@@ -815,11 +815,9 @@ def submit_tasks(jobid: int):
             )
 
             # ======================= Submeter o Job por asteroide ==========================
-            log.debug("-------------------------------------------------------------")
-            log.debug("Teste de Submissão de Job")
             # Adicionar os asteroids a tabela job result ( que agora passa a representar as job tasks.)
             # Cada asteroid será adicionado com status queued e depois atualizado para running e depois para completed.
-            # Cada asteroid terá um job_id que será o job_id do job principal.
+            # Cada asteroid terá um job_id que será o id do job principal.
             task_id = dao_job_result.insert(
                 {
                     "name": a.name,
@@ -833,26 +831,21 @@ def submit_tasks(jobid: int):
             a.set_task_id(task_id)
 
             log.debug(f"Task ID:  {task_id}")
-
-            log.debug("-------------------------------------------------------------")
-
             log.debug("Submitting the Job. [%s]" % str(a.get_path()))
             start_date = str(PREDICT_START.date())
             end_date = str(PREDICT_END.date())
             name = a.alias
-            number = a.number
             path = str(a.get_path())
 
             try:
                 # TODO: Passar como parametro apenas o path e o nome do arquivo json.
-                # Demais parametros devem ser lidos do arquivo json.
+                # Demais parametros podem ser lidos do arquivo json.
                 proc = run_pipeline(
                     (
                         workdir,
                         name,
                         start_date,
                         end_date,
-                        number,
                         path,
                         PREDICT_STEP,
                         LEAP_SECOND,
@@ -926,10 +919,6 @@ def submit_tasks(jobid: int):
                     else:
                         status = task.result()
 
-                    ast_obj = Asteroid(
-                        name=proc["name"], base_path=ASTEROID_PATH, log=log
-                    )
-
                     step2_current_idx += 1
 
                     if status:
@@ -940,36 +929,6 @@ def submit_tasks(jobid: int):
                         )
                     else:
                         step2_success += 1
-
-                        # TODO: Registro das prediçoes foi levado para o pipeline.
-                        # start_date = str(
-                        #     PREDICT_START.replace(hour=0, minute=0, second=0)
-                        # )
-                        # end_date = str(
-                        #     PREDICT_END.replace(hour=23, minute=59, second=59)
-                        # )
-                        # log.info(
-                        #     "Registering Occultations for Asteroid: [%s]" % ast_obj.name
-                        # )
-                        # ingested_occ_count = ast_obj.register_occultations(
-                        #     start_date, end_date, jobid
-                        # )
-
-                        # update_progress_status(
-                        #     jobid,
-                        #     step=2,
-                        #     status=2,
-                        #     count=len(jobs_asteroids),
-                        #     current=step2_current_idx,
-                        #     success=step2_success,
-                        #     failures=step2_failures,
-                        #     t0=hb_t0,
-                        # )
-
-                        # log.info(
-                        #     "Asteroid: [%s] Occultations: [%s]"
-                        #     % (ast_obj.name, str(ingested_occ_count))
-                        # )
 
                 is_done.append(proc.get("done"))
             # log.debug(
@@ -1000,6 +959,8 @@ def submit_tasks(jobid: int):
         trace = traceback.format_exc()
         log.error(trace)
         log.error("ABORT ERROR: %s" % e)
+
+        # TODO: alterar o status de todas as tasks para abortado.
 
         # Status 4 = Failed
         job.update(
@@ -1067,95 +1028,40 @@ def submit_tasks(jobid: int):
             failures=step2_failures,
             t0=hb_t0,
         )
+
     finally:
-
-        # l_consolidated = []
-
-        # asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
-        # consolid_current_idx = 1
-
-        # for asteroid in asteroids:
-        #     log.info(
-        #         "---------------< Consolidated: %s / %s >---------------"
-        #         % (consolid_current_idx, job["count_asteroids"])
-        #     )
-        #     log.info("Asteroid: [%s]" % asteroid["name"])
-
-        #     current_path = pathlib.Path(job.get("path"))
-        #     ASTEROID_PATH = current_path.joinpath("asteroids")
-
-        #     ast_obj = Asteroid(name=asteroid["name"], base_path=ASTEROID_PATH, log=log)
-
-        #     consolid_current_idx += 1
-
-        #     consolidated = ast_obj.consiladate()
-
-        #     l_consolidated.append(consolidated)
-
         log.debug("-----------------------------------------------")
         log.debug("Job completed - Update Progress bar step2")
 
         job.update({"submited_all_jobs": True, "condor_job_submited": len(asteroids)})
         update_job(job)
 
-        # # ========================= Consolidando resultados ============================
-        # if len(l_consolidated) > 0:
-        #     consolidate_job_results(l_consolidated, current_path, log)
+        consolidate_job_results(job, current_path, log)
 
-        #     log.info("Ingest Predict Occultation Job Results in database")
-        #     count_results_ingested = ingest_job_results(current_path, jobid)
-        #     log.debug(
-        #         "Predict Occultation Job Results ingested: %s" % count_results_ingested
-        #     )
-
-        # complete_job(job, log, job.get("status", "Completed"))
+        complete_job(job, log, job.get("status", "Completed"))
 
         os.chdir(original_path)
         parsl.clear()
         return True
 
 
-def consolidate_job_results(consolidated, job_path, log):
+def consolidate_job_results(job, job_path, log):
 
     log.info("Consolidating Job Results.")
+    dao = PredictOccultationJobResultDao()
+    results = dao.by_job_id(job["id"])
+
     df_result = pd.DataFrame(
-        consolidated,
+        results,
         columns=[
             "name",
             "number",
             "base_dynclass",
             "dynclass",
-            "des_obs",
-            "des_obs_start",
-            "des_obs_finish",
-            "des_obs_exec_time",
-            "des_obs_gen_run",
-            "des_obs_tp_start",
-            "des_obs_tp_finish",
-            "bsp_jpl_start",
-            "bsp_jpl_finish",
-            "bsp_jpl_dw_time",
-            "bsp_jpl_dw_run",
-            "bsp_jpl_tp_start",
-            "bsp_jpl_tp_finish",
-            "obs_source",
-            "obs_start",
-            "obs_finish",
-            "obs_dw_time",
-            "obs_dw_run",
-            "obs_tp_start",
-            "obs_tp_finish",
-            "orb_ele_source",
-            "orb_ele_start",
-            "orb_ele_finish",
-            "orb_ele_dw_time",
-            "orb_ele_dw_run",
-            "orb_ele_tp_start",
-            "orb_ele_tp_finish",
-            "ref_orb_start",
-            "ref_orb_finish",
-            "ref_orb_exec_time",
-            "pre_occ_count",
+            "status",
+            "occultations",
+            "exec_time",
+            "messages",
             "pre_occ_start",
             "pre_occ_finish",
             "pre_occ_exec_time",
@@ -1166,9 +1072,8 @@ def consolidate_job_results(consolidated, job_path, log):
             "ing_occ_start",
             "ing_occ_finish",
             "ing_occ_exec_time",
-            "exec_time",
-            "messages",
-            "status",
+            "job_id",
+            "stars",
         ],
     )
 
@@ -1188,7 +1093,7 @@ def consolidate_job_results(consolidated, job_path, log):
         header=header,
     )
     del df_result
-    # log.info("File with the consolidated Job data. [%s]" % result_filepath)
+    log.info("File with the consolidated Job data. [%s]" % result_filepath)
 
 
 def complete_job(job, log, status):
@@ -1202,8 +1107,8 @@ def complete_job(job, log, status):
     l_status = df["status"].to_list()
     count_success = int(l_status.count(1))
     count_failures = int(l_status.count(2))
-    occultations = int(df["ing_occ_count"].sum())
-    ast_with_occ = int((df["ing_occ_count"] != 0).sum())
+    occultations = int(df["occultations"].sum())
+    ast_with_occ = int((df["occultations"] != 0).sum())
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)

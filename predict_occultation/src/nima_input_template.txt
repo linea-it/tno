@@ -1,0 +1,1 @@
+/app/src/pipeline/nima_input_template.txt
