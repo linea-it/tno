@@ -9,6 +9,7 @@ import time
 import traceback
 from datetime import datetime, timezone
 from io import StringIO
+from pathlib import Path
 from time import sleep
 
 import humanize
@@ -294,127 +295,6 @@ def update_job(job) -> None:
     write_job_file(job.get("path"), job)
 
 
-def ingest_job_results(job_path, job_id):
-    dao = PredictOccultationJobResultDao()
-    dao.delete_by_job_id(job_id)
-
-    filepath = pathlib.Path(job_path, "job_consolidated.csv")
-
-    df = pd.read_csv(
-        filepath,
-        delimiter=";",
-        usecols=[
-            "name",
-            "number",
-            "base_dynclass",
-            "dynclass",
-            "des_obs",
-            "obs_source",
-            "orb_ele_source",
-            "pre_occ_count",
-            "ing_occ_count",
-            "messages",
-            "exec_time",
-            "status",
-            "des_obs_start",
-            "des_obs_finish",
-            "des_obs_exec_time",
-            "bsp_jpl_start",
-            "bsp_jpl_finish",
-            "bsp_jpl_dw_time",
-            "obs_start",
-            "obs_finish",
-            "obs_dw_time",
-            "orb_ele_start",
-            "orb_ele_finish",
-            "orb_ele_dw_time",
-            "ref_orb_start",
-            "ref_orb_finish",
-            "ref_orb_exec_time",
-            "pre_occ_start",
-            "pre_occ_finish",
-            "pre_occ_exec_time",
-            "calc_path_coeff_start",
-            "calc_path_coeff_finish",
-            "calc_path_coeff_exec_time",
-            "ing_occ_start",
-            "ing_occ_finish",
-            "ing_occ_exec_time",
-        ],
-    )
-    df["job_id"] = int(job_id)
-    df = df.rename(columns={"pre_occ_count": "occultations"})
-
-    df["des_obs"].fillna(0, inplace=True)
-    df["occultations"].fillna(0, inplace=True)
-    df["ing_occ_count"].fillna(0, inplace=True)
-
-    df = df.astype(
-        {
-            "des_obs": "int32",
-            "occultations": "int32",
-            "ing_occ_count": "int32",
-            "job_id": "int32",
-            "status": "int32",
-        }
-    )
-
-    df = df.reindex(
-        columns=[
-            "name",
-            "number",
-            "base_dynclass",
-            "dynclass",
-            "status",
-            "des_obs",
-            "obs_source",
-            "orb_ele_source",
-            "occultations",
-            "ing_occ_count",
-            "exec_time",
-            "messages",
-            "job_id",
-            "des_obs_start",
-            "des_obs_finish",
-            "des_obs_exec_time",
-            "bsp_jpl_start",
-            "bsp_jpl_finish",
-            "bsp_jpl_dw_time",
-            "obs_start",
-            "obs_finish",
-            "obs_dw_time",
-            "orb_ele_start",
-            "orb_ele_finish",
-            "orb_ele_dw_time",
-            "ref_orb_start",
-            "ref_orb_finish",
-            "ref_orb_exec_time",
-            "pre_occ_start",
-            "pre_occ_finish",
-            "pre_occ_exec_time",
-            "ing_occ_start",
-            "ing_occ_finish",
-            "ing_occ_exec_time",
-            "calc_path_coeff_start",
-            "calc_path_coeff_finish",
-            "calc_path_coeff_exec_time",
-        ]
-    )
-
-    data = StringIO()
-    df.to_csv(
-        data,
-        sep="|",
-        header=True,
-        index=False,
-    )
-    data.seek(0)
-
-    rowcount = dao.import_predict_occultation_results(data)
-
-    return rowcount
-
-
 def read_job_json_by_id(jobid):
     dao = PredictOccultationJobDao()
     job_db = dao.get_job_by_id(jobid)
@@ -600,6 +480,11 @@ def submit_tasks(jobid: int):
 
         log.debug(f"Asteroid PATH: [{ASTEROID_PATH}]")
 
+        # Diretório onde ficam os arquivos BSP por asteroid, estes arquivos são baixados
+        # previamente independente do job e permanecem no diretório para serem utilizados novamente.
+        # Dentro deste diretório é criado uma pasta por asteroid.
+        INPUTS_PATH = Path(os.getenv("PREDICT_INPUTS", "/app/inputs"))
+
         # Parametros usados na Predição de Ocultação
         # predict_start_date: Data de Inicio da Predição no formato "YYYY-MM-DD". Default = NOW()
         # predict_end_date: Data de Termino da Predição no formato "YYYY-MM-DD". Default = NOW() + 1 Year
@@ -635,23 +520,6 @@ def submit_tasks(jobid: int):
 
         STAR_CATALOG = job["star_catalog"]
         log.debug("STAR_CATALOG: [%s]" % STAR_CATALOG["display_name"])
-
-        # TODO: Remover não está sendo utilizado.
-        # # Remove resultados e inputs de execuções anteriores
-        # # Durante o desenvolvimento é util não remover os inputs pois acelera o processamento
-        # # No uso normal é recomendado sempre regerar os inputs
-        # FORCE_REFRESH_INPUTS = bool(job.get("force_refresh_inputs", True))
-        # log.debug("Force Refresh Inputs: %s" % FORCE_REFRESH_INPUTS)
-
-        # TODO: Remover não está sendo utilizado.
-        # # Determina a validade dos arquivos de inputs.
-        # # Durante o desenvolvimento é util não fazer o download a cada execução
-        # # No uso normal é recomendado sempre baixar os inputs utilizando valor 0
-        # inputs_days_to_expire = int(job.get("inputs_days_to_expire", 0))
-        # ORBITAL_ELEMENTS_DAYS_TO_EXPIRE = inputs_days_to_expire
-        # OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
-        # DES_OBSERVATIONS_DAYS_TO_EXPIRE = inputs_days_to_expire
-        # log.debug("Input days to expire: [%s]" % inputs_days_to_expire)
 
         # =========================== Parsl ===========================
         log.info("Settings Parsl configurations")
@@ -746,7 +614,7 @@ def submit_tasks(jobid: int):
                 # Remove Arquivos da execução anterior, inputs, resultados e logs
                 # Necessário em dev quando se está usando rerun
                 new_run=True,
-                inputs_path=pathlib.Path(os.getenv("PREDICT_INPUTS", "/app/inputs")),
+                inputs_path=INPUTS_PATH,
             )
 
             a.set_job_id(int(jobid))
@@ -764,38 +632,53 @@ def submit_tasks(jobid: int):
             # Para isso basta deixar o bsp_start_date = None e o periodo será setado na hora do download.
             # Se NÃO tiver posições no DES o BSP tera como inicio a data solicitada para predição.
             bsp_start_date = str(PREDICT_START.date())
-
+            bsp_end_date = str(PREDICT_END.date())
             have_bsp_jpl = a.check_bsp_jpl(
                 start_period=bsp_start_date,
-                end_period=str(PREDICT_END.date()),
+                end_period=bsp_end_date,
             )
 
             # TODO: Duvida se o BSP JPL precisa ser copiado para pasta do Asteroid.
             # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a
             # compatibilidade com versão anterior
-            if have_bsp_jpl is False:
-                log.warning(
-                    "Asteroid [%s] Ignored for not having BSP JPL." % asteroid["name"]
-                )
+            if not have_bsp_jpl:
+                try:
+                    a.download_jpl_bsp(
+                        start_period=bsp_start_date,
+                        end_period=bsp_end_date,
+                    )
+                except Exception as e:
+                    log.error(f"Error downloading BSP JPL: {str(e)}")
 
-                current_idx += 1
-                step1_failures += 1
+                # checa novamente o bsp
+                if not a.check_bsp_jpl(
+                    start_period=bsp_start_date,
+                    end_period=bsp_end_date,
+                ):
 
-                # Registra na tabela results que o asteroid foi ignorado.
-                dao_job_result.insert(
-                    {
-                        "name": a.name,
-                        "number": a.number,
-                        "base_dynclass": a.base_dynclass,
-                        "dynclass": a.dynclass,
-                        "status": 2,  # Failed
-                        "job_id": jobid,
-                        "messages": "Asteroid Ignored for not having BSP JPL.",
-                    }
-                )
+                    log.warning(
+                        "Asteroid [%s] Ignored for not having BSP JPL."
+                        % asteroid["name"]
+                    )
 
-                # Ignora as proximas etapas para este asteroid.
-                continue
+                    current_idx += 1
+                    step1_failures += 1
+
+                    # Registra na tabela results que o asteroid foi ignorado.
+                    dao_job_result.insert(
+                        {
+                            "name": a.name,
+                            "number": a.number,
+                            "base_dynclass": a.base_dynclass,
+                            "dynclass": a.dynclass,
+                            "status": 2,  # Failed
+                            "job_id": jobid,
+                            "messages": "Asteroid Ignored for not having BSP JPL.",
+                        }
+                    )
+
+                    # Ignora as proximas etapas para este asteroid.
+                    continue
 
             # STAR CATALOG
             a.set_star_catalog(**STAR_CATALOG)
