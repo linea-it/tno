@@ -559,7 +559,7 @@ def submit_tasks(jobid: int):
 
         asteroids = retrieve_asteroids(job["filter_type"], job["filter_value"])
 
-        asteroids = asteroids[0:10]
+        # asteroids = asteroids[0:10]
 
         step_t1 = datetime.now(tz=timezone.utc)
         step_tdelta = step_t1 - step_t0
