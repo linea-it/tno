@@ -41,7 +41,8 @@ function PredictionAsteroid() {
             date_time_after: undefined,
             date_time_before: undefined,
             solar_time_after: undefined,
-            solar_time_before: undefined
+            solar_time_before: undefined,
+            closestApproachUncertainty: undefined
           }
         }
       })
