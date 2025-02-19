@@ -11,12 +11,12 @@ if [[ "$PARSL_ENV" = "linea" ]]
 then
     echo "Setting up LIneA Remote envs"
 
-    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}/predict_occultation
+    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}
     export PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
     export SSHKEY=/home/app.tno/.ssh/id_rsa
 
-    echo "Running Rsync: /app/src/predict_occultation/ ${PIPELINE_PREDIC_OCC}"
-    rsync -r /app/src/predict_occultation/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/
+    echo "Running Rsync: /app/src/ ${PIPELINE_PREDIC_OCC}"
+    rsync -r /app/src/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/
 
     # ulimit -s 100000
     # ulimit -u 100000
