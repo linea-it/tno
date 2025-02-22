@@ -4,10 +4,182 @@
 import collections
 import os
 
+import numpy as np
 import pandas as pd
 from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy.pool import NullPool
 from sqlalchemy.sql import text
+
+
+def compute_strip_boundaries(ra, dec, angdiam):
+    """
+    Compute the upper and lower boundaries of a strip centered on a given RA/Dec path.
+
+    The boundaries are computed by projecting the RA/Dec coordinates to a tangent plane,
+    calculating the normal vector to the path, offsetting by half the angular diameter, and
+    then transforming back to celestial coordinates.
+
+    Parameters:
+        ra (array-like): Right ascension values in degrees.
+        dec (array-like): Declination values in degrees.
+        angdiam (float): Angular diameter (width of the strip) in degrees.
+
+    Returns:
+        tuple: A tuple containing:
+            - (ra_upper, dec_upper): Arrays of RA and Dec for the upper boundary (in degrees).
+            - (ra_lower, dec_lower): Arrays of RA and Dec for the lower boundary (in degrees).
+    """
+    ra = np.array(ra)
+    dec = np.array(dec)
+    ra_rad = np.radians(ra)
+    dec_rad = np.radians(dec)
+
+    # Project to a tangent plane: x corresponds to RA adjusted by cos(dec), y corresponds to Dec.
+    x = ra_rad * np.cos(dec_rad)
+    y = dec_rad
+
+    # Compute gradients along the center line to get the tangent vector.
+    dx = np.gradient(x)
+    dy = np.gradient(y)
+    norm = np.sqrt(dx**2 + dy**2)
+    tx = dx / norm
+    ty = dy / norm
+    # Rotate tangent vector by 90° to obtain the normal vector.
+    nx = -ty
+    ny = tx
+
+    # Compute half the angular diameter in radians.
+    half_width = np.radians(angdiam) / 2
+
+    # Offset the center line by the normal vector to obtain upper and lower boundaries.
+    x_upper = x + half_width * nx
+    y_upper = y + half_width * ny
+    x_lower = x - half_width * nx
+    y_lower = y - half_width * ny
+
+    # Convert the projected coordinates back to RA and Dec.
+    ra_upper = x_upper / np.cos(y_upper)
+    ra_lower = x_lower / np.cos(y_lower)
+
+    return (np.degrees(ra_upper), np.degrees(y_upper)), (
+        np.degrees(ra_lower),
+        np.degrees(y_lower),
+    )
+
+
+def build_ra_dec_chunks(ra, dec, angular_diameter, chunk_size=1):
+    """
+    Divide RA, Dec, and angular diameter arrays into chunks based on a distance threshold.
+
+    The function iterates over the input arrays and creates chunks when the Euclidean distance
+    between the starting point of the current chunk and a subsequent point exceeds the given
+    chunk_size (in degrees). An extra element is included for overlap between chunks.
+
+    Parameters:
+        ra (array-like): Right ascension values in degrees.
+        dec (array-like): Declination values in degrees.
+        angular_diameter (array-like): Angular diameter values in degrees.
+        chunk_size (float): Distance threshold (in degrees) to start a new chunk.
+
+    Returns:
+        tuple: Three lists containing the RA, Dec, and angular diameter chunks.
+    """
+    ra = np.array(ra)
+    dec = np.array(dec)
+    angular_diameter = np.array(angular_diameter)
+    n = len(ra)
+
+    chunks_ra = []
+    chunks_dec = []
+    chunks_angdiam = []
+    i_start = 0
+
+    # Iterate through the arrays, creating chunks when the distance threshold is reached.
+    for i in range(1, n):
+        if (
+            np.sqrt((ra[i] - ra[i_start]) ** 2 + (dec[i] - dec[i_start]) ** 2)
+            >= chunk_size
+        ):
+            # Include an extra element (i+2) for overlap. Slicing is safe even if i+2 > n.
+            chunks_ra.append(ra[i_start:i])
+            chunks_dec.append(dec[i_start:i])
+            chunks_angdiam.append(angular_diameter[i_start:i])
+            i_start = i
+
+    # Append the remaining elements as the final chunk.
+    if i_start < n:
+        chunks_ra.append(ra[i_start:])
+        chunks_dec.append(dec[i_start:])
+        chunks_angdiam.append(angular_diameter[i_start:])
+
+    return chunks_ra, chunks_dec, chunks_angdiam
+
+
+def compute_polygons(ra, dec, angular_diameter, proper_motion_compensation=10):
+    """
+    Compute complex and simplified polygon representations from RA, Dec, and angular diameter.
+
+    The function first expands the angular diameter to account for proper motion compensation
+    (in arcseconds). It then computes the strip boundaries using `compute_strip_boundaries`,
+    builds a complex polygon by concatenating the upper boundary with the reversed lower boundary,
+    and finally computes a simplified polygon based on linear approximations of these boundaries.
+
+    Parameters:
+        ra (array-like): Right ascension values in degrees.
+        dec (array-like): Declination values in degrees.
+        angular_diameter (float): Angular diameter in degrees.
+        proper_motion_compensation (float): Additional buffer in arcseconds to account for proper motion.
+
+    Returns:
+        tuple: A tuple containing:
+            - complex_polygon (numpy.ndarray): Array of (ra, dec) points forming a closed polygon.
+            - simplified_polygon (numpy.ndarray): Array of (ra, dec) points forming a simplified closed polygon.
+    """
+    # Add proper motion compensation (converted from arcseconds to degrees).
+    angular_diameter += proper_motion_compensation / 3600.0
+
+    # Compute the upper and lower boundaries of the strip.
+    (ra_upper, dec_upper), (ra_lower, dec_lower) = compute_strip_boundaries(
+        ra, dec, angular_diameter
+    )
+
+    # Build the complex polygon: upper boundary points, then reversed lower boundary points.
+    upper_forward = list(zip(ra_upper, dec_upper))
+    lower_reversed = list(zip(ra_lower, dec_lower))[::-1]
+
+    # Extract RA and Dec from the upper and lower boundaries for simplified polygon computation.
+    c_ra, c_dec = np.array(upper_forward).T
+    cc_ra, cc_dec = np.array(lower_reversed).T
+
+    # Compute linear model for the upper boundary.
+    m = (c_dec[-1] - c_dec[0]) / (c_ra[-1] - c_ra[0])
+    b = c_dec[0] - c_ra[0] * m
+    line = c_ra * m + b
+    diff = max(abs(line - c_dec))
+    new_c_dec = np.array([c_dec[0] + diff, c_dec[-1] + diff])
+    new_c_ra = np.array([c_ra[0], c_ra[-1]])
+
+    # Compute linear model for the lower boundary.
+    m_lower = (cc_dec[0] - cc_dec[-1]) / (cc_ra[0] - cc_ra[-1])
+    b_lower = cc_dec[0] - cc_ra[0] * m_lower
+    line_lower = cc_ra * m_lower + b_lower
+    diff_lower = min(abs(line_lower - cc_dec))
+    new_cc_dec = np.array([cc_dec[0] - diff_lower, cc_dec[-1] - diff_lower])
+    new_cc_ra = np.array([cc_ra[0], cc_ra[-1]])
+
+    # Build the complex polygon by concatenating the upper boundary with the reversed lower boundary,
+    # then close the loop by appending the first upper boundary point.
+    complex_polygon = upper_forward.copy()
+    complex_polygon.extend(lower_reversed)
+    complex_polygon.append((ra_upper[0], dec_upper[0]))
+    complex_polygon = np.array(complex_polygon)
+
+    # Build the simplified polygon by combining the endpoints of the linear models.
+    simplified_ra = np.concatenate([new_c_ra, new_cc_ra, np.array([new_c_ra[0]])])
+    simplified_dec = np.concatenate([new_c_dec, new_cc_dec, np.array([new_c_dec[0]])])
+    simplified_polygon = np.column_stack((simplified_ra, simplified_dec))
+
+    return complex_polygon, simplified_polygon
 
 
 class MissingDBURIException(Exception):
@@ -134,6 +306,96 @@ class GaiaDao(Dao):
 
         return clause
 
+    def catalog_by_polygons(
+        self, ra, dec, angular_diameter, max_mag=18, proper_motion_compensation=10
+    ):
+        try:
+            columns = ", ".join(self.gaia_properties)
+            df_results = pd.DataFrame()
+
+            print("GAIA Querys:")
+            print("-----------------------------------")
+            # Agrupar clausulas em grupos para diminuir a quantidade de querys
+
+            # Order ra properly
+            # remove gaps and make it monotonically increasing
+            if ra[0] > ra[-1]:
+                idx = np.where(ra > ra[-1])
+                ra[idx] -= 360
+
+            # Create the polygons for q3c query
+            chunks_ra, chunks_dec, chunks_angdiam = build_ra_dec_chunks(
+                ra, dec, angular_diameter, chunk_size=1
+            )
+            polygons = []
+
+            for cra, cdec, angdiam in zip(chunks_ra, chunks_dec, chunks_angdiam):
+                _, spol = compute_polygons(
+                    cra,
+                    cdec,
+                    angdiam,
+                    proper_motion_compensation=proper_motion_compensation,
+                )
+                polygons.append(spol)
+
+            # Build queries
+            n_chunks = len(polygons)
+            for i, chunk in enumerate(polygons):
+                where_clause = 'q3c_poly_query("ra", "dec", ARRAY['
+                for pos in chunk:
+                    where_clause += f"[{pos[0]}, {pos[1]}], "
+                where_clause = where_clause[:-2] + "])"
+                if i == 0:
+                    q3c_radial = f' OR q3c_radial_query("ra", "dec", {chunk[0][0]}, {chunk[0][1] - (chunk[0][1] - chunk[-1][1])/2}, {abs(chunk[-1][1]-chunk[-2][1])})'
+                elif i == n_chunks - 1:
+                    q3c_radial = f' OR q3c_radial_query("ra", "dec", {chunk[0][0]}, {chunk[1][1] + (chunk[2][1] - chunk[1][1])/2}, {abs(chunk[2][1]-chunk[1][1])})'
+                else:
+                    q3c_radial = ""
+
+                where_clause = where_clause + q3c_radial
+
+                if max_mag:
+                    where_clause = "%s AND (%s)" % (
+                        self.mag_max_clause(max_mag),
+                        where_clause,
+                    )
+
+                stm = """SELECT %s FROM %s WHERE %s """ % (
+                    columns,
+                    self.tablename,
+                    where_clause,
+                )
+
+                print(text(stm))
+                df_rows = pd.read_sql(text(stm), con=self.get_db_engine())
+
+                if df_results is None:
+                    df_results = df_rows
+                else:
+                    # Concatena o resultado da nova query com os resultados anteriores.
+                    # Tratando possiveis duplicatas.
+                    df_results = (
+                        pd.concat([df_results, df_rows])
+                        .drop_duplicates()
+                        .reset_index(drop=True)
+                    )
+
+                del df_rows
+            print("-----------------------------------")
+
+            if df_results.shape[0] >= 2100000:
+                pass
+                # self.logger.warning("Stellar Catalog too big")
+                # TODO marcar o status do Asteroid como warning.
+                # TODO implementar funcao para dividir o resutado em lista menores e executar em loop.
+
+            return df_results
+
+        except Exception as e:
+            print(e)
+            return None
+
+    # Build final query
     def catalog_by_positions(self, positions, radius=0.15, max_mag=None):
 
         try:

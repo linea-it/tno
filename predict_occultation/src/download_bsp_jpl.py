@@ -1,4 +1,7 @@
+import argparse
+import datetime
 import logging
+import os
 import shutil
 import sys
 import traceback
@@ -6,12 +9,7 @@ from pathlib import Path
 
 import colorlog
 from asteroid import Asteroid
-import os
 from run_pred_occ import retrieve_asteroids
-import argparse
-import datetime
-
-
 
 log = colorlog.getLogger("download_bsp_jpl")
 consoleFormatter = colorlog.ColoredFormatter("%(log_color)s%(message)s")
@@ -44,11 +42,11 @@ def main(start, end, filter_type, filter_value):
             log.info(f"Asteroid: {asteroid['name']}")
 
             a = Asteroid(
-                name=asteroid['name'],
+                name=asteroid["name"],
                 base_path=base_path,
                 log=log,
                 # new_run=False
-                inputs_path=inputs_path
+                inputs_path=inputs_path,
             )
 
             # Verifica se o BSP JPL já foi baixado
@@ -70,7 +68,7 @@ def main(start, end, filter_type, filter_value):
             shutil.rmtree(a.path)
 
             log.info("-" * 50)
-            
+
     except Exception as e:
         log.error(traceback.format_exc())
         log.error(e)
@@ -80,13 +78,28 @@ def main(start, end, filter_type, filter_value):
         log.info(f"Total Downloaded: {count} - Skiped: {skiped}")
         log.info(f"Total time: {dt}")
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog='Download BSPs from JPL')
-    parser.add_argument('-s', '--start', help='BSP Start Date YYYY-MM-DD', required=True)
-    parser.add_argument('-e', '--end', help='BSP End Date YYYY-MM-DD', required=True)
-    parser.add_argument('-t', '--filter_type', help='Filter Type one of [name, dynclass, base_dynclass]', required=True)
-    parser.add_argument('-v', '--filter_value', help='Filter Value for query asteroids', required=True)
+    parser = argparse.ArgumentParser(prog="Download BSPs from JPL")
+    parser.add_argument(
+        "-s", "--start", help="BSP Start Date YYYY-MM-DD", required=True
+    )
+    parser.add_argument("-e", "--end", help="BSP End Date YYYY-MM-DD", required=True)
+    parser.add_argument(
+        "-t",
+        "--filter_type",
+        help="Filter Type one of [name, dynclass, base_dynclass]",
+        required=True,
+    )
+    parser.add_argument(
+        "-v", "--filter_value", help="Filter Value for query asteroids", required=True
+    )
 
     args = parser.parse_args()
 
-    main(start=args.start, end=args.end, filter_type=args.filter_type, filter_value=args.filter_value)
+    main(
+        start=args.start,
+        end=args.end,
+        filter_type=args.filter_type,
+        filter_value=args.filter_value,
+    )
