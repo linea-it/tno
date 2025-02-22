@@ -315,18 +315,12 @@ class GaiaDao(Dao):
             print("-----------------------------------")
             # Agrupar clausulas em grupos para diminuir a quantidade de querys
 
-            # Order ra properly
-            # remove gaps and make it monotonically increasing
-            if ra[0] > ra[-1]:
-                idx = np.where(ra > ra[-1])
-                ra[idx] -= 360
-
             # Create the polygons for q3c query
             chunks_ra, chunks_dec, chunks_angdiam = build_ra_dec_chunks(
                 ra, dec, angular_diameter, chunk_size=1, overlap=5
             )
-            polygons = []
 
+            polygons = []
             for cra, cdec, angdiam in zip(chunks_ra, chunks_dec, chunks_angdiam):
                 _, spol = compute_polygons(
                     cra,
