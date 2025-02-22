@@ -67,7 +67,7 @@ def compute_strip_boundaries(ra, dec, angdiam):
     )
 
 
-def build_ra_dec_chunks(ra, dec, angular_diameter, chunk_size=1):
+def build_ra_dec_chunks(ra, dec, angular_diameter, chunk_size=1, overlap=10):
     """
     Divide RA, Dec, and angular diameter arrays into chunks based on a distance threshold.
 
@@ -80,6 +80,7 @@ def build_ra_dec_chunks(ra, dec, angular_diameter, chunk_size=1):
         dec (array-like): Declination values in degrees.
         angular_diameter (array-like): Angular diameter values in degrees.
         chunk_size (float): Distance threshold (in degrees) to start a new chunk.
+        overlap (int): Overlap between chunks.
 
     Returns:
         tuple: Three lists containing the RA, Dec, and angular diameter chunks.
@@ -92,21 +93,25 @@ def build_ra_dec_chunks(ra, dec, angular_diameter, chunk_size=1):
     chunks_ra = []
     chunks_dec = []
     chunks_angdiam = []
+
     i_start = 0
 
-    # Iterate through the arrays, creating chunks when the distance threshold is reached.
     for i in range(1, n):
         if (
             np.sqrt((ra[i] - ra[i_start]) ** 2 + (dec[i] - dec[i_start]) ** 2)
             >= chunk_size
         ):
-            # Include an extra element (i+2) for overlap. Slicing is safe even if i+2 > n.
-            chunks_ra.append(ra[i_start:i])
-            chunks_dec.append(dec[i_start:i])
-            chunks_angdiam.append(angular_diameter[i_start:i])
-            i_start = i
+            i_end = min(
+                i + overlap, n
+            )  # Ensure the overlap doesn't exceed array bounds
+            chunks_ra.append(ra[i_start:i_end])
+            chunks_dec.append(dec[i_start:i_end])
+            chunks_angdiam.append(angular_diameter[i_start:i_end])
+            i_start = max(
+                i - overlap, i
+            )  # Ensure overlap inclusion without getting stuck
 
-    # Append the remaining elements as the final chunk.
+    # Append the remaining elements if not yet included
     if i_start < n:
         chunks_ra.append(ra[i_start:])
         chunks_dec.append(dec[i_start:])
@@ -115,69 +120,64 @@ def build_ra_dec_chunks(ra, dec, angular_diameter, chunk_size=1):
     return chunks_ra, chunks_dec, chunks_angdiam
 
 
-def compute_polygons(ra, dec, angular_diameter, proper_motion_compensation=10):
+def compute_polygons(ra, dec, angular_diameter):
     """
-    Compute complex and simplified polygon representations from RA, Dec, and angular diameter.
-
-    The function first expands the angular diameter to account for proper motion compensation
-    (in arcseconds). It then computes the strip boundaries using `compute_strip_boundaries`,
-    builds a complex polygon by concatenating the upper boundary with the reversed lower boundary,
-    and finally computes a simplified polygon based on linear approximations of these boundaries.
+    Compute a complex polygon and a simplified quadrilateral enclosing the data.
 
     Parameters:
         ra (array-like): Right ascension values in degrees.
         dec (array-like): Declination values in degrees.
         angular_diameter (float): Angular diameter in degrees.
-        proper_motion_compensation (float): Additional buffer in arcseconds to account for proper motion.
 
     Returns:
         tuple: A tuple containing:
-            - complex_polygon (numpy.ndarray): Array of (ra, dec) points forming a closed polygon.
-            - simplified_polygon (numpy.ndarray): Array of (ra, dec) points forming a simplified closed polygon.
+            - complex_polygon (numpy.ndarray): Full boundary polygon.
+            - simplified_polygon (numpy.ndarray): A quadrilateral (4 vertices).
     """
-    # Add proper motion compensation (converted from arcseconds to degrees).
-    angular_diameter += proper_motion_compensation / 3600.0
-
-    # Compute the upper and lower boundaries of the strip.
     (ra_upper, dec_upper), (ra_lower, dec_lower) = compute_strip_boundaries(
         ra, dec, angular_diameter
     )
 
-    # Build the complex polygon: upper boundary points, then reversed lower boundary points.
-    upper_forward = list(zip(ra_upper, dec_upper))
-    lower_reversed = list(zip(ra_lower, dec_lower))[::-1]
+    # Construir polígono complexo
+    upper_forward = np.column_stack((ra_upper, dec_upper))
+    lower_reversed = np.column_stack((ra_lower[::-1], dec_lower[::-1]))
+    complex_polygon = np.vstack(
+        [upper_forward, lower_reversed, upper_forward[0]]
+    )  # Fechar o polígono
 
-    # Extract RA and Dec from the upper and lower boundaries for simplified polygon computation.
-    c_ra, c_dec = np.array(upper_forward).T
-    cc_ra, cc_dec = np.array(lower_reversed).T
+    # Criar conjunto de pontos para simplificação
+    all_points = np.vstack([upper_forward, lower_reversed])
 
-    # Compute linear model for the upper boundary.
-    m = (c_dec[-1] - c_dec[0]) / (c_ra[-1] - c_ra[0])
-    b = c_dec[0] - c_ra[0] * m
-    line = c_ra * m + b
-    diff = max(abs(line - c_dec))
-    new_c_dec = np.array([c_dec[0] + diff, c_dec[-1] + diff])
-    new_c_ra = np.array([c_ra[0], c_ra[-1]])
+    # Calcular matriz de covariância para encontrar os eixos principais
+    mean_ra, mean_dec = np.mean(all_points, axis=0)
+    centered_points = all_points - [mean_ra, mean_dec]
+    cov_matrix = np.dot(centered_points.T, centered_points) / (len(all_points) - 1)
 
-    # Compute linear model for the lower boundary.
-    m_lower = (cc_dec[0] - cc_dec[-1]) / (cc_ra[0] - cc_ra[-1])
-    b_lower = cc_dec[0] - cc_ra[0] * m_lower
-    line_lower = cc_ra * m_lower + b_lower
-    diff_lower = min(abs(line_lower - cc_dec))
-    new_cc_dec = np.array([cc_dec[0] - diff_lower, cc_dec[-1] - diff_lower])
-    new_cc_ra = np.array([cc_ra[0], cc_ra[-1]])
+    # Calcular autovalores e autovetores
+    eigenvalues, eigenvectors = np.linalg.eig(cov_matrix)
+    sorted_indices = np.argsort(eigenvalues)[::-1]
+    principal_axes = eigenvectors[:, sorted_indices]
 
-    # Build the complex polygon by concatenating the upper boundary with the reversed lower boundary,
-    # then close the loop by appending the first upper boundary point.
-    complex_polygon = upper_forward.copy()
-    complex_polygon.extend(lower_reversed)
-    complex_polygon.append((ra_upper[0], dec_upper[0]))
-    complex_polygon = np.array(complex_polygon)
+    # Transformar pontos para o espaço dos eixos principais
+    transformed_points = np.dot(centered_points, principal_axes)
 
-    # Build the simplified polygon by combining the endpoints of the linear models.
-    simplified_ra = np.concatenate([new_c_ra, new_cc_ra, np.array([new_c_ra[0]])])
-    simplified_dec = np.concatenate([new_c_dec, new_cc_dec, np.array([new_c_dec[0]])])
-    simplified_polygon = np.column_stack((simplified_ra, simplified_dec))
+    # Encontrar limites mínimos e máximos no novo sistema de coordenadas
+    min_x, max_x = np.min(transformed_points[:, 0]), np.max(transformed_points[:, 0])
+    min_y, max_y = np.min(transformed_points[:, 1]), np.max(transformed_points[:, 1])
+
+    # Definir os 4 vértices do retângulo mínimo
+    box_corners = np.array(
+        [
+            [min_x, min_y],
+            [min_x, max_y],
+            [max_x, max_y],
+            [max_x, min_y],
+            [min_x, min_y],  # Fechar quadrilátero
+        ]
+    )
+
+    # Reverter a transformação para o espaço original de RA/Dec
+    simplified_polygon = np.dot(box_corners, principal_axes.T) + [mean_ra, mean_dec]
 
     return complex_polygon, simplified_polygon
 
@@ -306,9 +306,7 @@ class GaiaDao(Dao):
 
         return clause
 
-    def catalog_by_polygons(
-        self, ra, dec, angular_diameter, max_mag=18, proper_motion_compensation=10
-    ):
+    def catalog_by_polygons(self, ra, dec, angular_diameter, max_mag=18):
         try:
             columns = ", ".join(self.gaia_properties)
             df_results = pd.DataFrame()
@@ -325,7 +323,7 @@ class GaiaDao(Dao):
 
             # Create the polygons for q3c query
             chunks_ra, chunks_dec, chunks_angdiam = build_ra_dec_chunks(
-                ra, dec, angular_diameter, chunk_size=1
+                ra, dec, angular_diameter, chunk_size=1, overlap=5
             )
             polygons = []
 
@@ -334,7 +332,6 @@ class GaiaDao(Dao):
                     cra,
                     cdec,
                     angdiam,
-                    proper_motion_compensation=proper_motion_compensation,
                 )
                 polygons.append(spol)
 

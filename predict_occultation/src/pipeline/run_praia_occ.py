@@ -146,13 +146,21 @@ def start_praia_occ(
     )
     # TODO: otimizar a query no gaia com base no tamanho aparente do objeto no ceu (rodrigo)
     # # BUSCA USANDO QC3 POLIGONO calculando tamanho aparante (objeto+terra+objeto)
+    # Obtem o diametro do objeto + erro maximo, trata possivel ausencia de erro e diametro
+    object_diameter = (obj_data.get("diameter", None) or 0) + (
+        obj_data.get("density_err_max", None) or 0
+    )
+    object_diameter = object_diameter if object_diameter > 0 else None
+    print("Object Diameter: [%s]" % object_diameter)
     # Obter as posicoes do objeto para calcular os poligonos
     ra, dec, angular_diameter = read_ra_dec_from_ephemerides(
-        eph_filename, h=obj_data.get("h", None)
+        eph_filename,
+        object_diameter=object_diameter,
+        h=obj_data.get("h", None),
+        proper_motion_compensation=15,  # compensação de movimento proprio (em arcsec), suficiente para a estrela com maior mp mover durante ~1.5 ano
     )
-    df_catalog = dao.catalog_by_polygons(
-        ra, dec, angular_diameter, max_mag=max_mag, proper_motion_compensation=60
-    )  # proper_motion_compensation default of 60 arcsec
+
+    df_catalog = dao.catalog_by_polygons(ra, dec, angular_diameter, max_mag=max_mag)
 
     # # BUSCA USANDO QC3 RADIAL (ANTIGO)
     # # Executar o Elimina e gerar o Centers.txt

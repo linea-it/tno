@@ -795,7 +795,11 @@ def get_moon_illuminated_fraction(time, ephemeris=None):
 
 
 def angle_subtended_by_a_sphere(
-    geocentric_distance, object_diameter=None, h=None, earth_diameter=12756
+    geocentric_distance,
+    object_diameter=None,
+    h=None,
+    proper_motion_compensation=None,
+    earth_diameter=12756,
 ):
     """
     Calculate the angular diameter (in degrees) of a sphere combined with Earth's radius.
@@ -807,6 +811,7 @@ def angle_subtended_by_a_sphere(
         geocentric_distance (float): Distance from Earth's center to the object's center (km).
         object_diameter (float, optional): Object diameter in kilometers.
         h (float, optional): Absolute magnitude, used to estimate the diameter if object_diameter is not provided.
+        proper_motion_compensation (float, optional): Proper motion compensation in arcseconds.
         earth_diameter (float): Earth's diameter in kilometers (default 12756 km).
 
     Returns:
@@ -829,7 +834,9 @@ def angle_subtended_by_a_sphere(
         return 180.0
 
     # Return the full angular diameter in degrees.
-    return np.degrees(np.arcsin(ratio)) * 2
+    pmc = (proper_motion_compensation or 0) / 3600
+
+    return 2 * np.degrees(np.arcsin(ratio)) + 2 * pmc
 
 
 def eph_hhmmss_to_deg(hour, minute, second):
@@ -844,7 +851,9 @@ def eph_ddmmss_to_deg(degree, minute, second, sign):
     return degree + minute / 60.0 + second / 3600.0
 
 
-def read_ra_dec_from_ephemerides(input, h=None):
+def read_ra_dec_from_ephemerides(
+    input, object_diameter=None, h=None, proper_motion_compensation=None
+):
     # Read the ephemerides and prepare the data
     ra, dec, geodist = [], [], []
     with open(input) as f:
@@ -864,5 +873,13 @@ def read_ra_dec_from_ephemerides(input, h=None):
             geodist.append(float(tokens[8]))
 
     ra, dec, geodist = np.array(ra), np.array(dec), np.array(geodist)
-    angular_diameter = np.array([angle_subtended_by_a_sphere(g, h=h) for g in geodist])
+    pmc = proper_motion_compensation or 0
+    angular_diameter = np.array(
+        [
+            angle_subtended_by_a_sphere(
+                g, object_diameter=object_diameter, h=h, proper_motion_compensation=pmc
+            )
+            for g in geodist
+        ]
+    )
     return ra, dec, angular_diameter
