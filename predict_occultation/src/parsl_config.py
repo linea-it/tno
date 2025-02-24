@@ -51,13 +51,13 @@ def get_config(key, jobpath):
             "linea": HighThroughputExecutor(
                 label="linea",
                 worker_logdir_root=str(script_dir),
-                max_workers=100,
+                max_workers=500,
                 provider=SlurmProvider(
                     partition="cpu_long",
                     nodes_per_block=1,  # number of nodes
                     cmd_timeout=240,  # duration for which the provider will wait for a command to be invoked on a remote system
                     launcher=SrunLauncher(debug=True, overrides=""),
-                    init_blocks=3,
+                    init_blocks=10,
                     parallelism=1,
                     walltime="240:00:00",
                     worker_init=f"source {cluster_env_sh}\n",
