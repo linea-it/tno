@@ -157,7 +157,7 @@ def start_praia_occ(
         eph_filename,
         object_diameter=object_diameter,
         h=obj_data.get("h", None),
-        proper_motion_compensation=15,  # compensação de movimento proprio (em arcsec), suficiente para a estrela com maior mp mover durante ~1.5 ano
+        proper_motion_compensation=150,  # proper motion compensation in arcsec (stars move over time)
     )
 
     df_catalog = dao.catalog_by_polygons(ra, dec, angular_diameter, max_mag=max_mag)
