@@ -31,10 +31,14 @@ def get_config(key, jobpath):
         # Diretório de Outputs
         predict_outputs = Path(os.getenv("PREDICT_OUTPUTS"))
         predict_outputs.mkdir(parents=True, exist_ok=True)
+        # Diretório de Inputs
+        predict_inputs = Path(os.getenv("PREDICT_INPUTS"))
         # Linea SSH user keys
         sshkey = os.getenv("SSHKEY")
         # Linea DB prod_gavo DB uri. Catalog DB.
         db_uri = os.getenv("DB_CATALOG_URI")
+        # Linea DB portal admin
+        admin_db_uri = os.getenv("DB_ADMIN_URI")
 
         # Env.sh que sera executado antes de iniciar as tasks no cluster
         cluster_env_sh = pipeline_pred_occ.joinpath("cluster.sh")
@@ -75,7 +79,9 @@ def get_config(key, jobpath):
                                 ]
                             ),
                             "PREDICT_OUTPUTS": str(predict_outputs),
+                            "PREDICT_INPUTS": str(predict_inputs), 
                             "DB_CATALOG_URI": db_uri,
+                            "DB_ADMIN_URI": admin_db_uri,
                         },
                     ),
                 ),

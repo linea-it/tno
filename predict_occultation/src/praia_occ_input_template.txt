@@ -1,1 +1,0 @@
-/app/src/pipeline/praia_occ_input_template.txt

@@ -1,1 +1,0 @@
-/app/src/pipeline/generate_dates.py

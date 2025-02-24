@@ -1,1 +1,0 @@
-/app/src/pipeline/occ_path_coeff.py

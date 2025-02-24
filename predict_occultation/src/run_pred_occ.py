@@ -588,7 +588,10 @@ def submit_tasks(jobid: int):
 
         jobs_asteroids = []
 
-        workdir = os.getenv("PIPELINE_ROOT")
+        workdir = os.getenv("PIPELINE_PREDIC_OCC")
+        log.debug(f"Workdir: [{workdir}]")
+        db_admin_uri = os.getenv("DB_ADMIN_URI")
+        log.debug(f"DB Admin URI: [{db_admin_uri}]")
 
         step1_count = len(asteroids)
 
