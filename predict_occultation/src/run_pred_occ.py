@@ -588,7 +588,7 @@ def submit_tasks(jobid: int):
 
         jobs_asteroids = []
 
-        workdir = os.getenv("PIPELINE_ROOT")
+        workdir = os.getenv("PIPELINE_PREDIC_OCC")
 
         step1_count = len(asteroids)
 
@@ -638,7 +638,6 @@ def submit_tasks(jobid: int):
                 end_period=bsp_end_date,
             )
 
-            # TODO: Duvida se o BSP JPL precisa ser copiado para pasta do Asteroid.
             # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a
             # compatibilidade com versão anterior
             if not have_bsp_jpl:
@@ -679,6 +678,16 @@ def submit_tasks(jobid: int):
 
                     # Ignora as proximas etapas para este asteroid.
                     continue
+
+            # TODO: Por enquanto estamos Copiando o BSP JPL para pasta do Asteroid.
+            log.info(f"Copying bsp file to asteroid directory.")
+            ast_bsp_origin = pathlib.Path(a.get_bsp_path()).parent
+            ast_bsp_destiny = pathlib.Path(a.get_path())
+            for file in ast_bsp_origin.iterdir():
+                file_destiny = ast_bsp_destiny.joinpath(file.name)
+                log.debug(f"Coping: {file} -> {file_destiny}")
+                shutil.copyfile(file, file_destiny)
+
 
             # STAR CATALOG
             a.set_star_catalog(**STAR_CATALOG)
