@@ -20,6 +20,7 @@ from pipeline.library import (
     check_leapsec,
     clear_for_rerun,
     read_asteroid_json,
+    read_ra_dec_from_ephemerides,
 )
 from pipeline.search_candidates import search_candidates
 
@@ -132,14 +133,6 @@ def start_praia_occ(
 
     print("Ephemeris File: [%s]" % eph_file)
 
-    # Executar o Elimina e gerar o Centers.txt
-    centers_file = run_elimina(eph_filename, centers_filename)
-    print("Centers File: [%s]" % centers_file)
-
-    # Converter as posições do Centers.txt para graus
-    # gera um arquivo com as posições convertidas, mas o retorno da função é um array.
-    center_positions = centers_positions_to_deg(centers_file, centers_deg_filename)
-
     # Para cada posição executa a query no banco de dados.
     print("Maximum Visual Magnitude: [%s]" % max_mag)
 
@@ -152,9 +145,36 @@ def start_praia_occ(
         dec_property=obj_data["star_catalog"]["dec_property"],
     )
     # TODO: otimizar a query no gaia com base no tamanho aparente do objeto no ceu (rodrigo)
-    df_catalog = dao.catalog_by_positions(
-        center_positions, radius=0.15, max_mag=max_mag
+    # # BUSCA USANDO QC3 POLIGONO calculando tamanho aparante (objeto+terra+objeto)
+    # Obtem o diametro do objeto + erro maximo, trata possivel ausencia de erro e diametro
+    object_diameter = (obj_data.get("diameter", None) or 0) + (
+        obj_data.get("density_err_max", None) or 0
     )
+    object_diameter = object_diameter if object_diameter > 0 else None
+    print("Object Diameter: [%s]" % object_diameter)
+    # Obter as posicoes do objeto para calcular os poligonos
+    ra, dec, angular_diameter = read_ra_dec_from_ephemerides(
+        eph_filename,
+        object_diameter=object_diameter,
+        h=obj_data.get("h", None),
+        proper_motion_compensation=150,  # proper motion compensation in arcsec (stars move over time)
+    )
+
+    df_catalog = dao.catalog_by_polygons(ra, dec, angular_diameter, max_mag=max_mag)
+
+    # # BUSCA USANDO QC3 RADIAL (ANTIGO)
+    # # Executar o Elimina e gerar o Centers.txt
+    # centers_file = run_elimina(eph_filename, centers_filename)
+    # print("Centers File: [%s]" % centers_file)
+
+    # # Converter as posições do Centers.txt para graus
+    # # gera um arquivo com as posições convertidas, mas o retorno da função é um array.
+    # center_positions = centers_positions_to_deg(centers_file, centers_deg_filename)
+
+    # df_catalog = dao.catalog_by_positions(
+    #     center_positions, radius=0.15, max_mag=max_mag
+    # )
+
     print("Stars: [%s]" % df_catalog.shape[0])
     # Cria um arquivo no formato especifico do praia_occ
     gaia_cat = dao.write_gaia_catalog(df_catalog.to_dict("records"), gaia_cat_filename)
