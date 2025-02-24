@@ -367,7 +367,7 @@ class GaiaDao(Dao):
                     # Tratando possiveis duplicatas.
                     df_results = (
                         pd.concat([df_results, df_rows])
-                        .drop_duplicates()
+                        .drop_duplicates(subset=["source_id"])
                         .reset_index(drop=True)
                     )
 
