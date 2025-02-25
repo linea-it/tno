@@ -141,6 +141,70 @@ def get_job_running():
         return job.get("id")
 
 
+def update_job_progress(jobid):
+    # TODO: Implementação temporaria para atualizar o progresso do job.
+    dao_job = PredictOccultationJobDao()
+    dao_job_result = PredictOccultationJobResultDao()
+
+    job = dao_job.get_job_by_id(jobid)
+
+    # Total de asteroids
+    count_asteroids = job["count_asteroids"]
+    # print(f"Job asteroid {count_asteroids}" )
+
+    # Total de tasks submetidas.
+    submited_tasks = dao_job_result.count_by_job_id(jobid)
+    # print(f"Submited Tasks {submited_tasks}")
+
+    # Job results/tasks status
+    # (1, "Idle"),
+    # (2, "Running"),
+    # (3, "Completed"),
+    # (4, "Failed"),
+    # (5, "Aborted"),
+    # (6, "Warning"),
+    # (7, "Aborting"),
+
+    # Total de tasks completas.
+    completed_tasks = dao_job_result.count_by_job_id(jobid, status=[3, 4, 5, 6])
+    # print(f"Completed Tasks {completed_tasks}")
+
+    success_tasks = dao_job_result.count_by_job_id(jobid, status=[3])
+    # print(f"Success Tasks {success_tasks}")
+    failed_tasks = dao_job_result.count_by_job_id(jobid, status=[4])
+    # print(f"Failed Tasks {failed_tasks}")
+
+    # Update job progress stage 1 - Submission of tasks
+    # 3 = completed
+    # 2 = running
+    stage1_status = 3 if submited_tasks == count_asteroids else 2
+    update_progress_status(
+        jobid,
+        step=1,
+        status=stage1_status,
+        count=count_asteroids,
+        current=submited_tasks,
+        # success=step1_success,
+        # failures=step1_failures,
+        t0=job["start"],
+    )
+
+    # Update job progress stage 2 - Running tasks
+    stage2_status = 3 if completed_tasks == count_asteroids else 2
+    update_progress_status(
+            jobid,
+            step=2,
+            status=stage2_status,
+            count=submited_tasks,
+            current=completed_tasks,
+            success=success_tasks,
+            failures=failed_tasks,
+            t0=job["start"],
+        )
+
+
+
+
 def predict_job_queue():
     # Verifica se ha algum job sendo executado.
     if has_job_running():
@@ -698,16 +762,16 @@ def submit_tasks(jobid: int):
             step1_success += 1
             current_idx += 1
 
-            update_progress_status(
-                jobid,
-                step=1,
-                status=2,
-                count=len(asteroids),
-                current=current_idx,
-                success=step1_success,
-                failures=step1_failures,
-                t0=hb_t0,
-            )
+            # update_progress_status(
+            #     jobid,
+            #     step=1,
+            #     status=2,
+            #     count=len(asteroids),
+            #     current=current_idx,
+            #     success=step1_success,
+            #     failures=step1_failures,
+            #     t0=hb_t0,
+            # )
 
             # ======================= Submeter o Job por asteroide ==========================
             # Adicionar os asteroids a tabela job result ( que agora passa a representar as job tasks.)
@@ -758,29 +822,29 @@ def submit_tasks(jobid: int):
                 log.error("Error running asteroid %s" % name)
                 continue
 
-        update_progress_status(
-            jobid,
-            step=1,
-            status=3,
-            count=len(asteroids),
-            current=current_idx,
-            success=step1_success,
-            failures=step1_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=1,
+        #     status=3,
+        #     count=len(asteroids),
+        #     current=current_idx,
+        #     success=step1_success,
+        #     failures=step1_failures,
+        #     t0=hb_t0,
+        # )
 
         log.info("All jobs have been submitted.")
 
-        update_progress_status(
-            jobid,
-            step=2,
-            status=2,
-            count=len(jobs_asteroids),
-            current=step2_current_idx,
-            success=step2_success,
-            failures=step2_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=2,
+        #     status=2,
+        #     count=len(jobs_asteroids),
+        #     current=step2_current_idx,
+        #     success=step2_success,
+        #     failures=step2_failures,
+        #     t0=hb_t0,
+        # )
 
         log.debug(f"Jobs to Parsl: [{len(jobs_asteroids)}]")
 
@@ -838,16 +902,16 @@ def submit_tasks(jobid: int):
         if is_abort:
             raise AbortError("Job ID %s aborted!" % str(jobid), -1)
 
-        update_progress_status(
-            jobid,
-            step=2,
-            status=3,
-            count=len(jobs_asteroids),
-            current=step2_current_idx,
-            success=step2_success,
-            failures=step2_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=2,
+        #     status=3,
+        #     count=len(jobs_asteroids),
+        #     current=step2_current_idx,
+        #     success=step2_success,
+        #     failures=step2_failures,
+        #     t0=hb_t0,
+        # )
 
         job.update({"status": "Completed"})
     except AbortError as e:
@@ -866,27 +930,27 @@ def submit_tasks(jobid: int):
             }
         )
 
-        update_progress_status(
-            jobid,
-            step=1,
-            status=5,
-            count=step1_count,
-            current=current_idx,
-            success=step1_success,
-            failures=step1_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=1,
+        #     status=5,
+        #     count=step1_count,
+        #     current=current_idx,
+        #     success=step1_success,
+        #     failures=step1_failures,
+        #     t0=hb_t0,
+        # )
 
-        update_progress_status(
-            jobid,
-            step=2,
-            status=5,
-            count=step2_count,
-            current=step2_current_idx,
-            success=step2_success,
-            failures=step2_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=2,
+        #     status=5,
+        #     count=step2_count,
+        #     current=step2_current_idx,
+        #     success=step2_success,
+        #     failures=step2_failures,
+        #     t0=hb_t0,
+        # )
 
     except Exception as e:
         trace = traceback.format_exc()
@@ -902,27 +966,27 @@ def submit_tasks(jobid: int):
             }
         )
 
-        update_progress_status(
-            jobid,
-            step=1,
-            status=4,
-            count=step1_count,
-            current=current_idx,
-            success=step1_success,
-            failures=step1_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=1,
+        #     status=4,
+        #     count=step1_count,
+        #     current=current_idx,
+        #     success=step1_success,
+        #     failures=step1_failures,
+        #     t0=hb_t0,
+        # )
 
-        update_progress_status(
-            jobid,
-            step=2,
-            status=4,
-            count=step2_count,
-            current=step2_current_idx,
-            success=step2_success,
-            failures=step2_failures,
-            t0=hb_t0,
-        )
+        # update_progress_status(
+        #     jobid,
+        #     step=2,
+        #     status=4,
+        #     count=step2_count,
+        #     current=step2_current_idx,
+        #     success=step2_success,
+        #     failures=step2_failures,
+        #     t0=hb_t0,
+        # )
 
     finally:
         log.debug("-----------------------------------------------")
@@ -1032,6 +1096,30 @@ def complete_job(job, log, status):
     log.info("Update Job status.")
     # write_job_file(current_path, job)
     update_job(job)
+
+
+    # # Update Job Progress
+    # update_progress_status(
+    #     job['id'],
+    #     step=1,
+    #     status=3,
+    #     count=step1_count,
+    #     current=current_idx,
+    #     success=step1_success,
+    #     failures=step1_failures,
+    #     t0=hb_t0,
+    # )
+
+    # update_progress_status(
+    #     job['id'],
+    #     step=2,
+    #     status=3,
+    #     count=step2_count,
+    #     current=step2_current_idx,
+    #     success=step2_success,
+    #     failures=step2_failures,
+    #     t0=hb_t0,
+    # )    
 
     # Remove o diretório de asteroids do job.
     if not job["debug"]:

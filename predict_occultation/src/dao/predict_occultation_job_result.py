@@ -2,7 +2,8 @@ from datetime import timedelta
 
 from dao.db_base import DBBase
 from sqlalchemy.sql import and_, delete, select
-
+from sqlalchemy import func
+from typing import List
 
 class PredictOccultationJobResultDao(DBBase):
     def __init__(self):
@@ -66,3 +67,11 @@ class PredictOccultationJobResultDao(DBBase):
         stm = select(self.tbl.c).where(and_(self.tbl.c.job_id == job_id))
 
         return self.fetch_all_dict(stm)
+
+    def count_by_job_id(self, job_id, status: List = None):
+        stm = select([func.count()]).select_from(self.tbl).where(and_(self.tbl.c.job_id == job_id))
+        if status:
+            stm = stm.where(self.tbl.c.status.in_(status))
+
+        # print(stm)
+        return self.fetch_scalar(stm)

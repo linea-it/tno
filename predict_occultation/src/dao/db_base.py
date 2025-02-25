@@ -85,6 +85,11 @@ class DBBase:
                 else:
                     return None
 
+    def fetch_scalar(self, stm):
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            return con.execute(stm).scalar()
+
     def get_job_by_id(self, id):
 
         tbl = self.get_table(tablename="des_astrometryjob")
