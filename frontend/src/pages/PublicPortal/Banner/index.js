@@ -23,11 +23,9 @@ function PublicBanner() {
   // }, [])
   return (
     <Box className={classes.root}>
-      <Grid container direction='row' justifyContent='space-between' spacing={2} className={classes.container}>
-        <Grid container item xs={12} md={12} lg={12} sx={{ display: 'flex', justifyContent: 'right', marginRight: '40px' }}>
-          <Grid item xs={12} md={6} lg={3} sx={{ display: 'flex', justifyContent: 'right' }}>
-            <NewRelease />
-          </Grid>
+      <Grid container direction='row' spacing={2} className={classes.container}>
+        <Grid container sx={{ marginTop: '1px', justifyContent: 'flex-end', alignItens: 'right' }}>
+          <NewRelease />
         </Grid>
         <img src={`${process.env.PUBLIC_URL}/img/tno_logo_projetos.png`} alt='Data Release Interface' className={classes.logo} />
         <Grid item xs={12} className={classes.titleWrapper}>
