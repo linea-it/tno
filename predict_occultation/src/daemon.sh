@@ -6,4 +6,4 @@ set -o pipefail
 source /app/src/env.sh
 
 echo "Starting the daemon"
-while true; do python /app/src/run_daemon.py ; sleep 10; done
+while true; do python /app/src/run_daemon.py ; sleep 30; done
