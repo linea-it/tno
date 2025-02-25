@@ -137,11 +137,24 @@ class PredictionJobSerializer(serializers.ModelSerializer):
 class PredictionJobResultSerializer(serializers.ModelSerializer):
     predict_start_date = serializers.DateField(source="job.predict_start_date")
     predict_end_date = serializers.DateField(source="job.predict_end_date")
-
+    status_name = serializers.SerializerMethodField()
     class Meta:
         model = PredictionJobResult
         fields = "__all__"
 
+    def get_status_name(self, obj):
+        if obj.status == 1:
+            return "Success"
+        elif obj.status == 2:
+            return "Failed"
+        elif obj.status == 3:
+            return "Queued"
+        elif obj.status == 4:
+            return "Running"
+        elif obj.status == 5:
+            return "Aborted"
+        else:
+            return "Unknown"
 
 class PredictionJobStatusSerializer(serializers.ModelSerializer):
     class Meta:
