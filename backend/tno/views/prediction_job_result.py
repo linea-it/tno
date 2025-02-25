@@ -29,5 +29,6 @@ class PredictionJobResultViewSet(viewsets.ReadOnlyModelViewSet):
         "occultations",
         "des_obs",
         "exec_time",
+        "status",
     )
     ordering = ("name",)

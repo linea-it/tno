@@ -122,8 +122,9 @@ RUN groupadd --gid 15007 linea-members  \
 
 
 ENV PIPELINE_ROOT=${APP_HOME}/src
-ENV PIPELINE_PREDIC_OCC=${PIPELINE_ROOT}/predict_occultation
-ENV PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
+ENV PIPELINE_PREDIC_OCC=${PIPELINE_ROOT}
+ENV PIPELINE_PATH=${PIPELINE_ROOT}/pipeline
+
 
 # quando parsl_env = local o diretório remoto é o mesmo que o local.
 # mas quando parsl_env = linea o diretório remoto é por ex: /lustre/t1/scratch/users/app.tno/tno_testing

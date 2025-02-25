@@ -120,12 +120,25 @@ class PredictionJobViewSet(
     @action(detail=True, methods=["post"])
     def cancel_job(self, request, pk=None):
         """
-        Sinaliza o pediio de cancelamento um Prediction job, alterando status para aborting
+        Sinaliza o pedido de cancelamento um Prediction job, alterando status para aborting
         """
         job = self.get_object()
         # Se o job estiver idle=1 ou running=2
         if job.status <= 2:
+            # Marca o job como 7-Aborting
             job.status = 7
             job.save()
+
+            # Alterar todas as tasks do job para aborting 
+            # 3-Queued
+            tasks = job.predictionjobresult_set.filter(status=3)
+            tasks.update(status=5)
+
+            # Verificar se tem alguma task em execução
+            # se não tiver altera o status direto para 5-Aborted
+            tasks = job.predictionjobresult_set.filter(status=4)
+            if len(tasks) == 0:
+                job.status = 5
+                job.save()
         result = PredictionJobSerializer(job)
         return Response(result.data)

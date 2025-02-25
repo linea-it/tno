@@ -8,8 +8,7 @@ import numpy as np
 import pandas as pd
 import spiceypy as spice
 from astropy.time import Time
-from occviz import occultation_path_coeff
-from predict_occultation.pipeline.library import (
+from pipeline.library import (
     asteroid_visual_magnitude,
     compute_magnitude_drop,
     dec_hms_to_deg,
@@ -23,10 +22,13 @@ from predict_occultation.pipeline.library import (
     get_moon_illuminated_fraction,
     ra_hms_to_deg,
 )
+from pipeline.occviz import occultation_path_coeff
 
 
 def run_occultation_path_coeff(
-    predict_table_path: Path, obj_data: dict, mag_and_uncert_path: Path
+    predict_table_path: Path,
+    obj_data: dict,
+    mag_and_uncert_path: Path,
 ) -> dict:
 
     calculate_path_coeff = {}
@@ -231,7 +233,7 @@ def run_occultation_path_coeff(
             else:
                 # tenta calcular a partir de h e g do bsp e só funciona para asteroides em geral
                 if (
-                    obj_data["h"] is not None and obj_data["h"] < 99
+                    obj_data["h"] < 99
                 ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
                     ast_vis_mag = asteroid_visual_magnitude(
                         obj_data["bsp_jpl"]["filename"],
@@ -463,8 +465,6 @@ def run_occultation_path_coeff(
         df["catalog"] = obj_data["predict_occultation"]["catalog"]
         df["predict_step"] = obj_data["predict_occultation"]["predict_step"]
         df["bsp_source"] = obj_data["bsp_jpl"]["source"]
-        df["obs_source"] = obj_data["observations"]["source"]
-        df["orb_ele_source"] = obj_data["orbital_elements"]["source"]
         df["bsp_planetary"] = obj_data["predict_occultation"]["bsp_planetary"]
         df["leap_seconds"] = obj_data["predict_occultation"]["leap_seconds"]
         df["nima"] = obj_data["predict_occultation"]["nima"]
@@ -578,8 +578,6 @@ def run_occultation_path_coeff(
                 "job_id",
                 "leap_seconds",
                 "nima",
-                "obs_source",
-                "orb_ele_source",
                 "predict_step",
                 "albedo",
                 "albedo_err_max",
@@ -622,6 +620,7 @@ def run_occultation_path_coeff(
         )
 
         # ATENCAO! Sobrescreve o arquivo occultation_table.csv
+        print(f"Writing occultation table to file: {predict_table_path}")
         df.to_csv(predict_table_path, index=False, sep=";")
         del df
 

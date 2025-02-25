@@ -3,6 +3,7 @@ import moment from 'moment'
 import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
+import Chip from '@mui/material/Chip';
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
@@ -18,6 +19,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import {
   getPredictionJobById,
   getPredictionJobResultsByJobId,
+  getPredictionJobResultsFailuresByJobId,
   cancelPredictionJobById,
   getPredictionJobProgressById
 } from '../../services/api/PredictJobs'
@@ -123,6 +125,28 @@ function PredictDetail() {
       align: 'center'
     },
     {
+      name: 'status',
+      title: 'Status',
+      width: 150,
+      customElement: (row) => {
+        if (row.status === 1) {
+          return <Chip variant="outlined" label={"Success"} color="success" />
+        }
+        if (row.status === 2) {
+          return <Chip variant="outlined" label={"Failure"} color="error" />
+        }
+        if (row.status === 3) {
+          return <Chip variant="outlined" label={"Queued"} />
+        }
+        if (row.status === 4) {
+          return <Chip variant="outlined" label={"Running"} color="info" />
+        }
+        if (row.status === 5) {
+          return <Chip variant="outlined" label={"Aborted"} color="secondary" />
+        }
+      },
+    },
+    {
       name: 'name',
       title: 'Asteroid',
       width: 150
@@ -143,9 +167,8 @@ function PredictDetail() {
       align: 'center'
     },
     {
-      name: 'des_obs',
-      title: 'DES Obs',
-      width: 130,
+      name: 'stars',
+      title: 'Stars',
       align: 'center'
     },
     {
@@ -163,7 +186,7 @@ function PredictDetail() {
       // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
       const page = currentPage + 1
 
-      getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, true).then((res) => {
+      getPredictionJobResultsByJobId({ id, page, pageSize, ordering }).then((res) => {
         setTableData(res.results)
         setTotalCount(res.count)
       })
@@ -177,7 +200,7 @@ function PredictDetail() {
       // Current Page count starts at 0, but the endpoint expects the 1 as the first index:
       const page = currentPage + 1
 
-      getPredictionJobResultsByJobId({ id, page, pageSize, ordering }, false).then((res) => {
+      getPredictionJobResultsFailuresByJobId({ id, page, pageSize, ordering }).then((res) => {
         setTableErrorData(res.results)
         setTotalErrorCount(res.count)
       })

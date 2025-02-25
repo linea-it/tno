@@ -28,7 +28,18 @@ export const getPredictionJobById = ({ id }) => api.get(`/prediction_job/${id}`)
 export const getPredictionJobResultsByJobId = ({ id, pageSize, page, ordering }, successed) => {
   const params = {
     job: id,
-    status: successed ? 1 : 2,
+    page,
+    pageSize,
+    ordering
+  }
+
+  return api.get(`/prediction_job_result/`, { params }).then((res) => res.data)
+}
+
+export const getPredictionJobResultsFailuresByJobId = ({ id, pageSize, page, ordering }) => {
+  const params = {
+    job: id,
+    status: 2,
     page,
     pageSize,
     ordering

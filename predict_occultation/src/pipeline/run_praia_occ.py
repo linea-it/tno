@@ -1,50 +1,28 @@
-#!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
 import argparse
 import os
+import shutil
 import sys
 import traceback
 from datetime import datetime
+from pathlib import Path
 
 from dao import GaiaDao, MissingDBURIException
-from generate_dates import generate_dates_file
-from generate_ephemeris import centers_positions_to_deg, generate_ephemeris, run_elimina
-from library import (
+from pipeline.generate_dates import generate_dates_file
+from pipeline.generate_ephemeris import (
+    centers_positions_to_deg,
+    generate_ephemeris,
+    run_elimina,
+)
+from pipeline.library import (
     check_bsp_object,
     check_bsp_planetary,
     check_leapsec,
     clear_for_rerun,
     read_asteroid_json,
+    read_ra_dec_from_ephemerides,
 )
-from search_candidates import search_candidates
-
-parser = argparse.ArgumentParser()
-parser.add_argument("name", help="Object name without spaces")
-parser.add_argument("start_date", help="Initial date. example '2018-JAN-01'")
-parser.add_argument("final_date", help="Final date. example '2018-DEC-31 23:59:01'")
-parser.add_argument("step", help="steps in seconds. Example 60")
-parser.add_argument(
-    "--leap_sec",
-    default="naif0012.tls",
-    help="Name of the Leap Seconds file, it must be in the directory /data. example naif0012.tls",
-)
-parser.add_argument(
-    "--bsp_planetary",
-    default="de435.bsp",
-    help="Name of the BSP Planetary file, it must be in the directory /data. example de435.bsp",
-)
-parser.add_argument(
-    "--bsp_object",
-    default=None,
-    help="Name of the Asteroid BSP file, it must be in the directory /data. example Eris.bsp. default <name>.bsp",
-)
-parser.add_argument(
-    "-p",
-    "--path",
-    default=None,
-    required=False,
-    help="Path where the inputs are and where the outputs will be. must be the path as it is mounted on the volume, should be used when it is not possible to mount the volume as /data. example the inputs are in /archive/asteroids/Eris and this path is mounted inside the container the parameter --path must have this value --path /archive/asteroids/Eris, the program will create a link from this path to /data.",
-)
+from pipeline.search_candidates import search_candidates
 
 
 def start_praia_occ(
@@ -57,6 +35,10 @@ def start_praia_occ(
     bsp_object_filename,
     max_mag,
 ):
+
+    # Diretorio de Dados dentro do container.
+    data_dir = os.environ.get("DIR_DATA").rstrip("/")
+    print("DATA DIR: [%s]" % data_dir)
 
     log_file = os.path.join(os.environ.get("DIR_DATA"), "praia_occ.log")
 
@@ -74,8 +56,7 @@ def start_praia_occ(
     gaia_cat_filename = "gaia_catalog.cat"
     gaia_csv_filename = "gaia_catalog.csv"
     occultation_table_filename = "occultation_table.csv"
-    if bsp_object_filename is None:
-        bsp_object_filename = "%s.bsp" % name
+    praia_occultation_table_filename = "praia_occultation_table.csv"
 
     # Inputs/Outputs do PRAIA Occ Star Search,
     # IMPORTANTE! esses filenames são HARDCODED na função praia_occ_input_file
@@ -122,7 +103,20 @@ def start_praia_occ(
     print("BSP Planetary: [%s]" % bsp_planetary)
 
     # Checa o arquivo bsp_object
-    bsp_object = check_bsp_object(bsp_object_filename)
+    # Procura o arquivo bsp_jpl primeiro no diretório de inputs.
+    # Depois no diretório do asteroid.
+    bsp_jpl_filepath = os.path.join(
+        os.getenv("PREDICT_INPUTS"), obj_data["alias"], bsp_object_filename
+    )
+    if not os.path.exists(bsp_jpl_filepath):
+        # Se não encontrar no diretório de inputs utiliza o diretório do objeto.
+        bsp_jpl_filepath = Path(data_dir).joinpath(bsp_object_filename)
+        print("BSP JPL FILE PATH: [%s]" % bsp_jpl_filepath)
+
+    bsp_object = check_bsp_object(
+        filepath=bsp_jpl_filepath, filename=bsp_object_filename
+    )
+
     print("BSP Object: [%s]" % bsp_object)
 
     # Gerar arquivo de datas
@@ -139,26 +133,6 @@ def start_praia_occ(
 
     print("Ephemeris File: [%s]" % eph_file)
 
-    # # TODO: Verificar se é mesmo necessário!
-    # # Gerar aquivo de posições
-    # positions_file = generate_positions(
-    #     eph_filename, positions_filename)
-
-    # print("Positions File: [%s]" % positions_file)
-
-    # TODO: Gerar plot Orbit in Sky se for necessário
-    # plotOrbit(object_name, footprint, ecliptic_galactic,
-    #         positions, orbit_in_sky)
-    # os.chmod(orbit_in_sky, 0776)
-
-    # Executar o Elimina e gerar o Centers.txt
-    centers_file = run_elimina(eph_filename, centers_filename)
-    print("Centers File: [%s]" % centers_file)
-
-    # Converter as posições do Centers.txt para graus
-    # gera um arquivo com as posições convertidas, mas o retorno da função é um array.
-    center_positions = centers_positions_to_deg(centers_file, centers_deg_filename)
-
     # Para cada posição executa a query no banco de dados.
     print("Maximum Visual Magnitude: [%s]" % max_mag)
 
@@ -171,9 +145,36 @@ def start_praia_occ(
         dec_property=obj_data["star_catalog"]["dec_property"],
     )
     # TODO: otimizar a query no gaia com base no tamanho aparente do objeto no ceu (rodrigo)
-    df_catalog = dao.catalog_by_positions(
-        center_positions, radius=0.15, max_mag=max_mag
+    # # BUSCA USANDO QC3 POLIGONO calculando tamanho aparante (objeto+terra+objeto)
+    # Obtem o diametro do objeto + erro maximo, trata possivel ausencia de erro e diametro
+    object_diameter = (obj_data.get("diameter", None) or 0) + (
+        obj_data.get("density_err_max", None) or 0
     )
+    object_diameter = object_diameter if object_diameter > 0 else None
+    print("Object Diameter: [%s]" % object_diameter)
+    # Obter as posicoes do objeto para calcular os poligonos
+    ra, dec, angular_diameter = read_ra_dec_from_ephemerides(
+        eph_filename,
+        object_diameter=object_diameter,
+        h=obj_data.get("h", None),
+        proper_motion_compensation=150,  # proper motion compensation in arcsec (stars move over time)
+    )
+
+    df_catalog = dao.catalog_by_polygons(ra, dec, angular_diameter, max_mag=max_mag)
+
+    # # BUSCA USANDO QC3 RADIAL (ANTIGO)
+    # # Executar o Elimina e gerar o Centers.txt
+    # centers_file = run_elimina(eph_filename, centers_filename)
+    # print("Centers File: [%s]" % centers_file)
+
+    # # Converter as posições do Centers.txt para graus
+    # # gera um arquivo com as posições convertidas, mas o retorno da função é um array.
+    # center_positions = centers_positions_to_deg(centers_file, centers_deg_filename)
+
+    # df_catalog = dao.catalog_by_positions(
+    #     center_positions, radius=0.15, max_mag=max_mag
+    # )
+
     print("Stars: [%s]" % df_catalog.shape[0])
     # Cria um arquivo no formato especifico do praia_occ
     gaia_cat = dao.write_gaia_catalog(df_catalog.to_dict("records"), gaia_cat_filename)
@@ -207,6 +208,12 @@ def start_praia_occ(
     )
 
     print("Occultation CSV Table: [%s]" % occultation_file)
+
+    # COPY file to keep orinal praia csv for debug
+    praia_occultation_table_filepath = Path(data_dir).joinpath(
+        praia_occultation_table_filename
+    )
+    shutil.copy(occultation_file, praia_occultation_table_filepath)
 
     sys.stdout = orig_stdout
     f.close()
