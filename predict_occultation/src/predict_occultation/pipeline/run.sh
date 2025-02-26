@@ -18,8 +18,8 @@ echo 'CONDAPATH: ' $CONDAPATH
 echo 'PIPELINE_PREDIC_OCC: ' $PIPELINE_PREDIC_OCC
 echo 'PIPELINE_PATH: ' $PIPELINE_PATH
 echo 'PYTHONPATH: ' $PYTHONPATH
+echo 'PREDICT_INPUTS: ' $PREDICT_INPUTS
 echo 'PREDICT_OUTPUTS: ' $PREDICT_OUTPUTS
-
 echo "=========================================================="
 
 TMPDIR=`echo $RANDOM | md5sum | head -c 5; echo;`

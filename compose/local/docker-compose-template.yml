@@ -56,6 +56,7 @@ services:
     volumes:
       - ${TNO_PROJ_DIR:-.}/predict_occultation:/app
       - ${TNO_PROJ_DIR:-.}/data/predict_occultations:/app/outputs/predict_occultations
+      - ${TNO_PROJ_DIR:-.}/data/asteroids:/app/inputs/
     env_file:
       - .env
 
