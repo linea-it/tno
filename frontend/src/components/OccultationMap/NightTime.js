@@ -15,7 +15,7 @@ const NightLayer = ({ datetime }) => {
       weight: 1
       //color: 'black'
     }).addTo(map)
-    console.log('executei Nighttime...')
+
     nightmask.setTime(datetime)
 
     // Remove a camada ao desmontar ou ao atualizar
