@@ -1,16 +1,15 @@
 // Importações principais de bibliotecas necessárias para o funcionamento do componente
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
 import L from 'leaflet' // Biblioteca para manipulação de mapas
-import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
+import { MapContainer, TileLayer, Polyline, Circle, CircleMarker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
 import { Box, Card, CircularProgress, Stack, Typography, Button } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
-import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
 import DayLayer from '../../../../components/OccultationMap/DayTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
-import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
+//import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
 import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
 import DownloadButton from '../../../../components/OccultationMap/OccultationKmzDownload'
 
@@ -79,13 +78,14 @@ const PredictOccultationMap = ({ occultationId }) => {
     // staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
 
-  console.log('data', data)
+  // Verifica se existem dados válidos para plotar as linhas
+  const hasValidData = data !== undefined
 
   // Define o nível de zoom com base nos parâmetros
   const zoomLevel = 3
 
   // Determina dinamicamente o centro do mapa e o nível de zoom inicial
-  const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : null
+  const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : [-15.7801, -47.9292] //[44.17465934494479, 113.58434929682991] //
   const mapZoom = data ? 4 : zoomLevel
 
   // Configurações do ícone personalizado
@@ -172,42 +172,47 @@ const PredictOccultationMap = ({ occultationId }) => {
             </Typography>
           </Box>
         )}
-        {!isFetching && mapCenter && (
+        {!isFetching && (
           <MapContainer className={classes.map} center={mapCenter} zoom={zoomLevel}>
             <TileLayer url={tileLayerUrl} subdomains={['mt0', 'mt1', 'mt2', 'mt3']} />
             {/* <FlyToMap center={mapCenter} zoom={mapZoom} /> */}
-            <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
 
             {/* Chamada do Componente que desenha as sombras */}
-            {/* <NightLayer datetime={datetime} /> */}
-            <DayLayer datetime={datetime} />
+            {data ? <DayLayer datetime={datetime} /> : ''}
 
-            {/* Linha principal do caminho central */}
-            {periodicLineCenterSegments.map((segment, index) => (
-              <Polyline key={index} pathOptions={blueOptions} positions={segment} />
-            ))}
+            {hasValidData && (
+              <>
+                <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
 
-            {/* Pontos do caminho central */}
-            {periodicCentralPathSteps.map((point, index) => (
-              <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
-            ))}
-            <Circle center={mapCenter} pathOptions={circleOptions} />
+                {/* Linha principal do caminho central */}
+                {periodicLineCenterSegments.map((segment, index) => (
+                  <Polyline key={index} pathOptions={blueOptions} positions={segment} />
+                ))}
 
-            {/* Limites superiores e inferiores do corpo */}
-            {periodicBodyUpperSegments.map((segment, index) => (
-              <Polyline key={`upper-${index}`} pathOptions={bodyOptions} positions={segment} />
-            ))}
-            {periodicBodyLowerSegments.map((segment, index) => (
-              <Polyline key={`lower-${index}`} pathOptions={bodyOptions} positions={segment} />
-            ))}
+                {/* Pontos do caminho central */}
+                {periodicCentralPathSteps.map((point, index) => (
+                  <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
+                ))}
 
-            {/* Limites de incerteza */}
-            {periodicUncertaintyUpperSegments.map((segment, index) => (
-              <Polyline key={`uncertainty-upper-${index}`} pathOptions={traceOptions} positions={segment} />
-            ))}
-            {periodicUncertaintyLowerSegments.map((segment, index) => (
-              <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
-            ))}
+                {!hasValidData && <Circle center={mapCenter} pathOptions={circleOptions} />}
+
+                {/* Limites superiores e inferiores do corpo */}
+                {periodicBodyUpperSegments.map((segment, index) => (
+                  <Polyline key={`upper-${index}`} pathOptions={bodyOptions} positions={segment} />
+                ))}
+                {periodicBodyLowerSegments.map((segment, index) => (
+                  <Polyline key={`lower-${index}`} pathOptions={bodyOptions} positions={segment} />
+                ))}
+
+                {/* Limites de incerteza */}
+                {periodicUncertaintyUpperSegments.map((segment, index) => (
+                  <Polyline key={`uncertainty-upper-${index}`} pathOptions={traceOptions} positions={segment} />
+                ))}
+                {periodicUncertaintyLowerSegments.map((segment, index) => (
+                  <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
+                ))}
+              </>
+            )}
           </MapContainer>
         )}
         {/* Contêiner dos botões de download */}
