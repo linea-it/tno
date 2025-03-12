@@ -78,14 +78,14 @@ const PredictOccultationMap = ({ occultationId }) => {
     // staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
 
-  // Verifica se existem dados válidos para plotar as linhas
-  const hasValidData = data !== undefined
-
   // Define o nível de zoom com base nos parâmetros
   const zoomLevel = 3
 
   // Determina dinamicamente o centro do mapa e o nível de zoom inicial
-  const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : [-15.7801, -47.9292] //[44.17465934494479, 113.58434929682991] //
+  const mapCenterBr = [-15.7801, -47.9292]
+
+  //const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : mapCenterBr
+  const mapCenter = data ? [data?.latitude || mapCenterBr[0], data?.longitude || mapCenterBr[1]] : mapCenterBr
   const mapZoom = data ? 4 : zoomLevel
 
   // Configurações do ícone personalizado
@@ -120,6 +120,8 @@ const PredictOccultationMap = ({ occultationId }) => {
   const bodyOptions = { color: '#00468D', weight: 2 } // Opções para linhas de limite do corpo
 
   // Extração dos dados para construção dos elementos do mapa
+  const warning = data?.warning
+  console.log(warning)
   const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data?.central_path_longitude[i]]) || []
   const centralPathSteps = data?.central_path_latitude_60s_step?.map((lat, i) => [lat, data?.central_path_longitude_60s_step[i]]) || []
   const bodyUpper = data?.body_upper_limit_latitude?.map((lat, i) => [lat, data?.body_upper_limit_longitude[i]]) || []
@@ -172,47 +174,43 @@ const PredictOccultationMap = ({ occultationId }) => {
             </Typography>
           </Box>
         )}
-        {!isFetching && (
+        {!isFetching && mapCenter && (
           <MapContainer className={classes.map} center={mapCenter} zoom={zoomLevel}>
             <TileLayer url={tileLayerUrl} subdomains={['mt0', 'mt1', 'mt2', 'mt3']} />
             {/* <FlyToMap center={mapCenter} zoom={mapZoom} /> */}
 
             {/* Chamada do Componente que desenha as sombras */}
-            {data ? <DayLayer datetime={datetime} /> : ''}
+            <DayLayer datetime={datetime} />
 
-            {hasValidData && (
-              <>
-                <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
+            <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} warning={warning} />
 
-                {/* Linha principal do caminho central */}
-                {periodicLineCenterSegments.map((segment, index) => (
-                  <Polyline key={index} pathOptions={blueOptions} positions={segment} />
-                ))}
+            {/* Linha principal do caminho central */}
+            {periodicLineCenterSegments.map((segment, index) => (
+              <Polyline key={index} pathOptions={blueOptions} positions={segment} />
+            ))}
 
-                {/* Pontos do caminho central */}
-                {periodicCentralPathSteps.map((point, index) => (
-                  <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
-                ))}
+            {/* Pontos do caminho central */}
+            {periodicCentralPathSteps.map((point, index) => (
+              <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
+            ))}
 
-                {!hasValidData && <Circle center={mapCenter} pathOptions={circleOptions} />}
+            {!mapCenterBr && <Circle center={mapCenter} pathOptions={circleOptions} />}
 
-                {/* Limites superiores e inferiores do corpo */}
-                {periodicBodyUpperSegments.map((segment, index) => (
-                  <Polyline key={`upper-${index}`} pathOptions={bodyOptions} positions={segment} />
-                ))}
-                {periodicBodyLowerSegments.map((segment, index) => (
-                  <Polyline key={`lower-${index}`} pathOptions={bodyOptions} positions={segment} />
-                ))}
+            {/* Limites superiores e inferiores do corpo */}
+            {periodicBodyUpperSegments.map((segment, index) => (
+              <Polyline key={`upper-${index}`} pathOptions={bodyOptions} positions={segment} />
+            ))}
+            {periodicBodyLowerSegments.map((segment, index) => (
+              <Polyline key={`lower-${index}`} pathOptions={bodyOptions} positions={segment} />
+            ))}
 
-                {/* Limites de incerteza */}
-                {periodicUncertaintyUpperSegments.map((segment, index) => (
-                  <Polyline key={`uncertainty-upper-${index}`} pathOptions={traceOptions} positions={segment} />
-                ))}
-                {periodicUncertaintyLowerSegments.map((segment, index) => (
-                  <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
-                ))}
-              </>
-            )}
+            {/* Limites de incerteza */}
+            {periodicUncertaintyUpperSegments.map((segment, index) => (
+              <Polyline key={`uncertainty-upper-${index}`} pathOptions={traceOptions} positions={segment} />
+            ))}
+            {periodicUncertaintyLowerSegments.map((segment, index) => (
+              <Polyline key={`uncertainty-lower-${index}`} pathOptions={traceOptions} positions={segment} />
+            ))}
           </MapContainer>
         )}
         {/* Contêiner dos botões de download */}

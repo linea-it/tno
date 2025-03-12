@@ -4,7 +4,7 @@ import L from 'leaflet' // Biblioteca para manipulação de mapas
 
 // Componente Legend
 // Adiciona uma legenda dinamicamente ao mapa
-const Legend = ({ hasBodyLimit, hasUncertainty }) => {
+const Legend = ({ hasBodyLimit, hasUncertainty, warning }) => {
   const map = useMap()
 
   useEffect(() => {
@@ -18,7 +18,9 @@ const Legend = ({ hasBodyLimit, hasUncertainty }) => {
       div.style.marginRight = '10px'
       div.style.boxShadow = '0 0 15px rgba(0, 0, 0, 0.2)'
 
+      // if limits dont exist plot 'Path outside the limits of the map'
       // Estrutura fixa da legenda com elementos opcionais para "Body Limits" e "Uncertainty"
+
       div.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: space-around;">
           <div style="display: flex; align-items: center; margin: 0 10px;">
@@ -31,22 +33,30 @@ const Legend = ({ hasBodyLimit, hasUncertainty }) => {
             <div style="width: 5px; height: 5px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> 60s steps
           </div>
           ${
-            hasBodyLimit
-              ? `
-          <div style="display: flex; align-items: center; margin: 0 10px;">
-            <div style="width: 10px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
-          </div>
-          `
-              : ''
-          }
-          ${
-            hasUncertainty
-              ? `
-          <div style="display: flex; align-items: center; margin: 0 10px;">
-            <div style="width: 10px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
-          </div>
-          `
-              : ''
+            warning
+              ? `<div style="display: flex; align-items: center; margin: 0 10px; color: #D32F2F;">
+                  <div style="width: 10px; height: 4px; background: #D32F2F; margin-right: 8px;"></div> ${warning}
+              </div>`
+              : `
+                ${
+                  hasBodyLimit
+                    ? `
+                    <div style="display: flex; align-items: center; margin: 0 10px;">
+                      <div style="width: 10px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
+                    </div>
+                    `
+                    : ''
+                }
+                ${
+                  hasUncertainty
+                    ? `
+                  <div style="display: flex; align-items: center; margin: 0 10px;">
+                    <div style="width: 10px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
+                  </div>
+                  `
+                    : ''
+                }
+              `
           }
         </div>
       `
@@ -58,7 +68,7 @@ const Legend = ({ hasBodyLimit, hasUncertainty }) => {
     return () => {
       map.removeControl(legend)
     }
-  }, [hasBodyLimit, hasUncertainty, map])
+  }, [hasBodyLimit, hasUncertainty, warning, map])
 
   return null
 }
