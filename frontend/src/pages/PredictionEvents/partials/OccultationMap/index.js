@@ -193,7 +193,7 @@ const PredictOccultationMap = ({ occultationId }) => {
               <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
             ))}
 
-            {!mapCenterBr && <Circle center={mapCenter} pathOptions={circleOptions} />}
+            {!warning && <Circle center={mapCenter} pathOptions={circleOptions} />}
 
             {/* Limites superiores e inferiores do corpo */}
             {periodicBodyUpperSegments.map((segment, index) => (

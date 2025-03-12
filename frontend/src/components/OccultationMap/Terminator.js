@@ -118,7 +118,7 @@ var Terminator = L.Polygon.extend({
       latLng[i + 1] = [this._latitude(ha, sunEqPos), lng]
     }
 
-    console.log('daytime:', daytime, 'sunEqPos.delta:', sunEqPos.delta)
+    // console.log('daytime:', daytime, 'sunEqPos.delta:', sunEqPos.delta)
 
     // Update the condition based on the `daytime` boolean
     if (daytime) {
