@@ -80,7 +80,7 @@ def get_config(key, jobpath):
                                 ]
                             ),
                             "PREDICT_OUTPUTS": str(predict_outputs),
-                            "PREDICT_INPUTS": str(predict_inputs), 
+                            "PREDICT_INPUTS": str(predict_inputs),
                             "DB_CATALOG_URI": db_uri,
                             "DB_ADMIN_URI": admin_db_uri,
                         },

@@ -192,15 +192,15 @@ def update_job_progress(jobid):
     # Update job progress stage 2 - Running tasks
     stage2_status = 3 if completed_tasks == submited_tasks else 2
     update_progress_status(
-            jobid,
-            step=2,
-            status=stage2_status,
-            count=submited_tasks,
-            current=completed_tasks,
-            success=success_tasks,
-            failures=failed_tasks,
-            t0=job["start"],
-        )
+        jobid,
+        step=2,
+        status=stage2_status,
+        count=submited_tasks,
+        current=completed_tasks,
+        success=success_tasks,
+        failures=failed_tasks,
+        t0=job["start"],
+    )
 
 
 def predict_job_queue():
@@ -753,7 +753,6 @@ def submit_tasks(jobid: int):
                 log.debug(f"Coping: {file} -> {file_destiny}")
                 shutil.copyfile(file, file_destiny)
 
-
             # STAR CATALOG
             a.set_star_catalog(**STAR_CATALOG)
 
@@ -1096,7 +1095,7 @@ def complete_job(job, log, status):
     update_job(job)
 
     # Update Job Progress
-    update_job_progress(job['id'])
+    update_job_progress(job["id"])
 
     # Remove o diretório de asteroids do job.
     if not job["debug"]:

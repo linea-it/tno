@@ -1,6 +1,6 @@
-from run_pred_occ import predict_job_queue
-from run_pred_occ import get_job_running, update_job_progress
+from run_pred_occ import get_job_running, predict_job_queue
 from run_pred_occ import run_job as predict_run_job
+from run_pred_occ import update_job_progress
 
 
 def predict_occultation_queue():
@@ -26,8 +26,6 @@ if __name__ == "__main__":
             update_job_progress(running_id)
         else:
             print("No job running.")
-
-
 
     except Exception as e:
         # Este exception é para evitar que a daemon desligue em caso de falha.

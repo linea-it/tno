@@ -129,7 +129,7 @@ class PredictionJobViewSet(
             job.status = 7
             job.save()
 
-            # Alterar todas as tasks do job para aborting 
+            # Alterar todas as tasks do job para aborting
             # 3-Queued
             tasks = job.predictionjobresult_set.filter(status=3)
             tasks.update(status=5)

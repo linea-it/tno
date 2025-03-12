@@ -138,6 +138,7 @@ class PredictionJobResultSerializer(serializers.ModelSerializer):
     predict_start_date = serializers.DateField(source="job.predict_start_date")
     predict_end_date = serializers.DateField(source="job.predict_end_date")
     status_name = serializers.SerializerMethodField()
+
     class Meta:
         model = PredictionJobResult
         fields = "__all__"
@@ -155,6 +156,7 @@ class PredictionJobResultSerializer(serializers.ModelSerializer):
             return "Aborted"
         else:
             return "Unknown"
+
 
 class PredictionJobStatusSerializer(serializers.ModelSerializer):
     class Meta:
