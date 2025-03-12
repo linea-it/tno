@@ -11,7 +11,7 @@ import DayLayer from '../../../../components/OccultationMap/DayTime' // componen
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
 //import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
 import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
-import DownloadButton from '../../../../components/OccultationMap/OccultationKmzDownload'
+import DownloadKMZButton from '../../../../components/OccultationMap/OccultationKmzDownload'
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
@@ -121,7 +121,6 @@ const PredictOccultationMap = ({ occultationId }) => {
 
   // Extração dos dados para construção dos elementos do mapa
   const warning = data?.warning
-  console.log(warning)
   const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data?.central_path_longitude[i]]) || []
   const centralPathSteps = data?.central_path_latitude_60s_step?.map((lat, i) => [lat, data?.central_path_longitude_60s_step[i]]) || []
   const bodyUpper = data?.body_upper_limit_latitude?.map((lat, i) => [lat, data?.body_upper_limit_longitude[i]]) || []
@@ -225,7 +224,7 @@ const PredictOccultationMap = ({ occultationId }) => {
           >
             {/* Botão de Download do arquivo KMZ */}
             <Stack sx={{ flex: 1, mx: 0.5, maxWidth: { xs: '100%', sm: '200px' }, alignSelf: 'stretch' }}>
-              <DownloadButton
+              <DownloadKMZButton
                 {...{
                   id: occultationId,
                   mapCenter,

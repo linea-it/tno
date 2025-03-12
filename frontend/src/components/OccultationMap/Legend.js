@@ -21,7 +21,8 @@ const Legend = ({ hasBodyLimit, hasUncertainty, warning }) => {
       // if limits dont exist plot 'Path outside the limits of the map'
       // Estrutura fixa da legenda com elementos opcionais para "Body Limits" e "Uncertainty"
 
-      div.innerHTML = `
+      if (warning == null) {
+        div.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: space-around;">
           <div style="display: flex; align-items: center; margin: 0 10px;">
             <div style="width: 10px; height: 2px; background: #00468D; margin-right: 8px;"></div> Shadow Path
@@ -33,34 +34,34 @@ const Legend = ({ hasBodyLimit, hasUncertainty, warning }) => {
             <div style="width: 5px; height: 5px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> 60s steps
           </div>
           ${
-            warning
-              ? `<div style="display: flex; align-items: center; margin: 0 10px; color: #D32F2F;">
-                   ${warning}
-              </div>`
-              : `
-                ${
-                  hasBodyLimit
-                    ? `
-                    <div style="display: flex; align-items: center; margin: 0 10px;">
-                      <div style="width: 10px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
-                    </div>
-                    `
-                    : ''
-                }
-                ${
-                  hasUncertainty
-                    ? `
-                  <div style="display: flex; align-items: center; margin: 0 10px;">
-                    <div style="width: 10px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
-                  </div>
-                  `
-                    : ''
-                }
-              `
+            hasBodyLimit
+              ? `
+          <div style="display: flex; align-items: center; margin: 0 10px;">
+            <div style="width: 10px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
+          </div>
+          `
+              : ''
+          }
+          ${
+            hasUncertainty
+              ? `
+          <div style="display: flex; align-items: center; margin: 0 10px;">
+            <div style="width: 10px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
+          </div>
+          `
+              : ''
           }
         </div>
       `
-      return div
+        return div
+      } else {
+        div.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: space-around;">
+          <div style="display: flex; align-items: center; margin: 0 10px; color: #D32F2F;">
+           ${warning}
+          </div>`
+        return div
+      }
     }
 
     legend.addTo(map)
