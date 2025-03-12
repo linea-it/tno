@@ -150,7 +150,7 @@ const DownloadKMZButton = ({ id, ...params }) => {
       contentString += '<coordinates>\n'
       for (let i = 0; i < myArrayC.length; i++) {
         contentString += myArrayC[i] + ',0.0\n'
-        console.log(myArrayC[i])
+        // console.log(myArrayC[i])
       }
       contentString += '</coordinates>\n'
       contentString += '  </LineString>\n'
@@ -164,9 +164,15 @@ const DownloadKMZButton = ({ id, ...params }) => {
     generateKMZ(contentString, fileName)
   }
 
-  //
+  // console.log('params.warning', params.warning)
+
   return (
-    <Button variant='contained' color='secondary' onClick={handleDownload}>
+    <Button
+      variant='contained'
+      color='secondary'
+      onClick={handleDownload}
+      disabled={params.warning !== null} // Enable if params.warning is undefined
+    >
       Download KMZ
     </Button>
   )

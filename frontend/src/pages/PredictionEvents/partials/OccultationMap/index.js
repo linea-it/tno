@@ -235,7 +235,8 @@ const PredictOccultationMap = ({ occultationId }) => {
                   bodyUpper: bodyUpper,
                   bodyLower: bodyLower,
                   uncertaintyUpper: uncertaintyUpper,
-                  uncertaintyLower: uncertaintyLower
+                  uncertaintyLower: uncertaintyLower,
+                  warning: warning
                 }}
               />
             </Stack>

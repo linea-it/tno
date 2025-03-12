@@ -488,7 +488,9 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 output[key] = value
 
         except:
-            output["warning"] = "Path outside the limits of the map"
+            output["warning"] = (
+                "The shadow's mean path extends beyond Earth's planetary boundary."
+            )
 
         return Response(output)
 
