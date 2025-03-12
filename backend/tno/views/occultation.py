@@ -16,6 +16,7 @@ from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+
 from tno.db import CatalogDB
 from tno.models import AsteroidCache, Catalog, DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path, visibility_from_coeff
@@ -431,45 +432,45 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_occultation_paths(self, request, pk=None, hash_id=None):
         """Retorna um json contendo os caminhos da sombra."""
+
+        obj = self.get_object()
+
+        star_coordinates = obj.ra_star_candidate + " " + obj.dec_star_candidate
+        object_diameter = obj.diameter if obj.diameter is not None else 0
+        object_diameter_error_min = (
+            obj.diameter_err_min if obj.diameter_err_min is not None else 0
+        )
+        object_diameter_error_max = (
+            obj.diameter_err_max if obj.diameter_err_max is not None else 0
+        )
+        object_diameter_error = max(
+            object_diameter_error_min, object_diameter_error_max
+        )
+        object_diameter_error = (
+            None if object_diameter_error == 0 else object_diameter_error
+        )
+
+        output = {}
+        output["datetime"] = obj.date_time
+        output["diameter"] = object_diameter if object_diameter > 0 else None
+        diameter_upper_limit = (
+            (object_diameter + object_diameter_error_max)
+            if object_diameter > 0 and object_diameter_error_max > 0
+            else None
+        )
+        output["diameter_upper_limit"] = diameter_upper_limit
+        diameter_lower_limit = (
+            (object_diameter - object_diameter_error_min)
+            if object_diameter > 0 and object_diameter_error_min > 0
+            else None
+        )
+        output["diameter_lower_limit"] = diameter_lower_limit
+
+        # output["max_longitude"] = obj.occ_path_coeff["max_longitude"]
+        # output["min_longitude"] = obj.occ_path_coeff["min_longitude"]
+        # output["max_latitude"] = obj.occ_path_coeff["max_latitude"]
+        # output["min_latitude"] = obj.occ_path_coeff["min_latitude"]
         try:
-            obj = self.get_object()
-
-            star_coordinates = obj.ra_star_candidate + " " + obj.dec_star_candidate
-            object_diameter = obj.diameter if obj.diameter is not None else 0
-            object_diameter_error_min = (
-                obj.diameter_err_min if obj.diameter_err_min is not None else 0
-            )
-            object_diameter_error_max = (
-                obj.diameter_err_max if obj.diameter_err_max is not None else 0
-            )
-            object_diameter_error = max(
-                object_diameter_error_min, object_diameter_error_max
-            )
-            object_diameter_error = (
-                None if object_diameter_error == 0 else object_diameter_error
-            )
-
-            output = {}
-            output["datetime"] = obj.date_time
-            output["diameter"] = object_diameter if object_diameter > 0 else None
-            diameter_upper_limit = (
-                (object_diameter + object_diameter_error_max)
-                if object_diameter > 0 and object_diameter_error_max > 0
-                else None
-            )
-            output["diameter_upper_limit"] = diameter_upper_limit
-            diameter_lower_limit = (
-                (object_diameter - object_diameter_error_min)
-                if object_diameter > 0 and object_diameter_error_min > 0
-                else None
-            )
-            output["diameter_lower_limit"] = diameter_lower_limit
-
-            # output["max_longitude"] = obj.occ_path_coeff["max_longitude"]
-            # output["min_longitude"] = obj.occ_path_coeff["min_longitude"]
-            # output["max_latitude"] = obj.occ_path_coeff["max_latitude"]
-            # output["min_latitude"] = obj.occ_path_coeff["min_latitude"]
-
             paths = occultation_path(
                 obj.date_time,
                 star_coordinates,
@@ -483,15 +484,14 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
                 closest_approach_error=obj.closest_approach_uncertainty_km,
                 interpolate=True,
             )
+            output["warning"] = None
             for key, value in paths.items():
                 output[key] = value
 
-            return Response(output)
         except:
-            return Response(
-                {"error": "No occultation path data available"},
-                status=status.HTTP_204_NO_CONTENT,
-            )
+            output["warning"] = "Path outside the limits of the map"
+
+        return Response(output)
 
     @extend_schema(
         responses={
