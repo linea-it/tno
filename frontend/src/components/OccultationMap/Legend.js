@@ -35,7 +35,7 @@ const Legend = ({ hasBodyLimit, hasUncertainty, warning }) => {
           ${
             warning
               ? `<div style="display: flex; align-items: center; margin: 0 10px; color: #D32F2F;">
-                  <div style="width: 10px; height: 4px; background: #D32F2F; margin-right: 8px;"></div> ${warning}
+                   ${warning}
               </div>`
               : `
                 ${
