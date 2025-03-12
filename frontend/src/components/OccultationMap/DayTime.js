@@ -13,7 +13,7 @@ const DayLayer = ({ datetime }) => {
       fillOpacity: 0.65,
       daytime: true
     }).addTo(map)
-    console.log('executei Nighttime...')
+
     daymask.setTime(datetime)
 
     // Remove a camada ao desmontar ou ao atualizar

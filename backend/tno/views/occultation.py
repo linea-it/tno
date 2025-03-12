@@ -12,7 +12,7 @@ from django.core.cache import cache
 from django.db.models import F, FloatField, Q, Value
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, inline_serializer
-from rest_framework import serializers, viewsets
+from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -431,6 +431,7 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=True, methods=["get"], permission_classes=(AllowAny,))
     def get_occultation_paths(self, request, pk=None, hash_id=None):
         """Retorna um json contendo os caminhos da sombra."""
+
         obj = self.get_object()
 
         star_coordinates = obj.ra_star_candidate + " " + obj.dec_star_candidate
@@ -448,19 +449,6 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
             None if object_diameter_error == 0 else object_diameter_error
         )
 
-        paths = occultation_path(
-            obj.date_time,
-            star_coordinates,
-            obj.closest_approach,
-            obj.position_angle,
-            obj.velocity,
-            obj.delta,
-            offset=[0, 0],
-            object_diameter=object_diameter,
-            object_diameter_error=object_diameter_error,
-            closest_approach_error=obj.closest_approach_uncertainty_km,
-            interpolate=True,
-        )
         output = {}
         output["datetime"] = obj.date_time
         output["diameter"] = object_diameter if object_diameter > 0 else None
@@ -481,9 +469,28 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         # output["min_longitude"] = obj.occ_path_coeff["min_longitude"]
         # output["max_latitude"] = obj.occ_path_coeff["max_latitude"]
         # output["min_latitude"] = obj.occ_path_coeff["min_latitude"]
+        try:
+            paths = occultation_path(
+                obj.date_time,
+                star_coordinates,
+                obj.closest_approach,
+                obj.position_angle,
+                obj.velocity,
+                obj.delta,
+                offset=[0, 0],
+                object_diameter=object_diameter,
+                object_diameter_error=object_diameter_error,
+                closest_approach_error=obj.closest_approach_uncertainty_km,
+                interpolate=True,
+            )
+            output["warning"] = None
+            for key, value in paths.items():
+                output[key] = value
 
-        for key, value in paths.items():
-            output[key] = value
+        except:
+            output["warning"] = (
+                "The shadow's mean path extends beyond Earth's planetary boundary."
+            )
 
         return Response(output)
 

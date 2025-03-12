@@ -1,18 +1,17 @@
 // Importações principais de bibliotecas necessárias para o funcionamento do componente
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
 import L from 'leaflet' // Biblioteca para manipulação de mapas
-import { MapContainer, TileLayer, useMap, Popup, Polyline, Circle, CircleMarker, Marker } from 'react-leaflet' // Componentes do React para integração com Leaflet
+import { MapContainer, TileLayer, Polyline, Circle, CircleMarker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
 import { Box, Card, CircularProgress, Stack, Typography, Button } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
-import NightLayer from '../../../../components/OccultationMap/NightTime' // componente que desenha as sombras de acordo com o datetime
 import DayLayer from '../../../../components/OccultationMap/DayTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
-import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
+//import FlyToMap from '../../../../components/OccultationMap/FlyToMap' // componennte que move o mapa para posição especificada
 import OccultationMapDownload from '../../../../components/OccultationMap/OccultationMapDownload' //componente que faz o download do mapa do sora
-import DownloadButton from '../../../../components/OccultationMap/OccultationKmzDownload'
+import DownloadKMZButton from '../../../../components/OccultationMap/OccultationKmzDownload'
 
 // Função para lidar com descontinuidades em longitude
 const splitByDiscontinuity = (points, threshold = 180) => {
@@ -79,13 +78,14 @@ const PredictOccultationMap = ({ occultationId }) => {
     // staleTime: 60 * 1000 // Define o tempo em milissegundos antes de considerar a consulta desatualizada
   })
 
-  console.log('data', data)
-
   // Define o nível de zoom com base nos parâmetros
   const zoomLevel = 3
 
   // Determina dinamicamente o centro do mapa e o nível de zoom inicial
-  const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : null
+  const mapCenterBr = [-15.7801, -47.9292]
+
+  //const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : mapCenterBr
+  const mapCenter = data ? [data?.latitude || mapCenterBr[0], data?.longitude || mapCenterBr[1]] : mapCenterBr
   const mapZoom = data ? 4 : zoomLevel
 
   // Configurações do ícone personalizado
@@ -120,6 +120,7 @@ const PredictOccultationMap = ({ occultationId }) => {
   const bodyOptions = { color: '#00468D', weight: 2 } // Opções para linhas de limite do corpo
 
   // Extração dos dados para construção dos elementos do mapa
+  const warning = data?.warning
   const lineCenter = data?.central_path_latitude?.map((lat, i) => [lat, data?.central_path_longitude[i]]) || []
   const centralPathSteps = data?.central_path_latitude_60s_step?.map((lat, i) => [lat, data?.central_path_longitude_60s_step[i]]) || []
   const bodyUpper = data?.body_upper_limit_latitude?.map((lat, i) => [lat, data?.body_upper_limit_longitude[i]]) || []
@@ -176,11 +177,11 @@ const PredictOccultationMap = ({ occultationId }) => {
           <MapContainer className={classes.map} center={mapCenter} zoom={zoomLevel}>
             <TileLayer url={tileLayerUrl} subdomains={['mt0', 'mt1', 'mt2', 'mt3']} />
             {/* <FlyToMap center={mapCenter} zoom={mapZoom} /> */}
-            <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} />
 
             {/* Chamada do Componente que desenha as sombras */}
-            {/* <NightLayer datetime={datetime} /> */}
             <DayLayer datetime={datetime} />
+
+            <Legend hasBodyLimit={hasBodyLimit} hasUncertainty={hasUncertainty} warning={warning} />
 
             {/* Linha principal do caminho central */}
             {periodicLineCenterSegments.map((segment, index) => (
@@ -191,7 +192,8 @@ const PredictOccultationMap = ({ occultationId }) => {
             {periodicCentralPathSteps.map((point, index) => (
               <CircleMarker key={index} center={point} pathOptions={circleMinOptions} />
             ))}
-            <Circle center={mapCenter} pathOptions={circleOptions} />
+
+            {!warning && <Circle center={mapCenter} pathOptions={circleOptions} />}
 
             {/* Limites superiores e inferiores do corpo */}
             {periodicBodyUpperSegments.map((segment, index) => (
@@ -222,7 +224,7 @@ const PredictOccultationMap = ({ occultationId }) => {
           >
             {/* Botão de Download do arquivo KMZ */}
             <Stack sx={{ flex: 1, mx: 0.5, maxWidth: { xs: '100%', sm: '200px' }, alignSelf: 'stretch' }}>
-              <DownloadButton
+              <DownloadKMZButton
                 {...{
                   id: occultationId,
                   mapCenter,
@@ -232,7 +234,8 @@ const PredictOccultationMap = ({ occultationId }) => {
                   bodyUpper: bodyUpper,
                   bodyLower: bodyLower,
                   uncertaintyUpper: uncertaintyUpper,
-                  uncertaintyLower: uncertaintyLower
+                  uncertaintyLower: uncertaintyLower,
+                  warning: warning
                 }}
               />
             </Stack>
