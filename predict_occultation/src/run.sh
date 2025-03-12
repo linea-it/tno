@@ -3,11 +3,10 @@
 _name=$1
 _start=$2
 _end=$3
-_number=$4
-_path=$5
-_step=$6
-_leap_sec=$7
-_bsp_planetary=$8
+_path=$4
+_step=$5
+_leap_sec=$6
+_bsp_planetary=$7
 
 umask 0002
 
@@ -18,8 +17,8 @@ echo 'CONDAPATH: ' $CONDAPATH
 echo 'PIPELINE_PREDIC_OCC: ' $PIPELINE_PREDIC_OCC
 echo 'PIPELINE_PATH: ' $PIPELINE_PATH
 echo 'PYTHONPATH: ' $PYTHONPATH
+echo 'PREDICT_INPUTS: ' $PREDICT_INPUTS
 echo 'PREDICT_OUTPUTS: ' $PREDICT_OUTPUTS
-
 echo "=========================================================="
 
 TMPDIR=`echo $RANDOM | md5sum | head -c 5; echo;`
@@ -45,13 +44,12 @@ shift $#
 source $PIPELINE_PATH/env_pipeline.sh
 
 # run.sh <name> <start_date> <final_date> \
-#   --number <number>
 #   --path <path>
 #   --step <step>
 #   --leap_sec <leap_sec>
 #   --bsp_planetary <bsp_planetary>
 #   --refina_orbit OPCIONAL
-python run.py $_name $_start $_end --number $_number --path $_path --step $_step --leap_sec $_leap_sec --bsp_planetary $_bsp_planetary
+python $PIPELINE_PREDIC_OCC/run.py $_name $_start $_end --path $_path --step $_step --leap_sec $_leap_sec --bsp_planetary $_bsp_planetary
 
 rm $DIR_DATA
 

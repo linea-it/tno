@@ -41,7 +41,8 @@ function PredictionAsteroid() {
             date_time_after: undefined,
             date_time_before: undefined,
             solar_time_after: undefined,
-            solar_time_before: undefined
+            solar_time_before: undefined,
+            closestApproachUncertainty: undefined
           }
         }
       })
@@ -53,7 +54,7 @@ function PredictionAsteroid() {
       setSummary([
         {
           title: 'Status',
-          value: predictionJobResult.status === 1 ? 'success' : 'failure'
+          value: predictionJobResult.status_name
         },
         {
           title: 'Name',
@@ -72,34 +73,14 @@ function PredictionAsteroid() {
           value: predictionJobResult.occultations
         },
         {
-          title: '# Des Observations',
-          value: predictionJobResult.des_obs
-        }
+          title: '# Stars',
+          value: predictionJobResult.stars
+        },
       ])
       setTimes([
         {
           title: 'Execution time',
           value: predictionJobResult.exec_time ? predictionJobResult.exec_time.split('.')[0] : '-'
-        },
-        {
-          title: 'Download BSP',
-          value: predictionJobResult.bsp_jpl_dw_time ? predictionJobResult.bsp_jpl_dw_time.split('.')[0] : '-'
-        },
-        {
-          title: 'Observations Download Time',
-          value: predictionJobResult.obs_dw_time ? predictionJobResult.obs_dw_time.split('.')[0] : '-'
-        },
-        {
-          title: 'Orbital Elements Download Time',
-          value: predictionJobResult.orb_ele_dw_time ? predictionJobResult.orb_ele_dw_time.split('.')[0] : '-'
-        },
-        {
-          title: 'DES Observations Execution Time',
-          value: predictionJobResult.des_obs_exec_time ? predictionJobResult.des_obs_exec_time.split('.')[0] : '-'
-        },
-        {
-          title: 'Refine Orbit Execution Time',
-          value: predictionJobResult.ref_orb_exec_time ? predictionJobResult.ref_orb_exec_time.split('.')[0] : '-'
         },
         {
           title: 'Predict Occultation Execution Time',

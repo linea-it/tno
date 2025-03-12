@@ -1,5 +1,6 @@
 from dao.asteroid import AsteroidDao
 from dao.db_base import DBBase
+from dao.gaia import *
 from dao.leap_second import LeapSecondDao
 from dao.observation import ObservationDao
 from dao.occultation import OccultationDao

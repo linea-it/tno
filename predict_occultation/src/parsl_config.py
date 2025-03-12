@@ -31,10 +31,14 @@ def get_config(key, jobpath):
         # Diretório de Outputs
         predict_outputs = Path(os.getenv("PREDICT_OUTPUTS"))
         predict_outputs.mkdir(parents=True, exist_ok=True)
+        # Diretório de Inputs
+        predict_inputs = Path(os.getenv("PREDICT_INPUTS"))
         # Linea SSH user keys
         sshkey = os.getenv("SSHKEY")
         # Linea DB prod_gavo DB uri. Catalog DB.
         db_uri = os.getenv("DB_CATALOG_URI")
+        # Linea DB portal admin
+        admin_db_uri = os.getenv("DB_ADMIN_URI")
 
         # Env.sh que sera executado antes de iniciar as tasks no cluster
         cluster_env_sh = pipeline_pred_occ.joinpath("cluster.sh")
@@ -47,13 +51,14 @@ def get_config(key, jobpath):
             "linea": HighThroughputExecutor(
                 label="linea",
                 worker_logdir_root=str(script_dir),
-                max_workers=100,
+                # max_workers=500,
                 provider=SlurmProvider(
                     partition="cpu_long",
                     nodes_per_block=1,  # number of nodes
                     cmd_timeout=240,  # duration for which the provider will wait for a command to be invoked on a remote system
                     launcher=SrunLauncher(debug=True, overrides=""),
-                    init_blocks=3,
+                    init_blocks=1,
+                    max_blocks=10,
                     parallelism=1,
                     walltime="240:00:00",
                     worker_init=f"source {cluster_env_sh}\n",
@@ -75,7 +80,9 @@ def get_config(key, jobpath):
                                 ]
                             ),
                             "PREDICT_OUTPUTS": str(predict_outputs),
+                            "PREDICT_INPUTS": str(predict_inputs),
                             "DB_CATALOG_URI": db_uri,
+                            "DB_ADMIN_URI": admin_db_uri,
                         },
                     ),
                 ),

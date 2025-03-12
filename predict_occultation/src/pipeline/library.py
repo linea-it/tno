@@ -112,28 +112,24 @@ def check_bsp_planetary(filename):
             raise (Exception("BSP Planetary %s file does not exist." % filename))
 
 
-def check_bsp_object(filename):
+def check_bsp_object(filepath, filename):
     """
     Verifica se o arquivo BSP Object existe e cria um link no diretório app
     """
-    print(filename)
+    print("IN BSP: ", filepath)
     app_path = os.environ.get("APP_PATH").rstrip("/")
-    data_dir = os.environ.get("DIR_DATA").rstrip("/")
-
-    in_bsp = os.path.join(data_dir, filename)
-
     dest = os.path.join(app_path, filename)
-
-    print("IN BSP: ", in_bsp)
     print("DEST: ", dest)
 
     # Verifica se o Arquivo existe no diretorio data
-    if os.path.exists(in_bsp):
+    if os.path.exists(filepath):
         # Cria um link simbolico no Diretório do app
-        os.symlink(in_bsp, dest)
+        os.symlink(filepath, dest)
         return filename
     else:
-        raise (Exception("BSP Object %s file does not exist. %s" % (filename, in_bsp)))
+        raise (
+            Exception("BSP Object %s file does not exist. %s" % (filename, filepath))
+        )
 
 
 def HMS2deg(ra="", dec=""):
@@ -198,11 +194,12 @@ def read_asteroid_json(asteroid_name):
     filepath = os.path.join(path, filename)
 
     if os.path.exists(filepath):
+        print("Reading json file: ", filepath)
         with open(filepath) as json_file:
             data = json.load(json_file)
             return data
     else:
-        return dict({})
+        raise Exception("Asteroid Json File not found: ", filepath)
 
 
 def write_asteroid_json(asteroid_name, data, callback_path=None):
@@ -795,3 +792,94 @@ def get_moon_illuminated_fraction(time, ephemeris=None):
     illumination_fraction = (1 + np.cos(moon_phase_angle)) / 2.0
 
     return illumination_fraction
+
+
+def angle_subtended_by_a_sphere(
+    geocentric_distance,
+    object_diameter=None,
+    h=None,
+    proper_motion_compensation=None,
+    earth_diameter=12756,
+):
+    """
+    Calculate the angular diameter (in degrees) of a sphere combined with Earth's radius.
+
+    The function computes the angular diameter of an object as seen from Earth by combining the
+    object's radius (derived from its diameter or absolute magnitude) with Earth's radius.
+
+    Parameters:
+        geocentric_distance (float): Distance from Earth's center to the object's center (km).
+        object_diameter (float, optional): Object diameter in kilometers.
+        h (float, optional): Absolute magnitude, used to estimate the diameter if object_diameter is not provided.
+        proper_motion_compensation (float, optional): Proper motion compensation in arcseconds.
+        earth_diameter (float): Earth's diameter in kilometers (default 12756 km).
+
+    Returns:
+        float: Apparent angular diameter in degrees; returns 180 if the object fills the sky.
+    """
+    # If no object diameter is provided, compute it from the absolute magnitude or use a default fraction of Earth's diameter.
+    if object_diameter is None:
+        if h is None:
+            object_diameter = earth_diameter * 0.1  # Default: 10% of Earth's diameter
+        else:
+            # Infer diameter from absolute magnitude using a standard formula (assuming albedo p=0.01 here)
+            object_diameter = 1329 * 10 ** (-0.2 * h) / np.sqrt(0.01)
+
+    earth_radius = earth_diameter / 2
+    object_radius = object_diameter / 2
+    ratio = (earth_radius + object_radius) / geocentric_distance
+
+    # If the combined radius exceeds the distance, the object fills the sky.
+    if ratio > 1:
+        return 180.0
+
+    # Return the full angular diameter in degrees.
+    pmc = (proper_motion_compensation or 0) / 3600
+
+    return 2 * np.degrees(np.arcsin(ratio)) + 2 * pmc
+
+
+def eph_hhmmss_to_deg(hour, minute, second):
+    """Convert hour angle (hours, minutes, seconds) to degrees from eph file."""
+    return (hour + minute / 60.0 + second / 3600.0) * 15
+
+
+def eph_ddmmss_to_deg(degree, minute, second, sign):
+    """Convert sexagesimal degrees to decimal degrees from eph file."""
+    if sign == "-":
+        return degree - minute / 60.0 - second / 3600.0
+    return degree + minute / 60.0 + second / 3600.0
+
+
+def read_ra_dec_from_ephemerides(
+    input, object_diameter=None, h=None, proper_motion_compensation=None
+):
+    # Read the ephemerides and prepare the data
+    ra, dec, geodist = [], [], []
+    with open(input) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("Data"):
+                continue
+            tokens = line.split()
+            ra.append(
+                eph_hhmmss_to_deg(float(tokens[2]), float(tokens[3]), float(tokens[4]))
+            )
+            dec.append(
+                eph_ddmmss_to_deg(
+                    float(tokens[5]), float(tokens[6]), float(tokens[7]), tokens[5][0]
+                )
+            )
+            geodist.append(float(tokens[8]))
+
+    ra, dec, geodist = np.array(ra), np.array(dec), np.array(geodist)
+    pmc = proper_motion_compensation or 0
+    angular_diameter = np.array(
+        [
+            angle_subtended_by_a_sphere(
+                g, object_diameter=object_diameter, h=h, proper_motion_compensation=pmc
+            )
+            for g in geodist
+        ]
+    )
+    return ra, dec, angular_diameter
