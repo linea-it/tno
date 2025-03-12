@@ -16,7 +16,6 @@ from rest_framework import serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
 from tno.db import CatalogDB
 from tno.models import AsteroidCache, Catalog, DynclassCache, Highlights, Occultation
 from tno.occviz import occultation_path, visibility_from_coeff
