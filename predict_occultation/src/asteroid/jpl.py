@@ -120,7 +120,7 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         "format": "json",
         "EPHEM_TYPE": "SPK",
         "OBJ_DATA": "YES",
-        "COMMAND": "'DES=" + identifier + "'",
+        "COMMAND": "'" + identifier + ";'",
         "START_TIME": date1.strftime("%Y-%b-%d"),
         "STOP_TIME": date2.strftime("%Y-%b-%d"),
     }
@@ -131,16 +131,35 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
             f"Code {r.status_code} - {http.HTTPStatus(r.status_code).phrase}"
         )
 
+    response_data = json.loads(r.text)  ##
+
+    # Se não houver correspondências, retornar um response
     # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
-    if "No matches found." in json.loads(r.text)["result"]:
-        parameters["COMMAND"] = "'" + identifier + ";'"
-        r = requests.get(urlJPL, params=parameters, stream=True)
+    # if "No matches found." in json.loads(r.text)["result"]:
+    if "No matches found." in response_data["result"]:
+        return {
+            "status": "error",
+            "message": f"No matches found for identifier {identifier}.",
+            "identifier": identifier,
+        }
+
+    # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
+    parameters["COMMAND"] = "'DES=" + identifier + "'"  # "'" + identifier + ";'"
+    r = requests.get(urlJPL, params=parameters, stream=True)
+
     if (
         r.status_code == requests.codes.ok
         and r.headers["Content-Type"] == "application/json"
     ):
         try:
             data = json.loads(r.text)
+            if "No matches found." in data["result"]:
+                return {
+                    "status": "error",
+                    "message": f"No matches found for identifier {identifier} using DES.",
+                    "identifier": identifier,
+                }
+
             # now we will check if it is in the satellites_bsp SPK creation is not available
             if (
                 "error" in data.keys()
