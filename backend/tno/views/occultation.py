@@ -269,7 +269,10 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
         # Mas não calcula a visibilidade
         queryset = self.filter_queryset(self.get_queryset())
         # logger.debug(queryset.query)
-        logger.info(f"Results after filters in the database: [{queryset.count()}]")
+
+        # Esta linha foi comentada por estar fazendo um count no banco de dados e
+        # isso estava causando lentidão na resposta da API.
+        # logger.info(f"Results after filters in the database: [{queryset.count()}]")
 
         # Recupera os parametros da requisição
         params = self.request.query_params
