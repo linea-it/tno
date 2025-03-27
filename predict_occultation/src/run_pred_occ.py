@@ -583,19 +583,6 @@ def submit_tasks(jobid: int):
         STAR_CATALOG = job["star_catalog"]
         log.debug("STAR_CATALOG: [%s]" % STAR_CATALOG["display_name"])
 
-        # =========================== Parsl ===========================
-        log.info("Settings Parsl configurations")
-        envname = os.getenv("PARSL_ENV", "linea")
-        parsl_conf = get_config(envname, current_path)
-        # Altera o diretório runinfo para dentro do diretório do job.
-        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
-        #         current_path, "script_dir"
-        #     )
-
-        parsl.clear()
-        parsl.load(parsl_conf)
-
         # ======================= Generate dates file =======================
         # Arquivo de datas pode ser o mesmo para todos os asteroids.
         # Executa o programa fortran geradata.
@@ -658,6 +645,24 @@ def submit_tasks(jobid: int):
         step1_count = len(asteroids)
 
         dao_job_result = PredictOccultationJobResultDao()
+
+        # =========================== Parsl ===========================
+        log.info("Settings Parsl configurations")
+        envname = os.getenv("PARSL_ENV", "linea")
+        parsl_conf = get_config(envname, current_path)
+        # Altera o diretório runinfo para dentro do diretório do job.
+        parsl_conf.run_dir = os.path.join(current_path, "runinfo")
+        # Altera dinamicamento o numero
+        parsl_conf.executors[0].provider.init_blocks = (
+            (len(asteroids) // 1500) + 1 if len(asteroids) <= 15000 else 10
+        )
+        log.info(f"Init Blocks: {parsl_conf.executors[0].provider.init_blocks}")
+        # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
+        #         current_path, "script_dir"
+        #     )
+
+        parsl.clear()
+        parsl.load(parsl_conf)
 
         for asteroid in asteroids:
             log.info(
