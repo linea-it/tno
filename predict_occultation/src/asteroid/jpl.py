@@ -120,7 +120,8 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         "format": "json",
         "EPHEM_TYPE": "SPK",
         "OBJ_DATA": "YES",
-        "COMMAND": "'" + identifier + ";'",
+        # "COMMAND": "'DES=" + identifier + ";'",
+        "COMMAND": "'" + identifier + "'",
         "START_TIME": date1.strftime("%Y-%b-%d"),
         "STOP_TIME": date2.strftime("%Y-%b-%d"),
     }
@@ -144,7 +145,10 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         }
 
     # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
-    parameters["COMMAND"] = "'DES=" + identifier + "'"  # "'" + identifier + ";'"
+    # if identifier ===
+    # print(identifier)
+    # parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
+    parameters["COMMAND"] = "'" + identifier + "'"  # "'" + identifier + ";'"
     r = requests.get(urlJPL, params=parameters, stream=True)
 
     if (
@@ -156,7 +160,7 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
             if "No matches found." in data["result"]:
                 return {
                     "status": "error",
-                    "message": f"No matches found for identifier {identifier} using DES.",
+                    "message": f"No matches found for identifier {identifier} using ",
                     "identifier": identifier,
                 }
 

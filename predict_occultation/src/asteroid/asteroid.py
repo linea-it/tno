@@ -462,21 +462,23 @@ class Asteroid:
         t0 = dt.now(tz=timezone.utc)
         end_period = self.calculate_bsp_end_period(end_period)
 
-        identifiers = [self.provisional_designation, self.name, self.number]
+        identifiers = [self.name, self.number, self.provisional_designation]
 
         for identifier in identifiers:
             if not identifier:
                 continue  # Pula valores inválidos
             try:
+                # print(self.provisional_designation)
+                print(identifier)
                 bsp_path = get_bsp_from_jpl(
-                    identifier,  # self.provisional_designation,
+                    str(identifier),  # self.provisional_designation,
                     start_period,
                     end_period,
                     bsp_filepath.parent,
                     bsp_filename,
                 )
                 mag_and_uncert_path = get_asteroid_uncertainty_from_jpl(
-                    identifier,  # self.provisional_designation,
+                    str(identifier),  # self.provisional_designation,
                     start_period,
                     end_period,
                     bsp_filepath.parent,
