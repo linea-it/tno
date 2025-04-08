@@ -112,6 +112,7 @@ def map_folder_have_free_space() -> bool:
 def upcoming_events_to_create_maps(
     date_start: Optional[str] = None,
     date_end: Optional[str] = None,
+    mag: Optional[float] = 21,
     limit: Optional[int] = None,
 ) -> list:
     logger = logging.getLogger("predict_maps")
@@ -149,7 +150,9 @@ def upcoming_events_to_create_maps(
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
 
     next_events = (
-        Occultation.objects.filter(date_time__range=(date_start, date_end))
+        Occultation.objects.filter(
+            date_time__range=(date_start, date_end), g_star__lte=(mag)
+        )
         .order_by("g_star")
         .only(
             "name",
