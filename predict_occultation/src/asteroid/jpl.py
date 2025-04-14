@@ -3,6 +3,7 @@ import http
 import json
 import pathlib
 import shutil
+import urllib.parse
 from datetime import datetime as dt
 
 import requests
@@ -114,6 +115,11 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     # &START_TIME=2023-Jan-01
     # &STOP_TIME=2023-Mar-30
 
+    # nome_corpo = " " + identifier + " "
+    # identifier = urllib.parse.quote(identifier)
+    # print(identifier)
+    # identifier = urllib.parse.quote(nome_corpo)
+
     # first we will assume the object is an asteroid or comet
     urlJPL = "https://ssd.jpl.nasa.gov/api/horizons.api"
     parameters = {
@@ -150,6 +156,19 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     # parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
     parameters["COMMAND"] = "'" + identifier + "'"  # "'" + identifier + ";'"
     r = requests.get(urlJPL, params=parameters, stream=True)
+
+    ##
+    if "No matches found." in response_data["result"]:
+        return {
+            "status": "error",
+            "message": f"No matches found for identifier {identifier}.",
+            "identifier": identifier,
+        }
+
+    # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
+    parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
+    r = requests.get(urlJPL, params=parameters, stream=True)
+    ##
 
     if (
         r.status_code == requests.codes.ok

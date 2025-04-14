@@ -6,6 +6,7 @@ import os
 import pathlib
 import sys
 import time
+import urllib.parse
 from datetime import datetime as dt
 from datetime import timedelta, timezone
 from io import StringIO
@@ -465,6 +466,11 @@ class Asteroid:
         identifiers = [self.name, self.number, self.provisional_designation]
 
         for identifier in identifiers:
+            ## if self.name
+            if identifier == self.name:
+                identifier = urllib.parse.quote(identifier)
+                print(identifier)
+
             if not identifier:
                 continue  # Pula valores inválidos
             try:
