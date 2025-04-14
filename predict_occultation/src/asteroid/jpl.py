@@ -120,110 +120,165 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
     # print(identifier)
     # identifier = urllib.parse.quote(nome_corpo)
 
-    # first we will assume the object is an asteroid or comet
+    # # first we will assume the object is an asteroid or comet
     urlJPL = "https://ssd.jpl.nasa.gov/api/horizons.api"
-    parameters = {
-        "format": "json",
-        "EPHEM_TYPE": "SPK",
-        "OBJ_DATA": "YES",
-        # "COMMAND": "'DES=" + identifier + ";'",
-        "COMMAND": "'" + identifier + "'",
-        "START_TIME": date1.strftime("%Y-%b-%d"),
-        "STOP_TIME": date2.strftime("%Y-%b-%d"),
-    }
+    # parameters = {
+    #     "format": "json",
+    #     "EPHEM_TYPE": "SPK",
+    #     "OBJ_DATA": "YES",
+    #     # "COMMAND": "'DES=" + identifier + ";'",
+    #     "COMMAND": "'" + identifier + "'",
+    #     "START_TIME": date1.strftime("%Y-%b-%d"),
+    #     "STOP_TIME": date2.strftime("%Y-%b-%d"),
+    # }
 
-    r = requests.get(urlJPL, params=parameters, stream=True)
-    if r.status_code != 200:
-        raise Exception(
-            f"Code {r.status_code} - {http.HTTPStatus(r.status_code).phrase}"
-        )
+    # r = requests.get(urlJPL, params=parameters, stream=True)
+    # if r.status_code != 200:
+    #     raise Exception(
+    #         f"Code {r.status_code} - {http.HTTPStatus(r.status_code).phrase}"
+    #     )
 
-    response_data = json.loads(r.text)  ##
+    # response_data = json.loads(r.text)  ##
 
-    # Se não houver correspondências, retornar um response
-    # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
-    # if "No matches found." in json.loads(r.text)["result"]:
-    if "No matches found." in response_data["result"]:
-        return {
-            "status": "error",
-            "message": f"No matches found for identifier {identifier}.",
-            "identifier": identifier,
-        }
+    # # Se não houver correspondências, retornar um response
+    # # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
+    # # if "No matches found." in json.loads(r.text)["result"]:
+    # if "No matches found." in response_data["result"]:
+    #     return {
+    #         "status": "error",
+    #         "message": f"No matches found for identifier {identifier}.",
+    #         "identifier": identifier,
+    #     }
 
-    # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
-    # if identifier ===
-    # print(identifier)
-    # parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
-    parameters["COMMAND"] = "'" + identifier + "'"  # "'" + identifier + ";'"
-    r = requests.get(urlJPL, params=parameters, stream=True)
+    # # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
+    # # if identifier ===
+    # # print(identifier)
+    # # parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
+    # parameters["COMMAND"] = "'" + identifier + "'"  # "'" + identifier + ";'"
+    # r = requests.get(urlJPL, params=parameters, stream=True)
+
+    # ##
+    # # if "No matches found." in response_data["result"]:
+    # #     return {
+    # #         "status": "error",
+    # #         "message": f"No matches found for identifier {identifier}.",
+    # #         "identifier": identifier,
+    # #     }
+
+    # # # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
+    # # parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
+    # # r = requests.get(urlJPL, params=parameters, stream=True)
+    # ##
+
+    # if (
+    #     r.status_code == requests.codes.ok
+    #     and r.headers["Content-Type"] == "application/json"
+    # ):
+    #     try:
+    #         data = json.loads(r.text)
+    #         if "No matches found." in data["result"]:
+    #             return {
+    #                 "status": "error",
+    #                 "message": f"No matches found for identifier {identifier} using ",
+    #                 "identifier": identifier,
+    #             }
+
+    #         # now we will check if it is in the satellites_bsp SPK creation is not available
+    #         if (
+    #             "error" in data.keys()
+    #             and "SPK creation is not available" in data["error"]
+    #         ):
+    #             if identifier.upper() in satellites_bsp.keys():
+    #                 r = requests.get(satellites_bsp[identifier.upper()], stream=True)
+    #                 if r.status_code == 200:
+    #                     with open(spk_file, "wb") as f:
+    #                         f.write(r.content)
+    #                     return spk_file
+    #                 else:
+    #                     raise (
+    #                         "Failed to download the file. Status code:",
+    #                         r.status_code,
+    #                     )
+
+    #         # If the SPK file was generated, decode it and write it to the output file:
+    #         if "spk" in data:
+    #             with open(spk_file, "wb") as f:
+    #                 # Decode and write the binary SPK file content:
+    #                 f.write(base64.b64decode(data["spk"]))
+    #                 f.close()
+    #             return spk_file
+    #         else:
+    #             # Otherwise, the SPK file was not generated so output an error:
+    #             raise Exception(f"SPK file not generated: {r.text}")
+
+    #     except ValueError as e:
+    #         raise Exception(f"Unable to decode JSON. {e}")
+    #     except OSError as e:
+    #         raise Exception(f"Unable to create file '{spk_file}': {e}")
+    #     except Exception as e:
+    #         raise (e)
+
+    # elif r.status_code == 400:
+    #     raise Exception("Bad Request code 400 - {r.text}")
+    # else:
+    #     raise Exception(
+    #         f"It was not able to download the bsp file for object. Error: {r.status_code}"
+    #     )
 
     ##
-    if "No matches found." in response_data["result"]:
-        return {
-            "status": "error",
-            "message": f"No matches found for identifier {identifier}.",
-            "identifier": identifier,
+    attempts = [
+        f"'{identifier}'",  # tentativa 1
+        # f"'{identifier}'",  # tentativa 2 (repetida por segurança)
+        f"'DES={identifier}'",  # tentativa 3 com DES
+    ]
+
+    for attempt_num, command in enumerate(attempts, start=1):
+        print(f"Tentativa {attempt_num} com COMMAND={command}")
+
+        parameters = {
+            "format": "json",
+            "EPHEM_TYPE": "SPK",
+            "OBJ_DATA": "YES",
+            "COMMAND": command,
+            "START_TIME": date1.strftime("%Y-%b-%d"),
+            "STOP_TIME": date2.strftime("%Y-%b-%d"),
         }
 
-    # Tentar outra execuçao com "DES=" se a primeira tentativa falhar
-    parameters["COMMAND"] = "'DES=" + identifier + ";'"  # "'" + identifier + ";'"
-    r = requests.get(urlJPL, params=parameters, stream=True)
-    ##
+        r = requests.get(urlJPL, params=parameters, stream=True)
 
-    if (
-        r.status_code == requests.codes.ok
-        and r.headers["Content-Type"] == "application/json"
-    ):
+        if r.status_code != 200:
+            print(f"Tentativa {attempt_num} falhou: {r.status_code}")
+            continue
+
         try:
             data = json.loads(r.text)
-            if "No matches found." in data["result"]:
-                return {
-                    "status": "error",
-                    "message": f"No matches found for identifier {identifier} using ",
-                    "identifier": identifier,
-                }
-
-            # now we will check if it is in the satellites_bsp SPK creation is not available
-            if (
-                "error" in data.keys()
-                and "SPK creation is not available" in data["error"]
-            ):
-                if identifier.upper() in satellites_bsp.keys():
-                    r = requests.get(satellites_bsp[identifier.upper()], stream=True)
-                    if r.status_code == 200:
-                        with open(spk_file, "wb") as f:
-                            f.write(r.content)
-                        return spk_file
-                    else:
-                        raise (
-                            "Failed to download the file. Status code:",
-                            r.status_code,
-                        )
-
-            # If the SPK file was generated, decode it and write it to the output file:
-            if "spk" in data:
-                with open(spk_file, "wb") as f:
-                    # Decode and write the binary SPK file content:
-                    f.write(base64.b64decode(data["spk"]))
-                    f.close()
-                return spk_file
-            else:
-                # Otherwise, the SPK file was not generated so output an error:
-                raise Exception(f"SPK file not generated: {r.text}")
-
         except ValueError as e:
-            raise Exception(f"Unable to decode JSON. {e}")
-        except OSError as e:
-            raise Exception(f"Unable to create file '{spk_file}': {e}")
-        except Exception as e:
-            raise (e)
+            raise Exception(f"Erro ao decodificar JSON: {e}")
 
-    elif r.status_code == 400:
-        raise Exception("Bad Request code 400 - {r.text}")
-    else:
-        raise Exception(
-            f"It was not able to download the bsp file for object. Error: {r.status_code}"
-        )
+        if "No matches found." in data.get("result", ""):
+            print(f"Tentativa {attempt_num} sem correspondência.")
+            continue
+
+        if "error" in data and "SPK creation is not available" in data["error"]:
+            if identifier.upper() in satellites_bsp:
+                r = requests.get(satellites_bsp[identifier.upper()], stream=True)
+                if r.status_code == 200:
+                    with open(spk_file, "wb") as f:
+                        f.write(r.content)
+                    return spk_file
+                else:
+                    raise Exception("Failed to download satellite BSP file.")
+
+        if "spk" in data:
+            try:
+                with open(spk_file, "wb") as f:
+                    f.write(base64.b64decode(data["spk"]))
+                return spk_file
+            except Exception as e:
+                raise Exception(f"Erro ao salvar SPK: {e}")
+
+    raise Exception(f"Todas as tentativas falharam para o identificador: {identifier}")
+    ###
 
 
 def findSPKID(bsp):
