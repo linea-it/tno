@@ -2,6 +2,7 @@ import base64
 import http
 import json
 import pathlib
+import re
 import shutil
 from datetime import datetime as dt
 
@@ -15,12 +16,13 @@ satellites_bsp = {
 
 
 def get_asteroid_uncertainty_from_jpl(
-    identifier, initial_date, final_date, directory, filename, step=12
+    identifier, initial_date, final_date, directory, filename, name_type="", step=12
 ):
     url = "https://ssd.jpl.nasa.gov/api/horizons.api"
     params = {
         "format": "text",
-        "COMMAND": f"'DES={identifier}'",
+        # "COMMAND": f"'DES={identifier}'",
+        "COMMAND": f"'{name_type}{identifier}'",
         "OBJ_DATA": "NO",
         "MAKE_EPHEM": "YES",
         "EPHEM_TYPE": "OBSERVER",
@@ -91,7 +93,61 @@ def get_asteroid_uncertainty_from_jpl(
     return output_file
 
 
-def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
+### dont work!!!
+## Para casos em que a api retorna multiples objetos
+# def _parse_major_body_spkid(api_response: str, major_body_name: str) -> str | None:
+#     """Extract the major body's ID from API response text."""
+#     target = major_body_name.lower()
+#     primary_marker = "(system barycenter)"
+
+#     for line in api_response.splitlines():
+#         # Skip irrelevant lines quickly
+#         if not line.strip() or "ID#" in line or "-------" in line:
+#             continue
+
+
+#         line_lower = line.lower()
+#         if target in line_lower and primary_marker in line_lower:
+#             # Extract first token as ID if possible
+#             parts = line.split()
+#             if parts and parts[0].isdigit():
+#                 return str(int(parts[0]))
+#     return None
+###
+
+#### 2 tentativa
+# def extract_system_barycenter_id(text):
+#     if "Multiple major-bodies" not in text:
+#         return None
+
+#     # Regex para capturar o ID# antes de "(system barycenter)"
+#     match = re.search(r"^\\s*(\\d+)\\s+.*\\(system barycenter\\)", text, re.MULTILINE)
+#     print(match)
+#     if match:
+#         return match.group(1)
+#     return None
+####
+
+
+def extract_system_barycenter_id(text):
+    if "Multiple major-bodies" not in text:
+        return None
+
+    lines = text.splitlines()
+
+    for line in lines:
+        stripped = line.strip()
+        if "(system barycenter)" in stripped:
+            parts = stripped.split()
+            if parts:
+                return parts[0]  # O ID# é sempre o primeiro item da linha
+
+    return None
+
+
+def get_bsp_from_jpl(
+    identifier, initial_date, final_date, directory, filename, name_type=""
+):
     date1 = dt.strptime(initial_date, "%Y-%m-%d")
     date2 = dt.strptime(final_date, "%Y-%m-%d")
     diff = date2 - date1
@@ -107,6 +163,18 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
 
     spk_file = path.joinpath(filename)
 
+    ##
+    # check if it is a major body such as Pluto...
+    if identifier.upper() in satellites_bsp.keys():
+        r = requests.get(satellites_bsp[identifier.upper()], stream=True)
+        if r.status_code == 200:
+            with open(spk_file, "wb") as f:
+                f.write(r.content)
+            return spk_file
+        else:
+            return r.status_code
+
+    ##
     # https://ssd.jpl.nasa.gov/api/horizons.api?
     # format=text
     # &EPHEM_TYPE=SPK
@@ -120,7 +188,8 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
         "format": "json",
         "EPHEM_TYPE": "SPK",
         "OBJ_DATA": "YES",
-        "COMMAND": "'DES=" + identifier + "'",
+        # "COMMAND": "'DES=" + identifier + "'",
+        "COMMAND": f"'{name_type}{identifier}'",
         "START_TIME": date1.strftime("%Y-%b-%d"),
         "STOP_TIME": date2.strftime("%Y-%b-%d"),
     }
@@ -131,33 +200,36 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
             f"Code {r.status_code} - {http.HTTPStatus(r.status_code).phrase}"
         )
 
-    # now we will check if there was a match in the results if not it will search other minor planets suche as Ceres, Makemake...
-    if "No matches found." in json.loads(r.text)["result"]:
-        parameters["COMMAND"] = "'" + identifier + ";'"
-        r = requests.get(urlJPL, params=parameters, stream=True)
+    # now we will check if there was a match in the results returns status code 204
+    data = json.loads(r.text)
+    if "No matches found." in data["result"] or "error" in data.keys():
+        return 204
+
+    ## dont work !!!
+    # if "Multiple major-bodies" in data["result"]:
+    #     sb_identifier = _parse_major_body_spkid(data["result"], identifier)
+    #     if sb_identifier:
+    #         parameters["COMMAND"] = f"'DES={sb_identifier}'"
+    #         r = requests.get(urlJPL, params=parameters, stream=True)
+    #         data = json.loads(r.text)
+    ##
+
+    # funciona mas nao baixa o arquivo das incertezas
+    # if "Multiple major-bodies" in data["result"]:
+    #     # id_number = extract_system_barycenter_id(response_text)
+    #     sb_identifier = extract_system_barycenter_id(data["result"])
+    #     print("ID do system barycenter:", sb_identifier)
+
+    #     if sb_identifier:
+    #         parameters["COMMAND"] = f"'DES={sb_identifier}'"
+    #         r = requests.get(urlJPL, params=parameters, stream=True)
+    #         data = json.loads(r.text)
+
     if (
         r.status_code == requests.codes.ok
         and r.headers["Content-Type"] == "application/json"
     ):
         try:
-            data = json.loads(r.text)
-            # now we will check if it is in the satellites_bsp SPK creation is not available
-            if (
-                "error" in data.keys()
-                and "SPK creation is not available" in data["error"]
-            ):
-                if identifier.upper() in satellites_bsp.keys():
-                    r = requests.get(satellites_bsp[identifier.upper()], stream=True)
-                    if r.status_code == 200:
-                        with open(spk_file, "wb") as f:
-                            f.write(r.content)
-                        return spk_file
-                    else:
-                        raise (
-                            "Failed to download the file. Status code:",
-                            r.status_code,
-                        )
-
             # If the SPK file was generated, decode it and write it to the output file:
             if "spk" in data:
                 with open(spk_file, "wb") as f:

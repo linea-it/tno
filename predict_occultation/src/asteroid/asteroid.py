@@ -5,6 +5,7 @@ import logging
 import os
 import pathlib
 import sys
+import urllib.parse
 from datetime import datetime as dt
 from datetime import timedelta, timezone
 from io import StringIO
@@ -370,60 +371,70 @@ class Asteroid:
         t0 = dt.now(tz=timezone.utc)
         end_period = self.calculate_bsp_end_period(end_period)
 
-        try:
-            bsp_path = get_bsp_from_jpl(
-                self.provisional_designation,
-                start_period,
-                end_period,
-                bsp_filepath.parent,
-                bsp_filename,
-            )
-            mag_and_uncert_path = get_asteroid_uncertainty_from_jpl(
-                self.provisional_designation,
-                start_period,
-                end_period,
-                bsp_filepath.parent,
-                "apmag_and_uncertainties.json",
-                step=12,
-            )
-            t1 = dt.now(tz=timezone.utc)
-            tdelta = t1 - t0
+        identifiers = [self.name, self.number, self.provisional_designation]
 
-            # Retrieve SPKID FRON BSP FILE
-            spkid = None
+        # for identifier in identifiers:
+        for num, identifier in enumerate(identifiers):
+            # if identifier == self.name:
+            print(identifier)
+            if num == 0:
+                identifier = urllib.parse.quote(identifier)
+                # print(identifier)
+
             try:
-                spkid = findSPKID(str(bsp_path))
-                if spkid == "":
-                    spkid = None
+                bsp_path = get_bsp_from_jpl(
+                    str(identifier),  # self.provisional_designation,
+                    start_period,
+                    end_period,
+                    bsp_filepath.parent,
+                    bsp_filename,
+                    name_type="" if num < 2 else "DES=",
+                )
+                mag_and_uncert_path = get_asteroid_uncertainty_from_jpl(
+                    str(identifier),  # self.provisional_designation,
+                    start_period,
+                    end_period,
+                    bsp_filepath.parent,
+                    "apmag_and_uncertainties.json",
+                    name_type="" if num < 2 else "DES=",
+                    step=12,
+                )
+                t1 = dt.now(tz=timezone.utc)
+                tdelta = t1 - t0
+
+                # Retrieve SPKID FRON BSP FILE
+                spkid = None
+                try:
+                    spkid = findSPKID(str(bsp_path))
+                    if spkid == "":
+                        spkid = None
+                except Exception as e:
+                    raise Exception("Failed to find SPKID in BSP file. Error: [%s]" % e)
+
+                data = dict(
+                    {
+                        "source": "JPL",
+                        "spkid": spkid,
+                        "filename": bsp_path.name,
+                        "size": bsp_path.stat().st_size,
+                        "start_period": start_period,
+                        "end_period": end_period,
+                        "dw_start": t0.isoformat(),
+                        "dw_finish": t1.isoformat(),
+                        "dw_time": tdelta.total_seconds(),
+                        "mag_and_uncert_file": mag_and_uncert_path.name,
+                    }
+                )
+
+                bsp_info = pathlib.Path(bsp_filepath.parent, "bsp_jpl_info.json")
+                with open(bsp_info, "w") as json_file:
+                    json.dump(data, json_file, default=serialize)
+
+                log.info(f"Asteroid BSP Downloaded in {tdelta}")
+
+                return (data, "")
             except Exception as e:
-                raise Exception("Failed to find SPKID in BSP file. Error: [%s]" % e)
-
-            data = dict(
-                {
-                    "source": "JPL",
-                    "spkid": spkid,
-                    "filename": bsp_path.name,
-                    "size": bsp_path.stat().st_size,
-                    "start_period": start_period,
-                    "end_period": end_period,
-                    "dw_start": t0.isoformat(),
-                    "dw_finish": t1.isoformat(),
-                    "dw_time": tdelta.total_seconds(),
-                    "mag_and_uncert_file": mag_and_uncert_path.name,
-                }
-            )
-
-            bsp_info = pathlib.Path(bsp_filepath.parent, "bsp_jpl_info.json")
-            with open(bsp_info, "w") as json_file:
-                json.dump(data, json_file, default=serialize)
-
-            log.info(f"Asteroid BSP Downloaded in {tdelta}")
-
-            return (data, "")
-        except Exception as e:
-            download_exception_warning = "Failed to Download BSP. Error: [%s]" % e
-            log.warning(download_exception_warning)
-            return (None, download_exception_warning)
+                log.warning(f"Failed to Download BSP using {identifier}. Error: [{e}]")
 
     def check_bsp_jpl(self, end_period, start_period=None):
         log = self.get_log()
