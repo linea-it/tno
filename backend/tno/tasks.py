@@ -53,7 +53,7 @@ def teste_api_task():
     return True
 
 
-@shared_task
+@shared_task(queue="maintenance", soft_time_limit=7200, time_limit=10800)
 def garbage_collector():
     """Executado a cada 3 horas
     OBS: esta função não é exclusiva para os mapas.
@@ -75,7 +75,7 @@ def predict_jobs_for_upper_end_update(**kwargs):
         run_predicition_for_upper_end_update(debug=False)
 
 
-@shared_task
+@shared_task(queue="user-requested", soft_time_limit=900, time_limit=1800)
 def create_occ_map_task(**kwargs):
     sora_occultation_map(**kwargs)
 
@@ -86,7 +86,7 @@ def prediction_maps_log_error(request, exc, traceback):
     logger.error(f"{request.id} {exc} {traceback}")
 
 
-@shared_task
+@shared_task(queue="thumbnails", soft_time_limit=900, time_limit=1800)
 def create_thumbnail_maps():
     logger = logging.getLogger("predict_maps")
     logger.info("Starting create_thumbnail_maps task")
@@ -215,7 +215,7 @@ def assync_visibility_from_coeff(event_id, result_file, **kwargs):
     return event_id, bool(is_visible)
 
 
-@shared_task(soft_time_limit=7200, time_limit=10800)
+@shared_task(queue="maintenance", soft_time_limit=7200, time_limit=10800)
 def update_asteroid_table():
     """Updates the asteroid table data using data downloaded from MPC."""
     from tno.asteroid_table.asteroid_table_manager import AsteroidTableManager
@@ -259,7 +259,7 @@ def send_mail_subscription_task():
         raise
 
 
-@shared_task
+@shared_task(queue="scheduled", soft_time_limit=10800, time_limit=14400)
 def run_subscription_filter_and_send_mail(force_run=False):
     """
     Chains run_filter_task and send_mail_task to run sequentially.
@@ -282,7 +282,7 @@ def run_subscription_filter_and_send_mail(force_run=False):
         raise
 
 
-@shared_task
+@shared_task(queue="scheduled", soft_time_limit=7200, time_limit=10800)
 def update_asteroid_classes_cache():
 
     update_base_dynclass_cache()
@@ -313,7 +313,7 @@ def update_dynclass_cache():
     return None
 
 
-@shared_task
+@shared_task(queue="scheduled", soft_time_limit=7200, time_limit=10800)
 def update_occultations_highlights():
 
     logger = logging.getLogger("occultation_highlights")
@@ -390,7 +390,7 @@ def update_occultations_highlights():
     return highlights.id
 
 
-@shared_task
+@shared_task(queue="scheduled", soft_time_limit=7200, time_limit=10800)
 def update_unique_asteroids():
 
     logger = logging.getLogger("asteroid_cache")
@@ -462,7 +462,7 @@ def update_unique_asteroids():
     return current_count
 
 
-@shared_task
+@shared_task(queue="scheduled", soft_time_limit=7200, time_limit=10800)
 def update_unique_dynclass():
 
     logger = logging.getLogger("asteroid_cache")

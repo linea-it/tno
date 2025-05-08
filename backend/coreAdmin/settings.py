@@ -15,6 +15,7 @@ import urllib.parse
 from pathlib import Path
 
 import environ
+from kombu import Exchange, Queue
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -371,6 +372,41 @@ CACHES = {
 # CELERY_RESULT_BACKEND = "django-db"
 
 # Celery
+# settings.py – you still need to declare the queues
+
+CELERY_QUEUES = (
+    Queue(
+        "default",
+        Exchange("default"),
+        routing_key="default",
+        queue_arguments={"x-max-priority": 5},
+    ),
+    Queue(
+        "thumbnails",
+        Exchange("thumbnails"),
+        routing_key="thumbnails",
+        queue_arguments={"x-max-priority": 2},
+    ),
+    Queue(
+        "scheduled",
+        Exchange("scheduled"),
+        routing_key="scheduled",
+        queue_arguments={"x-max-priority": 8},
+    ),
+    Queue(
+        "maintenance",
+        Exchange("maintenance"),
+        routing_key="maintenance",
+        queue_arguments={"x-max-priority": 8},
+    ),
+    Queue(
+        "user-requested",
+        Exchange("user-requested"),
+        routing_key="user-requested",
+        queue_arguments={"x-max-priority": 10},
+    ),
+)
+
 # ------------------------------------------------------------------------------
 if USE_TZ:
     # https://docs.celeryq.dev/en/stable/userguide/configuration.html#std:setting-timezone
@@ -395,10 +431,10 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-time-limit
 # TODO: set to whatever value is adequate in your circumstances
-CELERY_TASK_TIME_LIMIT = 600
+CELERY_TASK_TIME_LIMIT = 7300
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#task-soft-time-limit
 # TODO: set to whatever value is adequate in your circumstances
-CELERY_TASK_SOFT_TIME_LIMIT = 580
+CELERY_TASK_SOFT_TIME_LIMIT = 7200
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#beat-scheduler
 # CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 # https://docs.celeryq.dev/en/stable/userguide/configuration.html#worker-send-task-events
