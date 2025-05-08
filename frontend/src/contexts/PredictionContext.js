@@ -28,7 +28,7 @@ export function PredictionEventsProvider({ children }) {
         maginitudeDropMin: undefined,
         diameterMin: undefined,
         diameterMax: undefined,
-        closestApproachUncertainty: 500,
+        closestApproachUncertainty: undefined,
         eventDurationMin: undefined,
         geo: false,
         latitude: undefined,

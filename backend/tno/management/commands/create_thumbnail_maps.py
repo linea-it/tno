@@ -41,5 +41,5 @@ class Command(BaseCommand):
         job = group(header)
         job.link_error(prediction_maps_log_error.s())
 
-        results = job.apply_async()
+        results = job.apply_async(queue="thumbnails")
         self.stdout.write(f"All [{len(results)}] subtasks are submitted.")
