@@ -15,4 +15,4 @@ celery -A coreAdmin worker \
     -l INFO \
     --pidfile="/tmp/%n.pid" \
     --logfile="/logs/%n%I.log" \
-    --queues=default,maintenance,scheduled,thumbnails  # Add all queues here
+    --queues=default,maintenance,scheduled,thumbnails,user-requested  # Add all queues here

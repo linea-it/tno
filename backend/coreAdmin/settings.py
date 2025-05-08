@@ -397,7 +397,7 @@ CELERY_QUEUES = (
         "maintenance",
         Exchange("maintenance"),
         routing_key="maintenance",
-        queue_arguments={"x-max-priority": 8},
+        queue_arguments={"x-max-priority": 7},
     ),
     Queue(
         "user-requested",
