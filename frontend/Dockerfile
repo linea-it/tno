@@ -48,8 +48,4 @@ COPY --from=user_docs /mkdocs/site /var/www/docs
 RUN chgrp nginx /var/www/docs
 RUN chmod -R g+w /var/www/docs
 
-# Copy nginx config with correct ownership and permissions
-COPY --chown=nginx:nginx nginx_proxy.conf /etc/nginx/conf.d/default.conf
-RUN chmod 644 /etc/nginx/conf.d/default.conf
-
 USER nginx
