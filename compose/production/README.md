@@ -49,13 +49,13 @@ git clone https://github.com/linea-it/tno.git tno_temp \
 
 Este miniconda é usado pelo pipeline predict_occultation e é especifico para este ambiente.
 
-**IMPORTANTE** No momento a instalação do miniconda está falhando quando executada direto da srvnode06. O workaround é executar os proximos comandos a partir da maquina srvnode04. mas usando o mesmo usuario app.tno e o mesmo diretório.
+**IMPORTANTE** No momento a instalação do miniconda está falhando quando executada direto da srvnode06. O workaround é executar os proximos comandos a partir da maquina loginapl. mas usando o mesmo usuario app.tno e o mesmo diretório.
 Pode ser necessário alterar o path onde o miniconda sera instalado. basta editar o script e fazer a alteração de acordo com o path.
 
 **IMPORTANTE II** A instalação DEVE ser feita em algum node do cluster ou node de submissão.
 
 ```sh
-miniconda_path="/lustre/t1/scratch/users/app.tno/<PROJ_DIR>/miniconda"
+miniconda_path="/data/apps/app.tno/<PROJ_DIR>/miniconda"
 ```
 
 Dentro da pasta existe um script install_miniconda.sh esse script baixa e instala o miniconda no path configurado na variavel `miniconda_path`.
