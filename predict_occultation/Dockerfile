@@ -38,7 +38,7 @@ RUN groupadd -r ton --gid 15010 \
 
 # -------------- PRAIA OCC compile Stage --------------
 FROM base as praia_occ
-ADD praia_occ_src /tmp/praia_occ_src
+COPY praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
     && cd /tmp/praia_occ_src \
     && gfortran geradata.f -o geradata spicelib.a \
