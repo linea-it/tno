@@ -6,10 +6,6 @@ ENV PATH /opt/conda/bin:$PATH
 
 # Instalacao do Gfortran 7 e Miniconda
 RUN set -x && \
-    # SOBRESCREVE sources.list para usar repositórios arquivados do BUSTER
-    # echo "deb [trusted=yes] http://archive.debian.org/debian buster main non-free contrib" > /etc/apt/sources.list && \
-    # echo "deb-src [trusted=yes] http://archive.debian.org/debian buster main non-free contrib" >> /etc/apt/sources.list && \
-    # echo "deb [trusted=yes] http://archive.debian.org/debian-security buster/updates main non-free contrib" >> /etc/apt/sources.list && \
     # \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
