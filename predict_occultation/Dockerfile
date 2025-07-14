@@ -10,7 +10,7 @@ RUN set -x && \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
     gcc \
-    gfortran \
+    gfortran-12 \
     ca-certificates \
     git \
     ssh \
