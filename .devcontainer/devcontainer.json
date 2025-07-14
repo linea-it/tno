@@ -17,15 +17,15 @@
   // Features to add to the dev container. More info: https://containers.dev/features.
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {},
-    // "ghcr.io/devcontainers-contrib/features/black:2": {},
-    // "ghcr.io/devcontainers-contrib/features/coverage-py:2": {},
-    // "ghcr.io/devcontainers-contrib/features/isort:2": {},
-    "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
-    "ghcr.io/devcontainers-contrib/features/zsh-plugins:0": {},
+    "ghcr.io/devcontainers-extra/features/black:2": {},
+    "ghcr.io/devcontainers-extra/features/coverage-py:2": {},
+    "ghcr.io/devcontainers-extra/features/isort:2": {},
+    "ghcr.io/devcontainers-extra/features/pre-commit:2": {},
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0": {},
     "ghcr.io/stuartleeks/dev-container-features/shell-history:0": {},
     "ghcr.io/guiyomh/features/vim:0": {},
     "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers-contrib/features/act:1": {},
+    "ghcr.io/devcontainers-extra/features/act:1": {},
     "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {},
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },

@@ -1,20 +1,23 @@
-FROM debian:buster-slim as base
+FROM debian:bookworm-slim as base
 # FROM ubuntu:20.04 as base
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
-# Instalacao do Gfortran 7 e Miniconda
+# Instalacao do Gfortran 12 e Miniconda
 RUN set -x && \
+    # \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
     gcc \
-    gfortran-7 \
+    gfortran-12 \
     ca-certificates \
     git \
     ssh \
     wget \
     rsync \
+    procps \
+    build-essential \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /opt/conda \
@@ -35,16 +38,16 @@ RUN groupadd -r ton --gid 15010 \
 
 # -------------- PRAIA OCC compile Stage --------------
 FROM base as praia_occ
-ADD praia_occ_src /tmp/praia_occ_src
+COPY praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
     && cd /tmp/praia_occ_src \
-    && gfortran-7 geradata.f -o geradata spicelib.a \
+    && gfortran-12 geradata.f -o geradata spicelib.a \
     && mv geradata /tmp/praia_occ \
-    && gfortran-7 elimina.f -o elimina \
+    && gfortran-12 elimina.f -o elimina \
     && mv elimina /tmp/praia_occ \
-    && gfortran-7 PRAIA_occ_star_search_12.f -o PRAIA_occ_star_search_12 \
+    && gfortran-12 PRAIA_occ_star_search_12.f -o PRAIA_occ_star_search_12 \
     && mv PRAIA_occ_star_search_12 /tmp/praia_occ \
-    # 	&& gfortran-7 gerapositions.f -o gerapositions \
+    # 	&& gfortran-12 gerapositions.f -o gerapositions \
     # 	&& mv gerapositions /usr/local/bin/ \
     && cd ~/ \
     && rm -r /tmp/praia_occ_src
