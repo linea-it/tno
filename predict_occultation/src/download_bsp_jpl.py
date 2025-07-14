@@ -103,3 +103,10 @@ if __name__ == "__main__":
         filter_type=args.filter_type,
         filter_value=args.filter_value,
     )
+
+
+# python download_bsp_jpl.py --start 2025-01-01 --end 2030-12-31 --filter_type name --filter_value Eris
+
+
+
+# docker compose exec download_bsp python download_bsp_jpl.py --start 2023-01-01 --end 2031-12-31 --filter_type name --filter_value Eris
