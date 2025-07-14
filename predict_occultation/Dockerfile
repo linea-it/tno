@@ -4,7 +4,7 @@ FROM debian:bookworm-slim as base
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 ENV PATH /opt/conda/bin:$PATH
 
-# Instalacao do Gfortran 7 e Miniconda
+# Instalacao do Gfortran 12 e Miniconda
 RUN set -x && \
     # \
     apt-get update --fix-missing && \
@@ -41,13 +41,13 @@ FROM base as praia_occ
 COPY praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
     && cd /tmp/praia_occ_src \
-    && gfortran geradata.f -o geradata spicelib.a \
+    && gfortran-12 geradata.f -o geradata spicelib.a \
     && mv geradata /tmp/praia_occ \
-    && gfortran elimina.f -o elimina \
+    && gfortran-12 elimina.f -o elimina \
     && mv elimina /tmp/praia_occ \
-    && gfortran PRAIA_occ_star_search_12.f -o PRAIA_occ_star_search_12 \
+    && gfortran-12 PRAIA_occ_star_search_12.f -o PRAIA_occ_star_search_12 \
     && mv PRAIA_occ_star_search_12 /tmp/praia_occ \
-    # 	&& gfortran-7 gerapositions.f -o gerapositions \
+    # 	&& gfortran-12 gerapositions.f -o gerapositions \
     # 	&& mv gerapositions /usr/local/bin/ \
     && cd ~/ \
     && rm -r /tmp/praia_occ_src
