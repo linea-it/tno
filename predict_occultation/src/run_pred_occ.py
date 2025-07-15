@@ -280,9 +280,10 @@ def predict_job_queue():
         # print("Nenhum job para executar.")
         return
 
+    return to_run.get("id")
     # Inicia o job.
     # print("Deveria executar o job com ID: %s" % to_run.get("id"))
-    run_job(to_run.get("id"))
+    # run_job(to_run.get("id"))
 
 
 def write_job_file(path, data):
