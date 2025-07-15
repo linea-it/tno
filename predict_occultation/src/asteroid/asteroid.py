@@ -547,14 +547,12 @@ class Asteroid:
         # log.debug("Removed Files: [%s]" % ", ".join(removed_files))
         log.info("Removed [%s] files in %s" % (len(removed_files), tdelta))
 
-    def register_occultations(self):
+    def consolidate_results(self):
         log = self.get_log()
         t0 = dt.now(tz=timezone.utc)
 
         jobid = int(self.job_id)
         try:
-            dao = OccultationDao(log=log)
-
             # Não executou a etapa de predição.
             # Não há arquivo com os resultados.
             if "filename" not in self.predict_occultation:
@@ -696,6 +694,51 @@ class Asteroid:
 
             # ATENCAO! Sobrescreve o arquivo occultation_table.csv
             df.to_csv(predict_table_path, index=False, sep=";")
+            rowcount = df.shape[0]
+            del df
+            log.info(f"Consolidated [{rowcount}] occultation events.")
+            return rowcount
+
+        except Exception as e:
+            msg = "Failed in Consolidate Occultations stage. Error: %s" % e
+            log.error("Asteroid [%s] %s" % (self.name, msg))
+            self.set_failure()
+            return 0
+
+        finally:
+            t1 = dt.now(tz=timezone.utc)
+            tdelta = t1 - t0
+            log.info("Consolidated Occultations in %s" % tdelta)
+            # Atualiza o Json do Asteroid
+            self.write_asteroid_json()
+
+    def ingest_predictions(self):
+        log = self.get_log()
+        t0 = dt.now(tz=timezone.utc)
+
+        try:
+            dao = OccultationDao()
+
+            # Não executou a etapa de predição.
+            # Não há arquivo com os resultados.
+            if "filename" not in self.predict_occultation:
+                log.warning("There is no file with the predictions.")
+                return 0
+
+            predict_table_path = pathlib.Path(
+                self.path, self.predict_occultation["filename"]
+            )
+
+            # Arquivo com resultados da predicao nao foi criado
+            # Foi executado mais não gerou resultados.
+            if not predict_table_path.exists():
+                return 0
+
+            # Le o arquivo occultation table e cria um dataframe
+            df = pd.read_csv(
+                predict_table_path,
+                delimiter=";",
+            )
 
             rowcount = dao.upinsert_occultations(df)
 
@@ -703,6 +746,10 @@ class Asteroid:
             del dao
 
             self.ingest_occultations.update({"count": rowcount})
+            log.info(
+                "Asteroid [%s] Ingested [%s] predictions events."
+                % (self.name, rowcount)
+            )
 
             return rowcount
         except Exception as e:
@@ -730,6 +777,7 @@ class Asteroid:
 
     def consiladate(self):
         log = self.get_log()
+        log.info("Consolidating Asteroid Results.")
 
         a = dict(
             {
@@ -842,6 +890,8 @@ class Asteroid:
 
             # Atualiza o Json do Asteroid
             self.write_asteroid_json()
+
+            log.info("Consolidating Asteroid Results finished.")
             return a
 
     def remove_outputs(self):

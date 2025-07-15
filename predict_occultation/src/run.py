@@ -41,6 +41,17 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    print("******************************************************************")
+    print("HOME: %s" % os.environ.get("HOME"))
+    print("ASTROPY CACHE: %s" % os.environ.get("XDG_CACHE_HOME"))
+    import astropy.config as config
+    # Get the path to the currently used cache directory
+    cache_directory = config.get_cache_dir()
+    print(f"Astropy is using the following cache directory: {cache_directory}")
+
+    print("******************************************************************")
+
+
     # Verifica o path onde o programa está sendo executado
     app_path = os.environ.get("APP_PATH")
     original_cwd = os.getcwd()

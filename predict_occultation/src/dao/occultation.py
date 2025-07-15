@@ -20,12 +20,19 @@ def occultations_upsert(table, conn, keys, data_iter):
 
 
 class OccultationDao(DBBase):
-    def __init__(self, log):
+    def __init__(self):
         super(OccultationDao, self).__init__()
 
         self.tbl = self.get_table("tno_occultation")
 
-        self.log = log
+    def delete_by_job_id(self, job_id):
+        stm = delete(self.tbl).where(self.tbl.c.job_id == job_id)
+
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            rows = con.execute(stm)
+
+            return rows
 
     def delete_by_asteroid_name(self, name):
 
@@ -52,9 +59,6 @@ class OccultationDao(DBBase):
         with engine.connect() as con:
             result = con.execute(stm)
             rows = result.rowcount
-            self.log.info(
-                f"Removed {rows} events for {name} in period {start_period} - {end_period}"
-            )
             return rows
 
     # def import_occultations(self, columns: list, data):

@@ -49,6 +49,7 @@ class PredictionJob(models.Model):
             (5, "Aborted"),
             (6, "Warning"),
             (7, "Aborting"),
+            (8, "Consolidating"),
         ),
     )
 

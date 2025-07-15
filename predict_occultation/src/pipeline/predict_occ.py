@@ -29,9 +29,9 @@ def main(
 
     task_id = temp_data["task_id"]
 
-    try:
-        a = Asteroid(name=temp_data["name"], base_path=data_dir, path=data_dir)
+    a = Asteroid(name=temp_data["name"], base_path=data_dir, path=data_dir)
 
+    try:
         obj_data = a.read_asteroid_json()
 
         # Alterar o status da task para 4-running
@@ -69,62 +69,72 @@ def main(
         print("Maximum Visual Magnitude: [%s]" % maximum_visual_magnitude)
 
         print("Running PRAIA OCC")
-        occultation_file = start_praia_occ(
-            name,
-            str(start_date),
-            str(final_date),
-            step,
-            leap_sec_filename,
-            bsp_planetary_filename,
-            bsp_object_filename,
-            maximum_visual_magnitude,
-        )
-
-        praia_t1 = datetime.now()
-        praia_td = praia_t1 - praia_t0
-
-        print("PRAIA OCC is Done!")
-        if os.path.exists(occultation_file):
-            print("Occultation table created: [%s]" % occultation_file)
-
-            # Quantidade de predições.
-            # Subtrai 1 por que o arquivo mesmo vazio tem os Headers
-            count = count_lines(occultation_file) - 1
-            print("Praia OCC Count: [%s]" % count)
-
-            # Quantidade de estrelas analisadas.
-            gaia_catalog_csv = os.path.join(data_dir, "gaia_catalog.csv")
-            count_stars = count_lines(gaia_catalog_csv) - 1
-
-            praia_result = dict(
-                {
-                    "filename": os.path.basename(occultation_file),
-                    "size": os.path.getsize(occultation_file),
-                    "count": count,
-                    "start_period": str(start_date),
-                    "end_period": str(final_date),
-                    "start": praia_t0.isoformat(),
-                    "finish": praia_t1.isoformat(),
-                    "exec_time": praia_td.total_seconds(),
-                    "catalog": GAIA_NAME,
-                    "predict_step": int(step),
-                    "bsp_planetary": bsp_planetary_filename.split(".")[0],
-                    "leap_seconds": leap_sec_filename.split(".")[0],
-                    "nima": USED_NIMA_BSP,
-                    "maximum_visual_magnitude": maximum_visual_magnitude,
-                    "stars": count_stars,
-                }
+        try:
+            occultation_file = start_praia_occ(
+                name,
+                str(start_date),
+                str(final_date),
+                step,
+                leap_sec_filename,
+                bsp_planetary_filename,
+                bsp_object_filename,
+                maximum_visual_magnitude,
             )
 
-        else:
+            praia_t1 = datetime.now()
+            praia_td = praia_t1 - praia_t0
+
+            print("PRAIA OCC is Done!")
+            if os.path.exists(occultation_file):
+                print("Occultation table created: [%s]" % occultation_file)
+
+                # Quantidade de predições.
+                # Subtrai 1 por que o arquivo mesmo vazio tem os Headers
+                count = count_lines(occultation_file) - 1
+                print("Praia OCC Count: [%s]" % count)
+
+                # Quantidade de estrelas analisadas.
+                gaia_catalog_csv = os.path.join(data_dir, "gaia_catalog.csv")
+                count_stars = count_lines(gaia_catalog_csv) - 1
+
+                praia_result = dict(
+                    {
+                        "filename": os.path.basename(occultation_file),
+                        "size": os.path.getsize(occultation_file),
+                        "count": count,
+                        "start_period": str(start_date),
+                        "end_period": str(final_date),
+                        "start": praia_t0.isoformat(),
+                        "finish": praia_t1.isoformat(),
+                        "exec_time": praia_td.total_seconds(),
+                        "catalog": GAIA_NAME,
+                        "predict_step": int(step),
+                        "bsp_planetary": bsp_planetary_filename.split(".")[0],
+                        "leap_seconds": leap_sec_filename.split(".")[0],
+                        "nima": USED_NIMA_BSP,
+                        "maximum_visual_magnitude": maximum_visual_magnitude,
+                        "stars": count_stars,
+                    }
+                )
+
+            else:
+                praia_result = dict(
+                    {
+                        "message": "PRAIA was executed but failed to create Occultation table."
+                    }
+                )
+
+                raise Exception(
+                    "Failed to create Occultation table. [%s]" % occultation_file
+                )
+
+        except Exception as e:
+            msg = f"Failed to run PRAIA OCC. Error: {e}"
+            print(msg)
             praia_result = dict(
                 {
-                    "message": "PRAIA was executed but failed to create Occultation table."
+                    "message": msg,
                 }
-            )
-
-            raise Exception(
-                "Failed to create Occultation table. [%s]" % occultation_file
             )
 
         a.set_predict_occultation(praia_result)
@@ -147,14 +157,13 @@ def main(
             # obj_data["calculate_path_coeff"] = path_coef_result
             a.set_calculate_path_coeff(path_coef_result)
 
-            # Só pode registrar no banco de dados as predições de occultação.
-            # Caso a patch coef tenha sido executado com sucesso.
-            # Se não o csv vai estar em outro formato.
-            print("startirng register occultations in database")
-            a.register_occultations()
+            # Consolida os resultados, adiciona informações de provenance
+            # Formata o arquivo de saida, mas não insere as prediçoes no banco de dados.
+            # 2025-07-15 - O registro dos resultados no banco de dados será feito na consolidação do job.
+            print("Consolidating Occultations")
+            a.consolidate_results()
 
         # Escreve os dados da execução no arquivo json do objeto.
-        # write_asteroid_json(name, obj_data)
         a.write_asteroid_json()
 
     except Exception as e:
@@ -164,7 +173,10 @@ def main(
         # O problema é que o consolidate do finaly sobrescreve.
         # deveria ficar regitrado pela Classe Asteroid.
     finally:
-        print("Consolidating Asteroid execution data")
-        consolidated = a.consiladate()
-        dao_job_result.update(id=task_id, data=consolidated)
+        print("Processing finished, updating task status to 6-ingesting")
+        # Changing status to Ingesting
+        # This indicates that the task is in the process of being finalized.
+        # and waiting for the registration of the occultations.
+        # Status 6 is Ingesting
+        dao_job_result.update(id=task_id, data={"status": 6})
         print("Task status updated")

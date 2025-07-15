@@ -29,6 +29,9 @@ function ColumnStatus({ status, title, align }) {
   } else if (status === 'aborting' || status === 7) {
     statusTitle = 'Aborting'
     statusColor = classes.btnAborting
+  } else if (status === 'consolidating' || status === 8) {
+    statusTitle = 'Consolidating'
+    statusColor = classes.btnRunning
   } else {
     statusTitle = 'Unknown'
     statusColor = classes.btnNotExecuted
