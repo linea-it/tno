@@ -162,7 +162,7 @@ def start_praia_occ(
 
     df_catalog = dao.catalog_by_polygons(ra, dec, angular_diameter, max_mag=max_mag)
     if df_catalog is None:
-        msg = ("No stars found in the catalog. Check access to the catalog database.")
+        msg = "No stars found in the catalog. Check access to the catalog database."
         print(msg)
         raise Exception(msg)
 
