@@ -44,11 +44,11 @@ app.conf.beat_schedule = {
     #     "schedule": crontab(minute="*/30"),
     # },
     # Executes every Monday morning at 2:00 a.m.
-    "update_asteroid_table-every-monday": {
-        "task": "tno.tasks.update_asteroid_table",
-        "schedule": crontab(hour=2, minute=0, day_of_week=1),
-        "options": {"queue": "maintenance"},
-    },
+    # "update_asteroid_table-every-monday": {
+    #     "task": "tno.tasks.update_asteroid_table",
+    #     "schedule": crontab(hour=2, minute=0, day_of_week=1),
+    #     "options": {"queue": "maintenance"},
+    # },
     # Executes every Day at 5:00 a.m.
     # "predict_job_for_updated_asteroids": {
     #     "task": "tno.tasks.predict_jobs_by_updated_asteroids",
