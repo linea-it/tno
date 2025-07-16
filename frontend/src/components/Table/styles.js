@@ -58,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
   btnRunning: {
     // backgroundColor: '#ffba01',
     // color: '#000',
-    color: '#ffba01'
+    color: '#0288D1'
   },
   btnNotExecuted: {
     // backgroundColor: '#ABA6A2',

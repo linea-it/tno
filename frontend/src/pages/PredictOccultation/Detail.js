@@ -3,7 +3,7 @@ import moment from 'moment'
 import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
-import Chip from '@mui/material/Chip';
+import Chip from '@mui/material/Chip'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
@@ -130,21 +130,24 @@ function PredictDetail() {
       width: 150,
       customElement: (row) => {
         if (row.status === 1) {
-          return <Chip variant="outlined" label={"Success"} color="success" />
+          return <Chip variant='outlined' label={'Success'} color='success' />
         }
         if (row.status === 2) {
-          return <Chip variant="outlined" label={"Failure"} color="error" />
+          return <Chip variant='outlined' label={'Failure'} color='error' />
         }
         if (row.status === 3) {
-          return <Chip variant="outlined" label={"Queued"} />
+          return <Chip variant='outlined' label={'Queued'} />
         }
         if (row.status === 4) {
-          return <Chip variant="outlined" label={"Running"} color="info" />
+          return <Chip variant='outlined' label={'Running'} color='info' />
         }
         if (row.status === 5) {
-          return <Chip variant="outlined" label={"Aborted"} color="secondary" />
+          return <Chip variant='outlined' label={'Aborted'} color='secondary' />
         }
-      },
+        if (row.status === 6) {
+          return <Chip variant='outlined' label={'Ingesting'} />
+        }
+      }
     },
     {
       name: 'name',

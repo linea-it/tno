@@ -161,19 +161,10 @@ def start_praia_occ(
     )
 
     df_catalog = dao.catalog_by_polygons(ra, dec, angular_diameter, max_mag=max_mag)
-
-    # # BUSCA USANDO QC3 RADIAL (ANTIGO)
-    # # Executar o Elimina e gerar o Centers.txt
-    # centers_file = run_elimina(eph_filename, centers_filename)
-    # print("Centers File: [%s]" % centers_file)
-
-    # # Converter as posições do Centers.txt para graus
-    # # gera um arquivo com as posições convertidas, mas o retorno da função é um array.
-    # center_positions = centers_positions_to_deg(centers_file, centers_deg_filename)
-
-    # df_catalog = dao.catalog_by_positions(
-    #     center_positions, radius=0.15, max_mag=max_mag
-    # )
+    if df_catalog is None:
+        msg = "No stars found in the catalog. Check access to the catalog database."
+        print(msg)
+        raise Exception(msg)
 
     print("Stars: [%s]" % df_catalog.shape[0])
     # Cria um arquivo no formato especifico do praia_occ

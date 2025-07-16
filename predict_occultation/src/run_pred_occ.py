@@ -12,12 +12,16 @@ from io import StringIO
 from pathlib import Path
 from time import sleep
 
+import astropy.config as config
 import humanize
 import pandas as pd
 from asteroid import Asteroid
+from astropy.utils import iers
+from astropy.utils.iers import IERS_Auto
 from dao import (
     AsteroidDao,
     LeapSecondDao,
+    OccultationDao,
     PlanetaryEphemerisDao,
     PredictOccultationJobDao,
     PredictOccultationJobResultDao,
@@ -129,16 +133,77 @@ def has_job_running() -> bool:
 
 
 def get_job_running():
-    """Verifica se há algum job com status = 2 Running.
+    """Verifica se há algum job com status = 2 Running ou 8 - Consolidating.
 
     Returns:
         Id: Job caso
     """
     dao = PredictOccultationJobDao()
-    job = dao.get_job_by_status(2)
+    job = dao.get_job_by_status([2, 8])
 
     if job is not None:
         return job.get("id")
+
+
+def get_job_to_complete():
+    dao = PredictOccultationJobDao()
+
+    # Jobs com status 8 - Consolidating
+    job = dao.get_job_by_status(8)
+
+    if job is not None:
+        # Verifica se há tasks com status 4 - Running ou 6 - Ingesting
+        dao_job_result = PredictOccultationJobResultDao()
+        tasks = dao_job_result.by_job_id(job["id"], status=[4, 6])
+        if len(tasks) == 0:
+            # Se não houver tasks com status 4 ou 6, retorna o job para completar.
+            return job.get("id")
+    return None
+
+
+def ingest_predictions(jobid: int):
+    print("Ingest Predictions for job: %s" % jobid)
+    # Read Inputs from job.json
+    job = read_job_json_by_id(jobid)
+    current_path = pathlib.Path(job.get("path"))
+
+    DEBUG = job.get("debug", False)
+
+    # Create a Log file
+    logname = "ingest_predictions"
+    log = get_logger(current_path, f"{logname}.log", DEBUG)
+
+    log.info("-" * 60)
+    log.info("Ingest Predictions started")
+
+    # Get all tasks with status 8 Registering
+    dao_job_result = PredictOccultationJobResultDao()
+    tasks = dao_job_result.by_job_id(jobid, status=6)
+
+    log.info(f"Tasks to register: {len(tasks)}")
+
+    ASTEROID_PATH = current_path.joinpath("asteroids")
+    for task in tasks:
+        log.info(
+            f"Registering results for task_id: {task['id']} asteroid_name: {task['name']}"
+        )
+
+        # Create Asteroid instance
+        a = Asteroid(
+            name=task["name"],
+            base_path=ASTEROID_PATH,
+            log=log,
+        )
+
+        # Ingesting predictions in database.
+        a.ingest_predictions()
+
+        # Consolidating asteroid results/errors
+        consolidated = a.consiladate()
+
+        log.info("Updating task with consolidated data")
+        dao_job_result.update(id=task["id"], data=consolidated)
+        log.info(f"task updated to status: {consolidated['status']}")
 
 
 def update_job_progress(jobid):
@@ -215,9 +280,10 @@ def predict_job_queue():
         # print("Nenhum job para executar.")
         return
 
+    return to_run.get("id")
     # Inicia o job.
     # print("Deveria executar o job com ID: %s" % to_run.get("id"))
-    run_job(to_run.get("id"))
+    # run_job(to_run.get("id"))
 
 
 def write_job_file(path, data):
@@ -345,6 +411,9 @@ def rerun_job(jobid: int):
     daostatus = PredictOccultationJobStatusDao()
     daostatus.delete_by_job_id(jobid)
 
+    daooccultation = OccultationDao()
+    daooccultation.delete_by_job_id(jobid)
+
     sleep(1)
     run_job(jobid)
     print("-------------------------------------------------")
@@ -439,33 +508,6 @@ def run_job(jobid: int):
 
     return submit_tasks(jobid)
 
-    # # Executa o job usando subproccess.
-    # env_file = pathlib.Path(os.environ['EXECUTION_PATH']).joinpath('env.sh')
-    # proc = subprocess.Popen(
-    #     # f"source /lustre/t1/tmp/tno/pipelines/env.sh; python orbit_trace.py {job_path}",
-    #     f"source {env_file}; python predict_occultation.py {job_path}",
-    #     stdout=subprocess.PIPE,
-    #     stderr=subprocess.PIPE,
-    #     shell=True,
-    #     text=True
-    # )
-
-    # [DESENVOLVIMENTO] descomentar este bloco para que o função execute.
-    # import time
-    # while proc.poll() is None:
-    #     print("Shell command is still running...")
-    #     time.sleep(1)
-
-    # # When arriving here, the shell command has finished.
-    # # Check the exit code of the shell command:
-    # print(proc.poll())
-    # # 0, means the shell command finshed successfully.
-
-    # # Check the output and error of the shell command:
-    # output, error = proc.communicate()
-    # print(output)
-    # print(error)
-
 
 def submit_tasks(jobid: int):
     # Read Inputs from job.json
@@ -504,6 +546,13 @@ def submit_tasks(jobid: int):
         log.info("Job ID: [%s]" % jobid)
         log.debug("Current Path: [%s]" % current_path)
         log.debug("DEBUG: [%s]" % DEBUG)
+
+        # Get the path to the currently used cache directory
+        log.debug("***********************************************************")
+        cache_directory = config.get_cache_dir()
+        log.debug(f"Astropy is using the following cache directory: {cache_directory}")
+        iers_a = IERS_Auto.open()
+        log.debug("***********************************************************")
 
         job.update(
             {
@@ -654,7 +703,7 @@ def submit_tasks(jobid: int):
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
         # Altera dinamicamento o numero
         parsl_conf.executors[0].provider.init_blocks = (
-            (len(asteroids) // 1500) + 1 if len(asteroids) <= 15000 else 10
+            (len(asteroids) // 500) + 1 if len(asteroids) <= 5000 else 15
         )
         log.info(f"Init Blocks: {parsl_conf.executors[0].provider.init_blocks}")
         # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
@@ -904,18 +953,9 @@ def submit_tasks(jobid: int):
         if is_abort:
             raise AbortError("Job ID %s aborted!" % str(jobid), -1)
 
-        # update_progress_status(
-        #     jobid,
-        #     step=2,
-        #     status=3,
-        #     count=len(jobs_asteroids),
-        #     current=step2_current_idx,
-        #     success=step2_success,
-        #     failures=step2_failures,
-        #     t0=hb_t0,
-        # )
+        # changing job status to 8 - consolidating
+        job.update({"status": "Consolidating"})
 
-        job.update({"status": "Completed"})
     except AbortError as e:
         trace = traceback.format_exc()
         log.error(trace)
@@ -932,28 +972,6 @@ def submit_tasks(jobid: int):
             }
         )
 
-        # update_progress_status(
-        #     jobid,
-        #     step=1,
-        #     status=5,
-        #     count=step1_count,
-        #     current=current_idx,
-        #     success=step1_success,
-        #     failures=step1_failures,
-        #     t0=hb_t0,
-        # )
-
-        # update_progress_status(
-        #     jobid,
-        #     step=2,
-        #     status=5,
-        #     count=step2_count,
-        #     current=step2_current_idx,
-        #     success=step2_success,
-        #     failures=step2_failures,
-        #     t0=hb_t0,
-        # )
-
     except Exception as e:
         trace = traceback.format_exc()
         log.error(trace)
@@ -968,41 +986,20 @@ def submit_tasks(jobid: int):
             }
         )
 
-        # update_progress_status(
-        #     jobid,
-        #     step=1,
-        #     status=4,
-        #     count=step1_count,
-        #     current=current_idx,
-        #     success=step1_success,
-        #     failures=step1_failures,
-        #     t0=hb_t0,
-        # )
-
-        # update_progress_status(
-        #     jobid,
-        #     step=2,
-        #     status=4,
-        #     count=step2_count,
-        #     current=step2_current_idx,
-        #     success=step2_success,
-        #     failures=step2_failures,
-        #     t0=hb_t0,
-        # )
-
     finally:
         log.debug("-----------------------------------------------")
-        log.debug("Job completed - Update Progress bar step2")
+        log.debug("Job Processing Completed - Waiting for consolidation.")
 
         job.update({"submited_all_jobs": True, "condor_job_submited": len(asteroids)})
         update_job(job)
 
-        consolidate_job_results(job, current_path, log)
+        # consolidate_job_results(job, current_path, log)
 
-        complete_job(job, log, job.get("status", "Completed"))
+        # complete_job(job, log, job.get("status", "Completed"))
 
         os.chdir(original_path)
         parsl.clear()
+        log.info("Job Processing Done.")
         return True
 
 
@@ -1056,9 +1053,21 @@ def consolidate_job_results(job, job_path, log):
     del df_result
     log.info("File with the consolidated Job data. [%s]" % result_filepath)
 
+    return result_filepath
 
-def complete_job(job, log, status):
-    consolidated_filepath = pathlib.Path(job.get("path"), "job_consolidated.csv")
+
+def complete_job(jobid: int):
+
+    job = read_job_json_by_id(jobid)
+    current_path = pathlib.Path(job.get("path"))
+
+    DEBUG = job.get("debug", False)
+
+    # Create a Log file
+    logname = "submit_tasks"
+    log = get_logger(current_path, f"{logname}.log", DEBUG)
+
+    consolidated_filepath = consolidate_job_results(job, current_path, log)
 
     if not consolidated_filepath.exists():
         raise Exception(f"Consolidated file not exists. [{consolidated_filepath}]")
@@ -1079,6 +1088,11 @@ def complete_job(job, log, status):
     avg_exec_time_asteroid = 0
     if count_success > 0:
         avg_exec_time_asteroid = int(tdelta.total_seconds() / count_success)
+
+    # Mantem outros status exemplo falha ou abort.
+    status = job.get("status")
+    if status == "Consolidating":
+        status = "Completed"
 
     # Status 3 = Completed
     job.update(
@@ -1157,3 +1171,7 @@ def generate_dates_file(
     finally:
         log.debug(f"Changing to Orinal job path: [{original_path}]")
         os.chdir(original_path)
+
+
+def timestamp():
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")

@@ -45,6 +45,7 @@ class PredictionJobResult(models.Model):
             (3, "Queued"),
             (4, "Running"),
             (5, "Aborted"),
+            (6, "Ingesting"),
         ),
     )
 

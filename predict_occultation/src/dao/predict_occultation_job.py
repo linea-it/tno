@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+from typing import List, Union
 
 from dao.db_base import DBBase
 from sqlalchemy.sql import and_, select, update
@@ -10,7 +11,7 @@ class PredictOccultationJobDao(DBBase):
 
         self.tbl = self.get_table("tno_predictionjob")
 
-    def get_job_by_status(self, status: int):
+    def get_job_by_status(self, status: Union[int, List[int]]):
         # (1, "Idle"),
         # (2, "Running"),
         # (3, "Completed"),
@@ -18,9 +19,16 @@ class PredictOccultationJobDao(DBBase):
         # (5, "Aborted"),
         # (6, "Warning"),
         # (7, "Aborting"),
+        # (8, "Consolidating"),
+
+        if isinstance(status, list):
+            condition = self.tbl.c.status.in_(status)
+        else:
+            condition = self.tbl.c.status == status
+
         stm = (
             select(self.tbl.c)
-            .where(and_(self.tbl.c.status == status))
+            .where(and_(condition))
             .order_by(self.tbl.c.submit_time)
             .limit(1)
         )
@@ -41,6 +49,7 @@ class PredictOccultationJobDao(DBBase):
             "Aborted",
             "Warning",
             "Aborting",
+            "Consolidating",
         ]
         return labels.index(status) + 1
 
