@@ -66,7 +66,7 @@ function PredictDetail() {
     //   loadDataProgress(id)
     // }
 
-    // Por enquanto, vou deixar o progresso sendo atualizado a cada 25 segundos independente do stautus do job
+    // Por enquanto, vou deixar o progresso sendo atualizado a cada 25 segundos independente do status do job
     loadDataProgress(id)
   }, 25000)
 
