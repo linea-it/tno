@@ -114,6 +114,8 @@ def upcoming_events_to_create_maps(
     date_end: Optional[str] = None,
     mag: Optional[float] = 21,
     limit: Optional[int] = None,
+    name: Optional[str] = None,
+    base_dynclass: Optional[str] = None,
 ) -> list:
     logger = logging.getLogger("predict_maps")
     logger.info(f"Looking for upcoming events")
@@ -129,30 +131,35 @@ def upcoming_events_to_create_maps(
     if not map_folder_have_free_space():
         logger.info("There is not enough free space.")
         return []
-
     # Os mapas são gerados em lotes, caso um lote extrapole o limite
     # O proximo só será executado quando tiver algum espaço livre na pasta
     events = []
     # Block size determina quantas tasks serao criadas
     block_size = int(settings.PREDICTION_MAP_BLOCK_SIZE)
-    if limit != None:
+    if limit is not None:
         block_size = int(limit)
 
-    if date_start == None:
-        date_start = datetime.now(timezone.utc)  # Corrected UTC handling
-    if date_end == None:
+    if date_start is None:
+        date_start = datetime.now(timezone.utc)
+    if date_end is None:
         date_end = date_start + timedelta(days=1)
-
     if isinstance(date_start, str):
         date_start = datetime.fromisoformat(date_start).astimezone(tz=timezone.utc)
-
     if isinstance(date_end, str):
         date_end = datetime.fromisoformat(date_end).astimezone(tz=timezone.utc)
 
+    filters = {"date_time__range": (date_start, date_end), "g_star__lte": mag}
+
+    if name is not None:
+        # Use '__icontains' para uma busca parcial e case-insensitive (ex: 'Ceres' encontra '1 Ceres')
+        filters["name__icontains"] = name
+
+    if base_dynclass is not None:
+        # Use '__iexact' para uma busca exata, mas case-insensitive
+        filters["base_dynclass__iexact"] = base_dynclass
+
     next_events = (
-        Occultation.objects.filter(
-            date_time__range=(date_start, date_end), g_star__lte=(mag)
-        )
+        Occultation.objects.filter(**filters)
         .order_by("g_star")
         .only(
             "name",
@@ -167,6 +174,8 @@ def upcoming_events_to_create_maps(
             "g_star",
             "long",
             "closest_approach_uncertainty",
+            # Adicione a coluna base_dynclass ao 'only' se precisar dela mais tarde
+            "base_dynclass",
         )
     )
 
