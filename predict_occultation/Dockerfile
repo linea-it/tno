@@ -1,12 +1,10 @@
-FROM debian:bookworm-slim as base
-# FROM ubuntu:20.04 as base
+FROM debian:bookworm-slim AS base
 
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
-ENV PATH /opt/conda/bin:$PATH
+ENV PATH=/opt/conda/bin:$PATH
 
 # Instalacao do Gfortran 12 e Miniconda
 RUN set -x && \
-    # \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
     gcc \
@@ -37,7 +35,7 @@ RUN groupadd -r ton --gid 15010 \
     && groupadd -r conda --gid 900
 
 # -------------- PRAIA OCC compile Stage --------------
-FROM base as praia_occ
+FROM base AS praia_occ
 COPY praia_occ_src /tmp/praia_occ_src
 RUN mkdir /tmp/praia_occ \
     && cd /tmp/praia_occ_src \
@@ -52,16 +50,8 @@ RUN mkdir /tmp/praia_occ \
     && cd ~/ \
     && rm -r /tmp/praia_occ_src
 
-# # -------------- Python 2.7 Environment Stage --------------
-# FROM base as py2_build
-# COPY environment.py2.yml .
-# RUN /bin/bash --login -c "conda init bash \
-#     && source ~/.bashrc \
-#     && conda env create -f environment.py2.yml \
-#     && conda activate py2"
-
 # -------------- Python 3.8 Environment Stage --------------
-FROM base as py3_build
+FROM base AS py3_build
 COPY environment.py3.yml .
 RUN /bin/bash --login -c "conda init bash \
     && source ~/.bashrc \

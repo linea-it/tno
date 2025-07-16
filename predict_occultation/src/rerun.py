@@ -1,6 +1,6 @@
 from sys import argv
 
-from run_pred_occ import rerun_job
+from run_pred_occ import rerun_job, update_job_progress
 
 
 def main():
@@ -10,6 +10,8 @@ def main():
         raise ValueError("No job")
 
     rerun_job(jobid)
+
+    # update_job_progress(jobid)
 
 
 if __name__ == "__main__":
