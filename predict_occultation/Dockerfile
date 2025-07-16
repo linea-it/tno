@@ -65,6 +65,8 @@ FROM base as py3_build
 COPY environment.py3.yml .
 RUN /bin/bash --login -c "conda init bash \
     && source ~/.bashrc \
+    && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/main \
+    && conda tos accept --override-channels --channel https://repo.anaconda.com/pkgs/r \
     && conda env create -f environment.py3.yml \
     && conda activate py3"
 
