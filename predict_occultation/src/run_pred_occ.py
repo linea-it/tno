@@ -703,7 +703,7 @@ def submit_tasks(jobid: int):
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
         # Altera dinamicamento o numero
         parsl_conf.executors[0].provider.init_blocks = (
-            (len(asteroids) // 1500) + 1 if len(asteroids) <= 15000 else 10
+            (len(asteroids) // 500) + 1 if len(asteroids) <= 5000 else 15
         )
         log.info(f"Init Blocks: {parsl_conf.executors[0].provider.init_blocks}")
         # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
