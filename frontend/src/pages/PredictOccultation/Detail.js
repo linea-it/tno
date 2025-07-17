@@ -68,7 +68,7 @@ function PredictDetail() {
 
     // Por enquanto, vou deixar o progresso sendo atualizado a cada 25 segundos independente do status do job
     loadDataProgress(id)
-  }, 25000)
+  }, 10000)
 
   const handleStopRun = () => {
     cancelPredictionJobById(id).then(() => {
@@ -250,7 +250,7 @@ function PredictDetail() {
         setPredictionJob(job)
       })
     }
-  }, 30000)
+  }, 10000)
 
   useEffect(() => {
     if (predictionJob.status) {
