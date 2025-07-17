@@ -6,7 +6,6 @@ from run_pred_occ import (
     predict_job_queue,
 )
 from run_pred_occ import run_job as predict_run_job
-from run_pred_occ import update_job_progress
 
 
 def predict_occultation_queue():
@@ -31,7 +30,6 @@ if __name__ == "__main__":
         if running_id:
             print(f"Job running: [{running_id}]")
             ingest_predictions(running_id)
-            update_job_progress(running_id)
         else:
             print("No job running.")
 

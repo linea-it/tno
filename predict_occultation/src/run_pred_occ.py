@@ -206,71 +206,6 @@ def ingest_predictions(jobid: int):
         log.info(f"task updated to status: {consolidated['status']}")
 
 
-# def update_job_progress(jobid):
-#     # Job results/tasks status
-
-#     # (1, "Success"),
-#     # (2, "Failed"),
-#     # (3, "Queued"),
-#     # (4, "Running"),
-#     # (5, "Aborted"),
-#     # (6, "Ingesting"),
-
-#     dao_job = PredictOccultationJobDao()
-#     dao_job_result = PredictOccultationJobResultDao()
-
-#     job = dao_job.get_job_by_id(jobid)
-
-#     # Update job progress stage 1 - Submission of tasks
-#     # ----------------------------------------------------
-
-#     # Total de asteroids
-#     count_asteroids = job["count_asteroids"]
-#     # print(f"Job asteroid {count_asteroids}" )
-
-#     # Total de tasks submetidas.
-#     submited_tasks = dao_job_result.count_by_job_id(jobid)
-#     # print(f"Submited Tasks {submited_tasks}")
-
-#     # Status da etapa
-#     # 3 = completed
-#     # 2 = running
-#     stage1_status = 3 if submited_tasks == count_asteroids else 2
-#     update_progress_status(
-#         jobid,
-#         step=1,
-#         status=stage1_status,
-#         count=count_asteroids,
-#         current=submited_tasks,
-#         # success=step1_success,
-#         # failures=step1_failures,
-#         t0=job["start"],
-#     )
-
-#     # Update job progress stage 2 - Running tasks
-#     # ----------------------------------------------------
-#     # Total de tasks completas.
-#     completed_tasks = dao_job_result.count_by_job_id(jobid, status=[1, 2, 5])
-#     # print(f"Completed Tasks {completed_tasks}")
-
-#     success_tasks = dao_job_result.count_by_job_id(jobid, status=[1])
-#     # print(f"Success Tasks {success_tasks}")
-#     failed_tasks = dao_job_result.count_by_job_id(jobid, status=[2])
-#     # print(f"Failed Tasks {failed_tasks}")
-
-#     stage2_status = 3 if completed_tasks == submited_tasks else 2
-#     update_progress_status(
-#         jobid,
-#         step=2,
-#         status=stage2_status,
-#         count=submited_tasks,
-#         current=completed_tasks,
-#         success=success_tasks,
-#         failures=failed_tasks,
-#         t0=job["start"],
-#     )
-
-
 def predict_job_queue():
     # Verifica se ha algum job sendo executado.
     if has_job_running():
@@ -1058,9 +993,6 @@ def complete_job(jobid: int):
     logname = "submit_tasks"
     log = get_logger(current_path, f"{logname}.log", DEBUG)
 
-    # # Update Progress Status
-    # update_job_progress(job["id"])
-
     consolidated_filepath = consolidate_job_results(job, current_path, log)
 
     if not consolidated_filepath.exists():
@@ -1106,9 +1038,6 @@ def complete_job(jobid: int):
     log.info("Update Job status.")
     # write_job_file(current_path, job)
     update_job(job)
-
-    # # Update Job Progress
-    # update_job_progress(job["id"])
 
     # Remove o diretório de asteroids do job.
     if not job["debug"]:
