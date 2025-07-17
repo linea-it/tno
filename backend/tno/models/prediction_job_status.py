@@ -1,6 +1,8 @@
 from django.db import models
 from tno.models import PredictionJob
 
+# TODO: Este model pode ser removido, NAO Está mais sendo utilizado.
+
 
 class PredictionJobStatus(models.Model):
 

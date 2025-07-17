@@ -57,14 +57,17 @@ class PredictOccultationJobResultDao(DBBase):
 
         return self.fetch_all_dict(stm)
 
-    def count_by_job_id(self, job_id, status: List = None):
+    def count_by_job_id(self, job_id, status: Optional[Union[int, List[int]]] = None):
         stm = (
             select([func.count()])
             .select_from(self.tbl)
             .where(and_(self.tbl.c.job_id == job_id))
         )
-        if status:
-            stm = stm.where(self.tbl.c.status.in_(status))
+        if status is not None:
+            if isinstance(status, list):
+                stm = stm.where(self.tbl.c.status.in_(status))
+            else:
+                stm = stm.where(self.tbl.c.status == status)
 
         # print(stm)
         return self.fetch_scalar(stm)

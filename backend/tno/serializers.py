@@ -1,7 +1,5 @@
-import humanize
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from skybot.models.position import Position
 from tno.models import (
     Asteroid,
     AsteroidJob,
@@ -12,7 +10,6 @@ from tno.models import (
     Occultation,
     PredictionJob,
     PredictionJobResult,
-    PredictionJobStatus,
     Profile,
 )
 
@@ -156,9 +153,3 @@ class PredictionJobResultSerializer(serializers.ModelSerializer):
             return "Aborted"
         else:
             return "Unknown"
-
-
-class PredictionJobStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PredictionJobStatus
-        fields = "__all__"

@@ -4,12 +4,12 @@ import Grid from '@mui/material/Grid'
 import Progress from '../Progress'
 import useStyles from './styles'
 
-function ProgressList({ lista }) {
+function ProgressList({ stageProgress }) {
   const classes = useStyles()
 
   return (
     <>
-      {lista.map((item, i) => (
+      {stageProgress.map((item, i) => (
         <Grid item key={`progress_${i}`}>
           <Progress key={item.step} title={item.task} variant='determinate' label={`teste`} total={item.count} current={item.current} />
           <label>

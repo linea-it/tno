@@ -4,6 +4,11 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Chip from '@mui/material/Chip'
+import Box from '@mui/material/Box'
+import Avatar from '@mui/material/Avatar'
+import Stack from '@mui/material/Stack'
+import Divider from '@mui/material/Divider'
+import CardActions from '@mui/material/CardActions'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
 import Button from '@mui/material/Button'
@@ -16,6 +21,7 @@ import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import Alert from '@mui/material/Alert'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import LastUpdated from '../../components/LastUpdated'
 import {
   getPredictionJobById,
   getPredictionJobResultsByJobId,
@@ -37,7 +43,7 @@ function PredictDetail() {
   const [totalCount, setTotalCount] = useState(0)
   const [totalErrorCount, setTotalErrorCount] = useState(0)
   const [isJobCanceled, setIsJobCanceled] = useState(false)
-  const [progress, setProgress] = useState([])
+  const [progress, setProgress] = useState()
   // const [dialog, setDialog] = useState({
   //   content: [],
   //   visible: false,
@@ -53,10 +59,16 @@ function PredictDetail() {
   }
 
   useInterval(() => {
-    if ([1, 2].includes(predictionJob.status) && id) {
-      loadDataProgress(id)
-    }
-  }, [10000])
+    // TODO: é necessário rever essa lógica,
+    // precisa atualizar o progresso pelo menos uma vez depois que o job for concluido.
+
+    // if ([1, 2, 7, 8].includes(predictionJob.status) && id) {
+    //   loadDataProgress(id)
+    // }
+
+    // Por enquanto, vou deixar o progresso sendo atualizado a cada 25 segundos independente do status do job
+    loadDataProgress(id)
+  }, 10000)
 
   const handleStopRun = () => {
     cancelPredictionJobById(id).then(() => {
@@ -231,14 +243,14 @@ function PredictDetail() {
   }, [id, loadDataFailure, loadDataSuccess])
 
   useInterval(() => {
-    const hasStatusRunning = [1, 2].includes(predictionJob.status)
+    // const hasStatusRunning = [1, 2, 7, 8].includes(predictionJob.status)
 
-    if (hasStatusRunning) {
+    if (isRunning() && id) {
       getPredictionJobById({ id }).then((job) => {
         setPredictionJob(job)
       })
     }
-  }, 2000)
+  }, 10000)
 
   useEffect(() => {
     if (predictionJob.status) {
@@ -295,6 +307,29 @@ function PredictDetail() {
     }
   }, [predictionJob])
 
+  const tasksStatus = () => {
+    if (!progress) {
+      return
+    }
+    return (
+      <Stack direction='row' spacing={2} m={2}>
+        {progress.tasks_status.map((task, index) => (
+          <Chip
+            key={`chip-status-${index}`}
+            variant='outlined'
+            label={task.label}
+            color={task.color || 'default'}
+            avatar={<Avatar>{task.count}</Avatar>}
+          />
+        ))}
+      </Stack>
+    )
+  }
+
+  const isRunning = () => {
+    return [1, 2, 7, 8].includes(predictionJob.status)
+  }
+
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -335,11 +370,13 @@ function PredictDetail() {
         <Card>
           <CardHeader title='Progress' />
           <CardContent>
-            <Grid container spacing={3} direction='column'>
-              <ProgressList lista={progress} />
-              {predictionJob.status === 1 && progress.length === 0 ? <CircularProgress disableShrink size={50} /> : null}
+            <Grid container spacing={2} direction='column'>
+              {progress && progress?.progress.length > 0 && <ProgressList stageProgress={progress.progress} />}
+              <Divider sx={{ mt: 2 }} />
+              {tasksStatus()}
             </Grid>
           </CardContent>
+          <CardActions>{isRunning() && <LastUpdated datetimeUTC={progress?.updated} />}</CardActions>
         </Card>
       </Grid>
       <>
