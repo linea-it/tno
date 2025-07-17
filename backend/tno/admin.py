@@ -175,23 +175,8 @@ class PredictionJobResultAdmin(admin.ModelAdmin):
     raw_id_fields = ("job",)
 
 
-@admin.register(PredictionJobStatus)
-class PredictionJobStatusAdmin(admin.ModelAdmin):
-    list_display = (
-        "job",
-        "step",
-        "status",
-        "count",
-        "current",
-        "average_time",
-        "time_estimate",
-        "success",
-        "failures",
-    )
-
-
 @admin.register(Highlights)
-class PredictionJobStatusAdmin(admin.ModelAdmin):
+class HighlightsAdmin(admin.ModelAdmin):
     list_display = (
         "month_count",
         "next_month_count",

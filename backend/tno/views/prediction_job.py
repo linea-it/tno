@@ -1,26 +1,15 @@
-import json
-import os
-import threading
 from datetime import datetime, timedelta
 
 import humanize
 import numpy as np
-import pandas as pd
-from django.core.paginator import Paginator
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from tno.models import (
-    BspPlanetary,
-    Catalog,
-    LeapSecond,
-    PredictionJob,
-    PredictionJobStatus,
-)
-from tno.serializers import PredictionJobSerializer, PredictionJobStatusSerializer
+from tno.models import BspPlanetary, Catalog, LeapSecond, PredictionJob
+from tno.serializers import PredictionJobSerializer
 
 
 @extend_schema(exclude=True)

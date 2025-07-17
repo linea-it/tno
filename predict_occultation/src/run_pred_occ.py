@@ -411,8 +411,8 @@ def rerun_job(jobid: int):
     daoresult = PredictOccultationJobResultDao()
     daoresult.delete_by_job_id(jobid)
 
-    daostatus = PredictOccultationJobStatusDao()
-    daostatus.delete_by_job_id(jobid)
+    # daostatus = PredictOccultationJobStatusDao()
+    # daostatus.delete_by_job_id(jobid)
 
     daooccultation = OccultationDao()
     daooccultation.delete_by_job_id(jobid)
