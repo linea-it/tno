@@ -136,6 +136,7 @@ RUN chmod -R =2775 ${PIPELINE_ROOT} \
     && chmod =2775 ${APP_HOME} \
     && mkdir -p ${APP_HOME}/logs \
     && chmod =2775 ${APP_HOME}/logs \
+    && chown -R ${USERNAME}:ton ${APP_HOME}/logs \
     && mv de440.bsp ${PIPELINE_PATH}/$BSP_PLANETARY_NAME \
     && mv naif0012.tls ${PIPELINE_PATH}/$LEAP_SECOND_NAME
 
