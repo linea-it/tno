@@ -383,8 +383,7 @@ class GaiaDao(Dao):
             return df_results
 
         except Exception as e:
-            print(e)
-            return None
+            raise Exception(f"Error querying GAIA catalog with polygons: {e}")
 
     # Build final query
     def catalog_by_positions(self, positions, radius=0.15, max_mag=None):
@@ -418,17 +417,15 @@ class GaiaDao(Dao):
 
                 print(text(stm))
                 df_rows = pd.read_sql(text(stm), con=self.get_db_engine())
+                print("Rows found: %d" % df_rows.shape[0])
 
-                if df_results is None:
-                    df_results = df_rows
-                else:
-                    # Concatena o resultado da nova query com os resultados anteriores.
-                    # Tratando possiveis duplicatas.
-                    df_results = (
-                        pd.concat([df_results, df_rows])
-                        .drop_duplicates()
-                        .reset_index(drop=True)
-                    )
+                # Concatena o resultado da nova query com os resultados anteriores.
+                # Tratando possiveis duplicatas.
+                df_results = (
+                    pd.concat([df_results, df_rows])
+                    .drop_duplicates()
+                    .reset_index(drop=True)
+                )
 
                 del df_rows
                 del clauses
