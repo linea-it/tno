@@ -1,5 +1,7 @@
 import json
 import os
+import signal
+import time
 from datetime import datetime as dt
 from datetime import timezone
 from pathlib import Path
@@ -23,6 +25,27 @@ from pipeline.library import (
     ra_hms_to_deg,
 )
 from pipeline.occviz import occultation_path_coeff
+
+
+class Timeout:
+    """A context manager to enforce a timeout on a block of code."""
+
+    def __init__(self, seconds=1, error_message="Operation timed out"):
+        self.seconds = seconds
+        self.error_message = f"{error_message} after {seconds} second(s)"
+
+    def _handle_timeout(self, signum, frame):
+        """This function is called when the alarm signal is received."""
+        raise TimeoutError(self.error_message)
+
+    def __enter__(self):
+        """Sets up the signal handler and alarm when entering the 'with' block."""
+        signal.signal(signal.SIGALRM, self._handle_timeout)
+        signal.alarm(self.seconds)
+
+    def __exit__(self, type, value, traceback):
+        """Cancels the alarm when exiting the 'with' block."""
+        signal.alarm(0)
 
 
 def run_occultation_path_coeff(
@@ -168,7 +191,7 @@ def run_occultation_path_coeff(
 
         coeff_paths = []
         # Para cada Ocultacao e necessario calcular o occultation path.
-        for row in df.to_dict(orient="records"):
+        for index, row in enumerate(df.to_dict(orient="records")):
 
             new_row = {
                 "hash_id": None,
@@ -262,7 +285,21 @@ def run_occultation_path_coeff(
             )
 
             # Calcula a fração ilumnada da lua
-            moon_illuminated_fraction = get_moon_illuminated_fraction(row["date_time"])
+            try:
+                # Usa classe para controlar o timeout da execucao do get_moon_illuminated_fraction
+                # O timeout é de 60 segundos, o que deve ser suficiente para a maioria dos casos.
+                # Acima de 60 segundos, o processo é interrompido e o resultado é marcado como Null.
+                with Timeout(seconds=60):
+                    moon_illuminated_fraction = get_moon_illuminated_fraction(
+                        row["date_time"]
+                    )
+            except TimeoutError as e:
+                # This block runs ONLY if the timeout was triggered.
+                moon_illuminated_fraction = None
+                print(
+                    f"INFO: Skipped moon illuminated fraction calculation for event with"
+                    f" gaia_source_id {source_id} because it exceeded the 60-second timeout."
+                )
 
             # Obtem o valor da incerteza do objeto no instante da ocultação
             # e calcula a incerteza no instante central
@@ -326,53 +363,65 @@ def run_occultation_path_coeff(
                 }
             )
 
-            occ_coeff = occultation_path_coeff(
-                date_time=dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S")
-                .replace(tzinfo=timezone.utc)
-                .isoformat(),
-                ra_star_candidate=row["ra_star_candidate"],
-                dec_star_candidate=row["dec_star_candidate"],
-                closest_approach=row["closest_approach"],
-                position_angle=row["position_angle"],
-                velocity=row["velocity"],
-                delta_distance=row["delta"],
-                offset_ra=row["off_ra"],
-                offset_dec=row["off_dec"],
-                closest_approach_error=closest_approach_uncertainty_km,
-                object_diameter=row.get("diameter", None),
-                object_diameter_error=row.get("diameter_err_max", None),
-            )
+            try:
+                # Usa classe para controlar o timeout da execucao do occultation_path_coeff
+                # O timeout é de 1 segundo, o que deve ser suficiente para a maioria dos casos.
+                # Acima de 1 segundo, o processo é interrompido e o resultado é marcado como skipped.
+                with Timeout(seconds=1):
+                    occ_coeff = occultation_path_coeff(
+                        date_time=dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S")
+                        .replace(tzinfo=timezone.utc)
+                        .isoformat(),
+                        ra_star_candidate=row["ra_star_candidate"],
+                        dec_star_candidate=row["dec_star_candidate"],
+                        closest_approach=row["closest_approach"],
+                        position_angle=row["position_angle"],
+                        velocity=row["velocity"],
+                        delta_distance=row["delta"],
+                        offset_ra=row["off_ra"],
+                        offset_dec=row["off_dec"],
+                        closest_approach_error=closest_approach_uncertainty_km,
+                        object_diameter=row.get("diameter", None),
+                        object_diameter_error=row.get("diameter_err_max", None),
+                    )
 
-            if (
-                len(occ_coeff["coeff_latitude"]) > 0
-                and len(occ_coeff["coeff_longitude"]) > 0
-            ):
-                new_row.update(
-                    {
-                        "have_path_coeff": True,
-                        "occ_path_min_longitude": (
-                            float(occ_coeff["min_longitude"])
-                            if occ_coeff["min_longitude"] != None
-                            else None
-                        ),
-                        "occ_path_max_longitude": (
-                            float(occ_coeff["max_longitude"])
-                            if occ_coeff["max_longitude"] != None
-                            else None
-                        ),
-                        "occ_path_min_latitude": (
-                            float(occ_coeff["min_latitude"])
-                            if occ_coeff["min_latitude"] != None
-                            else None
-                        ),
-                        "occ_path_max_latitude": (
-                            float(occ_coeff["max_latitude"])
-                            if occ_coeff["max_latitude"] != None
-                            else None
-                        ),
-                        "occ_path_is_nightside": bool(occ_coeff["nightside"]),
-                        "occ_path_coeff": json.dumps(occ_coeff),
-                    }
+                    if (
+                        len(occ_coeff["coeff_latitude"]) > 0
+                        and len(occ_coeff["coeff_longitude"]) > 0
+                    ):
+                        new_row.update(
+                            {
+                                "have_path_coeff": True,
+                                "occ_path_min_longitude": (
+                                    float(occ_coeff["min_longitude"])
+                                    if occ_coeff["min_longitude"] != None
+                                    else None
+                                ),
+                                "occ_path_max_longitude": (
+                                    float(occ_coeff["max_longitude"])
+                                    if occ_coeff["max_longitude"] != None
+                                    else None
+                                ),
+                                "occ_path_min_latitude": (
+                                    float(occ_coeff["min_latitude"])
+                                    if occ_coeff["min_latitude"] != None
+                                    else None
+                                ),
+                                "occ_path_max_latitude": (
+                                    float(occ_coeff["max_latitude"])
+                                    if occ_coeff["max_latitude"] != None
+                                    else None
+                                ),
+                                "occ_path_is_nightside": bool(occ_coeff["nightside"]),
+                                "occ_path_coeff": json.dumps(occ_coeff),
+                            }
+                        )
+            except TimeoutError as e:
+                # This block runs ONLY if the timeout was triggered.
+                new_row.update({"occ_path_coeff": json.dumps({"skipped": True})})
+                print(
+                    f"INFO: Skipped occultation path coefficient calculation for event with"
+                    f" gaia_source_id {source_id} because it exceeded the 1-second timeout."
                 )
 
             coeff_paths.append(new_row)
@@ -628,6 +677,7 @@ def run_occultation_path_coeff(
         msg = "Failed in Path Coef stage. Error: %s" % e
         calculate_path_coeff.update({"message": msg})
         print(msg)
+
     finally:
         t1 = dt.now(tz=timezone.utc)
         tdelta = t1 - t0

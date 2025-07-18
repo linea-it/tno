@@ -177,6 +177,18 @@ def run_elimina(eph_filename, centers_filename):
     out_link = os.path.join(app_path, centers_filename)
 
     strParameters = "\n".join(map(str, [eph_filename]))
+
+    # AQUI ESTAMOS VERIFICANDO O NUMERO DE LINHAS DO ARQUIVO EPHEMERIS
+    # O FORTRAN GERADATA TEM UM PARÂMETRO HARDCODED COM O MÁXIMO DE LINHAS
+    # CHAMADO MAX E ESTÁ SETADO COMO 10000000 (linhas)
+    with open(eph_filename, "r") as f:
+        lines = f.readlines()
+        line_count = len(lines)
+        if line_count > 10_000_000:
+            raise Exception(
+                f"Ephemeris file '{eph_filename}' exceeds line limit (10,000,000). Adjust MAX parameter in 'elimina.f'."
+            )
+
     with open(output, "w") as outFile:
         # open the script .sh with the necessary configurations
         p = subprocess.Popen(
@@ -208,13 +220,16 @@ def centers_positions_to_deg(centers_file, centers_deg_filename):
 
     a_radec = []
     with open(centers_file, "r") as f:
+        lines = f.readlines()
+        line_count = len(lines)
+        print(f"Processing {line_count} lines from centers file: {centers_file}")
 
         with open(output, "w") as csvfile:
             fieldnames = ["ra", "dec"]
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=";")
             writer.writeheader()
 
-            for line in f:
+            for line in lines:
                 ra_hms, dec_hms = line.split("  ")
                 radec = HMS2deg(ra_hms, dec_hms)
                 a_radec.append(radec)
