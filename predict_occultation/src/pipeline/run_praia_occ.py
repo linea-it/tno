@@ -235,10 +235,7 @@ def start_praia_occ(
         proper_motion_compensation=150,  # proper motion compensation in arcsec (stars move over time)
     )
 
-    # *********************************************************
-    # centers_file = run_elimina(eph_filename, centers_filename)
-    # print(f"Centers file generated: [{centers_file}]")
-    # *********************************************************
+# (Removed the commented-out block entirely)
 
     df_catalog = obter_catalogo_de_estrelas(
         dao=dao,
