@@ -235,7 +235,7 @@ def start_praia_occ(
         proper_motion_compensation=150,  # proper motion compensation in arcsec (stars move over time)
     )
 
-# (Removed the commented-out block entirely)
+    # (Removed the commented-out block entirely)
 
     df_catalog = obter_catalogo_de_estrelas(
         dao=dao,
