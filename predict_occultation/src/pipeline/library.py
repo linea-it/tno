@@ -337,7 +337,7 @@ def asteroid_visual_magnitude(
         naif_tls (str): Path to the NAIF Toolkit Leap Seconds (TLS) file.
         planetary_bsp (str): Path to the planetary data BSP file.
         instant (str): The specific instant in ISO format for the calculation.
-        bsp_header (bool or dict, optional): If True, retrieves the header values from the BSP file.
+        bsp_header (bool or dict, optional): If False, retrieves the header values from the BSP file.
         h (float, optional): Absolute magnitude parameter (H). If None, a default value is used.
         g (float, optional): Slope parameter (G). If None, a default value is used.
 

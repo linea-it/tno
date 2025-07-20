@@ -8,7 +8,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import spiceypy
 import spiceypy as spice
 from astropy.time import Time
 from pipeline.library import (
@@ -63,9 +62,8 @@ def run_occultation_path_coeff(
     # This avoids reduntant loads during the forthcomin loop
     try:
         loaded_kernels = []
-        for i in range(spiceypy.ktotal("ALL")):
-            # kdata retorna: caminho, tipo, fonte, handle
-            kernel_path, _, _, _ = spiceypy.kdata(i, "ALL")
+        for i in range(spice.ktotal("ALL")):
+            kernel_path, _, _, _ = spice.kdata(i, "ALL")
             loaded_kernels.append(kernel_path)
 
         if not obj_data["bsp_jpl"]["filename"] in loaded_kernels:
