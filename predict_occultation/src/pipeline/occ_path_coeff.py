@@ -16,6 +16,7 @@ from pipeline.library import (
     dec_hms_to_deg,
     generate_hash,
     get_apparent_diameter,
+    get_bsp_header_values,
     get_closest_approach_uncertainty,
     get_event_duration,
     get_instant_uncertainty,
@@ -56,6 +57,45 @@ def run_occultation_path_coeff(
 
     calculate_path_coeff = {}
     t0 = dt.now(tz=timezone.utc)
+
+    # Check if bsps are loaded and if not, load them
+    # This avoids reduntant loads during the forthcomin loop
+    try:
+        loaded_kernels = []
+        for i in range(spice.ktotal("ALL")):
+            kernel_path, _, _, _ = spice.kdata(i, "ALL")
+            loaded_kernels.append(kernel_path)
+
+        if not obj_data["bsp_jpl"]["filename"] in loaded_kernels:
+            spice.furnsh(obj_data["bsp_jpl"]["filename"])
+            print(f"Loaded JPL BSP file: {obj_data['bsp_jpl']['filename']}")
+
+        if (
+            not obj_data["predict_occultation"]["bsp_planetary"] + ".bsp"
+            in loaded_kernels
+        ):
+            spice.furnsh(obj_data["predict_occultation"]["bsp_planetary"] + ".bsp")
+            print(
+                f"Loaded planetary BSP file: {obj_data['predict_occultation']['bsp_planetary']}.bsp"
+            )
+
+        if (
+            not obj_data["predict_occultation"]["leap_seconds"] + ".tls"
+            in loaded_kernels
+        ):
+            spice.furnsh(obj_data["predict_occultation"]["leap_seconds"] + ".tls")
+            print(
+                f"Loaded leap seconds file: {obj_data['predict_occultation']['leap_seconds']}.tls"
+            )
+    except Exception as e:
+        raise Exception(f"Failed to load SPICE kernels. Error: {str(e)}")
+
+    # Get the header values from the JPL file
+    try:
+        bsp_header = get_bsp_header_values(obj_data["bsp_jpl"]["filename"])
+        print(f"BSP header extracted values: {bsp_header}")
+    except Exception as e:
+        raise Exception(f"Failed to get BSP header values. Error: {str(e)}")
 
     try:
         if not predict_table_path.exists():
@@ -260,9 +300,10 @@ def run_occultation_path_coeff(
                 ):  # some objects have h defined as 99.99 when unknown in the asteroid table inherited from MPC
                     ast_vis_mag = asteroid_visual_magnitude(
                         obj_data["bsp_jpl"]["filename"],
-                        obj_data["predict_occultation"]["leap_seconds"] + ".bsp",
+                        obj_data["predict_occultation"]["leap_seconds"] + ".tls",
                         obj_data["predict_occultation"]["bsp_planetary"] + ".bsp",
                         dt.strptime(row["date_time"], "%Y-%m-%d %H:%M:%S"),
+                        bsp_header=bsp_header,
                         h=obj_data["h"],
                         g=obj_data["g"],
                         spice_global=True,

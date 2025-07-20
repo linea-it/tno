@@ -320,7 +320,14 @@ def get_position_vector(target, observer, et, spice_object):
 
 
 def asteroid_visual_magnitude(
-    asteroid_bsp, naif_tls, planetary_bsp, instant, h=None, g=None, spice_global=False
+    asteroid_bsp,
+    naif_tls,
+    planetary_bsp,
+    instant,
+    bsp_header=False,
+    h=None,
+    g=None,
+    spice_global=False,
 ):
     """
     Calculate the visual magnitude of an asteroid at a specific instant.
@@ -330,6 +337,7 @@ def asteroid_visual_magnitude(
         naif_tls (str): Path to the NAIF Toolkit Leap Seconds (TLS) file.
         planetary_bsp (str): Path to the planetary data BSP file.
         instant (str): The specific instant in ISO format for the calculation.
+        bsp_header (bool or dict, optional): If False, retrieves the header values from the BSP file.
         h (float, optional): Absolute magnitude parameter (H). If None, a default value is used.
         g (float, optional): Slope parameter (G). If None, a default value is used.
 
@@ -338,8 +346,8 @@ def asteroid_visual_magnitude(
     """
 
     # Retrieve information from bsp header
-
-    bsp_header = get_bsp_header_values(asteroid_bsp)
+    if not bsp_header:
+        bsp_header = get_bsp_header_values(asteroid_bsp)
 
     if h is None:
         try:
