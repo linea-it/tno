@@ -178,8 +178,6 @@ def get_position_from_occ_table(data_array, index_list):
     return [" ".join(pos) for pos in data_array[:, index_list]]
 
 
-import numpy as np
-
 # This function is referenced but was not provided; assuming it exists elsewhere.
 # def get_position_from_occ_table(data, cols):
 #     ...
