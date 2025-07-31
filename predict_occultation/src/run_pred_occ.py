@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import math
 import os
 import pathlib
 import shutil
@@ -633,19 +634,37 @@ def submit_tasks(jobid: int):
         dao_job_result = PredictOccultationJobResultDao()
 
         # =========================== Parsl ===========================
-        log.info("Settings Parsl configurations")
+        log.info("Setting Parsl configurations")
+        # Get configuration parameters from environment variables
         envname = os.getenv("PARSL_ENV", "linea")
+        try:
+            ast_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 500))
+            max_nodes = int(os.getenv("MAX_NODES", 20))
+        except (ValueError, TypeError):
+            log.error("MAX_NODES and ASTEROIDS_PER_NODE must be integers.")
+            exit(1)
+
+        num_asteroids = len(asteroids)
+
+        # Dynamically calculate the number of nodes required based on the workload
+        if num_asteroids > 0:
+            nodes_needed = math.ceil(num_asteroids / ast_per_node)
+        else:
+            nodes_needed = 0
+
+        # Apply the max_nodes cap and set the initial blocks for the provider
+        num_blocks_to_init = min(nodes_needed, max_nodes)
+
         parsl_conf = get_config(envname, current_path)
-        # Altera o diretório runinfo para dentro do diretório do job.
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        # Altera dinamicamento o numero
-        parsl_conf.executors[0].provider.init_blocks = (
-            (len(asteroids) // 500) + 1 if len(asteroids) <= 5000 else 15
+        parsl_conf.executors[0].provider.init_blocks = int(num_blocks_to_init)
+
+        log.info(
+            f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
         )
-        log.info(f"Init Blocks: {parsl_conf.executors[0].provider.init_blocks}")
-        # parsl_conf.executors[0].provider.channel.script_dir = os.path.join(
-        #         current_path, "script_dir"
-        #     )
+        log.info(
+            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}"
+        )
 
         parsl.clear()
         parsl.load(parsl_conf)

@@ -19,12 +19,8 @@ def normalize_to_nearest_hour(dt):
     if not isinstance(dt, datetime):
         raise TypeError("Input must be a datetime object")
 
-    # Extract the minute component
-    minute = dt.minute
-
-    # If minutes >= 30, round up to the next hour
-    if minute >= 30:
-        dt = dt + timedelta(hours=1)
+    # Add 30 minutes to push the datetime into the correct hour
+    dt += timedelta(minutes=30)
 
     # Normalize to the nearest hour by setting minutes and seconds to zero
     normalized_dt = dt.replace(minute=0, second=0, microsecond=0)
@@ -351,13 +347,15 @@ def asteroid_visual_magnitude(
 
     if h is None:
         try:
-            h = bsp_header["bsp_absmag"]
+            h = bsp_header["physical_params"]["abs_mag_h"]
+            # h = bsp_header["bsp_absmag"]
         except:
             h = None
 
     if g is None:
         try:
-            g = bsp_header["bsp_gcoeff"]
+            g = bsp_header["physical_params"]["mag_slope_g"]
+            # g = bsp_header["bsp_gcoeff"]
         except:
             g = None
 
@@ -370,7 +368,8 @@ def asteroid_visual_magnitude(
         et = spice.str2et(instant.strftime("%Y-%b-%d %H:%M"))
 
         # Define the target object (asteroid)
-        target = bsp_header["bsp_spkid"]
+        target = bsp_header["ephemeris_info"]["target_spk_id"]
+        # target = bsp_header["bsp_spkid"]
 
         # Calculate heliocentric distance
         r_vec = get_position_vector(target, "SUN", et, spice)
@@ -410,88 +409,20 @@ def asteroid_visual_magnitude(
         return None
 
 
-def get_bsp_header_values(asteroid_bsp):
+def get_bsp_header_values(asteroid_bsp: str) -> dict:
     """
-    Extracts header information from an asteroid's binary SPK file.
+    Parses any JPL Horizons SPK header by slicing it into distinct data sections
+    and applying a comprehensive set of patterns for all known keys.
 
     Args:
-        asteroid_bsp (str): The path to the asteroid binary SPK file.
+        asteroid_bsp (str): The path to the binary SPK (.bsp) file.
 
     Returns:
-        dict: A dictionary with key-value pairs of the extracted header values.
-
-    Raises:
-        FileNotFoundError: If the SPK file is not found at the specified path.
-        ValueError: If the SPK file contents are in an unexpected format.
-
-    Example:
-        bsp_values = get_bsp_header_values('3031857.bsp')
+        dict: A structured dictionary with all metadata found, or an empty dict on failure.
     """
     try:
-        with open(asteroid_bsp, "rb") as binary_file:
-            # Read the binary data into a bytearray
-            binary_data = bytearray(binary_file.read())
-
-        # Convert the bytearray to a string using the appropriate encoding
-        texto = binary_data.decode("latin")
-
-        # Extract header information
-        # texto = decoded_string.split('SPK file contents:')[1]
-        bspdict = {}
-
-        # Extract target body name
-        target_body_match = re.search(r"\s*Target\s+body\s+:\s+\((.*?)\)", texto)
-        if target_body_match:
-            target_body_value = target_body_match.group(1).strip()
-            bspdict["bsp_target_body"] = target_body_value
-        else:
-            bspdict["bsp_target_body"] = None
-
-        # Extract SPK ID
-        spkid_match = re.search(r"\s*Target\s+SPK\s+ID\s+:\s+(\d+)", texto)
-        if spkid_match:
-            spkid_value = spkid_match.group(1).strip()
-            bspdict["bsp_spkid"] = str(spkid_value)
-        else:
-            bspdict["bsp_spkid"] = None
-
-        # This part is commented because the dates in the header seem not to match with the time range
-        # validity of the file. However, the code is kept for it may be useful in terms of pattern search
-        # inside bsps.
-
-        #         # Extract start time
-        #         start_time_match = re.search(r'\s*Start\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
-        #         if start_time_match:
-        #             start_time_value = start_time_match.group(1).strip('A.D.').strip()
-        #             bspdict['bsp_start_time'] = datetime.strptime(start_time_value, '%Y-%b-%d %H:%M:%S.%f')
-        #         else:
-        #             bspdict['bsp_start_time'] = None
-
-        #         # Extract stop time
-        #         stop_time_match = re.search(r'\s*Stop\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
-        #         if stop_time_match:
-        #             stop_time_value = stop_time_match.group(1).strip('A.D.').strip()
-        #             bspdict['bsp_stop_time'] = datetime.strptime(stop_time_value, '%Y-%b-%d %H:%M:%S.%f')
-        #         else:
-        #             bspdict['bsp_stop_time'] = None
-
-        # Extract absolute magnitude
-        absmag_match = re.search(r"\s+H=\s+([\d.]+)", texto)
-        if absmag_match:
-            absmag_value = absmag_match.group(1).strip()
-            bspdict["bsp_absmag"] = float(absmag_value)
-        else:
-            bspdict["bsp_absmag"] = None
-
-        # Extract gravitational coefficient
-        gcoeff_match = re.search(r"\s+G=\s+([\d.]+)", texto)
-        if gcoeff_match:
-            gcoeff_value = gcoeff_match.group(1).strip()
-            bspdict["bsp_gcoeff"] = float(gcoeff_value)
-        else:
-            bspdict["bsp_gcoeff"] = None
-
-        return bspdict
+        with open(asteroid_bsp, "rb") as f:
+            text = f.read().decode("latin-1")
 
     except FileNotFoundError:
         raise FileNotFoundError(
@@ -499,6 +430,235 @@ def get_bsp_header_values(asteroid_bsp):
         )
     except Exception as e:
         raise ValueError(f"Error parsing SPK file: {str(e)}")
+
+    comment_match = re.search(r"SPK file contents:(.*?)(?:\x04|\Z)", text, re.DOTALL)
+    if not comment_match:
+        return {}
+    comment_text = comment_match.group(1)
+
+    data = {}
+
+    def _clean(val_str):
+        if val_str is None:
+            return None
+        val_str = val_str.strip().strip("}")
+        if val_str.lower() in ["n.a.", "n.a"]:
+            return None
+        try:
+            return float(val_str)
+        except (ValueError, TypeError):
+            return val_str
+
+    # == Section 1: General & Source Information ==
+    info_patterns = {
+        "target_body": r"Target body\s*:\s*(.*?)\s*\{source:",
+        "target_spk_id": r"Target SPK ID\s*:\s*(\d+)",
+        "orbit_source": r"Target body.*?\{source:\s*(.*?)\}",
+        "center_body": r"Coord center\s*:\s*(.*?)\s*\(",
+        "start_time_tdb": r"Start time\s*:\s*A\.D\.\s*(.*?)\s*TDB",
+        "stop_time_tdb": r"Stop time\s*:\s*A\.D\.\s*(.*?)\s*TDB",
+    }
+    data["ephemeris_info"] = {}
+    for key, pattern in info_patterns.items():
+        match = re.search(pattern, comment_text)
+        if match:
+            data["ephemeris_info"][key] = _clean(match.group(1))
+
+    # == Define Section Headers to Slice the Text Block ==
+    sec_elements = "Initial IAU76/J2000"
+    sec_cartesian = "Equivalent ICRF"
+    sec_physical_asteroid = "Asteroid physical parameters"
+    sec_physical_comet = "Comet physical"
+
+    idx_elements = comment_text.find(sec_elements)
+    idx_cartesian = comment_text.find(sec_cartesian)
+    idx_physical = comment_text.find(sec_physical_asteroid)
+    if idx_physical == -1:
+        idx_physical = comment_text.find(sec_physical_comet)
+
+    # == Section 2: Osculating Elements ==
+    if idx_elements != -1:
+        end_slice = idx_cartesian if idx_cartesian != -1 else idx_physical
+        elements_text = comment_text[idx_elements:end_slice].replace("\x00", "")
+        elements_patterns = {
+            "epoch_jd": r"EPOCH\s*=\s*([\d.]+)",
+            "eccentricity": r"EC\s*=\s*([-\d.E+]+)",
+            "perihelion_dist_au": r"QR\s*=\s*([-\d.E+]+)",
+            "perihelion_time_jd": r"TP\s*=\s*([-\d.E+]+)",
+            "lon_asc_node_deg": r"OM\s*=\s*([-\d.E+]+)",
+            "arg_perihelion_deg": r"W\s*=\s*([-\d.E+]+)",
+            "inclination_deg": r"IN\s*=\s*([-\d.E+]+)",
+            "solution_rms": r"(?:Residual RMS|RMSW)\s*=\s*([^\s]+)",
+        }
+        data["osculating_elements"] = {}
+        for key, pattern in elements_patterns.items():
+            match = re.search(pattern, elements_text)
+            if match:
+                data["osculating_elements"][key] = _clean(match.group(1))
+
+    # == Section 3: Cartesian State ==
+    if idx_cartesian != -1:
+        end_slice = idx_physical if idx_physical != -1 else len(comment_text)
+        cartesian_text = comment_text[idx_cartesian:end_slice].replace("\x00", "")
+        pos_match = re.search(
+            r"X\s*=\s*([-\d.E+]+)\s*Y\s*=\s*([-\d.E+]+)\s*Z\s*=\s*([-\d.E+]+)",
+            cartesian_text,
+        )
+        vel_match = re.search(
+            r"VX\s*=\s*([-\d.E+]+)\s*VY\s*=\s*([-\d.E+]+)\s*VZ\s*=\s*([-\d.E+]+)",
+            cartesian_text,
+        )
+        if pos_match and vel_match:
+            data["cartesian_state_icrf"] = {
+                "position_au": {
+                    "x": _clean(pos_match.group(1)),
+                    "y": _clean(pos_match.group(2)),
+                    "z": _clean(pos_match.group(3)),
+                },
+                "velocity_au_day": {
+                    "vx": _clean(vel_match.group(1)),
+                    "vy": _clean(vel_match.group(2)),
+                    "vz": _clean(vel_match.group(3)),
+                },
+            }
+
+    # == Section 4: Physical Parameters ==
+    if idx_physical != -1:
+        phys_params_text = comment_text[idx_physical:].replace("\x00", "")
+        phys_patterns = {
+            "gm_km3_s2": r"GM\s*=\s*([^\s]+)",
+            "radius_km": r"RAD\s*=\s*([^\s]+)",
+            "abs_mag_h": r"\sH\s*=\s*([^\s]+)",
+            "mag_slope_g": r"\sG\s*=\s*([^\s]+)",
+            "rot_per_hr": r"ROTPER\s*=\s*([^\s]+)",
+            "albedo": r"ALBEDO\s*=\s*([^\s]+)",
+            "spectral_type": r"STYP\s*=\s*([^\s]+)",
+            "total_mag_m1": r"M1\s*=\s*([^\s]+)",
+            "nuclear_mag_m2": r"M2\s*=\s*([^\s]+)",
+            "mag_slope_k1": r"k1\s*=\s*([^\s]+)",
+            "mag_slope_k2": r"k2\s*=\s*([^\s]+)",
+            "phase_coeff_phcof": r"PHCOF\s*=\s*([^\s]+)",
+        }
+        data["physical_params"] = {}
+        for key, pattern in phys_patterns.items():
+            match = re.search(pattern, phys_params_text)
+            if match:
+                data["physical_params"][key] = _clean(match.group(1))
+        try:
+            data["physical_params"]["radius_km"] = float(
+                data["physical_params"]["radius_km"]
+            )
+        except:
+            data["physical_params"]["radius_km"] = None
+
+        try:
+            data["physical_params"]["gm_km3_s2"] = float(
+                data["physical_params"]["gm_km3_s2"]
+            )
+        except:
+            data["physical_params"]["gm_km3_s2"] = None
+
+    # == Final Type Correction ==
+    # Specifically convert target_spk_id to an integer if it exists.
+    if data.get("ephemeris_info", {}).get("target_spk_id") is not None:
+        try:
+            spk_id_float = data["ephemeris_info"]["target_spk_id"]
+            data["ephemeris_info"]["target_spk_id"] = int(spk_id_float)
+        except (ValueError, TypeError):
+            pass  # Keep the original value if conversion fails unexpectedly
+
+    return data
+
+
+# def get_bsp_header_values(asteroid_bsp):
+#     """
+#     Extracts header information from an asteroid's binary SPK file.
+
+#     Args:
+#         asteroid_bsp (str): The path to the asteroid binary SPK file.
+
+#     Returns:
+#         dict: A dictionary with key-value pairs of the extracted header values.
+
+#     Raises:
+#         FileNotFoundError: If the SPK file is not found at the specified path.
+#         ValueError: If the SPK file contents are in an unexpected format.
+
+#     Example:
+#         bsp_values = get_bsp_header_values('3031857.bsp')
+#     """
+#     try:
+#         with open(asteroid_bsp, "rb") as binary_file:
+#             # Read the binary data into a bytearray
+#             binary_data = bytearray(binary_file.read())
+
+#         # Convert the bytearray to a string using the appropriate encoding
+#         texto = binary_data.decode("latin")
+
+#         # Extract header information
+#         # texto = decoded_string.split('SPK file contents:')[1]
+#         bspdict = {}
+
+#         # Extract target body name
+#         target_body_match = re.search(r"\s*Target\s+body\s+:\s+\((.*?)\)", texto)
+#         if target_body_match:
+#             target_body_value = target_body_match.group(1).strip()
+#             bspdict["bsp_target_body"] = target_body_value
+#         else:
+#             bspdict["bsp_target_body"] = None
+
+#         # Extract SPK ID
+#         spkid_match = re.search(r"\s*Target\s+SPK\s+ID\s+:\s+(\d+)", texto)
+#         if spkid_match:
+#             spkid_value = spkid_match.group(1).strip()
+#             bspdict["bsp_spkid"] = str(spkid_value)
+#         else:
+#             bspdict["bsp_spkid"] = None
+
+#         # This part is commented because the dates in the header seem not to match with the time range
+#         # validity of the file. However, the code is kept for it may be useful in terms of pattern search
+#         # inside bsps.
+
+#         #         # Extract start time
+#         #         start_time_match = re.search(r'\s*Start\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
+#         #         if start_time_match:
+#         #             start_time_value = start_time_match.group(1).strip('A.D.').strip()
+#         #             bspdict['bsp_start_time'] = datetime.strptime(start_time_value, '%Y-%b-%d %H:%M:%S.%f')
+#         #         else:
+#         #             bspdict['bsp_start_time'] = None
+
+#         #         # Extract stop time
+#         #         stop_time_match = re.search(r'\s*Stop\s+time\s*:\s*(A\.D\.\s+[^\s:]+.*?)\s*TDB', texto)
+#         #         if stop_time_match:
+#         #             stop_time_value = stop_time_match.group(1).strip('A.D.').strip()
+#         #             bspdict['bsp_stop_time'] = datetime.strptime(stop_time_value, '%Y-%b-%d %H:%M:%S.%f')
+#         #         else:
+#         #             bspdict['bsp_stop_time'] = None
+
+#         # Extract absolute magnitude
+#         absmag_match = re.search(r"\s+H=\s+([\d.]+)", texto)
+#         if absmag_match:
+#             absmag_value = absmag_match.group(1).strip()
+#             bspdict["bsp_absmag"] = float(absmag_value)
+#         else:
+#             bspdict["bsp_absmag"] = None
+
+#         # Extract gravitational coefficient
+#         gcoeff_match = re.search(r"\s+G=\s+([\d.]+)", texto)
+#         if gcoeff_match:
+#             gcoeff_value = gcoeff_match.group(1).strip()
+#             bspdict["bsp_gcoeff"] = float(gcoeff_value)
+#         else:
+#             bspdict["bsp_gcoeff"] = None
+
+#         return bspdict
+
+#     except FileNotFoundError:
+#         raise FileNotFoundError(
+#             f"The specified SPK file '{asteroid_bsp}' does not exist."
+#         )
+#     except Exception as e:
+#         raise ValueError(f"Error parsing SPK file: {str(e)}")
 
 
 def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):

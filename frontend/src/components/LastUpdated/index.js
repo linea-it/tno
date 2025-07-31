@@ -20,7 +20,7 @@ function LastUpdated({ datetimeUTC }) {
     return () => clearInterval(interval)
   }, [datetimeUTC])
 
-  return <Typography variant='body2'>{durationText} ago</Typography>
+  return <Typography variant='body2' sx={{fontStyle: 'italic', color: 'text.secondary'}}>Updated {durationText} ago</Typography>
 }
 
 export default LastUpdated

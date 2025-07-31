@@ -841,10 +841,10 @@ class Occultation(models.Model):
 
     # Indica a Origem do aquivo BSP do Asteroid. atualmente JPL.
     bsp_source = models.CharField(
-        max_length=10,
+        max_length=35,
         null=True,
         blank=True,
-        default="JPL",
+        default="Unavailable",
         verbose_name="Bsp Source",
         help_text="Asteroid Bsp ephemeris data source. for example JPL.",
     )

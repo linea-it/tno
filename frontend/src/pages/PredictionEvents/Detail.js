@@ -141,6 +141,10 @@ function PredictionEventDetail() {
       {
         title: 'Creation date',
         value: `${occultation.created_at ? moment(occultation.created_at).utc() : null}`
+      },
+      {
+        title: 'Ephemeris Source',
+        value: `${occultation.bsp_source ? occultation.bsp_source : null}`
       }
     ])
 
