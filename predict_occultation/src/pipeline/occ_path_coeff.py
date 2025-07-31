@@ -1,6 +1,7 @@
 import json
 import os
 import signal
+import traceback
 from datetime import datetime as dt
 from datetime import timezone
 from pathlib import Path
