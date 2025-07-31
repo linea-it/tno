@@ -40,3 +40,9 @@ PREDICT_OUTPUTS=${TNO_PROJ_DIR:-.}/data/predict_occultations
 PREDICT_INPUTS=${TNO_PROJ_DIR:-.}/data/asteroids
 DB_ADMIN_URI=${DB_ADMIN_URI}
 DB_CATALOG_URI=${DB_CATALOG_URI}
+
+
+# HPC Parsl dynamic allocation
+# -------------------------------------
+MAX_NODES=24
+ASTEROIDS_PER_NODE=500
