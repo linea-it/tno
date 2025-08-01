@@ -1,3 +1,4 @@
+import gc  # Import the garbage collector module
 import json
 import os
 import signal
@@ -75,7 +76,8 @@ def safe_moon_fraction(date_str: str, source_id: int) -> Union[float, None]:
 def safe_occ_path_coeff(row: pd.Series) -> dict:
     """Safely calculates occultation path coefficients with a timeout."""
     try:
-        with Timeout(seconds=5):
+        # Timeout increased to 60s to handle potential 'first call' delays
+        with Timeout(seconds=60):
             date_time_obj = (
                 row["date_time_obj"].to_pydatetime().replace(tzinfo=timezone.utc)
             )
@@ -380,7 +382,18 @@ def run_occultation_path_coeff(
                     df[col] = np.nan
 
         with profiler("Calc: Path Coefficients (apply)"):
-            path_coeffs_results = df.apply(safe_occ_path_coeff, axis=1)
+            results_list = []
+            for i, row in enumerate(df.itertuples(index=False)):
+                row_series = pd.Series(row, index=df.columns)
+                result = safe_occ_path_coeff(row_series)
+                results_list.append(result)
+
+                # Periodically force garbage collection every 50 rows
+                if (i + 1) % 50 == 0:
+                    gc.collect()
+
+            path_coeffs_results = pd.Series(results_list, index=df.index)
+
             path_df = pd.json_normalize(path_coeffs_results.tolist()).set_index(
                 df.index
             )
