@@ -388,8 +388,8 @@ def run_occultation_path_coeff(
                 result = safe_occ_path_coeff(row_series)
                 results_list.append(result)
 
-                # Periodically force garbage collection every 50 rows
-                if (i + 1) % 50 == 0:
+                # Periodically force garbage collection every 10 rows
+                if (i + 1) % 10 == 0:
                     gc.collect()
 
             path_coeffs_results = pd.Series(results_list, index=df.index)
