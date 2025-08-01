@@ -22,6 +22,7 @@ from astropy.coordinates import (
     get_sun,
 )
 from astropy.time import Time
+from pipeline.profiler import Profiler
 from scipy.interpolate import CubicSpline
 
 
@@ -623,40 +624,56 @@ def _path_latlon_coeff(
     tuple
         Tuple containing the longitude and latitude coefficients, as well as the maximum and minimum longitude values.
     """
-    arc_x, arc_y = _calculate_arc_coordinates(
-        delta, ca, pa, dtimes, vel, pa_plus, radius
-    )
+    path_coeff_profiler = Profiler()
 
-    lon, lat = _xy2latlon(arc_x, arc_y, centers.lon.value, centers.lat.value, instants)
+    with path_coeff_profiler("Calculate Arc Coordinates"):
+        arc_x, arc_y = _calculate_arc_coordinates(
+            delta, ca, pa, dtimes, vel, pa_plus, radius
+        )
 
-    valid_coordinates = lon < 1e31
-    lon, lat, times = (
-        lon[valid_coordinates],
-        lat[valid_coordinates],
-        dtimes[valid_coordinates],
-    )
-    if (len(lon) > degree + 1) and (len(lat) > degree + 1):
-        try:
-            location = EarthLocation.from_geodetic(
-                lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m
-            )
-            nighttime = _check_nighttime(location, central_instant)
-            lon = _handle_longitude_discontinuities(lon)
-            lon_coeff = _polynomial_fit(times, lon, degree)
-            lat_coeff = _polynomial_fit(times, lat, degree)
-            return (
-                lon_coeff.tolist(),
-                lat_coeff.tolist(),
-                lon.max(),
-                lon.min(),
-                lat.max(),
-                lat.min(),
-                nighttime,
-            )
-        except:
+    with path_coeff_profiler("Calculate XY to LatLon"):
+        lon, lat = _xy2latlon(
+            arc_x, arc_y, centers.lon.value, centers.lat.value, instants
+        )
+
+        valid_coordinates = lon < 1e31
+        lon, lat, times = (
+            lon[valid_coordinates],
+            lat[valid_coordinates],
+            dtimes[valid_coordinates],
+        )
+        if (len(lon) > degree + 1) and (len(lat) > degree + 1):
+            try:
+                with path_coeff_profiler("Check Path Visibility"):
+                    location = EarthLocation.from_geodetic(
+                        lat=lat * u.deg, lon=lon * u.deg, height=0 * u.m
+                    )
+                with path_coeff_profiler("Check Nithtime"):
+                    nighttime = _check_nighttime(location, central_instant)
+                with path_coeff_profiler("Handle Longitude Discontinuities and Fit"):
+                    lon = _handle_longitude_discontinuities(lon)
+                with path_coeff_profiler("Polynomial Fit longitude"):
+                    lon_coeff = _polynomial_fit(times, lon, degree)
+                with path_coeff_profiler("Polynomial Fit latitude"):
+                    lat_coeff = _polynomial_fit(times, lat, degree)
+                path_coeff_profiler.sub_report()
+
+                return (
+                    lon_coeff.tolist(),
+                    lat_coeff.tolist(),
+                    lon.max(),
+                    lon.min(),
+                    lat.max(),
+                    lat.min(),
+                    nighttime,
+                )
+            except:
+                path_coeff_profiler.sub_report()
+                return [], [], None, None, None, None, False
+        else:
+
+            path_coeff_profiler.sub_report()
             return [], [], None, None, None, None, False
-    else:
-        return [], [], None, None, None, None, False
 
 
 def _build_path_from_coeff(
@@ -963,6 +980,8 @@ def occultation_path_coeff(
     dict
         Dictionary containing the calculated coefficients and other relevant information.
     """
+    profiler = Profiler()
+
     if isinstance(date_time, str):
         date_time = datetime.fromisoformat(date_time)
     date_time = date_time.isoformat().replace("+00:00", "Z")
@@ -979,19 +998,26 @@ def occultation_path_coeff(
     )
     total_radius = object_radius + object_radius_error + closest_approach_error
 
-    instant, star, delta, vel, pa, ca = _setup_initial_variables(
-        date_time,
-        star_coordinates,
-        delta_distance,
-        velocity,
-        position_angle,
-        closest_approach,
-        offset,
-    )
+    with profiler("Setup Initial Variables"):
+        instant, star, delta, vel, pa, ca = _setup_initial_variables(
+            date_time,
+            star_coordinates,
+            delta_distance,
+            velocity,
+            position_angle,
+            closest_approach,
+            offset,
+        )
 
-    pa_plus = _calculate_position_angle(pa)
-    dtimes = _generate_instants_array(vel)
-    centers = _create_star_positions_array(star, instant + dtimes)
+    with profiler("Calculate Position Angle"):
+        pa_plus = _calculate_position_angle(pa)
+
+    with profiler("Generate Instants Array"):
+        dtimes = _generate_instants_array(vel)
+
+    with profiler("Create Star Positions Array"):
+        centers = _create_star_positions_array(star, instant + dtimes)
+
     instants = dtimes + instant
     (
         upper_limit,
@@ -1027,19 +1053,20 @@ def occultation_path_coeff(
     )
 
     # coefficients for the main path
-    result = _path_latlon_coeff(
-        instants,
-        instant,
-        dtimes,
-        centers,
-        delta,
-        ca,
-        vel,
-        pa,
-        pa_plus,
-        radius=0,
-        degree=degree,
-    )
+    with profiler("Calculate Path LatLon Coefficients"):
+        result = _path_latlon_coeff(
+            instants,
+            instant,
+            dtimes,
+            centers,
+            delta,
+            ca,
+            vel,
+            pa,
+            pa_plus,
+            radius=0,
+            degree=degree,
+        )
 
     output.update({"coeff_latitude": result[1], "coeff_longitude": result[0]})
     lons.append([result[2], result[3]])
@@ -1047,101 +1074,111 @@ def occultation_path_coeff(
     nightside.append([result[6]])
 
     # coefficients for the upper and lower limits
-    if total_radius > 0:
-        upper_limit = _path_latlon_coeff(
-            instants,
-            instant,
-            dtimes,
-            centers,
-            delta,
-            ca,
-            vel,
-            pa,
-            pa_plus,
-            radius=total_radius,
-            degree=degree,
-        )
-        output.update(
-            {
-                "body_upper_coeff_latitude": upper_limit[1],
-                "body_upper_coeff_longitude": upper_limit[0],
-            }
-        )
-        lower_limit = _path_latlon_coeff(
-            instants,
-            instant,
-            dtimes,
-            centers,
-            delta,
-            ca,
-            vel,
-            pa,
-            pa_plus,
-            radius=-total_radius,
-            degree=degree,
-        )
-        output.update(
-            {
-                "body_lower_coeff_latitude": lower_limit[1],
-                "body_lower_coeff_longitude": lower_limit[0],
-            }
-        )
-        lons.append([upper_limit[2], upper_limit[3], lower_limit[2], lower_limit[3]])
-        lats.append([upper_limit[4], upper_limit[5], lower_limit[4], lower_limit[5]])
-        nightside.append([upper_limit[6], lower_limit[6]])
+    with profiler("Calculate Upper and Lower Limits"):
+        if total_radius > 0:
+            upper_limit = _path_latlon_coeff(
+                instants,
+                instant,
+                dtimes,
+                centers,
+                delta,
+                ca,
+                vel,
+                pa,
+                pa_plus,
+                radius=total_radius,
+                degree=degree,
+            )
+            output.update(
+                {
+                    "body_upper_coeff_latitude": upper_limit[1],
+                    "body_upper_coeff_longitude": upper_limit[0],
+                }
+            )
+            lower_limit = _path_latlon_coeff(
+                instants,
+                instant,
+                dtimes,
+                centers,
+                delta,
+                ca,
+                vel,
+                pa,
+                pa_plus,
+                radius=-total_radius,
+                degree=degree,
+            )
+            output.update(
+                {
+                    "body_lower_coeff_latitude": lower_limit[1],
+                    "body_lower_coeff_longitude": lower_limit[0],
+                }
+            )
+            lons.append(
+                [upper_limit[2], upper_limit[3], lower_limit[2], lower_limit[3]]
+            )
+            lats.append(
+                [upper_limit[4], upper_limit[5], lower_limit[4], lower_limit[5]]
+            )
+            nightside.append([upper_limit[6], lower_limit[6]])
 
-    longitudes = np.array(
-        [
-            item
-            for sublist in lons
-            if sublist is not None
-            for item in sublist
-            if item is not None
-        ]
-    )
-    index = np.where(longitudes > 180)
-    longitudes[index] -= 360
-
-    latitudes = np.array(
-        [
-            item
-            for sublist in lats
-            if sublist is not None
-            for item in sublist
-            if item is not None
-        ]
-    )
-
-    try:
-        output.update(
-            {
-                "min_longitude": longitudes.min(),
-                "max_longitude": longitudes.max(),
-                "min_latitude": latitudes.min(),
-                "max_latitude": latitudes.max(),
-            }
+    with profiler("Process Longitude and Latitude"):
+        longitudes = np.array(
+            [
+                item
+                for sublist in lons
+                if sublist is not None
+                for item in sublist
+                if item is not None
+            ]
         )
-    except:
-        output.update(
-            {
-                "min_longitude": None,
-                "max_longitude": None,
-                "min_latitude": None,
-                "max_latitude": None,
-            }
+        index = np.where(longitudes > 180)
+        longitudes[index] -= 360
+
+        latitudes = np.array(
+            [
+                item
+                for sublist in lats
+                if sublist is not None
+                for item in sublist
+                if item is not None
+            ]
         )
 
-    nightsides = np.array(
-        [
-            item
-            for sublist in nightside
-            if sublist is not None
-            for item in sublist
-            if item is not None
-        ]
-    )
+    with profiler("Update Output with Min/Max Values"):
+        try:
+            output.update(
+                {
+                    "min_longitude": longitudes.min(),
+                    "max_longitude": longitudes.max(),
+                    "min_latitude": latitudes.min(),
+                    "max_latitude": latitudes.max(),
+                }
+            )
+        except:
+            output.update(
+                {
+                    "min_longitude": None,
+                    "max_longitude": None,
+                    "min_latitude": None,
+                    "max_latitude": None,
+                }
+            )
 
-    output.update({"nightside": any(nightsides)})
+    with profiler("Check Nightside Visibility"):
+        nightsides = np.array(
+            [
+                item
+                for sublist in nightside
+                if sublist is not None
+                for item in sublist
+                if item is not None
+            ]
+        )
+
+        output.update({"nightside": any(nightsides)})
+
+    profiler.sub_report()
 
     return output
 

@@ -71,6 +71,18 @@ class Profiler:
             )
             print("=" * 110 + "\n")
 
+    def sub_report(self):
+        """Imprime um relatório tabular com as medições de tempo e memória."""
+        if not self.records:
+            print("Nenhum dado de profiling foi coletado.")
+            return
+        df_report = pd.DataFrame(self.records)
+        with pd.option_context("display.max_colwidth", None):
+            print("-" * 110)
+            print("Sub-relatório de Performance")
+            print(df_report.to_string(index=False, justify="left"))
+            print("-" * 110 + "\n")
+
     class ProfileContext:
         """Classe auxiliar para o gerenciador de contexto."""
 
