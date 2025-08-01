@@ -680,28 +680,48 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     return drop_magnitude
 
 
+# def get_moon_and_sun_separation(ra, dec, instant):
+#     "Earth location is considered geocentric"
+#     instant = Time(instant, scale="utc")
+#     object_coord = SkyCoord(ra=ra * u.deg, dec=dec * u.deg, obstime=instant)
+
+#     # Set location as geocenter
+#     geocenter = EarthLocation(x=0 * u.m, y=0 * u.m, z=0 * u.m)
+
+#     # Get the coordinates of the Moon and the Sun at the current time
+#     moon_coord = get_body("moon", instant, location=geocenter)
+#     sun_coord = get_body("sun", instant, location=geocenter)
+
+#     # Convert the celestial coordinates of the object to AltAz frame
+#     object_altaz = object_coord.transform_to(AltAz(obstime=instant, location=geocenter))
+
+#     # Convert the geocentric coordinates of the Moon and the Sun to AltAz frame
+#     moon_altaz = moon_coord.transform_to(AltAz(obstime=instant, location=geocenter))
+#     sun_altaz = sun_coord.transform_to(AltAz(obstime=instant, location=geocenter))
+
+#     # Calculate the angular separation between the Moon and the object
+#     moon_angular_separation = object_altaz.separation(moon_altaz).degree
+#     sun_angular_separation = object_altaz.separation(sun_altaz).degree
+#     return moon_angular_separation, sun_angular_separation
+
+
 def get_moon_and_sun_separation(ra, dec, instant):
-    "Earth location is considered geocentric"
+    """
+    Calculates the angular separation between an object and the Moon and Sun.
+    """
+    # Create Time and SkyCoord objects for the target
     instant = Time(instant, scale="utc")
-    object_coord = SkyCoord(ra=ra * u.deg, dec=dec * u.deg, obstime=instant)
+    object_coord = SkyCoord(ra=ra * u.deg, dec=dec * u.deg)
 
-    # Set location as geocenter
-    geocenter = EarthLocation(x=0 * u.m, y=0 * u.m, z=0 * u.m)
+    # Get geocentric coordinates of the Moon and the Sun
+    # The default location for get_body is the geocenter
+    moon_coord = get_body("moon", instant)
+    sun_coord = get_body("sun", instant)
 
-    # Get the coordinates of the Moon and the Sun at the current time
-    moon_coord = get_body("moon", instant, location=geocenter)
-    sun_coord = get_body("sun", instant, location=geocenter)
+    # Calculate separation directly in the celestial frame. No AltAz transform needed.
+    moon_angular_separation = object_coord.separation(moon_coord).degree
+    sun_angular_separation = object_coord.separation(sun_coord).degree
 
-    # Convert the celestial coordinates of the object to AltAz frame
-    object_altaz = object_coord.transform_to(AltAz(obstime=instant, location=geocenter))
-
-    # Convert the geocentric coordinates of the Moon and the Sun to AltAz frame
-    moon_altaz = moon_coord.transform_to(AltAz(obstime=instant, location=geocenter))
-    sun_altaz = sun_coord.transform_to(AltAz(obstime=instant, location=geocenter))
-
-    # Calculate the angular separation between the Moon and the object
-    moon_angular_separation = object_altaz.separation(moon_altaz).degree
-    sun_angular_separation = object_altaz.separation(sun_altaz).degree
     return moon_angular_separation, sun_angular_separation
 
 
