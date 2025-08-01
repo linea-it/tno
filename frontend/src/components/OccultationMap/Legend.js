@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useMap } from 'react-leaflet'
 import L from 'leaflet' // Biblioteca para manipulação de mapas
 
@@ -33,23 +33,21 @@ const Legend = ({ hasBodyLimit, hasUncertainty, warning }) => {
           <div style="display: flex; align-items: center; margin: 0 10px;">
             <div style="width: 5px; height: 5px; background: #00468D; border-radius: 50%; margin-right: 8px;"></div> 60s steps
           </div>
-          ${
-            hasBodyLimit
-              ? `
+          ${hasBodyLimit
+            ? `
           <div style="display: flex; align-items: center; margin: 0 10px;">
             <div style="width: 10px; height: 4px; background: #00468D; margin-right: 8px;"></div> Body Limits
           </div>
           `
-              : ''
+            : ''
           }
-          ${
-            hasUncertainty
-              ? `
+          ${hasUncertainty
+            ? `
           <div style="display: flex; align-items: center; margin: 0 10px;">
             <div style="width: 10px; height: 2px; background: repeating-linear-gradient(to right, #D32F2F 0, #D32F2F 8px, transparent 2px, transparent 10px); margin-right: 8px;"></div> Uncertainty
           </div>
           `
-              : ''
+            : ''
           }
         </div>
       `

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Grid from '@mui/material/Grid'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getAsteroidJobById, getAsteroidJobByIdTwo } from '../../services/api/AsteroidJob'
+import { getAsteroidJobById } from '../../services/api/AsteroidJob'
 import { useQuery } from 'react-query'
 import Alert from '@mui/material/Alert'
 import moment from 'moment'

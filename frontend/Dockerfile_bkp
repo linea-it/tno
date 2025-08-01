@@ -1,37 +1,22 @@
-FROM node:18.12.1 AS base
+FROM node:18.12.1 AS builder
 
-ENV GENERATE_SOURCEMAP=false
-ENV NODE_OPTIONS=--max_old_space_size=8192
-ENV NODE_ENV=production
-
-
-FROM base AS dependencies
-ENV GENERATE_SOURCEMAP=false
-ENV NODE_OPTIONS=--max_old_space_size=8192
-WORKDIR /app
-COPY ./package.json /app
-COPY ./yarn.lock /app
-RUN yarn install --non-interactive --ignore-optional --network-timeout 500000
-
-FROM base AS builder
-WORKDIR /app
-COPY --from=dependencies /app/node_modules /app/node_modules
 COPY . /app
+WORKDIR /app
+
+ENV GENERATE_SOURCEMAP=false
+ENV NODE_OPTIONS=--max_old_space_size=8192
+
+RUN yarn -v
+RUN yarn --non-interactive --ignore-optional --network-timeout 500000
+
+
+FROM builder AS builder_all
 RUN yarn run build
 
-# FROM base AS runner
-# WORKDIR /app
-# COPY --from=builder /app /app
-# RUN mkdir -p /app/.next/cache && chmod -R 777 /app/.next/cache
-# RUN yarn global add serve
-# EXPOSE 3000
-# # CMD ["yarn", "start"]
-# CMD ["yarn", "serve", "-s", "build"]
-
-# Build user documentation
 FROM polinux/mkdocs:1.5.2 AS user_docs
 COPY ./user_docs /mkdocs
 RUN bash -c "cd /mkdocs && mkdocs build --strict"
+
 
 # Ngnix
 FROM nginx:latest
@@ -46,7 +31,7 @@ RUN chmod -R g+w /var/log/nginx/
 # Write the PID file to a location where regular users have write access.
 RUN sed --regexp-extended --in-place=.bak 's%^pid\s+/var/run/nginx.pid;%pid /var/tmp/nginx.pid;%' /etc/nginx/nginx.conf
 
-COPY --from=builder /app/build /var/www/frontend
+COPY --from=builder_all /app/build /var/www/frontend
 RUN chgrp nginx /var/www/frontend
 RUN chmod -R g+w /var/www/frontend
 

@@ -16,7 +16,7 @@ const OccultationMapDownload = ({ occultationId }) => {
   }
 
   // Only run this query when refetch() is called
-  const { data, isLoading, refetch } = useQuery({
+  const { isLoading, refetch } = useQuery({
     queryKey: ['getOrCreatePredrictMap', { id: occultationId, force }],
     queryFn: getOrCreatePredictionMap,
     enabled: false,

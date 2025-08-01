@@ -4,7 +4,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid'
 import Card from '@mui/material/Card'
 import Chip from '@mui/material/Chip'
-import Box from '@mui/material/Box'
 import Avatar from '@mui/material/Avatar'
 import Stack from '@mui/material/Stack'
 import Divider from '@mui/material/Divider'
@@ -21,7 +20,7 @@ import Table from '../../components/Table'
 import ColumnStatus from '../../components/Table/ColumnStatus'
 import Alert from '@mui/material/Alert'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
-import LastUpdated from '../../components/LastUpdated'
+// import LastUpdated from '../../components/LastUpdated'
 import {
   getPredictionJobById,
   getPredictionJobResultsByJobId,
@@ -371,12 +370,14 @@ function PredictDetail() {
           <CardHeader title='Progress' />
           <CardContent>
             <Grid container spacing={2} direction='column'>
-              {progress && progress?.progress.length > 0 && <ProgressList stageProgress={progress.progress} />}
+              {progress && progress?.progress.length > 0 && <ProgressList stageProgress={progress?.progress} />}
               <Divider sx={{ mt: 2 }} />
               {tasksStatus()}
             </Grid>
           </CardContent>
-          <CardActions>{isRunning() && <LastUpdated datetimeUTC={progress?.updated} />}</CardActions>
+          <CardActions>
+            {/* {isRunning() && <LastUpdated datetimeUTC={progress?.updated} />} */}
+          </CardActions>
         </Card>
       </Grid>
       <>

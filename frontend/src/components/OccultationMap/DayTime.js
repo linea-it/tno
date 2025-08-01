@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useMap } from 'react-leaflet' // Componentes do React para integração com Leaflet
 // plugins do leaflet para desenhar as sombras
 import terminator from './Terminator'

@@ -1,11 +1,10 @@
 // Importações principais de bibliotecas necessárias para o funcionamento do componente
 import React from 'react'
 import { useQuery } from 'react-query' // Hook para gerenciar consultas assíncronas
-import L from 'leaflet' // Biblioteca para manipulação de mapas
 import { MapContainer, TileLayer, Polyline, Circle, CircleMarker } from 'react-leaflet' // Componentes do React para integração com Leaflet
 //import star from './data/img/estrela-pontiaguda.png' // Ícone personalizado
 import styles from './styles' // Estilos do componente
-import { Box, Card, CircularProgress, Stack, Typography, Button } from '@mui/material' // Componentes de UI do Material-UI
+import { Box, Card, CircularProgress, Stack, Typography } from '@mui/material' // Componentes de UI do Material-UI
 import { getOccultationPaths } from '../../../../services/api/Occultation' // Função para recuperar dados de ocultação
 import DayLayer from '../../../../components/OccultationMap/DayTime' // componente que desenha as sombras de acordo com o datetime
 import Legend from '../../../../components/OccultationMap/Legend' // componente que desenha as lellglendas dinamicamente
@@ -20,7 +19,9 @@ const splitByDiscontinuity = (points, threshold = 180) => {
 
   for (let i = 0; i < points.length - 1; i++) {
     currentSegment.push(points[i])
+    // eslint-disable-next-line no-unused-vars
     const [lat1, lon1] = points[i]
+    // eslint-disable-next-line no-unused-vars
     const [lat2, lon2] = points[i + 1]
 
     // Verifica a diferença em longitude para identificar a descontinuidade
@@ -86,7 +87,7 @@ const PredictOccultationMap = ({ occultationId }) => {
 
   //const mapCenter = data ? [data?.latitude || 0, data?.longitude || 0] : mapCenterBr
   const mapCenter = data ? [data?.latitude || mapCenterBr[0], data?.longitude || mapCenterBr[1]] : mapCenterBr
-  const mapZoom = data ? 4 : zoomLevel
+  // const mapZoom = data ? 4 : zoomLevel
 
   // Configurações do ícone personalizado
   // const starIcon = React.useMemo(
