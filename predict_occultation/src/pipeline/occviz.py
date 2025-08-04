@@ -114,8 +114,8 @@ def _transform_coordinates(r, x, y, time, loncen, latcen, true_idx, r2):
                 frame=center_frame,
             )
             # These are now vectorized operations on the whole array
-            n_coord = new_pos.transform_to(GCRS(obstime=time))
-            n_itrs = n_coord.transform_to(ITRS(obstime=time))
+            # n_coord = new_pos.transform_to(GCRS(obstime=time))
+            n_itrs = new_pos.transform_to(ITRS(obstime=time))
             n_site = n_itrs.earth_location
             # Re-calculate on the surface (height=0) to refine position
             itrs_site = EarthLocation(n_site.lon, n_site.lat, height=0 * u.m).get_itrs(
@@ -124,6 +124,12 @@ def _transform_coordinates(r, x, y, time, loncen, latcen, true_idx, r2):
             gcrs_site = itrs_site.transform_to(GCRS(obstime=time))
             target1 = gcrs_site.transform_to(center_frame)
             r = target1.cartesian.x.to(u.m).value  # Update 'r' for the next iteration
+
+            # --- Release intermediate objects ---
+            # These objects are recalculated in the next iteration, so we can
+            # release the memory they occupy. 'r' is preserved for the refinement.
+            # The final 'n_site' will persist after the loop finishes.
+            del new_pos, n_itrs, n_site, itrs_site, gcrs_site, target1
 
         return n_site.lon.deg, n_site.lat.deg
     else:
