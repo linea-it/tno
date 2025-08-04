@@ -129,7 +129,7 @@ def _transform_coordinates(r, x, y, time, loncen, latcen, true_idx, r2):
             # These objects are recalculated in the next iteration, so we can
             # release the memory they occupy. 'r' is preserved for the refinement.
             # The final 'n_site' will persist after the loop finishes.
-            del new_pos, n_itrs, n_site, itrs_site, gcrs_site, target1
+            del new_pos, n_itrs, itrs_site, gcrs_site, target1
 
         return n_site.lon.deg, n_site.lat.deg
     else:
