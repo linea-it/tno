@@ -43,8 +43,8 @@ def run_prepare_step(task):
         # Muda o Status para PREPARING
         transition(task, PredictionState.PREPARING)
 
-        # Simulação de possível falha (20% chance)
-        if random.random() < 0.2:
+        # Simulação de possível falha (10% chance)
+        if random.random() < 0.1:
             raise RuntimeError("Erro temporário na preparação")
         
         time.sleep(0.5)
@@ -68,8 +68,8 @@ def run_submit_step(task: PredictionTask):
     try:
         transition(task, PredictionState.SUBMITTING)
 
-        # Simulação de possível falha (20% chance)
-        if random.random() < 0.2:
+        # Simulação de possível falha (10% chance)
+        if random.random() < 0.1:
             raise RuntimeError("Erro temporário na submissão")
 
         time.sleep(0.5)  # simulação
@@ -94,8 +94,8 @@ def run_run_step(task: PredictionTask):
     try:
         transition(task, PredictionState.RUNNING)
         
-        # Simulação de possível falha (20% chance)
-        if random.random() < 0.2:
+        # Simulação de possível falha (10% chance)
+        if random.random() < 0.1:
             raise RuntimeError("Erro temporário na execução no cluster")
 
         time.sleep(random.randint(2, 10))  # simulação
@@ -114,8 +114,8 @@ def run_ingest_step(task: PredictionTask):
     try:
         transition(task, PredictionState.INGESTING)
 
-        # Simulação de possível falha (20% chance)
-        if random.random() < 0.2:
+        # Simulação de possível falha (10% chance)
+        if random.random() < 0.1:
             raise RuntimeError("Erro temporário na ingestão")
 
         time.sleep(0.5)  # simulação

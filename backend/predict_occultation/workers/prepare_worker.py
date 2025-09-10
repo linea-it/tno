@@ -11,8 +11,9 @@ def prepare_worker(interval=2.0, batch=5):
         log = logging.getLogger("predict_occ_prepare_worker")
 
         log.info("Starting prepare_worker")
+        log.info("-"*40)
         while True:
-            log.info("-"*40)
+            # log.info("-"*40)
             tasks = (
                 PredictionTask.objects.filter(
                     state=PredictionState.PENDING,
@@ -23,10 +24,10 @@ def prepare_worker(interval=2.0, batch=5):
                 )
                 .order_by("-priority", "created_at")[:batch]
             )
-            log.debug(f"Found {tasks.count()} tasks to process.")
+            # log.debug(f"Found {tasks.count()} tasks to process.")
 
             if not tasks.exists():
-                log.debug("No tasks found, sleeping...")
+                # log.debug("No tasks found, sleeping...")
                 time.sleep(interval)
                 continue
             for task in tasks:
