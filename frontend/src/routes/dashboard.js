@@ -22,6 +22,8 @@ import PersistentDrawerLeft from '../components/Drawer'
 // import OrbitTraceAsteroid from '../pages/OrbitTrace/Asteroid'
 import PredictionEvents from '../pages/PredictionEvents/index'
 
+import PredictionTasks from '../pages/PredictionTasks/index'
+
 import AsteroidJob from '../pages/AsteroidJob/index'
 import AsteroidJobDetail from '../pages/AsteroidJob/AsteroidJobDetail'
 import Home from '../pages/LandingPage/Home'
@@ -160,6 +162,19 @@ export function DashboardPageRoutes() {
           </DashboardPage>
         }
       /> */}
+
+      {/* Prediction Tasks / Orchestration */}
+      <Route
+        isPrivate
+        exact
+        path='/dashboard/prediction-of-occultation/tasks'
+        element={
+          <DashboardPage>
+            <PredictionTasks />
+          </DashboardPage>
+        }
+      />
+
       <Route
         isPrivate
         exact
