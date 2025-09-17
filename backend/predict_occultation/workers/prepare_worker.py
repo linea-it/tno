@@ -1,6 +1,6 @@
 import time
 from django.utils import timezone
-from predict_occultation.models import PredictionTask, PredictionState
+from predict_occultation.models import PredictionTask, PredictionState, WorkersHeartbeat, WorkersName
 from predict_occultation.workflow import run_prepare_step
 import django.db.models as models
 
@@ -12,8 +12,16 @@ def prepare_worker(interval=2.0, batch=5):
 
         log.info("Starting prepare_worker")
         log.info("-"*40)
+
+        # Update worker heartbeat
+        heartbeat, created = WorkersHeartbeat.objects.get_or_create(worker=WorkersName.PREPARE)
+        heartbeat.start_heartbeat()
+
         while True:
             # log.info("-"*40)
+
+            heartbeat.update_heartbeat()
+
             tasks = (
                 PredictionTask.objects.filter(
                     state=PredictionState.PENDING,
@@ -29,7 +37,12 @@ def prepare_worker(interval=2.0, batch=5):
             if not tasks.exists():
                 # log.debug("No tasks found, sleeping...")
                 time.sleep(interval)
+                heartbeat.update_heartbeat()
+                
                 continue
             for task in tasks:
                 log.info(f"Running prepare step for task [{task.id}] priority [{task.priority}] (asteroid {task.asteroid_id})")
                 run_prepare_step(task)
+                
+                heartbeat.update_heartbeat()
+

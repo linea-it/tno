@@ -106,3 +106,40 @@ class PredictionAttempt(models.Model):
     success = models.BooleanField(default=True)
     error = models.TextField(blank=True)
     meta = models.JSONField(default=dict, blank=True)
+
+
+class WorkersName(models.TextChoices):
+    PREPARE = "PREPARE", "Prepare"
+    SUBMIT = "SUBMIT", "Submit"
+    INGEST = "INGEST", "Ingest"
+
+class WorkersStatus(models.TextChoices):
+    RUNNING = "RUNNING", "Running"
+    STALE = "STALE", "Stale"
+    # BUSY = "BUSY", "Busy"
+    # IDLE = "IDLE", "Idle"
+
+class WorkersHeartbeat(models.Model):
+    worker = models.CharField(max_length=32, choices=WorkersName.choices)
+    started_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
+    uptime = models.IntegerField(default=0)  # em segundos
+
+    def start_heartbeat(self):
+        self.started_at = timezone.now()
+        self.updated_at = timezone.now()
+        self.save(update_fields=["started_at", "updated_at"])
+
+    def update_heartbeat(self):
+        self.updated_at = timezone.now()
+
+        delta = timezone.now() - self.started_at
+        self.uptime = int(delta.total_seconds())
+
+        self.save(update_fields=["updated_at", "uptime"])
+
+    def status(self):
+        delta = timezone.now() - self.updated_at
+        if delta.total_seconds() > 300:  # 5 minutos sem atualização
+            return WorkersStatus.STALE
+        return WorkersStatus.RUNNING

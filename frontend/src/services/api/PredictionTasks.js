@@ -34,3 +34,9 @@ export const getPredictionTasksByState = ({ queryKey }) => {
 
   return api.get(`/predict_occultation/task`, { params: { ...params } }).then((res) => res.data)
 }
+
+export const getWorkers = ({ queryKey }) => {
+  const params = queryKey[1]
+
+  return api.get(`/predict_occultation/worker/`, { params: { ...params } }).then((res) => res.data)
+}

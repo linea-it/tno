@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PredictionTask, PredictionAttempt, PredictionState
+from .models import PredictionTask, PredictionAttempt, PredictionState, WorkersHeartbeat
 
 
 @admin.register(PredictionTask)
@@ -35,3 +35,10 @@ class PredictionAttemptAdmin(admin.ModelAdmin):
     list_display = ("id", "task", "stage", "success", "started_at", "finished_at")
     list_filter = ("stage", "success")
     search_fields = ("task__asteroid_id",)
+
+@admin.register(WorkersHeartbeat)
+class WorkersHeartbeatAdmin(admin.ModelAdmin):
+    list_display = ("id", "worker", "started_at", "updated_at")
+    list_filter = ("worker",)
+    search_fields = ("worker",)
+

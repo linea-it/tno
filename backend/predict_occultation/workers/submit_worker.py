@@ -1,5 +1,5 @@
 import time
-from predict_occultation.models import PredictionTask, PredictionState
+from predict_occultation.models import PredictionTask, PredictionState, WorkersHeartbeat, WorkersName
 from predict_occultation.workflow import run_submit_step
 import django.db.models as models
 from django.utils import timezone
@@ -10,8 +10,16 @@ def submit_worker(interval=2.0, batch=5):
     log = logging.getLogger("predict_occ_submit_worker")
     log.info("Starting submit_worker")
     log.info("-"*40)
+
+    # Update worker heartbeat
+    heartbeat, created = WorkersHeartbeat.objects.get_or_create(worker=WorkersName.SUBMIT)
+    heartbeat.start_heartbeat()
+
     while True:
         # log.info("-"*40)
+
+        heartbeat.update_heartbeat()
+
         tasks = (
             PredictionTask.objects.filter(state=PredictionState.READY_FOR_RUN, aborted=False)
             .filter(
@@ -23,7 +31,11 @@ def submit_worker(interval=2.0, batch=5):
         if not tasks.exists():
             # log.debug("No tasks found, sleeping...")
             time.sleep(interval)
+            heartbeat.update_heartbeat()
+
             continue
         for task in tasks:
             log.info(f"Running submit step for task [{task.id}] priority [{task.priority}] (asteroid {task.asteroid_id})")
             run_submit_step(task)
+
+            heartbeat.update_heartbeat()

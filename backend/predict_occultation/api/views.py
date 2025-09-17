@@ -6,10 +6,12 @@ from rest_framework import status
 from django.db.models import Count
 from predict_occultation.models import PredictionTask
 from predict_occultation.models import PredictionAttempt
+from predict_occultation.models import WorkersHeartbeat
 
 from predict_occultation.api.serializers import PredictionTaskSerializer
 from predict_occultation.api.serializers import PredictionTaskDetailSerializer
 from predict_occultation.api.serializers import PredictionAttemptSerializer
+from predict_occultation.api.serializers import WorkersHeartbeatSerializer
 
 class PredictionTaskViewSet(ModelViewSet):
     serializer_class = PredictionTaskSerializer
@@ -40,3 +42,7 @@ class PredictionTaskViewSet(ModelViewSet):
 class PredictionAttemptViewSet(ModelViewSet):
     serializer_class = PredictionAttemptSerializer
     queryset = PredictionAttempt.objects.all()
+
+class WorkersHeartbeatViewSet(ModelViewSet):
+    serializer_class = WorkersHeartbeatSerializer
+    queryset = WorkersHeartbeat.objects.all()

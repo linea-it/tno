@@ -4,16 +4,14 @@ import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
-import Button from '@mui/material/Button';
-import ButtonGroup from '@mui/material/ButtonGroup';
 import ToggleButton from '@mui/material/ToggleButton'
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import IconButton from '@mui/material/IconButton';
 import ViewKanbanIcon from '@mui/icons-material/ViewKanban';
 import ViewListIcon from '@mui/icons-material/ViewList'
 import TasksGrid from './TasksGrid';
 import TasksKanban from './TasksKanban';
 import TaskSummary from './Summary';
+import WorkersSummary from './Workers';
 
 function PredictionTasks() {
 
@@ -38,7 +36,9 @@ function PredictionTasks() {
         </Grid>
         <Grid xs={4}>
           <Card sx={{ minHeight: 200 }}>
-            <CardContent>Heartbeat of workers</CardContent>
+            <CardContent>
+              <WorkersSummary />
+            </CardContent>
           </Card>
         </Grid>
       </Grid>
