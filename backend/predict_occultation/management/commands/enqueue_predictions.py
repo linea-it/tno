@@ -16,7 +16,21 @@ class Command(BaseCommand):
             if random.random() < 0.2:  # 20% chance de ser alta prioridade
                 priority = 500
 
+            input_manifest = {
+                "start_date": "2025-02-14",
+                "end_date": "2025-03-14",
+                "maximum_visual_magnitude": 18,
+                "ephemeris_step": 60,
+                "star_catalog": "gaia_dr3",
+                "planetary_ephemeris": "de440",
+                "leap_seconds":"naif0012"
+            }
+
             task = PredictionTask.objects.create(
-                asteroid_id=f"AST-{i:04d}", priority=priority
+                # asteroid_id=f"AST-{i:04d}",
+                asteroid_id = "2008 RH167",
+                priority=priority,
+                # workdir= "/data/outputs/process001",
+                input_manifest= input_manifest,
             )
             self.stdout.write(self.style.SUCCESS(f"Task criada: {task}"))

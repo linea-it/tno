@@ -4,7 +4,7 @@ from .models import PredictionTask, PredictionAttempt, PredictionState, WorkersH
 
 @admin.register(PredictionTask)
 class PredictionTaskAdmin(admin.ModelAdmin):
-    list_display = ("id", "asteroid_id", "state", "priority", "attempt_count", "max_retries", "created_at", "updated_at", "aborted")
+    list_display = ("id", "asteroid_id", "state", "priority", "attempt_count", "max_retries", "workdir", "created_at", "updated_at", "aborted")
     list_filter = ("state", "priority", "aborted")
     search_fields = ("asteroid_id",)
     # ordering = ("-priority", "-created_at")
