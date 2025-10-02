@@ -1,6 +1,7 @@
 from .asteroid import Asteroid
 from .asteroid_cache import AsteroidCache
 from .asteroid_job import AsteroidJob
+from .bsp_asteroid import BspAsteroid
 from .bsp_planetary import BspPlanetary
 from .catalog import Catalog
 from .dynclass_cache import DynclassCache
@@ -12,3 +13,4 @@ from .prediction_job import PredictionJob
 from .prediction_job_result import PredictionJobResult
 from .prediction_job_status import PredictionJobStatus
 from .profile import Profile
+
