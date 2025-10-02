@@ -210,6 +210,22 @@ class AsteroidDAO(BaseDAO):
                 db_session.rollback()
                 raise Exception(msg)
 
+class AsteroidEphemerisDAO(BaseDAO):
+    def __init__(self, engine, log):
+        AsteroidEphemeris = create_reflected_model("tno_bspasteroid", engine)
+        super().__init__(engine, AsteroidEphemeris, log)
+
+
+    def get_by_name(self, name: str) -> dict:
+        with Session(self.engine) as db_session:
+            try:
+                asteroid = db_session.query(self.model).filter_by(name=name).first()
+                return asteroid
+            except Exception as e:
+                msg = f"Error searching for asteroid ephemeris by name {name}: {e}"
+                db_session.rollback()
+                raise Exception(msg)
+
 
 def occultations_upsert(table, conn, keys, data_iter):
 

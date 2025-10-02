@@ -10,6 +10,8 @@ class BspAsteroid(models.Model):
         max_length=35,
         verbose_name="Name",
         help_text="(ucd=“meta.id;meta.main”) Object name (official or provisional designation).",
+        db_index=True,
+        unique=True,
     )
 
     number = models.PositiveBigIntegerField(
@@ -27,6 +29,7 @@ class BspAsteroid(models.Model):
         default=None,
         null=True,
         blank=True,
+        db_index=True,
     )
 
     alias = models.CharField(
@@ -36,6 +39,7 @@ class BspAsteroid(models.Model):
         null=True,
         blank=True,
         default=None,
+        db_index=True,
     )
     # TODO: Renomear este campo, Impacto grande.
     # 'skybot_dynbaseclass',
@@ -46,6 +50,7 @@ class BspAsteroid(models.Model):
         default=None,
         null=True,
         blank=True,
+        db_index=True,
     )
 
     # TODO: Renomear este campo, Impacto grande.
@@ -57,6 +62,7 @@ class BspAsteroid(models.Model):
         default=None,
         null=True,
         blank=True,
+        db_index=True,
     )
 
     # BSP specific fields

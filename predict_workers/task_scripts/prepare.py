@@ -2,7 +2,7 @@ import json
 import pathlib
 
 from base_worker import BaseWorker
-from dao.models import (AsteroidDAO, CatalogDAO, LeapSecondDAO,
+from dao.models import (AsteroidDAO, AsteroidEphemerisDAO, CatalogDAO, LeapSecondDAO,
                         PlanetaryEphemerisDAO, PredictionState, serialize)
 
 
@@ -12,6 +12,8 @@ class PrepareWorker(BaseWorker):
         self.state_to_process = 'PENDING'
 
         self.asteroid_dao = AsteroidDAO(self.engine, self.log)
+        self.asteroid_ephemeris_dao = AsteroidEphemerisDAO(self.engine, self.log)
+
         self.catalog_dao = CatalogDAO(self.engine, self.log)
         self.planetary_ephemeris_dao = PlanetaryEphemerisDAO(self.engine, self.log)
         self.leap_second_dao = LeapSecondDAO(self.engine, self.log)
@@ -50,15 +52,17 @@ class PrepareWorker(BaseWorker):
         }
 
     def get_asteroid_ephemeris_info(self, asteroid_name):
-        # Implement search in database or directory.
+        ast_ephem = self.asteroid_ephemeris_dao.get_by_name(asteroid_name)
+
         return {
-            "source": "JPL",
-            "filename": "2008RH167.bsp",
-            "start_period": "2023-01-01",
-            "end_period": "2030-12-31",
-            "mag_and_uncert_file": "apmag_and_uncertainties.json",
-            "size": 210944,
+            "source": ast_ephem.source,
+            "filename": ast_ephem.filename,
+            "start_period": ast_ephem.start_period.isoformat(),
+            "end_period": ast_ephem.end_period.isoformat(),
+            "mag_and_uncert_filename": ast_ephem.mag_and_uncert_filename,
+            "size": ast_ephem.size,
         }
+
 
     def perform_task(self, task, db_session):
         self.log.info(f"Performing prepare step for task id: {task.id}")
