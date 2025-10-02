@@ -94,10 +94,10 @@ class WorkerHeartbeatDAO(BaseDAO):
                     db.commit()
                     self.log.debug(f"Heartbeat initialized for worker {worker_name}.")
                 else:
-                    heartbeat.uptime = (int((datetime.datetime.now(tz=datetime.timezone.utc) - heartbeat.started_at).total_seconds()))
+                    heartbeat.uptime = 0 # Reinicia o uptime toda vez que o worker é iniciado.
                     heartbeat.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
                     db.commit()
-                    self.log.debug(f"Heartbeat updated for worker {worker_name}.")
+                    # self.log.debug(f"Heartbeat updated for worker {worker_name}.")
             except Exception as e:
                 self.log.error(f"Error initializing/updating heartbeat: {e}")
                 # add traceback for debugging
@@ -114,7 +114,7 @@ class WorkerHeartbeatDAO(BaseDAO):
                     heartbeat.uptime = (int((datetime.datetime.now(tz=datetime.timezone.utc) - heartbeat.started_at).total_seconds()))
                     heartbeat.updated_at = datetime.datetime.now(tz=datetime.timezone.utc)
                     db.commit()
-                    self.log.debug(f"Heartbeat sent for worker {worker_name}.")
+                    # self.log.debug(f"Heartbeat sent for worker {worker_name}.")
                 else:
                     self.log.warning(f"Heartbeat for {worker_name} not found. Reinitializing...")
                     self.initialize_heartbeat(worker_name)

@@ -27,6 +27,26 @@ class SlurmExecutor(Executor):
             "asteroid_path": task.workdir,
         })
 
+        # Exemplo de retorno da Orchestration
+        # {
+        #     'id': 220,
+        #     'owner': 'pipeline_manager',
+        #     'path_str': 'predict_occultation/00000220',
+        #     'pipeline': 'predict_occultation',
+        #     'pipeline_version': '0.0.1',
+        #     'used_config': '{"message": "Hello World", "asteroid_path": "/data/outputs/277"}',
+        #     'created_at': '2025-10-02T17:18:00.594232Z',
+        #     'started_at': None,
+        #     'ended_at': None,
+        #     'executor': 'slurm',
+        #     'worker': None,
+        #     'task_id': 'a346c397-f747-4191-8a51-71d50619797b',
+        #     'pid': None,
+        #     'status': 6,
+        #     'comment': None,
+        #     'user': 3
+        # }
+
         return slurm_task
 
     # def cancel(self, task: "PredictionTask") -> bool:

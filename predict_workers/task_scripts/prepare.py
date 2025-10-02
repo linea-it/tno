@@ -76,9 +76,6 @@ class PrepareWorker(BaseWorker):
         self.log.info(f"Asteroid found: {asteroid.get('name')}")
 
 
-
-
-        # TODO: REMOVER ESSA PARTE
         if workdir.exists():
             self.log.warning(f"Task directory {workdir} already exists. Removing it for re-run task.")
             self.cleanup_workdir(workdir)

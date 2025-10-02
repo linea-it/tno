@@ -51,7 +51,6 @@ class BaseWorker:
                     'CRITICAL': 'bold_red',
                 }
             )
-      
             handler.setFormatter(formatter)
             self.log.addHandler(handler)
 
@@ -112,15 +111,14 @@ class BaseWorker:
             db = self.SessionLocal() # SessionLocal is accessible via self.SessionLocal in BaseWorker
 
             try:
-                # time.sleep(self.interval)
                 task = self.get_next_task(db, self.state_to_process)
 
                 if not task:
-                    self.log.info(f"No task with state {self.state_to_process} found. Waiting...")
-                    time.sleep(self.interval) # Espera antes de tentar novamente
+                    # self.log.info(f"No task with state {self.state_to_process} found. Waiting...")
                     continue
 
                 if task:
+                    self.log.info("="*60)
                     self.log.info(f"Task {task.id} selected for processing. Current state: {task.state}")
                     
                     try:
@@ -134,11 +132,11 @@ class BaseWorker:
             except Exception as e:
                 db.rollback()
                 self.log.error(f"Error in main worker loop: {e}")
-                time.sleep(self.interval)
-                
             finally:
                 self.send_heartbeat()
                 db.close()
+                time.sleep(self.interval)
+
 
 
     def perform_task(self, task, db_session):
