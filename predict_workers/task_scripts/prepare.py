@@ -2,15 +2,9 @@ import json
 import pathlib
 
 from base_worker import BaseWorker
-from dao.models import (
-    AsteroidDAO,
-    AsteroidEphemerisDAO,
-    CatalogDAO,
-    LeapSecondDAO,
-    PlanetaryEphemerisDAO,
-    PredictionState,
-    serialize,
-)
+from dao.models import (AsteroidDAO, AsteroidEphemerisDAO, CatalogDAO,
+                        LeapSecondDAO, PlanetaryEphemerisDAO, PredictionState,
+                        serialize)
 
 
 class PrepareWorker(BaseWorker):

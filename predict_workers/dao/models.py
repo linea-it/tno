@@ -9,17 +9,8 @@ from typing import Optional
 
 import pandas as pd
 import sqlalchemy as sa
-from sqlalchemy import (
-    JSON,
-    Boolean,
-    Column,
-    DateTime,
-    Integer,
-    MetaData,
-    String,
-    Table,
-    create_engine,
-)
+from sqlalchemy import (JSON, Boolean, Column, DateTime, Integer, MetaData,
+                        String, Table, create_engine)
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import Session, declarative_base, registry, sessionmaker

@@ -1,6 +1,7 @@
+import os
+
 from executors.base import Executor
 from executors.maestro import Maestro
-import os
 
 
 class SlurmExecutor(Executor):

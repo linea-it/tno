@@ -3,6 +3,7 @@ import os
 import pathlib
 import time
 from typing import Optional
+
 import colorlog
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

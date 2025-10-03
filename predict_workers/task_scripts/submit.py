@@ -1,10 +1,11 @@
 import json
 import os
 import pathlib
+
 from base_worker import BaseWorker
 from dao.models import PredictionState
-from executors.slurm import SlurmExecutor
 from executors.local import LocalExecutor
+from executors.slurm import SlurmExecutor
 
 
 class SubmitWorker(BaseWorker):
