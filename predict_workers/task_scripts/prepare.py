@@ -53,7 +53,10 @@ class PrepareWorker(BaseWorker):
 
     def get_asteroid_ephemeris_info(self, asteroid_name):
         ast_ephem = self.asteroid_ephemeris_dao.get_by_name(asteroid_name)
-
+        if not ast_ephem:
+            msg = f"No asteroid ephemeris found for asteroid name: {asteroid_name}"
+            raise ValueError(msg)
+            
         return {
             "source": ast_ephem.source,
             "filename": ast_ephem.filename,

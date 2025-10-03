@@ -4,7 +4,7 @@ from .models import PredictionTask, PredictionState, WorkersHeartbeat
 
 @admin.register(PredictionTask)
 class PredictionTaskAdmin(admin.ModelAdmin):
-    list_display = ("id", "asteroid_id", "state", "priority", "attempt_count", "max_retries", "workdir", "created_at", "updated_at", "aborted")
+    list_display = ("id", "asteroid_id", "state", "priority", "attempt_count", "max_retries", "workdir", "created_at", "updated_at", "aborted", "debug")
     list_filter = ("state", "priority", "aborted")
     search_fields = ("asteroid_id",)
     # ordering = ("-priority", "-created_at")
@@ -32,7 +32,7 @@ class PredictionTaskAdmin(admin.ModelAdmin):
 
 @admin.register(WorkersHeartbeat)
 class WorkersHeartbeatAdmin(admin.ModelAdmin):
-    list_display = ("id", "worker", "started_at", "updated_at")
+    list_display = ("id", "worker", "started_at", "updated_at", "uptime")
     list_filter = ("worker",)
     search_fields = ("worker",)
 

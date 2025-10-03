@@ -134,6 +134,7 @@ class BaseWorker:
 
                 if not task:
                     # self.log.info(f"No task with state {self.state_to_process} found. Waiting...")
+                    time.sleep(self.interval)
                     continue
 
                 if task:
@@ -156,7 +157,7 @@ class BaseWorker:
             finally:
                 self.send_heartbeat()
                 db.close()
-                time.sleep(self.interval)
+                
 
     def perform_task(self, task, db_session):
         raise NotImplementedError(

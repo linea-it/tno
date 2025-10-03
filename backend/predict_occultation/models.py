@@ -55,6 +55,8 @@ class PredictionTask(models.Model):
     
     aborted = models.BooleanField(default=False)
 
+    debug = models.BooleanField(default=False)  # se True, não apaga workdir
+
     BASE_DELAY = 60  # segundos (1 minuto)
 
     def mark_failed(self, error: str ):

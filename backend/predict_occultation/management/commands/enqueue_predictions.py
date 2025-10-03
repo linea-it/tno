@@ -28,6 +28,8 @@ class Command(BaseCommand):
         parser.add_argument("--leap_seconds", type=str, help="Leap seconds file. default is naif0012", default="naif0012")
         parser.add_argument("--priority", type=int, help="Task priority. default is 100", default=100)
 
+        parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+
 
     def handle(self, *args, **options):
 
@@ -69,5 +71,6 @@ class Command(BaseCommand):
                 asteroid_id=asteroid.name,
                 priority=priority,
                 input_manifest=input_manifest,
+                debug=options.get("debug", False),
             )
             self.stdout.write(self.style.SUCCESS(f"Task [{task.id}] criada  para asteroid: [{asteroid.name}]") )

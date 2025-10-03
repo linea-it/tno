@@ -37,14 +37,33 @@ class IngestWorker(BaseWorker):
 
         self.log.info(f"Upserting occultation records into database.")
 
-        rowcount = self.occultation_dao.upinsert_occultations(df)
-        self.log.info(f"{rowcount} occultation records upserted.")
+        events_count = 0
+        if not df.empty:
+            events_count = self.occultation_dao.upinsert_occultations(df)
+            self.log.info(f"{events_count} occultation records upserted.")
 
-        # TODO: if debug, keep the directory.
+        # Also read the star catalog to report how many stars were used.
+        star_catalog = workdir.joinpath("star_catalog.csv")
+        df_stars = pd.read_csv(
+            star_catalog,
+            delimiter=";",
+        )
+        stars_count = df_stars.shape[0]
+        # self.log.info(f"{stars_count} star records read from catalog.")
+
+
+        output_manifest = {
+            "occultations": events_count, # Number of predicted occultation events identified for this asteroid.
+            "stars": stars_count, # Number of stars used for predictions.
+        }
+
+
         # Cleanup the working directory
-        self.cleanup_workdir(workdir)
+        if task.debug is False:
+            self.log.info(f"Cleaning up workdir: {workdir}")
+            self.cleanup_workdir(workdir)
 
         # Change task status to DONE
-        self.update_task_status(db_session, task, PredictionState.DONE)
+        self.update_task_status(db_session, task, PredictionState.DONE, output_manifest=output_manifest)
 
         self.log.info(f"Task {task.id} DONE successfully.")

@@ -96,6 +96,7 @@ class WorkerHeartbeatDAO(BaseDAO):
                     db.commit()
                     self.log.debug(f"Heartbeat initialized for worker {worker_name}.")
                 else:
+                    heartbeat.started_at = datetime.datetime.now(tz=datetime.timezone.utc)
                     heartbeat.uptime = (
                         0  # Reinicia o uptime toda vez que o worker é iniciado.
                     )
@@ -185,6 +186,7 @@ class PredictionTaskDAO(BaseDAO):
         new_state,
         slurm_job_id: int = None,
         workdir: Optional[pathlib.Path] = None,
+        output_manifest: Optional[dict] = None,
     ):
         try:
             task.state = new_state
@@ -193,6 +195,8 @@ class PredictionTaskDAO(BaseDAO):
                 task.slurm_job_id = slurm_job_id
             if workdir is not None:
                 task.workdir = str(workdir)
+            if output_manifest is not None:
+                task.output_manifest = output_manifest
             db_session.add(task)
             db_session.commit()
             db_session.refresh(task)

@@ -18,7 +18,6 @@ class PredictionTaskDetailSerializer(serializers.ModelSerializer):
 
 class WorkersHeartbeatSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
-    name = serializers.SerializerMethodField()
     class Meta:
         model = WorkersHeartbeat
         fields = '__all__'        
@@ -26,5 +25,3 @@ class WorkersHeartbeatSerializer(serializers.ModelSerializer):
     def get_status(self, obj):
         return obj.status()
     
-    def get_name(self, obj):
-        return obj.get_worker_display()

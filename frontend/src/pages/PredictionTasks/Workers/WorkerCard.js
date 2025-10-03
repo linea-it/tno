@@ -60,7 +60,7 @@ function WorkerCard({ worker }) {
             label={worker.status}
             color={colors[worker.status]?.chip}
             size="small" />
-          <Typography variant="h6" sx={{ fontSize: '1rem' }}>{worker.name}</Typography>
+          <Typography variant="h6" sx={{ fontSize: '1rem' }}>{worker.worker}</Typography>
         </Stack>
         <Stack direction="row" spacing={2}>
           <Stack direction="row" spacing={1}>
