@@ -99,10 +99,6 @@ class PredictionTask(models.Model):
         ]
 
 
-class WorkersName(models.TextChoices):
-    PREPARE = "PREPARE", "Prepare"
-    SUBMIT = "SUBMIT", "Submit"
-    INGEST = "INGEST", "Ingest"
 
 class WorkersStatus(models.TextChoices):
     RUNNING = "RUNNING", "Running"
@@ -111,7 +107,7 @@ class WorkersStatus(models.TextChoices):
     # IDLE = "IDLE", "Idle"
 
 class WorkersHeartbeat(models.Model):
-    worker = models.CharField(max_length=32, choices=WorkersName.choices)
+    worker = models.CharField(max_length=32, unique=True)
     started_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     uptime = models.IntegerField(default=0)  # em segundos
