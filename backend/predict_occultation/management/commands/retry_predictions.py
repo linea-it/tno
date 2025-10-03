@@ -12,6 +12,7 @@ class Command(BaseCommand):
         asteroid_ids = options["asteroid_id"]
         tasks = PredictionTask.objects.filter(asteroid_id__in=asteroid_ids)
         for task in tasks:
+            # TODO: Verificar a regra de retry deveria ser Staled também?
             if task.state in [PredictionState.FAILED, PredictionState.ABORTED]:
                 task.retry()
                 self.stdout.write(self.style.SUCCESS(f"Task {task.asteroid_id} reenfileirada"))

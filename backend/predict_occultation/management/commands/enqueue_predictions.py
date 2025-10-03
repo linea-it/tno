@@ -8,6 +8,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--count", type=int, default=5, help="Quantidade de tasks a criar")
+        # parser.add_argument("--interval", type=float, default=2.0, help="Intervalo de polling (s)")
+        # parser.add_argument("--batch", type=int, default=5, help="Número máximo de tasks por loop")
 
     def handle(self, *args, **options):
         count = options["count"]

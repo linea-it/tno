@@ -56,7 +56,6 @@ from tno.views import (
 
 from predict_occultation.api.views import (
     PredictionTaskViewSet,
-    PredictionAttemptViewSet,
     WorkersHeartbeatViewSet,
 )
 
@@ -104,7 +103,6 @@ router.register(r"submission", SubmissionViewSet, basename="submission")
 
 
 router.register(r"predict_occultation/task", PredictionTaskViewSet, basename="predict_occultation_task")
-router.register(r"predict_occultation/attempt", PredictionAttemptViewSet, basename="predict_occultation_attempt")
 router.register(r"predict_occultation/worker", WorkersHeartbeatViewSet, basename="predict_occultation_worker")
 
 urlpatterns = [

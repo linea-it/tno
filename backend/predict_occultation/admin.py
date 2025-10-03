@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PredictionTask, PredictionAttempt, PredictionState, WorkersHeartbeat
+from .models import PredictionTask, PredictionState, WorkersHeartbeat
 
 
 @admin.register(PredictionTask)
@@ -29,12 +29,6 @@ class PredictionTaskAdmin(admin.ModelAdmin):
         self.message_user(request, f"{count} tasks re-enfileiradas.")
     retry_tasks.short_description = "Retry nas tasks selecionadas"
 
-
-@admin.register(PredictionAttempt)
-class PredictionAttemptAdmin(admin.ModelAdmin):
-    list_display = ("id", "task", "stage", "success", "started_at", "finished_at")
-    list_filter = ("stage", "success")
-    search_fields = ("task__asteroid_id",)
 
 @admin.register(WorkersHeartbeat)
 class WorkersHeartbeatAdmin(admin.ModelAdmin):

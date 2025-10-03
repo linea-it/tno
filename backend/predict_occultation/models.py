@@ -98,15 +98,6 @@ class PredictionTask(models.Model):
             models.Index(fields=["state", "priority", "-created_at"]),
         ]
 
-class PredictionAttempt(models.Model):
-    task = models.ForeignKey(PredictionTask, on_delete=models.CASCADE, related_name="attempts")
-    stage = models.CharField(max_length=32, choices=AttemptStage.choices)
-    started_at = models.DateTimeField(default=timezone.now)
-    finished_at = models.DateTimeField(null=True, blank=True)
-    success = models.BooleanField(default=True)
-    error = models.TextField(blank=True)
-    meta = models.JSONField(default=dict, blank=True)
-
 
 class WorkersName(models.TextChoices):
     PREPARE = "PREPARE", "Prepare"

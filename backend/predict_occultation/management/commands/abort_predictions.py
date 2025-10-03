@@ -6,6 +6,7 @@ class Command(BaseCommand):
     help = "Aborta tasks em andamento ou na fila"
 
     def add_arguments(self, parser):
+        # TODO: Ter uma opção para abortar todas as tasks em andamento?
         parser.add_argument("asteroid_id", nargs="+", help="ID(s) dos asteroids para abortar")
 
     def handle(self, *args, **options):

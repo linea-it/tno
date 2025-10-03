@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from predict_occultation.models import PredictionTask
-from predict_occultation.models import PredictionAttempt
 from predict_occultation.models import WorkersHeartbeat
 
 
@@ -10,15 +9,8 @@ class PredictionTaskSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-
-class PredictionAttemptSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PredictionAttempt
-        fields = '__all__'
-
 class PredictionTaskDetailSerializer(serializers.ModelSerializer):
 
-    attempts = PredictionAttemptSerializer(many=True)
     class Meta:
         model = PredictionTask
         fields = '__all__'        
