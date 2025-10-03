@@ -11,7 +11,7 @@ class IngestWorker(BaseWorker):
         super().__init__(worker_name, database_url)
         self.state_to_process = "WAITING_RESULTS"
         self.occultation_dao = OccultationDAO(self.engine, self.log)
-        
+
     def perform_task(self, task, db_session):
         self.log.info(f"Performing ingest step for task id: {task.id}")
 
@@ -20,7 +20,7 @@ class IngestWorker(BaseWorker):
 
         workdir = pathlib.Path(task.workdir)
 
-        occultation_file = workdir.joinpath('occultation_table.csv')
+        occultation_file = workdir.joinpath("occultation_table.csv")
 
         if not occultation_file.exists():
             msg = f"Occultation file not found at [{occultation_file}]"
@@ -48,4 +48,3 @@ class IngestWorker(BaseWorker):
         self.update_task_status(db_session, task, PredictionState.DONE)
 
         self.log.info(f"Task {task.id} DONE successfully.")
-

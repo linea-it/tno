@@ -432,10 +432,13 @@ if __name__ == "__main__":
     # processes = maestro.get_processes()
     # print(processes)
 
-    task = maestro.start("predict_occultation", {
-        "message": "Hello World", 
-        "asteroid_path": "/data/apps/app.orch/dev/pipelines/predict_occultation/process001",
-        "asteroid_name": "2008 RH167",
-        "task_id": 1
-    })
+    task = maestro.start(
+        "predict_occultation",
+        {
+            "message": "Hello World",
+            "asteroid_path": "/data/apps/app.orch/dev/pipelines/predict_occultation/process001",
+            "asteroid_name": "2008 RH167",
+            "task_id": 1,
+        },
+    )
     print(task)
