@@ -196,18 +196,21 @@ def ascii_to_csv(inputFile, outputFile):
 
     nRows, nCols = data.shape
 
-    # Robustly handle date/time conversion, including seconds=60
+    # Robustly handle date/time conversion, including seconds=60, minutes=60, hours=24+
     date = []
     for d in data[:, :6]:
-        # Create a base datetime object from year down to the minute
-        base_dt = datetime.strptime(" ".join(d[:5]), "%d %m %Y %H %M")
+        # Create a base datetime object with only day, month, year
+        base_dt = datetime.strptime(" ".join(d[:3]), "%d %m %Y")
 
-        # Parse seconds as a float
+        # Parse hours, minutes, and seconds as floats
+        hours = float(d[3])
+        minutes = float(d[4])
         seconds = float(d[5])
 
-        # Add the seconds using timedelta, which handles rollovers correctly.
-        # e.g., 59 minutes + 60 seconds becomes the next hour at 00 seconds.
-        final_dt = base_dt + timedelta(seconds=seconds)
+        # Add hours, minutes, and seconds using timedelta, which handles all rollovers correctly.
+        # e.g., 19 hours + 60 minutes + 0 seconds = 20 hours + 0 minutes + 0 seconds
+        # e.g., 59 minutes + 60 seconds = 1 hour + 0 minutes + 0 seconds
+        final_dt = base_dt + timedelta(hours=hours, minutes=minutes, seconds=seconds)
         date.append(final_dt)
 
     dateAndPositions = [date]
