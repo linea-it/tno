@@ -16,6 +16,10 @@ then
     export XDG_CACHE_HOME=${HOME}
     echo "XDG_CACHE_HOME: ${XDG_CACHE_HOME}"
 
+    # Configure Astropy IERS for offline operation on cluster workers
+    export ASTROPY_IERS_AUTO_UPDATE=False
+    echo "ASTROPY_IERS_AUTO_UPDATE: ${ASTROPY_IERS_AUTO_UPDATE}"
+
     export EUPS_USERDATA=/tmp/`whoami`/eups
     . /opt/eups/bin/setups.sh
 

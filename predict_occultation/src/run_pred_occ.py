@@ -496,20 +496,34 @@ def submit_tasks(jobid: int):
         cache_directory = config.get_cache_dir()
         log.debug(f"Astropy is using the following cache directory: {cache_directory}")
 
+        # Pre-warm IERS cache on head node (which has internet access)
+        # This ensures IERS data is downloaded to shared cache before cluster submission
+        log.info("Pre-warming IERS cache on head node...")
+        os.environ["ASTROPY_IERS_AUTO_UPDATE"] = "True"
+        try:
+            iers_a = IERS_Auto.open()
+            log.info("IERS cache ready for cluster workers")
+        except Exception as e:
+            log.warning(f"Failed to pre-warm IERS cache: {e}")
+            log.warning(
+                "Cluster workers may attempt to download IERS (will fail if offline)"
+            )
+
         # Check if IERS cache files exist (for logging purposes)
         cache_url_dir = Path(cache_directory) / "download" / "url"
         if cache_url_dir.exists():
             contents_files = list(cache_url_dir.glob("*/contents"))
             if contents_files:
                 cache_file = max(contents_files, key=lambda p: p.stat().st_mtime)
-                log.debug(f"IERS cache file: {cache_file}")
+                log.info(f"IERS cache file found: {cache_file}")
+                # Check file age
+                file_age_days = (time.time() - cache_file.stat().st_mtime) / 86400
+                log.info(f"IERS cache age: {file_age_days:.1f} days")
             else:
-                log.debug("No IERS cache files found in cache directory")
+                log.warning("No IERS cache files found in cache directory")
         else:
-            log.debug(f"Cache URL directory does not exist yet: {cache_url_dir}")
+            log.warning(f"Cache URL directory does not exist yet: {cache_url_dir}")
 
-        # Use Astropy's default auto_max_age (30 days) for IERS cache
-        iers_a = IERS_Auto.open()
         log.debug("***********************************************************")
 
         job.update(

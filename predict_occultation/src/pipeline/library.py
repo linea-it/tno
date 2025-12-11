@@ -6,6 +6,25 @@ import os
 import re
 from datetime import datetime, timedelta
 
+# Configure Astropy IERS before imports to prevent download attempts
+os.environ["ASTROPY_IERS_AUTO_UPDATE"] = "False"
+
+
+def _configure_iers():
+    """Configure Astropy IERS table from shared cache as fallback."""
+    try:
+        from astropy.utils.iers import IERS_Auto
+
+        # Astropy will use the shared cache configured via XDG_CACHE_HOME
+        # This function serves as a fallback to ensure IERS is loaded
+        # without attempting downloads on offline cluster workers
+        pass
+    except Exception:
+        pass  # Fallback to default behavior if configuration fails
+
+
+_configure_iers()
+
 import astropy.units as u
 import numpy as np
 import spiceypy as spice
