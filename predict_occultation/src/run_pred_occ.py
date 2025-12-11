@@ -14,6 +14,9 @@ from pathlib import Path
 from time import sleep
 
 import astropy.config as config
+
+# Import cache configuration FIRST before any astropy imports
+import astropy_cache_config
 import humanize
 import pandas as pd
 from asteroid import Asteroid
@@ -487,8 +490,25 @@ def submit_tasks(jobid: int):
 
         # Get the path to the currently used cache directory
         log.debug("***********************************************************")
+        log.debug(
+            f"XDG_CACHE_HOME environment variable: {os.environ.get('XDG_CACHE_HOME')}"
+        )
         cache_directory = config.get_cache_dir()
         log.debug(f"Astropy is using the following cache directory: {cache_directory}")
+
+        # Check if IERS cache files exist (for logging purposes)
+        cache_url_dir = Path(cache_directory) / "download" / "url"
+        if cache_url_dir.exists():
+            contents_files = list(cache_url_dir.glob("*/contents"))
+            if contents_files:
+                cache_file = max(contents_files, key=lambda p: p.stat().st_mtime)
+                log.debug(f"IERS cache file: {cache_file}")
+            else:
+                log.debug("No IERS cache files found in cache directory")
+        else:
+            log.debug(f"Cache URL directory does not exist yet: {cache_url_dir}")
+
+        # Use Astropy's default auto_max_age (30 days) for IERS cache
         iers_a = IERS_Auto.open()
         log.debug("***********************************************************")
 

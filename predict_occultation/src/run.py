@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
+# Import cache configuration FIRST before any astropy imports
 import argparse
 import os
 import traceback
 from datetime import datetime
 
+import astropy_cache_config
 from pipeline.predict_occ import main
 
 parser = argparse.ArgumentParser()

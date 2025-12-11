@@ -6,7 +6,8 @@ import astropy
 import numpy as np
 from astroquery.mpc import MPC
 
-astropy.utils.data.clear_download_cache()
+# Removed clear_download_cache() to preserve IERS cache between runs
+# astropy.utils.data.clear_download_cache()
 
 
 def get_identifier(name, number=None):

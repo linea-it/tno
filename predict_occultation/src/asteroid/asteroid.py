@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import pathlib
+import shutil
 import sys
 from datetime import datetime as dt
 from datetime import timedelta, timezone
@@ -532,7 +533,10 @@ class Asteroid:
             if f.name not in ignore_files:
                 removed_files.append(f.name)
                 log.debug(f"Removed: [{f.name}]")
-                f.unlink()
+                if f.is_dir():
+                    shutil.rmtree(f)
+                else:
+                    f.unlink()
 
         # Limpa os metadados das etapas de resultado
         self.predict_occultation = {}
