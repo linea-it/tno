@@ -47,7 +47,7 @@ class ResourceMonitor:
         path : Path
             Directory to save the monitoring results
         enabled : bool
-            Whether to enable monitoring (default: False). 
+            Whether to enable monitoring (default: False).
             Can also be enabled via RESOURCE_MONITOR=1 environment variable.
         """
         # Enable via parameter (from job debug flag) or environment variable (fallback)
