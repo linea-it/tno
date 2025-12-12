@@ -270,6 +270,11 @@ class Asteroid:
         self.task_id = int(task_id)
         self.write_asteroid_json()
 
+    def set_debug(self, debug: bool):
+        """Set debug flag - enables benchmarking and resource monitoring."""
+        self.debug = bool(debug)
+        self.write_asteroid_json()
+
     def set_predict_occultation(self, data):
         self.predict_occultation = data
         self.write_asteroid_json()
