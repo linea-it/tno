@@ -12,7 +12,7 @@ then
 
     ulimit -s 100000
     ulimit -u 100000
-    
+
     # Configure astropy cache on lead node (before Python imports astropy)
     # Use shared filesystem location based on PREDICT_INPUTS
     if [ -z "${XDG_CACHE_HOME:-}" ] && [ -n "${PREDICT_INPUTS:-}" ]; then
@@ -21,7 +21,7 @@ then
         mkdir -p ${XDG_CACHE_HOME}/astropy
         echo "XDG_CACHE_HOME set to: ${XDG_CACHE_HOME}"
     fi
-    
+
     # Propagate monitoring environment variables if they exist
     # These need to be in environment when get_config() runs on lead node
     if [ -n "${BENCHMARK_ENABLED:-}" ]; then
