@@ -4,7 +4,8 @@
 # REMOVAL: Delete this file and remove imports/calls from occ_path_coeff.py
 #
 # Usage:
-#   Set environment variable RESOURCE_MONITOR=1 to enable
+#   Pass enabled=True to ResourceMonitor constructor (or set debug=True in job config)
+#   Or set environment variable RESOURCE_MONITOR=1 (fallback)
 #   Results are saved to resource_monitor.json in the asteroid's path
 
 import json
@@ -35,7 +36,7 @@ class ResourceMonitor:
     - Timing for each section
     """
 
-    def __init__(self, name: str, path: Path):
+    def __init__(self, name: str, path: Path, enabled: bool = False):
         """
         Initialize the resource monitor.
 
@@ -45,8 +46,12 @@ class ResourceMonitor:
             Identifier for this monitoring session (e.g., asteroid name)
         path : Path
             Directory to save the monitoring results
+        enabled : bool
+            Whether to enable monitoring (default: False). 
+            Can also be enabled via RESOURCE_MONITOR=1 environment variable.
         """
-        self.enabled = os.environ.get("RESOURCE_MONITOR") == "1"
+        # Enable via parameter (from job debug flag) or environment variable (fallback)
+        self.enabled = enabled or os.environ.get("RESOURCE_MONITOR") == "1"
         self.name = name
         self.path = Path(path) if path else None
         self.samples = []
@@ -342,12 +347,23 @@ class NoOpResourceMonitor:
         pass
 
 
-def get_resource_monitor(name: str, path: Path) -> ResourceMonitor:
+def get_resource_monitor(
+    name: str, path: Path, enabled: bool = False
+) -> ResourceMonitor:
     """
     Factory function to get the appropriate monitor.
 
-    Returns ResourceMonitor if RESOURCE_MONITOR=1, otherwise NoOpResourceMonitor.
+    Parameters
+    ----------
+    name : str
+        Identifier for this monitoring session (e.g., asteroid name)
+    path : Path
+        Directory to save the monitoring results
+    enabled : bool
+        Whether to enable monitoring. Can also be enabled via RESOURCE_MONITOR=1 env var.
+
+    Returns ResourceMonitor if enabled=True or RESOURCE_MONITOR=1, otherwise NoOpResourceMonitor.
     """
-    if os.environ.get("RESOURCE_MONITOR") == "1":
-        return ResourceMonitor(name, path)
+    if enabled or os.environ.get("RESOURCE_MONITOR") == "1":
+        return ResourceMonitor(name, path, enabled=True)
     return NoOpResourceMonitor(name, path)

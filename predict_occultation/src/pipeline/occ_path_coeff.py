@@ -146,12 +146,22 @@ def run_occultation_path_coeff(
     calculate_path_coeff = {}
     t0 = dt.now(tz=timezone.utc)
 
+    # Check debug flag from job configuration (enables benchmarking and resource monitoring)
+    # Can be set in obj_data directly or in predict_occultation sub-dict
+    debug_enabled = obj_data.get("debug", False) or obj_data.get(
+        "predict_occultation", {}
+    ).get("debug", False)
+
     # BENCHMARK: START - delete this block to remove benchmarking
-    bm = Benchmark(name=obj_data.get("name"), path=obj_data.get("path"))
+    bm = Benchmark(
+        name=obj_data.get("name"), path=obj_data.get("path"), enabled=debug_enabled
+    )
     # BENCHMARK: END
 
     # RESOURCE_MONITOR: START - delete this block to remove resource monitoring
-    rm = get_resource_monitor(name=obj_data.get("name"), path=obj_data.get("path"))
+    rm = get_resource_monitor(
+        name=obj_data.get("name"), path=obj_data.get("path"), enabled=debug_enabled
+    )
     # RESOURCE_MONITOR: END
 
     try:
