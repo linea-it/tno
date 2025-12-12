@@ -6,9 +6,8 @@ To completely remove benchmarking:
 2. In occ_path_coeff.py, search for "# BENCHMARK" and remove all marked blocks
 3. Run: grep -rn "BENCHMARK" predict_occultation/src/pipeline/ to find all references
 
-To disable without removal:
-- Pass enabled=False to Benchmark constructor (default: disabled)
-- Or set debug=False in job configuration
+To enable benchmarking:
+- Set environment variable: BENCHMARK_ENABLED=1
 - When disabled, all benchmark operations are no-ops (zero overhead)
 """
 
@@ -24,18 +23,17 @@ class Benchmark:
     """
     Performance benchmarking utility for occ_path_coeff.py.
 
-    When enabled=False, all operations are no-ops.
-    Enable by passing enabled=True or by setting job debug=True.
+    Controlled exclusively by environment variable BENCHMARK_ENABLED=1.
+    When disabled, all operations are no-ops.
     """
 
     def __init__(
         self,
         name: Optional[str] = None,
         path: Optional[str] = None,
-        enabled: bool = False,
     ):
-        # Enable via parameter (from job debug flag) or environment variable (fallback)
-        self.enabled = enabled or os.getenv("BENCHMARK_ENABLED", "").lower() in (
+        # Enable exclusively via environment variable
+        self.enabled = os.getenv("BENCHMARK_ENABLED", "").lower() in (
             "1",
             "true",
             "yes",

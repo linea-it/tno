@@ -4,8 +4,7 @@
 # REMOVAL: Delete this file and remove imports/calls from occ_path_coeff.py
 #
 # Usage:
-#   Pass enabled=True to ResourceMonitor constructor (or set debug=True in job config)
-#   Or set environment variable RESOURCE_MONITOR=1 (fallback)
+#   Set environment variable RESOURCE_MONITOR=1
 #   Results are saved to resource_monitor.json in the asteroid's path
 
 import json
@@ -28,6 +27,8 @@ class ResourceMonitor:
     """
     Monitor system resources during processing to diagnose performance issues.
 
+    Controlled exclusively by environment variable RESOURCE_MONITOR=1.
+
     Tracks:
     - CPU usage (per-process and system-wide)
     - Memory usage (RSS, available, swap)
@@ -36,7 +37,7 @@ class ResourceMonitor:
     - Timing for each section
     """
 
-    def __init__(self, name: str, path: Path, enabled: bool = False):
+    def __init__(self, name: str, path: Path):
         """
         Initialize the resource monitor.
 
@@ -46,12 +47,9 @@ class ResourceMonitor:
             Identifier for this monitoring session (e.g., asteroid name)
         path : Path
             Directory to save the monitoring results
-        enabled : bool
-            Whether to enable monitoring (default: False).
-            Can also be enabled via RESOURCE_MONITOR=1 environment variable.
         """
-        # Enable via parameter (from job debug flag) or environment variable (fallback)
-        self.enabled = enabled or os.environ.get("RESOURCE_MONITOR") == "1"
+        # Enable exclusively via environment variable
+        self.enabled = os.environ.get("RESOURCE_MONITOR") == "1"
         self.name = name
         self.path = Path(path) if path else None
         self.samples = []
@@ -347,11 +345,11 @@ class NoOpResourceMonitor:
         pass
 
 
-def get_resource_monitor(
-    name: str, path: Path, enabled: bool = False
-) -> ResourceMonitor:
+def get_resource_monitor(name: str, path: Path) -> ResourceMonitor:
     """
     Factory function to get the appropriate monitor.
+
+    Controlled exclusively by environment variable RESOURCE_MONITOR=1.
 
     Parameters
     ----------
@@ -359,11 +357,9 @@ def get_resource_monitor(
         Identifier for this monitoring session (e.g., asteroid name)
     path : Path
         Directory to save the monitoring results
-    enabled : bool
-        Whether to enable monitoring. Can also be enabled via RESOURCE_MONITOR=1 env var.
 
-    Returns ResourceMonitor if enabled=True or RESOURCE_MONITOR=1, otherwise NoOpResourceMonitor.
+    Returns ResourceMonitor if RESOURCE_MONITOR=1, otherwise NoOpResourceMonitor.
     """
-    if enabled or os.environ.get("RESOURCE_MONITOR") == "1":
-        return ResourceMonitor(name, path, enabled=True)
+    if os.environ.get("RESOURCE_MONITOR") == "1":
+        return ResourceMonitor(name, path)
     return NoOpResourceMonitor(name, path)

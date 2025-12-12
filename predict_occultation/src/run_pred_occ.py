@@ -727,7 +727,6 @@ def submit_tasks(jobid: int):
             )
 
             a.set_job_id(int(jobid))
-            a.set_debug(DEBUG)  # Pass job debug flag to asteroid - enables benchmarking/monitoring
 
             # ========================= Download dos Inputs Externos ============================
 
