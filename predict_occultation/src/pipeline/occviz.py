@@ -473,7 +473,9 @@ def _check_nighttime(location, instant):
         True if the occultation event occurs during nighttime, False otherwise.
     """
     try:
-        sun = get_sun(instant)
+        # PERFORMANCE: Use cached sun position (sun moves ~1°/day, safe to cache by day)
+        jd_int = int(instant.jd)
+        sun = _get_sun_cached(jd_int)
         sun_lat = sun.dec
         sun_lon = sun.ra - instant.sidereal_time("mean", "greenwich")
         sun_theta = np.arccos(

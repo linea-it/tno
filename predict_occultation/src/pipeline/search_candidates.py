@@ -194,7 +194,22 @@ def ascii_to_csv(inputFile, outputFile):
     """
     data = np.loadtxt(inputFile, skiprows=41, dtype=str, ndmin=2)
 
+    # TODO: Remover isso quando o PRAIA OCC for atualizado. Estamos ignorando linhas com asteriscos.
+    # Filter out rows containing asterisks (PRAIA error values)
+    mask = np.array([not any("*" in cell for cell in row) for row in data])
+    removed_rows = data[~mask]
+    if len(removed_rows) > 0:
+        # Extract object name from input file path
+        obj_name = os.path.basename(os.path.dirname(inputFile))
+        for row in removed_rows:
+            # Parse datetime from row (columns 0-5: day, month, year, hour, minute, second)
+            row_date = f"{row[0]}/{row[1]}/{row[2]} {row[3]}:{row[4]}:{row[5]}"
+            print(
+                f"[WARNING] Removed row with asterisks - Object: {obj_name}, Date: {row_date}"
+            )
+    data = data[mask]
     nRows, nCols = data.shape
+    ####################################
 
     # Robustly handle date/time conversion, including seconds=60, minutes=60, hours=24+
     date = []
