@@ -88,9 +88,12 @@ def get_config(key, jobpath):
                             "PREDICT_INPUTS": str(predict_inputs),
                             "DB_CATALOG_URI": db_uri,
                             "DB_ADMIN_URI": admin_db_uri,
-                            # Monitoring flags - set in .env to enable
-                            "BENCHMARK_ENABLED": os.getenv("BENCHMARK_ENABLED", ""),
-                            "RESOURCE_MONITOR": os.getenv("RESOURCE_MONITOR", ""),
+                            # Monitoring flags - set in environment to enable
+                            # Variables from environment are propagated to cluster workers via envs dict
+                            "BENCHMARK_ENABLED": os.environ.get(
+                                "BENCHMARK_ENABLED", ""
+                            ),
+                            "RESOURCE_MONITOR": os.environ.get("RESOURCE_MONITOR", ""),
                         },
                     ),
                 ),

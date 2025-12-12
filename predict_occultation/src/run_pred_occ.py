@@ -13,25 +13,19 @@ from io import StringIO
 from pathlib import Path
 from time import sleep
 
-import astropy.config as config
-
 # Import cache configuration FIRST before any astropy imports
 import astropy_cache_config
+
+import astropy.config as config
 import humanize
 import pandas as pd
 from asteroid import Asteroid
 from astropy.utils import iers
 from astropy.utils.iers import IERS_Auto
-from dao import (
-    AsteroidDao,
-    LeapSecondDao,
-    OccultationDao,
-    PlanetaryEphemerisDao,
-    PredictOccultationJobDao,
-    PredictOccultationJobResultDao,
-    PredictOccultationJobStatusDao,
-    StarCatalogDao,
-)
+from dao import (AsteroidDao, LeapSecondDao, OccultationDao,
+                 PlanetaryEphemerisDao, PredictOccultationJobDao,
+                 PredictOccultationJobResultDao,
+                 PredictOccultationJobStatusDao, StarCatalogDao)
 
 try:
     from app import run_pipeline
