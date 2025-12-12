@@ -47,20 +47,23 @@ def get_config(key, jobpath):
         script_dir = pipeline_root.joinpath("script_dir")
         script_dir.mkdir(parents=True, exist_ok=True)
 
+        # Cluster scaling parameters (from .env)
+        max_nodes = int(os.getenv("MAX_NODES", 20))
+        max_workers_per_node = int(os.getenv("MAX_WORKERS_PER_NODE", 10))
+
         executors = {
             "linea": HighThroughputExecutor(
                 label="linea",
                 worker_logdir_root=str(script_dir),
-                # max_workers=100,
-                # max_workers=2, # Teste escalonamento
+                max_workers=max_workers_per_node,  # Limit concurrent workers per node to reduce I/O contention
                 provider=SlurmProvider(
                     partition="cpu_long",
                     nodes_per_block=1,  # number of nodes
                     cmd_timeout=240,  # duration for which the provider will wait for a command to be invoked on a remote system
                     launcher=SrunLauncher(debug=True, overrides=""),
-                    init_blocks=10,
+                    init_blocks=1,  # Overridden by run_pred_occ.py dynamically
                     min_blocks=1,
-                    max_blocks=10,
+                    max_blocks=max_nodes,  # From MAX_NODES env var
                     parallelism=1,
                     walltime="240:00:00",
                     worker_init=f"source {cluster_env_sh}\n",
@@ -85,6 +88,9 @@ def get_config(key, jobpath):
                             "PREDICT_INPUTS": str(predict_inputs),
                             "DB_CATALOG_URI": db_uri,
                             "DB_ADMIN_URI": admin_db_uri,
+                            # Monitoring flags - set in .env to enable
+                            "BENCHMARK_ENABLED": os.getenv("BENCHMARK_ENABLED", ""),
+                            "RESOURCE_MONITOR": os.getenv("RESOURCE_MONITOR", ""),
                         },
                     ),
                 ),
@@ -92,6 +98,17 @@ def get_config(key, jobpath):
         }
 
     if parsl_env == "local":
+        # Build worker_init with monitoring env vars
+        local_worker_init = "source /app/src/env.sh\n"
+        if os.getenv("BENCHMARK_ENABLED"):
+            local_worker_init += (
+                f"export BENCHMARK_ENABLED={os.getenv('BENCHMARK_ENABLED')}\n"
+            )
+        if os.getenv("RESOURCE_MONITOR"):
+            local_worker_init += (
+                f"export RESOURCE_MONITOR={os.getenv('RESOURCE_MONITOR')}\n"
+            )
+
         executors = {
             "local": HighThroughputExecutor(
                 label="local",
@@ -102,7 +119,7 @@ def get_config(key, jobpath):
                     init_blocks=1,
                     max_blocks=1,
                     parallelism=1,
-                    worker_init=f"source /app/src/env.sh\n",
+                    worker_init=local_worker_init,
                 ),
             ),
         }
