@@ -49,7 +49,7 @@ def get_config(key, jobpath):
 
         # Cluster scaling parameters (from .env)
         max_nodes = int(os.getenv("MAX_NODES", 20))
-        max_workers_per_node = int(os.getenv("MAX_WORKERS_PER_NODE", 10))
+        max_workers_per_node = int(os.getenv("MAX_WORKERS_PER_NODE", 28))
 
         executors = {
             "linea": HighThroughputExecutor(
