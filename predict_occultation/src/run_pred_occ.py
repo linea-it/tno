@@ -524,6 +524,35 @@ def submit_tasks(jobid: int):
         else:
             log.warning(f"Cache URL directory does not exist yet: {cache_url_dir}")
 
+        # Copy pre-warmed cache to job folder for cluster workers
+        # This ensures workers can access the cache even if they can't access the shared location
+        log.info("Copying astropy cache to job folder for cluster workers...")
+        shared_cache_dir = Path(
+            cache_directory
+        ).parent  # This is PREDICT_INPUTS.parent / ".astropy_cache"
+        job_cache_dir = current_path / ".astropy_cache"
+
+        try:
+            if shared_cache_dir.exists():
+                # Remove existing job cache if it exists
+                if job_cache_dir.exists():
+                    log.debug(f"Removing existing job cache directory: {job_cache_dir}")
+                    shutil.rmtree(job_cache_dir)
+
+                # Copy the entire cache directory to job folder
+                log.debug(f"Copying cache from {shared_cache_dir} to {job_cache_dir}")
+                shutil.copytree(shared_cache_dir, job_cache_dir)
+                log.info(
+                    f"Successfully copied astropy cache to job folder: {job_cache_dir}"
+                )
+            else:
+                log.warning(
+                    f"Shared cache directory does not exist: {shared_cache_dir}"
+                )
+        except Exception as e:
+            log.error(f"Failed to copy cache to job folder: {e}")
+            log.warning("Cluster workers may not have access to pre-warmed cache")
+
         log.debug("***********************************************************")
 
         job.update(
@@ -839,6 +868,7 @@ def submit_tasks(jobid: int):
                         PREDICT_STEP,
                         LEAP_SECOND,
                         BSP_PLANETARY,
+                        str(current_path),  # Job path for cache location
                     ),
                     stderr=f"{path}/{name}.err",
                     stdout=f"{path}/{name}.out",

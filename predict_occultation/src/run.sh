@@ -7,8 +7,16 @@ _path=$4
 _step=$5
 _leap_sec=$6
 _bsp_planetary=$7
+_job_path=$8
 
 umask 0002
+
+# Set JOB_PATH environment variable BEFORE sourcing env_pipeline.sh
+# This allows env_pipeline.sh to configure XDG_CACHE_HOME to the job folder's cache
+if [ -n "$_job_path" ]; then
+    export JOB_PATH=$_job_path
+    echo 'JOB_PATH: '$JOB_PATH
+fi
 
 echo "Enviroment Vars =========================================="
 

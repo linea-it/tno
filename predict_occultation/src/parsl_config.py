@@ -100,14 +100,15 @@ def get_config(key, jobpath):
     if parsl_env == "local":
         # Build worker_init with monitoring env vars
         local_worker_init = "source /app/src/env.sh\n"
-        if os.getenv("BENCHMARK_ENABLED"):
-            local_worker_init += (
-                f"export BENCHMARK_ENABLED={os.getenv('BENCHMARK_ENABLED')}\n"
-            )
-        if os.getenv("RESOURCE_MONITOR"):
-            local_worker_init += (
-                f"export RESOURCE_MONITOR={os.getenv('RESOURCE_MONITOR')}\n"
-            )
+        # Propagate monitoring environment variables to workers if they are set
+        # Variables are loaded from .env via docker-compose environment section
+        # We check 'in os.environ' to catch variables even if they're empty strings
+        if "BENCHMARK_ENABLED" in os.environ:
+            benchmark_enabled = os.environ.get("BENCHMARK_ENABLED", "")
+            local_worker_init += f"export BENCHMARK_ENABLED={benchmark_enabled}\n"
+        if "RESOURCE_MONITOR" in os.environ:
+            resource_monitor = os.environ.get("RESOURCE_MONITOR", "")
+            local_worker_init += f"export RESOURCE_MONITOR={resource_monitor}\n"
 
         executors = {
             "local": HighThroughputExecutor(
