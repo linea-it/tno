@@ -13,8 +13,7 @@ from typing import List, Optional
 
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
-from asteroid.jpl import (findSPKID, get_asteroid_uncertainty_from_jpl,
-                          get_bsp_from_jpl)
+from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
