@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import pathlib
+import shutil
 import sys
 from datetime import datetime as dt
 from datetime import timedelta, timezone
@@ -12,7 +13,8 @@ from typing import List, Optional
 
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
-from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
+from asteroid.jpl import (findSPKID, get_asteroid_uncertainty_from_jpl,
+                          get_bsp_from_jpl)
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
@@ -532,7 +534,10 @@ class Asteroid:
             if f.name not in ignore_files:
                 removed_files.append(f.name)
                 log.debug(f"Removed: [{f.name}]")
-                f.unlink()
+                if f.is_dir():
+                    shutil.rmtree(f)
+                else:
+                    f.unlink()
 
         # Limpa os metadados das etapas de resultado
         self.predict_occultation = {}
@@ -569,10 +574,25 @@ class Asteroid:
                 return 0
 
             # Le o arquivo occultation table e cria um dataframe
+            # Handle null values: "--" and "-" are used by PRAIA to indicate missing values
             df = pd.read_csv(
                 predict_table_path,
                 delimiter=";",
+                na_values=["--", "-", ""],
             )
+
+            # Filter out rows with null closest_approach (required field, NOT NULL in database)
+            if "closest_approach" not in df.columns:
+                log.error("Column 'closest_approach' not found in CSV file!")
+                return 0
+
+            initial_count = len(df)
+            df = df.dropna(subset=["closest_approach"])
+            filtered_count = initial_count - len(df)
+            if filtered_count > 0:
+                log.warning(
+                    f"Filtered out [{filtered_count}] rows with null closest_approach out of [{initial_count}] total rows"
+                )
 
             # -------------------------------------------------
             # Provenance Fields
@@ -692,6 +712,16 @@ class Asteroid:
                 ]
             )
 
+            # Safety check: Filter out any rows with null closest_approach after reindex
+            # (reindex might create NaN values if columns are missing)
+            before_reindex_count = len(df)
+            df = df.dropna(subset=["closest_approach"])
+            after_reindex_count = len(df)
+            if before_reindex_count != after_reindex_count:
+                log.warning(
+                    f"After reindex: Filtered out [{before_reindex_count - after_reindex_count}] additional rows with null closest_approach"
+                )
+
             # ATENCAO! Sobrescreve o arquivo occultation_table.csv
             df.to_csv(predict_table_path, index=False, sep=";")
             rowcount = df.shape[0]
@@ -735,10 +765,25 @@ class Asteroid:
                 return 0
 
             # Le o arquivo occultation table e cria um dataframe
+            # Handle null values: "--" and "-" are used by PRAIA to indicate missing values
             df = pd.read_csv(
                 predict_table_path,
                 delimiter=";",
+                na_values=["--", "-", ""],
             )
+
+            # Filter out rows with null closest_approach (required field, NOT NULL in database)
+            if "closest_approach" not in df.columns:
+                log.error("Column 'closest_approach' not found in CSV file during ingestion!")
+                return 0
+
+            initial_count = len(df)
+            df = df.dropna(subset=["closest_approach"])
+            filtered_count = initial_count - len(df)
+            if filtered_count > 0:
+                log.warning(
+                    f"During ingestion: Filtered out [{filtered_count}] rows with null closest_approach out of [{initial_count}] total rows"
+                )
 
             rowcount = dao.upinsert_occultations(df)
 

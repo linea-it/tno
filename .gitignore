@@ -63,3 +63,4 @@ database_subset/
 
 # Parsl Runinfo
 predict_occultation/runinfo
+predict_occultation/.astropy_cache

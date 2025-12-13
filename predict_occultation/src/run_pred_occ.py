@@ -13,22 +13,19 @@ from io import StringIO
 from pathlib import Path
 from time import sleep
 
+# Import cache configuration FIRST before any astropy imports
+import astropy_cache_config
+
 import astropy.config as config
 import humanize
 import pandas as pd
 from asteroid import Asteroid
 from astropy.utils import iers
 from astropy.utils.iers import IERS_Auto
-from dao import (
-    AsteroidDao,
-    LeapSecondDao,
-    OccultationDao,
-    PlanetaryEphemerisDao,
-    PredictOccultationJobDao,
-    PredictOccultationJobResultDao,
-    PredictOccultationJobStatusDao,
-    StarCatalogDao,
-)
+from dao import (AsteroidDao, LeapSecondDao, OccultationDao,
+                 PlanetaryEphemerisDao, PredictOccultationJobDao,
+                 PredictOccultationJobResultDao,
+                 PredictOccultationJobStatusDao, StarCatalogDao)
 
 try:
     from app import run_pipeline
@@ -487,9 +484,69 @@ def submit_tasks(jobid: int):
 
         # Get the path to the currently used cache directory
         log.debug("***********************************************************")
+        log.debug(
+            f"XDG_CACHE_HOME environment variable: {os.environ.get('XDG_CACHE_HOME')}"
+        )
         cache_directory = config.get_cache_dir()
         log.debug(f"Astropy is using the following cache directory: {cache_directory}")
-        iers_a = IERS_Auto.open()
+
+        # Pre-warm IERS cache on head node (which has internet access)
+        # This ensures IERS data is downloaded to shared cache before cluster submission
+        log.info("Pre-warming IERS cache on head node...")
+        os.environ["ASTROPY_IERS_AUTO_UPDATE"] = "True"
+        try:
+            iers_a = IERS_Auto.open()
+            log.info("IERS cache ready for cluster workers")
+        except Exception as e:
+            log.warning(f"Failed to pre-warm IERS cache: {e}")
+            log.warning(
+                "Cluster workers may attempt to download IERS (will fail if offline)"
+            )
+
+        # Check if IERS cache files exist (for logging purposes)
+        cache_url_dir = Path(cache_directory) / "download" / "url"
+        if cache_url_dir.exists():
+            contents_files = list(cache_url_dir.glob("*/contents"))
+            if contents_files:
+                cache_file = max(contents_files, key=lambda p: p.stat().st_mtime)
+                log.info(f"IERS cache file found: {cache_file}")
+                # Check file age
+                file_age_days = (time.time() - cache_file.stat().st_mtime) / 86400
+                log.info(f"IERS cache age: {file_age_days:.1f} days")
+            else:
+                log.warning("No IERS cache files found in cache directory")
+        else:
+            log.warning(f"Cache URL directory does not exist yet: {cache_url_dir}")
+
+        # Copy pre-warmed cache to job folder for cluster workers
+        # This ensures workers can access the cache even if they can't access the shared location
+        log.info("Copying astropy cache to job folder for cluster workers...")
+        shared_cache_dir = Path(
+            cache_directory
+        ).parent  # This is PREDICT_INPUTS.parent / ".astropy_cache"
+        job_cache_dir = current_path / ".astropy_cache"
+
+        try:
+            if shared_cache_dir.exists():
+                # Remove existing job cache if it exists
+                if job_cache_dir.exists():
+                    log.debug(f"Removing existing job cache directory: {job_cache_dir}")
+                    shutil.rmtree(job_cache_dir)
+
+                # Copy the entire cache directory to job folder
+                log.debug(f"Copying cache from {shared_cache_dir} to {job_cache_dir}")
+                shutil.copytree(shared_cache_dir, job_cache_dir)
+                log.info(
+                    f"Successfully copied astropy cache to job folder: {job_cache_dir}"
+                )
+            else:
+                log.warning(
+                    f"Shared cache directory does not exist: {shared_cache_dir}"
+                )
+        except Exception as e:
+            log.error(f"Failed to copy cache to job folder: {e}")
+            log.warning("Cluster workers may not have access to pre-warmed cache")
+
         log.debug("***********************************************************")
 
         job.update(
@@ -805,6 +862,7 @@ def submit_tasks(jobid: int):
                         PREDICT_STEP,
                         LEAP_SECOND,
                         BSP_PLANETARY,
+                        str(current_path),  # Job path for cache location
                     ),
                     stderr=f"{path}/{name}.err",
                     stdout=f"{path}/{name}.out",

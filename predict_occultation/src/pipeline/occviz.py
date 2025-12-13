@@ -90,7 +90,7 @@ def _transform_coordinates(r, x, y, time, loncen, latcen, true_idx, r2):
     """
     if (not time.isscalar) and (len(time) == len(r2)):
         time, loncen, latcen = time[true_idx], loncen[true_idx], latcen[true_idx]
-        site_cen = EarthLocation(loncen * u.deg, latcen * u.deg)
+        site_cen = EarthLocation(loncen * u.deg, latcen * u.deg, 0 * u.m)
         itrs_cen = site_cen.get_itrs(obstime=time)
         gcrs_cen = itrs_cen.transform_to(GCRS(obstime=time))
         center_frame = SkyOffsetFrame(origin=gcrs_cen)
@@ -106,7 +106,7 @@ def _transform_coordinates(r, x, y, time, loncen, latcen, true_idx, r2):
             n_coord = new_pos.transform_to(GCRS(obstime=time))
             n_itrs = n_coord.transform_to(ITRS(obstime=time))
             n_site = n_itrs.earth_location
-            n_site = EarthLocation(n_site.lon, n_site.lat, 0)
+            n_site = EarthLocation(n_site.lon, n_site.lat, 0 * u.m)
             itrs_site = n_site.get_itrs(obstime=time)
             gcrs_site = itrs_site.transform_to(GCRS(obstime=time))
             target1 = gcrs_site.transform_to(center_frame)
@@ -473,7 +473,9 @@ def _check_nighttime(location, instant):
         True if the occultation event occurs during nighttime, False otherwise.
     """
     try:
-        sun = get_sun(instant)
+        # PERFORMANCE: Use cached sun position (sun moves ~1°/day, safe to cache by day)
+        jd_int = int(instant.jd)
+        sun = _get_sun_cached(jd_int)
         sun_lat = sun.dec
         sun_lon = sun.ra - instant.sidereal_time("mean", "greenwich")
         sun_theta = np.arccos(

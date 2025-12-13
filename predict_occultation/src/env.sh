@@ -12,6 +12,24 @@ then
 
     ulimit -s 100000
     ulimit -u 100000
+
+    # Configure astropy cache on lead node (before Python imports astropy)
+    # Use shared filesystem location based on PREDICT_INPUTS
+    if [ -z "${XDG_CACHE_HOME:-}" ] && [ -n "${PREDICT_INPUTS:-}" ]; then
+        cache_base_dir=$(dirname "$PREDICT_INPUTS")/.astropy_cache
+        export XDG_CACHE_HOME=${cache_base_dir}
+        mkdir -p ${XDG_CACHE_HOME}/astropy
+        echo "XDG_CACHE_HOME set to: ${XDG_CACHE_HOME}"
+    fi
+
+    # Propagate monitoring environment variables if they exist
+    # These need to be in environment when get_config() runs on lead node
+    if [ -n "${BENCHMARK_ENABLED:-}" ]; then
+        export BENCHMARK_ENABLED="${BENCHMARK_ENABLED}"
+    fi
+    if [ -n "${RESOURCE_MONITOR:-}" ]; then
+        export RESOURCE_MONITOR="${RESOURCE_MONITOR}"
+    fi
 fi
 
 echo "REMOTE_PIPELINE_ROOT : ${PIPELINE_ROOT}"
