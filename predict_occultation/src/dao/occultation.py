@@ -87,16 +87,12 @@ class OccultationDao(DBBase):
 
         engine = self.get_db_engine()
         with engine.connect() as conn:
-            # Use larger chunksize to reduce number of INSERT statements
-            # This reduces lock contention on hash_id unique constraint
-            # Default pandas chunksize is ~1000, using 5000 to batch more rows per INSERT
             rowcount = df.to_sql(
                 "tno_occultation",
                 con=conn,
                 if_exists="append",
                 method=occultations_upsert,
                 index=False,
-                chunksize=5000,  # Process 5000 rows per INSERT statement
             )
 
             return rowcount
