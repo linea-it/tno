@@ -485,12 +485,136 @@ def submit_tasks(jobid: int):
         log.debug("Current Path: [%s]" % current_path)
         log.debug("DEBUG: [%s]" % DEBUG)
 
-        # Get the path to the currently used cache directory
-        log.debug("***********************************************************")
+        # Verify IERS cache exists before using it
+        # CRITICAL: Workers on cluster have no internet access - cache must exist!
+        parsl_env = os.getenv("PARSL_ENV", "local")
         cache_directory = config.get_cache_dir()
-        log.debug(f"Astropy is using the following cache directory: {cache_directory}")
+        cache_path = Path(cache_directory)
+        download_dir = cache_path / "download"
+
+        log.info("============================================================")
+        log.info("IERS Cache Verification")
+        log.info(f"PARSL_ENV: {parsl_env}")
+        log.info(f"Cache directory: {cache_directory}")
+        log.info(f"ASTROPY_CACHE_DIR: {os.getenv('ASTROPY_CACHE_DIR', 'not set')}")
+        log.info(f"CACHE_DIR: {os.getenv('CACHE_DIR', 'not set')}")
+        log.info("============================================================")
+
+        cache_exists = False
+        cache_file_path = None
+        cache_file_size = 0
+
+        if download_dir.exists():
+            # Check known IERS cache path (common hash: 12c1b04d92e4e66b3df6fbd0b137d06d)
+            known_cache_path = (
+                download_dir / "url" / "12c1b04d92e4e66b3df6fbd0b137d06d" / "contents"
+            )
+            if known_cache_path.exists() and known_cache_path.is_file():
+                file_size = known_cache_path.stat().st_size
+                if file_size > 1000000:  # IERS files are typically > 1MB
+                    cache_exists = True
+                    cache_file_path = known_cache_path
+                    cache_file_size = file_size
+                    log.info(
+                        f"✓ IERS cache found (known path): {known_cache_path.relative_to(cache_path)} ({cache_file_size} bytes)"
+                    )
+
+            # If not found in known path, search for large files (>1MB)
+            if not cache_exists:
+                try:
+                    large_files = [
+                        f
+                        for f in download_dir.rglob("*")
+                        if f.is_file() and f.stat().st_size > 1000000
+                    ]
+                    if large_files:
+                        cache_exists = True
+                        cache_file_path = large_files[0]
+                        cache_file_size = cache_file_path.stat().st_size
+                        log.info(
+                            f"✓ IERS cache found (search): {cache_file_path.relative_to(cache_path)} ({cache_file_size} bytes)"
+                        )
+                except Exception as e:
+                    log.error(f"Error checking cache directory: {e}")
+                    import traceback
+
+                    log.debug(traceback.format_exc())
+        else:
+            log.warning(f"Cache download directory does not exist: {download_dir}")
+
+        if not cache_exists:
+            if parsl_env == "linea":
+                log.error("=" * 60)
+                log.error("CRITICAL ERROR: IERS cache not found!")
+                log.error(f"Cache directory checked: {cache_directory}")
+                log.error(f"Download directory: {download_dir}")
+                log.error("")
+                log.error("Workers on cluster have NO internet access.")
+                log.error(
+                    "Cache warming must be executed in entrypoint.sh before workers start."
+                )
+                log.error("Check logs: /app/logs/cache.log")
+                log.error("=" * 60)
+                raise RuntimeError(
+                    "IERS cache not found! Cache warming must be executed in entrypoint.sh "
+                    "before workers start. Workers on cluster have no internet access."
+                )
+            else:
+                # For local environment, attempt automatic cache warming
+                log.warning(
+                    "IERS cache not found. Attempting automatic cache warming (local only)..."
+                )
+                cache_dir = os.getenv("CACHE_DIR")
+                if cache_dir:
+                    try:
+                        import subprocess
+
+                        result = subprocess.run(
+                            [
+                                "python3",
+                                "/app/src/warm_cache.py",
+                                "--cache-dir",
+                                cache_dir,
+                            ],
+                            capture_output=True,
+                            text=True,
+                            timeout=60,
+                        )
+                        if result.returncode != 0:
+                            log.error(f"Cache warming failed: {result.stderr}")
+                            raise RuntimeError(
+                                "Failed to warm IERS cache. Cannot proceed without cache."
+                            )
+                        log.info("✓ Cache warming completed successfully")
+
+                        # Re-verify cache after warming
+                        if download_dir.exists():
+                            large_files_after = [
+                                f
+                                for f in download_dir.rglob("*")
+                                if f.is_file() and f.stat().st_size > 1000000
+                            ]
+                            if large_files_after:
+                                cache_exists = True
+                                cache_file_path = large_files_after[0]
+                                cache_file_size = cache_file_path.stat().st_size
+                                log.info(
+                                    f"✓ Cache verified after warming: {cache_file_path.relative_to(cache_path)} ({cache_file_size} bytes)"
+                                )
+                    except Exception as e:
+                        log.error(f"Could not warm cache: {e}")
+                        import traceback
+
+                        log.debug(traceback.format_exc())
+                        raise RuntimeError(f"Failed to warm IERS cache: {e}")
+                else:
+                    raise RuntimeError("CACHE_DIR not set. Cannot warm cache.")
+
+        # Open IERS table (should use existing cache - no download attempted)
+        log.info("Opening IERS table (using existing cache, no download)...")
         iers_a = IERS_Auto.open()
-        log.debug("***********************************************************")
+        log.info(f"IERS table loaded successfully. Length: {len(iers_a)}")
+        log.info("============================================================")
 
         job.update(
             {
