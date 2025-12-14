@@ -3,6 +3,32 @@
 echo "Activating py3 environment"
 conda activate py3
 
+# ============================================================
+# CONFIGURAR CACHE DO ASTROPY
+# Prioridade: 1. CACHE_DIR do .env, 2. Padrão baseado em PARSL_ENV
+# ============================================================
+if [[ -z "$CACHE_DIR" ]]; then
+    if [[ "$PARSL_ENV" = "linea" ]]; then
+        # Para linea: cache no Lustre
+        if [[ -n "$REMOTE_PIPELINE_ROOT" ]]; then
+            export CACHE_DIR="${REMOTE_PIPELINE_ROOT}/cache"
+        else
+            export CACHE_DIR="/app/cache"  # fallback
+        fi
+    else
+        # Para local: cache dentro do container
+        export CACHE_DIR="/app/cache"
+    fi
+fi
+
+export XDG_CACHE_HOME=${CACHE_DIR}
+export ASTROPY_CACHE_DIR=${CACHE_DIR}/astropy
+
+# Criar diretório de cache se não existir
+mkdir -p ${ASTROPY_CACHE_DIR}
+
+echo "Cache directory: ${CACHE_DIR}"
+echo "PARSL_ENV: ${PARSL_ENV}"
 
 if [[ "$PARSL_ENV" = "linea" ]]
 then
