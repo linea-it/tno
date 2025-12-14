@@ -40,6 +40,41 @@ def get_config(key, jobpath):
         # Linea DB portal admin
         admin_db_uri = os.getenv("DB_ADMIN_URI")
 
+        # Meta 1.2: Diretório de cache compartilhado no Lustre
+        cache_dir = pipeline_root / "cache"
+        astropy_cache_dir = cache_dir / "astropy"
+
+        # CRITICAL: Verify cache exists before configuring Parsl
+        # Cache must be warmed in entrypoint.sh before any jobs are submitted
+        if not astropy_cache_dir.exists():
+            raise RuntimeError(
+                f"IERS cache directory does not exist: {astropy_cache_dir}\n"
+                "Cache warming must be executed in entrypoint.sh before Parsl is configured.\n"
+                "Workers on cluster have no internet access and require pre-warmed cache."
+            )
+
+        # Verify IERS cache file exists (typically > 1MB)
+        # CRITICAL: This check prevents Parsl from being configured if cache is missing
+        download_dir = astropy_cache_dir / "download"
+        if download_dir.exists():
+            # Look for large files (>1MB) - IERS files are typically large
+            cache_files = list(download_dir.rglob("*"))
+            large_files = [
+                f for f in cache_files if f.is_file() and f.stat().st_size > 1000000
+            ]
+            if not large_files:
+                raise RuntimeError(
+                    f"IERS cache file not found in {download_dir}\n"
+                    "Cache warming must be executed in entrypoint.sh before Parsl is configured.\n"
+                    "Workers on cluster have no internet access and require pre-warmed cache."
+                )
+        else:
+            raise RuntimeError(
+                f"Cache download directory does not exist: {download_dir}\n"
+                "Cache warming must be executed in entrypoint.sh before Parsl is configured.\n"
+                "Workers on cluster have no internet access and require pre-warmed cache."
+            )
+
         # Env.sh que sera executado antes de iniciar as tasks no cluster
         cluster_env_sh = pipeline_pred_occ.joinpath("cluster.sh")
 
@@ -83,6 +118,13 @@ def get_config(key, jobpath):
                             ),
                             "PREDICT_OUTPUTS": str(predict_outputs),
                             "PREDICT_INPUTS": str(predict_inputs),
+                            "CACHE_DIR": str(
+                                cache_dir
+                            ),  # Meta 1.2: Cache compartilhado
+                            "XDG_CACHE_HOME": str(cache_dir),  # Meta 1.2: Para Astropy
+                            "ASTROPY_CACHE_DIR": str(
+                                cache_dir / "astropy"
+                            ),  # Meta 1.2: Cache específico do Astropy
                             "DB_CATALOG_URI": db_uri,
                             "DB_ADMIN_URI": admin_db_uri,
                         },
@@ -92,6 +134,10 @@ def get_config(key, jobpath):
         }
 
     if parsl_env == "local":
+        # Para ambiente 'local' - cache dentro do container
+        cache_dir = Path("/app/cache")
+        # NÃO criar diretório aqui - já deve existir do warming
+
         executors = {
             "local": HighThroughputExecutor(
                 label="local",
