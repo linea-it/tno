@@ -41,6 +41,16 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    # DEBUG_CACHE_VERIFICATION_START
+    print("=== DEBUG: run.py - Environment Variables Check ===")
+    print(f"DEBUG: CACHE_DIR from env: '{os.getenv('CACHE_DIR', 'NOT_SET')}'")
+    print(f"DEBUG: XDG_CACHE_HOME from env: '{os.getenv('XDG_CACHE_HOME', 'NOT_SET')}'")
+    print(
+        f"DEBUG: ASTROPY_CACHE_DIR from env: '{os.getenv('ASTROPY_CACHE_DIR', 'NOT_SET')}'"
+    )
+    print(f"DEBUG: PARSL_ENV from env: '{os.getenv('PARSL_ENV', 'NOT_SET')}'")
+    # DEBUG_CACHE_VERIFICATION_END
+
     print("******************************************************************")
     print("HOME: %s" % os.environ.get("HOME"))
     print("ASTROPY CACHE: %s" % os.environ.get("XDG_CACHE_HOME"))
@@ -48,14 +58,36 @@ if __name__ == "__main__":
     # CRITICAL: Configure cache environment variables BEFORE importing Astropy
     # Astropy reads these variables at import time
     cache_dir_env = os.getenv("CACHE_DIR")
+
+    # DEBUG_CACHE_VERIFICATION_START
+    print(f"DEBUG: cache_dir_env from os.getenv('CACHE_DIR'): '{cache_dir_env}'")
+    # DEBUG_CACHE_VERIFICATION_END
+
     if cache_dir_env:
         os.environ["XDG_CACHE_HOME"] = cache_dir_env
         os.environ["ASTROPY_CACHE_DIR"] = os.path.join(cache_dir_env, "astropy")
+        # DEBUG_CACHE_VERIFICATION_START
+        print(f"DEBUG: Set XDG_CACHE_HOME to: {os.environ['XDG_CACHE_HOME']}")
+        print(f"DEBUG: Set ASTROPY_CACHE_DIR to: {os.environ['ASTROPY_CACHE_DIR']}")
+        # DEBUG_CACHE_VERIFICATION_END
+    else:
+        # DEBUG_CACHE_VERIFICATION_START
+        print("DEBUG: WARNING - CACHE_DIR not found in environment!")
+        print("DEBUG: Astropy will use default cache location")
+        # DEBUG_CACHE_VERIFICATION_END
 
     import astropy.config as config
 
     # Get the path to the currently used cache directory
     cache_directory = config.get_cache_dir()
+
+    # DEBUG_CACHE_VERIFICATION_START
+    print(f"DEBUG: Astropy config.get_cache_dir() returned: '{cache_directory}'")
+    print(
+        f"DEBUG: Expected cache dir: '{os.path.join(cache_dir_env, 'astropy') if cache_dir_env else 'DEFAULT'}'"
+    )
+    # DEBUG_CACHE_VERIFICATION_END
+
     print(f"Astropy is using the following cache directory: {cache_directory}")
 
     print("******************************************************************")

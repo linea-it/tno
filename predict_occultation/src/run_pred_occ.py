@@ -16,9 +16,29 @@ from time import sleep
 # CRITICAL: Configure cache environment variables BEFORE importing Astropy
 # Astropy reads these variables at import time
 cache_dir_env = os.getenv("CACHE_DIR")
+
+# DEBUG_CACHE_VERIFICATION_START
+print("=== DEBUG: run_pred_occ.py - Before Astropy Import ===")
+print(f"DEBUG: CACHE_DIR from env: '{cache_dir_env}'")
+print(f"DEBUG: XDG_CACHE_HOME from env: '{os.getenv('XDG_CACHE_HOME', 'NOT_SET')}'")
+print(
+    f"DEBUG: ASTROPY_CACHE_DIR from env: '{os.getenv('ASTROPY_CACHE_DIR', 'NOT_SET')}'"
+)
+print(f"DEBUG: PARSL_ENV from env: '{os.getenv('PARSL_ENV', 'NOT_SET')}'")
+# DEBUG_CACHE_VERIFICATION_END
+
 if cache_dir_env:
     os.environ["XDG_CACHE_HOME"] = cache_dir_env
     os.environ["ASTROPY_CACHE_DIR"] = os.path.join(cache_dir_env, "astropy")
+    # DEBUG_CACHE_VERIFICATION_START
+    print(f"DEBUG: Set XDG_CACHE_HOME to: {os.environ['XDG_CACHE_HOME']}")
+    print(f"DEBUG: Set ASTROPY_CACHE_DIR to: {os.environ['ASTROPY_CACHE_DIR']}")
+    # DEBUG_CACHE_VERIFICATION_END
+else:
+    # DEBUG_CACHE_VERIFICATION_START
+    print("DEBUG: WARNING - CACHE_DIR not found in environment!")
+    print("DEBUG: Astropy will use default cache location")
+    # DEBUG_CACHE_VERIFICATION_END
 
 import astropy.config as config
 import humanize
@@ -499,6 +519,24 @@ def submit_tasks(jobid: int):
         cache_path = Path(cache_directory)
         download_dir = cache_path / "download"
 
+        # DEBUG_CACHE_VERIFICATION_START
+        log.info(
+            "=== DEBUG: run_pred_occ.py submit_tasks - Cache Verification Start ==="
+        )
+        log.info(f"DEBUG: PARSL_ENV: '{parsl_env}'")
+        log.info(f"DEBUG: config.get_cache_dir() returned: '{cache_directory}'")
+        log.info(f"DEBUG: CACHE_DIR from env: '{os.getenv('CACHE_DIR', 'NOT_SET')}'")
+        log.info(
+            f"DEBUG: XDG_CACHE_HOME from env: '{os.getenv('XDG_CACHE_HOME', 'NOT_SET')}'"
+        )
+        log.info(
+            f"DEBUG: ASTROPY_CACHE_DIR from env: '{os.getenv('ASTROPY_CACHE_DIR', 'NOT_SET')}'"
+        )
+        log.info(f"DEBUG: cache_path: '{cache_path}'")
+        log.info(f"DEBUG: download_dir: '{download_dir}'")
+        log.info(f"DEBUG: download_dir.exists(): {download_dir.exists()}")
+        # DEBUG_CACHE_VERIFICATION_END
+
         log.info("============================================================")
         log.info("IERS Cache Verification")
         log.info(f"PARSL_ENV: {parsl_env}")
@@ -618,9 +656,44 @@ def submit_tasks(jobid: int):
                     raise RuntimeError("CACHE_DIR not set. Cannot warm cache.")
 
         # Open IERS table (should use existing cache - no download attempted)
+        # DEBUG_CACHE_VERIFICATION_START
+        cache_mtime_before = None
+        if cache_file_path and cache_file_path.exists():
+            cache_mtime_before = cache_file_path.stat().st_mtime
+            log.info(
+                f"DEBUG: Cache file timestamp before IERS_Auto.open(): {cache_mtime_before}"
+            )
+            log.info(f"DEBUG: Cache file path: {cache_file_path}")
+        else:
+            log.warning("DEBUG: No cache file found before IERS_Auto.open()")
+        # DEBUG_CACHE_VERIFICATION_END
+
         log.info("Opening IERS table (using existing cache, no download)...")
         iers_a = IERS_Auto.open()
         log.info(f"IERS table loaded successfully. Length: {len(iers_a)}")
+
+        # DEBUG_CACHE_VERIFICATION_START
+        if (
+            cache_file_path
+            and cache_file_path.exists()
+            and cache_mtime_before is not None
+        ):
+            cache_mtime_after = cache_file_path.stat().st_mtime
+            if cache_mtime_before == cache_mtime_after:
+                log.info(
+                    "✓ DEBUG: CONFIRMED - IERS cache was read from existing file (no download)"
+                )
+            else:
+                log.warning(f"⚠ DEBUG: WARNING - Cache file timestamp changed!")
+                log.warning(
+                    f"DEBUG: Before: {cache_mtime_before}, After: {cache_mtime_after}"
+                )
+                log.warning("DEBUG: This indicates a download may have occurred")
+        elif cache_file_path and cache_file_path.exists():
+            log.info("DEBUG: Cache file exists but timestamp check not available")
+        log.info("=== DEBUG: Cache Verification End ===")
+        # DEBUG_CACHE_VERIFICATION_END
+
         log.info("============================================================")
 
         job.update(
