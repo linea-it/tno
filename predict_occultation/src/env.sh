@@ -5,16 +5,17 @@ conda activate py3
 
 # ============================================================
 # CONFIGURAR CACHE DO ASTROPY
-# Prioridade: 1. CACHE_DIR do .env, 2. Padrão baseado em PARSL_ENV
+# Depende exclusivamente de PARSL_ENV
 # ============================================================
 if [[ -z "$CACHE_DIR" ]]; then
     if [[ "$PARSL_ENV" = "linea" ]]; then
-        # Para linea: cache no Lustre
-        if [[ -n "$REMOTE_PIPELINE_ROOT" ]]; then
-            export CACHE_DIR="${REMOTE_PIPELINE_ROOT}/cache"
-        else
-            export CACHE_DIR="/app/cache"  # fallback
+        # Para linea: cache no Lustre via REMOTE_PIPELINE_ROOT
+        if [[ -z "$REMOTE_PIPELINE_ROOT" ]]; then
+            echo "ERROR: REMOTE_PIPELINE_ROOT is not set for 'linea' environment!"
+            echo "       This must be configured in .env file or docker-compose.yml"
+            exit 1
         fi
+        export CACHE_DIR="${REMOTE_PIPELINE_ROOT}/cache"
     else
         # Para local: cache dentro do container
         export CACHE_DIR="/app/cache"
@@ -38,14 +39,14 @@ then
 
     ulimit -s 100000
     ulimit -u 100000
-fi
 
-echo "REMOTE_PIPELINE_ROOT : ${PIPELINE_ROOT}"
-echo "PIPELINE_PREDIC_OCC  : ${PIPELINE_PREDIC_OCC}"
-echo "PIPELINE_PATH        : ${PIPELINE_PATH}"
-echo "PREDICT_OUTPUTS      : ${PREDICT_OUTPUTS}"
-echo "PREDICT_INPUTS       : ${PREDICT_INPUTS}"
-echo "REMOTE_CONDA_PATH    : ${REMOTE_CONDA_PATH}"
+    echo "REMOTE_PIPELINE_ROOT : ${REMOTE_PIPELINE_ROOT}"
+    echo "PIPELINE_PREDIC_OCC  : ${PIPELINE_PREDIC_OCC}"
+    echo "PIPELINE_PATH        : ${PIPELINE_PATH}"
+    echo "PREDICT_OUTPUTS      : ${PREDICT_OUTPUTS}"
+    echo "PREDICT_INPUTS       : ${PREDICT_INPUTS}"
+    echo "REMOTE_CONDA_PATH    : ${REMOTE_CONDA_PATH}"
+fi
 
 export PYTHONPATH=${PYTHONPATH}:${PIPELINE_ROOT}:${PIPELINE_PREDIC_OCC}:${PIPELINE_PATH}
 echo "PYTHONPATH           ${PYTHONPATH}"

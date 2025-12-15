@@ -13,6 +13,13 @@ from io import StringIO
 from pathlib import Path
 from time import sleep
 
+# CRITICAL: Configure cache environment variables BEFORE importing Astropy
+# Astropy reads these variables at import time
+cache_dir_env = os.getenv("CACHE_DIR")
+if cache_dir_env:
+    os.environ["XDG_CACHE_HOME"] = cache_dir_env
+    os.environ["ASTROPY_CACHE_DIR"] = os.path.join(cache_dir_env, "astropy")
+
 import astropy.config as config
 import humanize
 import pandas as pd

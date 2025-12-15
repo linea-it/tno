@@ -26,9 +26,20 @@ class FlushFileHandler(logging.FileHandler):
 
 def get_cache_logger():
     """Get standardized logger for cache operations."""
+    # Try /app/logs first (container standard)
     log_dir = Path("/app/logs")
-    log_dir.mkdir(parents=True, exist_ok=True)
     logfile = log_dir / "cache.log"
+
+    # If /app/logs doesn't exist or isn't writable, use cache directory
+    if not log_dir.exists() or not os.access(log_dir, os.W_OK):
+        cache_dir_env = os.getenv("CACHE_DIR")
+        if cache_dir_env:
+            log_dir = Path(cache_dir_env)
+        else:
+            log_dir = Path("/tmp")
+        logfile = log_dir / "cache.log"
+
+    log_dir.mkdir(parents=True, exist_ok=True)
 
     logger = logging.getLogger("cache")
     logger.setLevel(logging.INFO)
