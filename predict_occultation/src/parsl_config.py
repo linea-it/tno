@@ -86,8 +86,7 @@ def get_config(key, jobpath):
             "linea": HighThroughputExecutor(
                 label="linea",
                 worker_logdir_root=str(script_dir),
-                # max_workers=100,
-                # max_workers=2, # Teste escalonamento
+                max_workers=28,
                 provider=SlurmProvider(
                     partition="cpu_long",
                     nodes_per_block=1,  # number of nodes
