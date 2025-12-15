@@ -9,29 +9,17 @@ echo "Checking mandatory environment variables."
 
 # ============================================================
 # CRIAR DIRETÓRIO DE CACHE SEMPRE (antes de qualquer coisa)
+# CACHE_DIR deve ser definido no arquivo .env
+# Este diretório de cache é usado para todos os tipos de cache (Astropy, etc.)
 # ============================================================
-if [[ "$PARSL_ENV" = "linea" ]]; then
-    # Verificar se REMOTE_PIPELINE_ROOT está definido e acessível
-    if [[ -z "$REMOTE_PIPELINE_ROOT" ]]; then
-        echo "ERROR: REMOTE_PIPELINE_ROOT is not set for 'linea' environment!"
-        exit 1
-    fi
-
-    CACHE_DIR="${REMOTE_PIPELINE_ROOT}/cache"
-
-    # Verificar se o diretório base está acessível (Lustre montado)
-    if [[ ! -d "$REMOTE_PIPELINE_ROOT" ]]; then
-        echo "ERROR: REMOTE_PIPELINE_ROOT directory not accessible: ${REMOTE_PIPELINE_ROOT}"
-        echo "       Ensure Lustre filesystem is mounted in the container."
-        exit 1
-    fi
-
-    echo "Cache directory (Lustre): ${CACHE_DIR}"
-    echo "REMOTE_PIPELINE_ROOT: ${REMOTE_PIPELINE_ROOT}"
-else
-    CACHE_DIR="/app/cache"
-    echo "Cache directory (local): ${CACHE_DIR}"
+if [[ -z "$CACHE_DIR" ]]; then
+    echo "ERROR: CACHE_DIR is not set!"
+    echo "       CACHE_DIR must be defined in .env file."
+    echo "       This cache directory is used for all types of cache (Astropy, etc.)"
+    exit 1
 fi
+
+echo "Cache directory: ${CACHE_DIR}"
 
 echo "Creating cache directory: ${CACHE_DIR}"
 mkdir -p ${CACHE_DIR}
