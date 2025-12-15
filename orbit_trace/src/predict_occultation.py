@@ -177,6 +177,18 @@ def remove_job_directory(jobid):
     # Apaga o diretorio usando rm pq o diretorio tem links simbolicos.
     job_path = get_job_path(jobid)
     print(f"Clear Job path: [{job_path}]")
+
+    # Close all file handlers to release log files before deletion
+    import logging
+
+    for logger in [
+        logging.getLogger(name) for name in logging.Logger.manager.loggerDict
+    ] + [logging.getLogger()]:
+        for handler in logger.handlers[:]:
+            if isinstance(handler, logging.FileHandler):
+                handler.close()
+                logger.removeHandler(handler)
+
     try:
         shutil.rmtree(job_path, ignore_errors=False)
     except:

@@ -7,6 +7,8 @@ set -o pipefail
 # exits if any of your variables is not set
 set -o nounset
 
+# Set umask to ensure group-writable directories (matching predict_occultation pattern)
+umask ug=rwx,o=r
 
 echo "Running Entrypoint.sh"
 
@@ -19,8 +21,8 @@ fi
 echo "Cache directory: ${CACHE_DIR}"
 
 echo "Creating cache directory: ${CACHE_DIR}"
-mkdir -p ${CACHE_DIR}
-mkdir -p ${CACHE_DIR}/cartopy
+mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
+mkdir -p ${CACHE_DIR}/cartopy || echo "WARNING: Could not create cartopy subdirectory"
 
 # Set CARTOPY_DATA_DIR environment variable
 export CARTOPY_DATA_DIR=${CACHE_DIR}/cartopy
