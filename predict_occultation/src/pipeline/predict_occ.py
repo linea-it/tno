@@ -10,6 +10,16 @@ from pipeline.library import count_lines, read_asteroid_json, write_asteroid_jso
 from pipeline.occ_path_coeff import run_occultation_path_coeff
 from pipeline.run_praia_occ import start_praia_occ
 
+# BENCHMARK_MODULE_START - Easy to remove: delete this import and the benchmark call
+if os.getenv("BENCHMARK_ENABLED", "").lower() in ("true", "1", "yes"):
+    try:
+        from pipeline.benchmark import run_benchmark
+    except ImportError:
+        run_benchmark = None
+else:
+    run_benchmark = None
+# BENCHMARK_MODULE_END
+
 
 def main(
     name: str,
@@ -156,6 +166,74 @@ def main(
             )
             # obj_data["calculate_path_coeff"] = path_coef_result
             a.set_calculate_path_coeff(path_coef_result)
+
+            # BENCHMARK_CALL_START - Easy to remove: delete this block
+            # Run benchmarking after path_coeff completes (if enabled)
+            # This monitors both PRAIA and path_coeff (astropy-heavy) stages
+            if run_benchmark is not None:
+                try:
+                    # Get occultation count for benchmark
+                    occ_count = None
+                    if os.path.exists(occultation_file):
+                        occ_count = count_lines(occultation_file) - 1
+
+                    # Extract path_coeff timing from result
+                    path_coeff_start = None
+                    path_coeff_finish = None
+                    path_coeff_exec_time = None
+                    path_coeff_detailed_timings = None
+                    if path_coef_result and isinstance(path_coef_result, dict):
+                        if "start" in path_coef_result:
+                            try:
+                                path_coeff_start = datetime.fromisoformat(
+                                    path_coef_result["start"].replace("Z", "+00:00")
+                                )
+                            except (ValueError, AttributeError):
+                                pass
+                        if "finish" in path_coef_result:
+                            try:
+                                path_coeff_finish = datetime.fromisoformat(
+                                    path_coef_result["finish"].replace("Z", "+00:00")
+                                )
+                            except (ValueError, AttributeError):
+                                pass
+                        if "exec_time" in path_coef_result:
+                            path_coeff_exec_time = path_coef_result["exec_time"]
+                        # Get detailed timings if available
+                        if "benchmark_timings" in path_coef_result:
+                            path_coeff_detailed_timings = path_coef_result[
+                                "benchmark_timings"
+                            ]
+
+                    # Get catalog query timing from run_praia_occ module
+                    catalog_query_timing = None
+                    try:
+                        from pipeline.run_praia_occ import get_benchmark_timings
+
+                        praia_timings = get_benchmark_timings()
+                        if praia_timings and "catalog_query" in praia_timings:
+                            catalog_query_timing = praia_timings["catalog_query"]
+                    except (ImportError, AttributeError):
+                        pass
+
+                    run_benchmark(
+                        data_dir=data_dir,
+                        asteroid_name=temp_data["name"],
+                        task_id=task_id,
+                        praia_start=praia_t0,
+                        praia_finish=praia_t1,
+                        praia_exec_time=praia_td.total_seconds(),
+                        occultation_count=occ_count,
+                        path_coeff_start=path_coeff_start,
+                        path_coeff_finish=path_coeff_finish,
+                        path_coeff_exec_time=path_coeff_exec_time,
+                        catalog_query_timing=catalog_query_timing,
+                        path_coeff_detailed_timings=path_coeff_detailed_timings,
+                    )
+                except Exception as e:
+                    # Don't fail pipeline if benchmarking fails
+                    print(f"Warning: Benchmarking failed: {e}")
+            # BENCHMARK_CALL_END
 
             # Consolida os resultados, adiciona informações de provenance
             # Formata o arquivo de saida, mas não insere as prediçoes no banco de dados.

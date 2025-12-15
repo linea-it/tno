@@ -115,6 +115,18 @@ def obter_catalogo_de_estrelas(
     return df_catalog
 
 
+# BENCHMARK_FUNCTION_START - Easy to remove: delete this function
+def get_benchmark_timings():
+    """
+    Returns benchmark timing data for catalog query.
+    This function is used by the benchmarking module to retrieve timing information.
+    """
+    return globals().get("_benchmark_timings", {})
+
+
+# BENCHMARK_FUNCTION_END
+
+
 def start_praia_occ(
     name,
     start_date,
@@ -237,6 +249,13 @@ def start_praia_occ(
 
     # (Removed the commented-out block entirely)
 
+    # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
+    from datetime import datetime as dt
+    from datetime import timezone
+
+    query_start = dt.now(tz=timezone.utc)
+    # BENCHMARK_TIMING_END
+
     df_catalog = obter_catalogo_de_estrelas(
         dao=dao,
         ra=ra,
@@ -247,6 +266,19 @@ def start_praia_occ(
         centers_filename=centers_filename,
         centers_deg_filename=centers_deg_filename,
     )
+
+    # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
+    query_finish = dt.now(tz=timezone.utc)
+    query_exec_time = (query_finish - query_start).total_seconds()
+    # Store timing in module-level variable for benchmark access
+    if "_benchmark_timings" not in globals():
+        globals()["_benchmark_timings"] = {}
+    globals()["_benchmark_timings"]["catalog_query"] = {
+        "start": query_start.isoformat(),
+        "finish": query_finish.isoformat(),
+        "exec_time": query_exec_time,
+    }
+    # BENCHMARK_TIMING_END
 
     print("Stars: [%s]" % df_catalog.shape[0])
     # Creates a file in the specific format of praia_occ
