@@ -791,12 +791,20 @@ def submit_tasks(jobid: int):
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
         parsl_conf.executors[0].provider.init_blocks = int(num_blocks_to_init)
+        parsl_conf.executors[0].provider.max_blocks = int(
+            max_nodes
+        )  # Allow scaling up to MAX_NODES
 
         log.info(
             f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
         )
         log.info(
-            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}"
+            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}, "
+            f"Max Blocks: {parsl_conf.executors[0].provider.max_blocks}"
+        )
+        log.info(
+            f"Parsl will scale incrementally from min_blocks=1 up to max_blocks={parsl_conf.executors[0].provider.max_blocks} "
+            f"as tasks are submitted (currently {num_asteroids} asteroids queued)"
         )
 
         parsl.clear()

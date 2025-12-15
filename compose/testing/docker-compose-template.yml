@@ -14,8 +14,11 @@ services:
       - ${TNO_PROJ_DIR:-.}/local_settings.py:/usr/src/app/coreAdmin/local_settings.py
       - ${TNO_PROJ_DIR:-.}/logs:/logs
       - ${TNO_PROJ_DIR:-.}/data:/archive
+      - ${TNO_PROJ_DIR:-.}/data/cache:/app/cache
     env_file:
       - .env
+    environment:
+      - CACHE_DIR=/app/cache
     command: /start.sh
     depends_on:
       - rabbit
@@ -54,8 +57,12 @@ services:
     volumes:
       - ${TNO_PROJ_DIR:-.}:${TNO_PROJ_DIR:-.}
       - ${TNO_SSHKEY}:/home/app.tno/.ssh/id_rsa
+      - ${TNO_PROJ_DIR:-.}/data/cache:/app/cache
+      - ${TNO_PROJ_DIR:-.}/logs:/app/logs
     env_file:
       - .env
+    environment:
+      - CACHE_DIR=/app/cache
 
   # Celery Workers (Tarefas do backend em background)
   celery_worker:
