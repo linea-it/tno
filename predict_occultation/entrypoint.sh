@@ -22,8 +22,8 @@ fi
 echo "Cache directory: ${CACHE_DIR}"
 
 echo "Creating cache directory: ${CACHE_DIR}"
-mkdir -p ${CACHE_DIR}
-mkdir -p ${CACHE_DIR}/astropy
+mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
+mkdir -p ${CACHE_DIR}/astropy || echo "WARNING: Could not create astropy subdirectory"
 
 if [[ "$PARSL_ENV" = "linea" ]]
 then

@@ -382,7 +382,16 @@ def main():
 
     logger.info(f"Starting cache warming for: {cache_dir}")
 
-    cache_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+    except (PermissionError, OSError) as e:
+        if cache_dir.exists():
+            logger.warning(
+                f"Cache directory {cache_dir} exists but is not writable: {e}. "
+                "This may cause issues in 'linea' environment where cache is critical."
+            )
+        else:
+            logger.error(f"Failed to create cache directory {cache_dir}: {e}")
 
     success = True
     if not args.skip_astropy:
@@ -412,8 +421,6 @@ def main():
                 "Cache warming completed with warnings (non-critical for local)"
             )
 
-    # Close all handlers to ensure logs are flushed to disk
-    # This is critical to ensure logs are written even if the script exits quickly
     for handler in logger.handlers[:]:
         handler.flush()
         handler.close()

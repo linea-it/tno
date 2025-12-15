@@ -47,14 +47,14 @@ if [ "$cartopy_files" -gt 0 ]; then
     # Create symlink from cartopy's default location to our cache
     CARTOPY_DEFAULT_DIR="${HOME}/.local/share/cartopy"
     if [ ! -d "${CARTOPY_DEFAULT_DIR}" ] || [ ! -L "${CARTOPY_DEFAULT_DIR}" ]; then
-        mkdir -p "$(dirname "${CARTOPY_DEFAULT_DIR}")"
+        mkdir -p "$(dirname "${CARTOPY_DEFAULT_DIR}")" || echo "WARNING: Could not create parent directory for cartopy symlink"
         if [ -d "${CARTOPY_DEFAULT_DIR}" ] && [ ! -L "${CARTOPY_DEFAULT_DIR}" ]; then
             if [ "$(find "${CARTOPY_DEFAULT_DIR}" -type f 2>/dev/null | wc -l)" -gt 0 ]; then
                 cp -r "${CARTOPY_DEFAULT_DIR}"/* "${CACHE_DIR}/cartopy/" 2>/dev/null || true
             fi
-            rm -rf "${CARTOPY_DEFAULT_DIR}"
+            rm -rf "${CARTOPY_DEFAULT_DIR}" || echo "WARNING: Could not remove old cartopy directory"
         fi
-        ln -sf "${CACHE_DIR}/cartopy" "${CARTOPY_DEFAULT_DIR}"
+        ln -sf "${CACHE_DIR}/cartopy" "${CARTOPY_DEFAULT_DIR}" || echo "WARNING: Could not create cartopy symlink"
     fi
 fi
 

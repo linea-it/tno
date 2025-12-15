@@ -114,7 +114,17 @@ def warm_cartopy_cache(
     """
     try:
         cartopy_cache_dir = cache_dir / "cartopy"
-        cartopy_cache_dir.mkdir(parents=True, exist_ok=True)
+        try:
+            cartopy_cache_dir.mkdir(parents=True, exist_ok=True)
+        except PermissionError as e:
+            if cartopy_cache_dir.exists():
+                logger.warning(
+                    f"Cartopy cache directory {cartopy_cache_dir} exists but is not writable: {e}. "
+                    "Skipping cache warming - Cartopy will download data at runtime if needed."
+                )
+                return True
+            else:
+                raise
 
         os.environ["CARTOPY_DATA_DIR"] = str(cartopy_cache_dir)
         logger.info(f"Warming Cartopy cache in: {cartopy_cache_dir}")
@@ -329,7 +339,16 @@ def main():
 
     logger.info(f"Starting cache warming for: {cache_dir}")
 
-    cache_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        cache_dir.mkdir(parents=True, exist_ok=True)
+    except (PermissionError, OSError) as e:
+        if cache_dir.exists():
+            logger.warning(
+                f"Cache directory {cache_dir} exists but is not writable: {e}. "
+                "Cartopy will download data to a writable location at runtime if needed."
+            )
+        else:
+            logger.warning(f"Failed to create cache directory {cache_dir}: {e}")
 
     success = True
     if not args.skip_cartopy:
@@ -349,13 +368,11 @@ def main():
     else:
         logger.warning("Cache warming completed with warnings")
 
-    # Close all handlers to ensure logs are flushed to disk
-    # This is critical to ensure logs are written even if the script exits quickly
     for handler in logger.handlers[:]:
         handler.flush()
         handler.close()
 
-    return 0 if success else 1
+    return 0
 
 
 if __name__ == "__main__":
