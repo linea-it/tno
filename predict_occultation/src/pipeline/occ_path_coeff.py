@@ -116,18 +116,10 @@ def run_occultation_path_coeff(
     calculate_path_coeff = {}
     t0 = dt.now(tz=timezone.utc)
 
-    # BENCHMARK_TIMING_START - Easy to remove: delete timing dict initialization
-    benchmark_timings = {}
-    # BENCHMARK_TIMING_END
-
     try:
         # -------------------------------------------------
         # SPICE Kernel Loading (once per execution)
         # -------------------------------------------------
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        spice_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         loaded_kernels = {spice.kdata(i, "ALL")[0] for i in range(spice.ktotal("ALL"))}
         kernels_to_load = {
             obj_data["bsp_jpl"]["filename"],
@@ -143,22 +135,9 @@ def run_occultation_path_coeff(
         bsp_header = get_bsp_header_values(obj_data["bsp_jpl"]["filename"])
         print(f"BSP header extracted values: {bsp_header}")
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        spice_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["spice_kernel_loading"] = {
-            "start": spice_start.isoformat(),
-            "finish": spice_finish.isoformat(),
-            "exec_time": (spice_finish - spice_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
         # -------------------------------------------------
         # File Reading (once per execution)
         # -------------------------------------------------
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        file_read_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         if not predict_table_path.exists():
             raise FileNotFoundError(
                 f"Predictions file does not exist: {predict_table_path}"
@@ -220,22 +199,9 @@ def run_occultation_path_coeff(
         else:
             print(f"Uncertainties file does not exist: {mag_and_uncert_path}")
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        file_read_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["file_reading"] = {
-            "start": file_read_start.isoformat(),
-            "finish": file_read_finish.isoformat(),
-            "exec_time": (file_read_finish - file_read_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
         # -------------------------------------------------
         # Data Cleaning and Type Conversion (Vectorized)
         # -------------------------------------------------
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        data_cleaning_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         df.rename(
             columns={
                 "occultation_date": "date_time",
@@ -289,22 +255,9 @@ def run_occultation_path_coeff(
             subset=["date_time_obj"], inplace=True
         )  # Drop events with invalid dates
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        data_cleaning_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["data_cleaning"] = {
-            "start": data_cleaning_start.isoformat(),
-            "finish": data_cleaning_finish.isoformat(),
-            "exec_time": (data_cleaning_finish - data_cleaning_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
         # -------------------------------------------------
         # Star Matching using SciPy cKDTree (Optimized)
         # -------------------------------------------------
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        star_matching_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         gaia_coords = df_gaia_csv[["ra", "dec"]].to_numpy()
         star_coords = df[["ra_star_deg", "dec_star_deg"]].to_numpy()
 
@@ -317,22 +270,9 @@ def run_occultation_path_coeff(
         df["e_ra"] = matched_gaia["ra_error"]
         df["e_dec"] = matched_gaia["dec_error"]
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        star_matching_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["star_matching"] = {
-            "start": star_matching_start.isoformat(),
-            "finish": star_matching_finish.isoformat(),
-            "exec_time": (star_matching_finish - star_matching_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
         # -------------------------------------------------
         # Primary Calculations
         # -------------------------------------------------
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        primary_calc_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         julian_dates = to_julian_date(df["date_time_obj"])
 
         # These calculations can be vectorized
@@ -385,20 +325,7 @@ def run_occultation_path_coeff(
             lambda r: safe_moon_fraction(r["date_time"], r["gaia_source_id"]), axis=1
         )
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        primary_calc_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["primary_calculations"] = {
-            "start": primary_calc_start.isoformat(),
-            "finish": primary_calc_finish.isoformat(),
-            "exec_time": (primary_calc_finish - primary_calc_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
         # --- Uncertainty calculations using .apply to fix the ValueError ---
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        uncertainty_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         if has_uncertainties:
             df["e_ra_target"] = ra_cs(julian_dates) / 3.0
             df["e_dec_target"] = dec_cs(julian_dates) / 3.0
@@ -462,19 +389,6 @@ def run_occultation_path_coeff(
             ]:
                 df[col] = np.nan
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        uncertainty_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["uncertainty_calculations"] = {
-            "start": uncertainty_start.isoformat(),
-            "finish": uncertainty_finish.isoformat(),
-            "exec_time": (uncertainty_finish - uncertainty_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        path_coeff_calc_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         path_coeffs_results = df.apply(safe_occ_path_coeff, axis=1)
         path_df = pd.json_normalize(path_coeffs_results.tolist()).set_index(df.index)
         df["occ_path_coeff"] = path_coeffs_results.apply(json.dumps)
@@ -486,17 +400,6 @@ def run_occultation_path_coeff(
         df["occ_path_is_nightside"] = pd.to_numeric(
             path_df.get("nightside"), errors="coerce"
         ).astype("boolean")
-
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        path_coeff_calc_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["path_coeff_calculation"] = {
-            "start": path_coeff_calc_start.isoformat(),
-            "finish": path_coeff_calc_finish.isoformat(),
-            "exec_time": (
-                path_coeff_calc_finish - path_coeff_calc_start
-            ).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
 
         # -------------------------------------------------
         # Add Asteroid and Provenance Data
@@ -579,10 +482,6 @@ def run_occultation_path_coeff(
         # -------------------------------------------------
         # Finalization and Output
         # -------------------------------------------------
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        finalization_start = dt.now(tz=timezone.utc)
-        # BENCHMARK_TIMING_END
-
         df["date_time"] = pd.to_datetime(df["date_time_obj"], utc=True)
 
         df["hash_id"] = df.apply(
@@ -608,15 +507,6 @@ def run_occultation_path_coeff(
         print(f"Writing updated occultation table to: {predict_table_path}")
         df.to_csv(predict_table_path, index=False, sep=";", na_rep="")
 
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        finalization_finish = dt.now(tz=timezone.utc)
-        benchmark_timings["finalization_output"] = {
-            "start": finalization_start.isoformat(),
-            "finish": finalization_finish.isoformat(),
-            "exec_time": (finalization_finish - finalization_start).total_seconds(),
-        }
-        # BENCHMARK_TIMING_END
-
     except Exception as e:
         msg = f"Failed in Path Coef stage. Error: {e}\n{traceback.format_exc()}"
         calculate_path_coeff.update({"message": msg, "success": False})
@@ -633,11 +523,6 @@ def run_occultation_path_coeff(
                 "exec_time": (t1 - t0).total_seconds(),
             }
         )
-        # BENCHMARK_TIMING_START - Easy to remove: delete this timing block
-        # Add detailed timings to the result
-        if benchmark_timings:
-            calculate_path_coeff["benchmark_timings"] = benchmark_timings
-        # BENCHMARK_TIMING_END
         # if "message" not in calculate_path_coeff:
         #     calculate_path_coeff["success"] = True
         #     calculate_path_coeff["message"] = "Path Coef stage completed successfully."

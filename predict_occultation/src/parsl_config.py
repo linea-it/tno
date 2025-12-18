@@ -82,20 +82,11 @@ def get_config(key, jobpath):
         script_dir = pipeline_root.joinpath("script_dir")
         script_dir.mkdir(parents=True, exist_ok=True)
 
-        # Get max_workers from ASTEROIDS_PER_NODE environment variable
-        # This allows dynamic configuration based on workload and node capacity
-        try:
-            asteroids_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 28))
-            max_workers = asteroids_per_node
-        except (ValueError, TypeError):
-            # Fallback to conservative default if ASTEROIDS_PER_NODE is invalid
-            max_workers = 28
-
         executors = {
             "linea": HighThroughputExecutor(
                 label="linea",
                 worker_logdir_root=str(script_dir),
-                max_workers=max_workers,
+                max_workers=28,
                 provider=SlurmProvider(
                     partition="cpu_long",
                     nodes_per_block=1,  # number of nodes
