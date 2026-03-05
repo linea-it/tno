@@ -22,40 +22,16 @@ echo "Cache directory: ${CACHE_DIR}"
 
 echo "Creating cache directory: ${CACHE_DIR}"
 mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
-mkdir -p ${CACHE_DIR}/cartopy || echo "WARNING: Could not create cartopy subdirectory"
 
-# Set CARTOPY_DATA_DIR environment variable
-export CARTOPY_DATA_DIR=${CACHE_DIR}/cartopy
+# Cache warming: Cartopy baixa para o diretório padrão da biblioteca (não usamos local customizado)
+echo "Cache warming for backend dependencies (Cartopy uses its default location)"
 
-# Cache warming
-echo "Cache warming for backend dependencies"
-
-# Use Python from the container to run cache warming
-if ! python3 /usr/src/app/warm_cache.py --cache-dir ${CACHE_DIR}; then
+if ! python3 /usr/src/app/warm_cache.py; then
     echo "WARNING: Cache warming failed!"
     echo "Check logs: /logs/cache.log"
     echo "Backend may download Cartopy data during execution if needed"
 else
     echo "Cache warming completed successfully"
-fi
-
-# Verify cartopy cache
-cartopy_files=$(find ${CACHE_DIR}/cartopy -type f 2>/dev/null | wc -l)
-if [ "$cartopy_files" -gt 0 ]; then
-    echo "✓ Cartopy cache verified: ${cartopy_files} files found"
-
-    # Create symlink from cartopy's default location to our cache
-    CARTOPY_DEFAULT_DIR="${HOME}/.local/share/cartopy"
-    if [ ! -d "${CARTOPY_DEFAULT_DIR}" ] || [ ! -L "${CARTOPY_DEFAULT_DIR}" ]; then
-        mkdir -p "$(dirname "${CARTOPY_DEFAULT_DIR}")" || echo "WARNING: Could not create parent directory for cartopy symlink"
-        if [ -d "${CARTOPY_DEFAULT_DIR}" ] && [ ! -L "${CARTOPY_DEFAULT_DIR}" ]; then
-            if [ "$(find "${CARTOPY_DEFAULT_DIR}" -type f 2>/dev/null | wc -l)" -gt 0 ]; then
-                cp -r "${CARTOPY_DEFAULT_DIR}"/* "${CACHE_DIR}/cartopy/" 2>/dev/null || true
-            fi
-            rm -rf "${CARTOPY_DEFAULT_DIR}" || echo "WARNING: Could not remove old cartopy directory"
-        fi
-        ln -sf "${CACHE_DIR}/cartopy" "${CARTOPY_DEFAULT_DIR}" || echo "WARNING: Could not create cartopy symlink"
-    fi
 fi
 
 # postgres_ready() {
