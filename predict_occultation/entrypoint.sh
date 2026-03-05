@@ -22,8 +22,13 @@ fi
 echo "Cache directory: ${CACHE_DIR}"
 
 echo "Creating cache directory: ${CACHE_DIR}"
-mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
-mkdir -p ${CACHE_DIR}/astropy || echo "WARNING: Could not create astropy subdirectory"
+if [ "$(id -u)" = "0" ]; then
+    mkdir -p ${CACHE_DIR}/astropy
+    chown -R 1000:1000 ${CACHE_DIR} 2>/dev/null || true
+else
+    mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
+    mkdir -p ${CACHE_DIR}/astropy || echo "WARNING: Could not create astropy subdirectory"
+fi
 
 if [[ "$PARSL_ENV" = "linea" ]]
 then
@@ -38,13 +43,13 @@ then
     echo "============================================================"
     echo "Cache warming for pipeline dependencies"
     echo "Cache directory: ${CACHE_DIR}"
-    echo "Log file: /app/logs/cache.log"
+    echo "Log file: /app/logs/predict_occ_cache.log"
     echo "============================================================"
 
     # Use Python from py3 environment (astropy is installed there)
     if ! /opt/conda/envs/py3/bin/python3 /app/src/warm_cache.py --cache-dir ${CACHE_DIR}; then
         echo "ERROR: Cache warming failed!"
-        echo "Check logs: /app/logs/cache.log"
+        echo "Check logs: /app/logs/predict_occ_cache.log"
         exit 1
     fi
 
@@ -53,7 +58,7 @@ then
     if [ -z "$cache_file" ]; then
         echo "ERROR: IERS cache file not found after warming!"
         echo "       Cache directory: ${CACHE_DIR}/astropy/download"
-        echo "       Check logs: /app/logs/cache.log"
+        echo "       Check logs: /app/logs/predict_occ_cache.log"
         echo "       Workers on cluster cannot download IERS data without cache!"
         exit 1
     fi
@@ -101,7 +106,7 @@ else
     echo "============================================================"
     echo "Cache warming for pipeline dependencies (local)"
     echo "Cache directory: ${CACHE_DIR}"
-    echo "Log file: /app/logs/cache.log"
+    echo "Log file: /app/logs/predict_occ_cache.log"
     echo "============================================================"
 
     # Use Python from py3 environment (astropy is installed there)
@@ -109,12 +114,15 @@ else
     # but we still log it
     if ! /opt/conda/envs/py3/bin/python3 /app/src/warm_cache.py --cache-dir ${CACHE_DIR}; then
         echo "WARNING: Cache warming failed (non-critical for local environment)"
-        echo "Check logs: /app/logs/cache.log"
+        echo "Check logs: /app/logs/predict_occ_cache.log"
         echo "Pipeline may download IERS data during execution if needed"
     else
         echo "Cache warming completed successfully"
     fi
     echo "============================================================"
+    if [ "$(id -u)" = "0" ]; then
+        chown -R 1000:1000 ${CACHE_DIR} 2>/dev/null || true
+    fi
 fi
 
 # Baixa os arquivos bsp planetary e leap_second caso não existam.
@@ -147,4 +155,8 @@ fi
 
 echo "Enviroment ${PARSL_ENV} is ready!"
 
-exec "$@"
+if [ "$(id -u)" = "0" ]; then
+    exec runuser -u vscode -- "$@"
+else
+    exec "$@"
+fi
