@@ -573,7 +573,7 @@ def submit_tasks(jobid: int):
                 log.error(
                     "Cache warming must be executed in entrypoint.sh before workers start."
                 )
-                log.error("Check logs: /app/logs/cache.log")
+                log.error("Check logs: /app/logs/predict_occ_cache.log")
                 log.error("=" * 60)
                 raise RuntimeError(
                     "IERS cache not found! Cache warming must be executed in entrypoint.sh "

@@ -2,7 +2,7 @@
 """
 Cache warming script for Astropy IERS data.
 Runs in the container (with internet access) before workers start.
-Logs to /app/logs/cache.log (inside container).
+Logs to /app/logs/predict_occ_cache.log (inside container).
 """
 
 import argparse
@@ -28,7 +28,7 @@ def get_cache_logger():
     """Get standardized logger for cache operations."""
     # Try /app/logs first (container standard)
     log_dir = Path("/app/logs")
-    logfile = log_dir / "cache.log"
+    logfile = log_dir / "predict_occ_cache.log"
 
     # If /app/logs doesn't exist or isn't writable, use cache directory
     if not log_dir.exists() or not os.access(log_dir, os.W_OK):
@@ -37,7 +37,7 @@ def get_cache_logger():
             log_dir = Path(cache_dir_env)
         else:
             log_dir = Path("/tmp")
-        logfile = log_dir / "cache.log"
+        logfile = log_dir / "predict_occ_cache.log"
 
     log_dir.mkdir(parents=True, exist_ok=True)
 
