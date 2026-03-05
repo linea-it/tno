@@ -10,18 +10,10 @@ import humanize
 import numpy as np
 from django.conf import settings
 from django.db.models import Q
-from tno.models import Occultation
 
-# Configure cartopy to use cache directory
-cache_dir = os.getenv("CACHE_DIR", "/app/cache")
-cartopy_cache_dir = Path(cache_dir) / "cartopy"
-if cartopy_cache_dir.exists():
-    os.environ["CARTOPY_DATA_DIR"] = str(cartopy_cache_dir)
-    import cartopy
-
-    cartopy.config["data_dir"] = str(cartopy_cache_dir)
-
+# Cartopy usa o diretório padrão da biblioteca (cache aquecido no entrypoint)
 from sora.prediction.occmap import plot_occ_map
+from tno.models import Occultation
 
 
 def get_size_of_map_folder():
