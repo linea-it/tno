@@ -21,8 +21,12 @@ services:
       - ${TNO_PROJ_DIR:-.}/logs:/logs
       # Diretório de Dados
       - ${TNO_PROJ_DIR:-.}/data:/archive
+      # Cache (Cartopy, etc.) persistente no host
+      - ${TNO_PROJ_DIR:-.}/data/cache:/app/cache
     env_file:
       - .env
+    environment:
+      - CACHE_DIR=/app/cache
     command: /start.sh
     depends_on:
       - database
