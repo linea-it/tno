@@ -98,41 +98,41 @@ def check_cache_age(cache_file: Path, max_age_days: float = 30.0) -> Tuple[bool,
 
 
 def warm_cartopy_cache(
-    cache_dir: Path,
     logger: logging.Logger,
     force_update: bool = False,
     max_age_days: float = 30.0,
 ) -> bool:
     """
     Warm Cartopy cache by downloading Natural Earth data and map features.
+    Uses Cartopy's default data directory (no custom location - the library
+    always downloads to its own default path).
 
     Args:
-        cache_dir: Directory where cache should be stored
         logger: Logger instance
         force_update: If True, force update even if cache exists and is recent
         max_age_days: Maximum age (in days) before cache is considered expired
     """
     try:
-        cartopy_cache_dir = cache_dir / "cartopy"
-        try:
-            cartopy_cache_dir.mkdir(parents=True, exist_ok=True)
-        except PermissionError as e:
-            if cartopy_cache_dir.exists():
-                logger.warning(
-                    f"Cartopy cache directory {cartopy_cache_dir} exists but is not writable: {e}. "
-                    "Skipping cache warming - Cartopy will download data at runtime if needed."
-                )
-                return True
-            else:
-                raise
-
+        # Definir CARTOPY_DATA_DIR antes do primeiro import para que o Cartopy
+        # grave os downloads neste diretório (e a verificação encontre os arquivos)
+        cartopy_cache_dir = Path(os.path.expanduser("~/.local/share/cartopy"))
         os.environ["CARTOPY_DATA_DIR"] = str(cartopy_cache_dir)
-        logger.info(f"Warming Cartopy cache in: {cartopy_cache_dir}")
 
         import cartopy
         import cartopy.crs as ccrs
         import cartopy.feature as cfeature
         import matplotlib
+
+        logger.info(f"Warming Cartopy cache: {cartopy_cache_dir}")
+
+        # Garantir que o diretório existe antes de escrever (ex.: .warm_cache_temp.png)
+        try:
+            cartopy_cache_dir.mkdir(parents=True, exist_ok=True)
+        except (PermissionError, OSError) as e:
+            logger.warning(
+                f"Could not create Cartopy cache dir {cartopy_cache_dir}: {e}. "
+                "Cartopy may create it on first download."
+            )
 
         matplotlib.use("Agg")
 
@@ -199,31 +199,36 @@ def warm_cartopy_cache(
 
         logger.info("Downloading Cartopy Natural Earth data...")
         try:
+            # Forçar download via shapereader (respeita CARTOPY_DATA_DIR); add_feature
+            # pode usar outro path. Chamar natural_earth() grava em data_dir/shapefiles/natural_earth/
+            import cartopy.io.shapereader as shpreader
+
+            datasets = [
+                ("110m", "physical", "coastline"),
+                ("110m", "physical", "land"),
+                ("110m", "physical", "ocean"),
+                ("110m", "cultural", "admin_0_countries"),
+                ("50m", "physical", "coastline"),
+                ("50m", "cultural", "admin_0_countries"),
+                ("10m", "physical", "coastline"),
+            ]
+            for resolution, category, name in datasets:
+                try:
+                    path = shpreader.natural_earth(
+                        resolution=resolution, category=category, name=name
+                    )
+                    logger.info(f"Downloaded {resolution} {category}/{name} -> {path}")
+                except Exception as e:
+                    logger.warning(f"Failed {resolution} {category}/{name}: {e}")
+
             import matplotlib.pyplot as plt
 
             fig = plt.figure(figsize=(8, 6))
             ax = fig.add_subplot(111, projection=ccrs.PlateCarree())
-
-            # Download all common resolutions (110m, 50m, 10m) to avoid runtime downloads
-            for scale in ["110m", "50m", "10m"]:
-                logger.info(f"Downloading Cartopy data for scale: {scale}")
-                try:
-                    fig_scale = plt.figure(figsize=(1, 1))
-                    ax_scale = fig_scale.add_subplot(111, projection=ccrs.PlateCarree())
-                    ax_scale.add_feature(cfeature.COASTLINE.with_scale(scale))
-                    ax_scale.add_feature(cfeature.BORDERS.with_scale(scale))
-                    ax_scale.add_feature(cfeature.LAND.with_scale(scale))
-                    ax_scale.add_feature(cfeature.OCEAN.with_scale(scale))
-                    plt.close("all")
-                except Exception as e:
-                    logger.warning(f"Failed to download scale {scale}: {e}")
-
-            # Create a full map with 110m to ensure everything is cached
             ax.add_feature(cfeature.COASTLINE.with_scale("110m"), linewidth=0.5)
             ax.add_feature(cfeature.BORDERS.with_scale("110m"), linewidth=0.5)
             ax.add_feature(cfeature.LAND.with_scale("110m"), alpha=0.5)
             ax.add_feature(cfeature.OCEAN.with_scale("110m"), alpha=0.5)
-
             ax.set_global()
 
             temp_file = cartopy_cache_dir / ".warm_cache_temp.png"
@@ -241,55 +246,21 @@ def warm_cartopy_cache(
             logger.debug(traceback.format_exc())
             return False
 
-        # Verify cache after download
-        possible_dirs = [
-            cartopy_cache_dir,
-            Path(cartopy.config.get("data_dir", cartopy_cache_dir)),
-        ]
+        # Verify cache after download (Cartopy uses its default dir)
+        if cartopy_cache_dir.exists():
+            all_files = [f for f in cartopy_cache_dir.rglob("*") if f.is_file()]
+            if all_files:
+                total_size = sum(f.stat().st_size for f in all_files)
+                logger.info(
+                    f"Cache verified in {cartopy_cache_dir}: {len(all_files)} files ({total_size / 1024 / 1024:.2f} MB)"
+                )
+                return True
 
-        cache_found = False
-        for check_dir in possible_dirs:
-            if check_dir.exists():
-                all_files = [f for f in check_dir.rglob("*") if f.is_file()]
-                if all_files:
-                    total_size = sum(f.stat().st_size for f in all_files)
-                    logger.info(
-                        f"Cache verified in {check_dir}: {len(all_files)} files ({total_size / 1024 / 1024:.2f} MB)"
-                    )
-                    if check_dir != cartopy_cache_dir:
-                        logger.info(
-                            f"Copying cache from {check_dir} to {cartopy_cache_dir}"
-                        )
-                        import shutil
-
-                        if cartopy_cache_dir.exists():
-                            try:
-                                if not any(cartopy_cache_dir.iterdir()):
-                                    cartopy_cache_dir.rmdir()
-                            except:
-                                pass
-                        try:
-                            shutil.copytree(
-                                check_dir, cartopy_cache_dir, dirs_exist_ok=True
-                            )
-                            logger.info(
-                                f"Cache copied successfully to {cartopy_cache_dir}"
-                            )
-                        except Exception as e:
-                            logger.warning(f"Failed to copy cache: {e}")
-                            # Data is already there, so we're good
-                    cache_found = True
-                    return True
-
-        if not cache_found:
-            logger.warning("Cache files not found in expected locations after download")
-            # List what was actually created
-            for check_dir in possible_dirs:
-                if check_dir.exists():
-                    logger.info(
-                        f"Directory {check_dir} exists but contains: {list(check_dir.iterdir())}"
-                    )
-
+        logger.warning("Cache files not found in expected location after download")
+        if cartopy_cache_dir.exists():
+            logger.info(
+                f"Directory {cartopy_cache_dir} contains: {list(cartopy_cache_dir.iterdir())}"
+            )
         return False
 
     except Exception as e:
@@ -353,7 +324,6 @@ def main():
     success = True
     if not args.skip_cartopy:
         if not warm_cartopy_cache(
-            cache_dir,
             logger,
             force_update=args.force_update,
             max_age_days=args.max_age_days,
