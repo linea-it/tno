@@ -69,6 +69,7 @@ def main(
         print("Maximum Visual Magnitude: [%s]" % maximum_visual_magnitude)
 
         print("Running PRAIA OCC")
+        occultation_file = None
         try:
             occultation_file = start_praia_occ(
                 name,
@@ -142,26 +143,28 @@ def main(
         # TODO: Toda esta parte do path coeff deveria estar dentro da função que roda o praia.
         # Executa o calculo Coeff Path
         # Somente calcula path coeff se o arquivo existir e não for vazio
-        occultation_filepath = Path(occultation_file)
-        print("PRAIA Occultation File Path: [%s]" % occultation_filepath)
+        if occultation_file is not None:
+            occultation_filepath = Path(occultation_file)
+            print("PRAIA Occultation File Path: [%s]" % occultation_filepath)
+            if (
+                occultation_filepath.exists()
+                and not pd.read_csv(occultation_file).empty
+            ):
+                print("Calculating path coef")
+                # TODO: path_coeff deve ter tratamento de erro e lançar exceções.
+                path_coef_result = run_occultation_path_coeff(
+                    predict_table_path=occultation_filepath,
+                    obj_data=a.read_asteroid_json(),
+                    mag_and_uncert_path=mag_and_uncert_path,
+                )
+                # obj_data["calculate_path_coeff"] = path_coef_result
+                a.set_calculate_path_coeff(path_coef_result)
 
-        if occultation_filepath.exists() and not pd.read_csv(occultation_file).empty:
-
-            print("Calculating path coef")
-            # TODO: path_coeff deve ter tratamento de erro e lançar exceções.
-            path_coef_result = run_occultation_path_coeff(
-                predict_table_path=occultation_filepath,
-                obj_data=a.read_asteroid_json(),
-                mag_and_uncert_path=mag_and_uncert_path,
-            )
-            # obj_data["calculate_path_coeff"] = path_coef_result
-            a.set_calculate_path_coeff(path_coef_result)
-
-            # Consolida os resultados, adiciona informações de provenance
-            # Formata o arquivo de saida, mas não insere as prediçoes no banco de dados.
-            # 2025-07-15 - O registro dos resultados no banco de dados será feito na consolidação do job.
-            print("Consolidating Occultations")
-            a.consolidate_results()
+                # Consolida os resultados, adiciona informações de provenance
+                # Formata o arquivo de saida, mas não insere as prediçoes no banco de dados.
+                # 2025-07-15 - O registro dos resultados no banco de dados será feito na consolidação do job.
+                print("Consolidating Occultations")
+                a.consolidate_results()
 
         # Escreve os dados da execução no arquivo json do objeto.
         a.write_asteroid_json()
