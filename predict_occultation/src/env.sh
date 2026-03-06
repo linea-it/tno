@@ -22,7 +22,7 @@ export ASTROPY_CACHE_DIR=${CACHE_DIR}/astropy
 mkdir -p ${ASTROPY_CACHE_DIR}
 
 echo "Cache directory: ${CACHE_DIR}"
-echo "PARSL_ENV: ${PARSL_ENV}"
+echo "PARSL_ENV: ${PARSL_ENV:-not set}"
 
 if [[ "$PARSL_ENV" = "linea" ]]
 then
@@ -41,7 +41,7 @@ then
     echo "REMOTE_CONDA_PATH    : ${REMOTE_CONDA_PATH}"
 fi
 
-export PYTHONPATH=${PYTHONPATH}:${PIPELINE_ROOT}:${PIPELINE_PREDIC_OCC}:${PIPELINE_PATH}
+export PYTHONPATH="${PYTHONPATH:-}:${PIPELINE_ROOT}:${PIPELINE_PREDIC_OCC}:${PIPELINE_PATH}"
 echo "PYTHONPATH           ${PYTHONPATH}"
 
 umask 0002

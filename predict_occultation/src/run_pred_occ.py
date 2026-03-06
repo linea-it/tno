@@ -72,7 +72,15 @@ def get_logger(path, filename="refine.log", debug=False):
     # File Handler
     logfile = os.path.join(path, filename)
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-    file_handler = logging.FileHandler(logfile)
+    try:
+        file_handler = logging.FileHandler(logfile)
+    except PermissionError:
+        fallback_logfile = os.path.join("/tmp", filename)
+        print(
+            "Warning: no write permission for log file [%s]. Using fallback [%s]."
+            % (logfile, fallback_logfile)
+        )
+        file_handler = logging.FileHandler(fallback_logfile)
     file_handler.setFormatter(formatter)
 
     # Stdout handler

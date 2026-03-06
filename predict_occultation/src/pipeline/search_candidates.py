@@ -149,15 +149,11 @@ def fix_table(filename):
     contents[5] = contents[5][:41] + b"cluded)\n"
     contents[6] = b" G" + contents[6][2:]
     contents[17] = contents[17][:27] + b"\n"
-    contents[26] = contents[26][:6] + b"only Gaia DR1 stars are used\n"
+    contents[26] = contents[26][:6] + b"only Gaia DR3 stars are used\n"
     contents[27] = contents[27][:-1] + b" (not applicable here)\n"
     contents[35] = contents[35][:34] + b"10)\n"
     contents[36] = contents[36][:41] + b"\n"
     contents[37] = contents[37][:36] + b"/yr); (0 when not provided by Gaia DR1)\n"
-    contents[39] = contents[39][:115] + b"G" + contents[39][116:]
-
-    for i in range(41, len(contents)):
-        contents[i] = contents[i][:169] + b"-- -" + contents[i][173:]
 
     inoutFile.seek(0)  # go at the begining of the read/write file
     inoutFile.truncate()  # clean the file (delete all content)

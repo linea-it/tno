@@ -155,8 +155,4 @@ fi
 
 echo "Enviroment ${PARSL_ENV} is ready!"
 
-if [ "$(id -u)" = "0" ]; then
-    exec runuser -u vscode -- "$@"
-else
-    exec "$@"
-fi
+exec "$@"
