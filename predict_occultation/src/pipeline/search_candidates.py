@@ -141,24 +141,10 @@ def run_praia_occ(
 
 
 def fix_table(filename):
-
-    inoutFile = open(filename, "r+b")
-    contents = inoutFile.readlines()
-
-    contents[4] = b" G: G magnitude from Gaia\n"
-    contents[5] = contents[5][:41] + b"cluded)\n"
-    contents[6] = b" G" + contents[6][2:]
-    contents[17] = contents[17][:27] + b"\n"
-    contents[26] = contents[26][:6] + b"only Gaia DR3 stars are used\n"
-    contents[27] = contents[27][:-1] + b" (not applicable here)\n"
-    contents[35] = contents[35][:34] + b"10)\n"
-    contents[36] = contents[36][:41] + b"\n"
-    contents[37] = contents[37][:36] + b"/yr); (0 when not provided by Gaia DR1)\n"
-
-    inoutFile.seek(0)  # go at the begining of the read/write file
-    inoutFile.truncate()  # clean the file (delete all content)
-    inoutFile.writelines(contents)  # write the new content in the blank file
-    inoutFile.close()
+    """Leave PRAIA table output unchanged. Header and content are correct from Fortran."""
+    # Previously this patched header lines by index; with the new PRAIA output
+    # (Gaia DR3, G*, separators) those patches corrupted the file. No patches applied.
+    pass
 
 
 def get_position_from_occ_table(data_array, index_list):

@@ -84,6 +84,18 @@ c     - remove blank spaces in between numbers from csv output file(89)
 c        - update format (196) and write on (89)
 c        - e.g. 1.234 => 001.234
 c     - Update header on output file (88)
+c
+c    Update Rodrigo Boufleur 06/Mar/2026
+c     - Gaia DR3: header output 88 - R magnitude/UCAC2 replaced by G (Gaia);
+c       ct line set to "only Gaia DR3 stars are used"; ifcat(nn)='g3' default
+c     - Header and notes: G column labeled as G* (normalized to 20 km/s);
+c       notes state G* from Gaia, G*, J*, H*, K* normalized; CSV header G*_mag
+c     - Output 89 (CSV): open/close, header with column names, format 196,
+c       write(89,196) with date, RA, DEC, C/A, P/A, velocity, distance, G/J/H/K, etc.
+c     - Format 195 (output 88): C/A f5.3->f6.3; Delta/vel/G column widths updated
+c     - Long separator and data header lines in output 88 rewritten with write(88,'(a)')
+c     - ifpm: else branch added (ifpm='--' when capma.le.10.d0)
+c
 
 
       IMPLICIT REAL *8 (A-H,O-Z)
@@ -796,9 +808,9 @@ c
      ?'
       write (88,*)'vel: velocity in plane of sky, in km/sec, positive= p
      ?rograde, negative= retrograde'
-      write (88,*)'G: G magnitude from Gaia'
-      write (88,*)'J, H, K: 2MASS magnitudes (50.0 = not in 2MASS)'
-      write (88,*)'R*, J*, H*, K* are normalized magnitudes to a common'
+      write (88,*)'G* from Gaia G magnitude; J, H, K from 2MASS (50.0 = no
+     ?t in 2MASS)'
+      write (88,*)'G*, J*, H*, K* are normalized magnitudes to a common'
       write (88,*)'shadown velocity of 20 km/sec by the relationship:'
       write (88,*)'Mag* = Mag_actual + 2.5*log10[velocity/20 (km/sec)]'
       write (88,*)'Delta: Planet range to Earth, AU'
@@ -848,7 +860,7 @@ c
      ?'--------------------------------------------'
       write (88,'(a)') ' dd mm year  h:m:s UT    ra____dec____J2000_' //
      ?'candidate   ra_dec_J2000_target_geocentr    _C/A_' //
-     ?'   _P/A_  ____vel___  ___delta__  ___G___ _J*_ _H*_ _K*_' //
+     ?'   _P/A_  ____vel___  ___delta__  __G*__ _J*_ _H*_ _K*_' //
      ?'  _long._ loc.t    off_ra   off_de   pm ct f E_ra E_de' //
      ?' pmra pmde'
       write (88,'(a)') '--------------------------------------------' //
@@ -860,7 +872,7 @@ c
 c     Explanation Header of csv data file
 c
       write (89,*)'Date-Time;RA_J2000;DEC_J2000;RA_geocenter;DEC_geocent
-     ?er;C/A;P/A;Velocity;Distance;G_mag;J_mag;H_mag;K_mag;Long;local;of
+     ?er;C/A;P/A;Velocity;Distance;G*_mag;J*_mag;H*_mag;K*_mag;Long;local;of
      ?f_RA;off_DEC;pm;cat;flag;E_ra;E_de;pmra;pmde'
 c
 
