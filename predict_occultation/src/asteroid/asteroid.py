@@ -10,6 +10,7 @@ from datetime import timedelta, timezone
 from io import StringIO
 from typing import List, Optional
 
+import numpy as np
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
 from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
@@ -734,10 +735,62 @@ class Asteroid:
             if not predict_table_path.exists():
                 return 0
 
-            # Le o arquivo occultation table e cria um dataframe
+            # Le o arquivo occultation table e cria um dataframe.
+            # Usar header=None e names explícitos para não depender do cabeçalho do PRAIA
+            # (que vem como "# occultation_date"), e renomear para os nomes da tabela.
             df = pd.read_csv(
                 predict_table_path,
                 delimiter=";",
+                header=None,
+                skiprows=1,
+                names=[
+                    "occultation_date",
+                    "ra_star_candidate",
+                    "dec_star_candidate",
+                    "ra_object",
+                    "dec_object",
+                    "ca",
+                    "pa",
+                    "vel",
+                    "delta",
+                    "g",
+                    "j",
+                    "h",
+                    "k",
+                    "long",
+                    "loc_t",
+                    "off_ra",
+                    "off_de",
+                    "pm",
+                    "ct",
+                    "f",
+                    "e_ra",
+                    "e_de",
+                    "pmra",
+                    "pmde",
+                ],
+                na_values=["--", "-"],
+            )
+            df = df.replace({np.nan: None})
+            df.rename(
+                columns={
+                    "occultation_date": "date_time",
+                    "ra_object": "ra_target",
+                    "dec_object": "dec_target",
+                    "ca": "closest_approach",
+                    "pa": "position_angle",
+                    "vel": "velocity",
+                    "g": "g_star",
+                    "j": "j_star",
+                    "h": "h_star",
+                    "k": "k_star",
+                    "off_de": "off_dec",
+                    "pm": "proper_motion",
+                    "f": "multiplicity_flag",
+                    "e_de": "e_dec",
+                    "pmde": "pmdec",
+                },
+                inplace=True,
             )
 
             rowcount = dao.upinsert_occultations(df)
