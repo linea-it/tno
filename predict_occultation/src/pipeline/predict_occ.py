@@ -131,12 +131,21 @@ def main(
 
         except Exception as e:
             msg = f"Failed to run PRAIA OCC. Error: {e}"
+            if not str(e).strip():
+                msg = f"Failed to run PRAIA OCC. Error: {type(e).__name__} {repr(e)}"
             print(msg)
             praia_result = dict(
                 {
                     "message": msg,
                 }
             )
+            # If file was created before the failure (e.g. 0 events), set filename so ingest can run
+            if (
+                occultation_file is not None
+                and os.path.exists(occultation_file)
+                and "filename" not in praia_result
+            ):
+                praia_result["filename"] = os.path.basename(occultation_file)
 
         a.set_predict_occultation(praia_result)
 

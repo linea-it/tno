@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-Cache warming script for Cartopy map data.
-Runs in the container (with internet access) before Django/Celery workers start.
+Cache warming script for Cartopy map data and Astropy IERS data.
+Runs in the container (with internet access) before Django/Celery workers start,
+or via `python manage.py update_caches` on the server to refresh caches outside the build.
 Logs to /logs/cache.log (inside container).
 """
 
@@ -271,11 +272,148 @@ def warm_cartopy_cache(
         return False
 
 
+def check_iers_predictive_data_age(
+    iers_table, max_age_days: float = 30.0
+) -> Tuple[bool, float]:
+    """
+    Check if IERS table predictive data is older than max_age_days.
+    Returns (is_expired, days_until_expiry).
+    """
+    try:
+        last_mjd = iers_table["MJD"].max()
+        from astropy.time import Time
+
+        last_time = Time(last_mjd, format="mjd")
+        last_date = last_time.datetime
+        now = datetime.now(timezone.utc)
+        days_until_expiry = (
+            last_date.replace(tzinfo=timezone.utc) - now
+        ).total_seconds() / 86400.0
+        is_expired = days_until_expiry < max_age_days
+        return (is_expired, days_until_expiry)
+    except Exception:
+        return (True, 0.0)
+
+
+def warm_astropy_cache(
+    cache_dir: Path,
+    logger: logging.Logger,
+    force_update: bool = False,
+    max_age_days: float = 30.0,
+) -> bool:
+    """
+    Warm Astropy IERS cache by downloading finals2000A.all.
+    Use the same cache_dir as the pipeline (e.g. CACHE_DIR) so workers use updated data.
+
+    Args:
+        cache_dir: Base directory (e.g. /app/cache); Astropy cache will be cache_dir/astropy.
+        logger: Logger instance.
+        force_update: If True, force download even if cache exists and is recent.
+        max_age_days: Maximum age (days) before cache is considered expired.
+    """
+    try:
+        os.environ["XDG_CACHE_HOME"] = str(cache_dir)
+        os.environ["ASTROPY_CACHE_DIR"] = str(cache_dir / "astropy")
+
+        astropy_cache_dir = cache_dir / "astropy"
+        astropy_cache_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(f"Warming Astropy IERS cache in: {astropy_cache_dir}")
+
+        import astropy.config as config
+        from astropy.utils.iers import IERS_Auto
+
+        actual_cache_dir = Path(config.get_cache_dir())
+        download_dir = actual_cache_dir / "download"
+        cache_exists = False
+        is_expired = True
+        age_days = 0.0
+        large_files = []
+
+        if download_dir.exists():
+            all_files = [f for f in download_dir.rglob("*") if f.is_file()]
+            large_files = [f for f in all_files if f.stat().st_size > 1000000]
+            if large_files:
+                cache_file = large_files[0]
+                file_size = cache_file.stat().st_size
+                cache_exists = True
+                is_expired, age_days = check_cache_age(cache_file, max_age_days)
+                logger.info(
+                    f"IERS cache exists: {cache_file.name} ({file_size} bytes, age: {age_days:.1f} days)"
+                )
+                if not force_update and not is_expired:
+                    logger.info("IERS cache still valid, skipping download.")
+                    return True
+                if is_expired:
+                    logger.warning(
+                        f"IERS cache expired (>{max_age_days} days), will update."
+                    )
+
+        should_force_download = force_update or (cache_exists and is_expired)
+        old_cache_file = None
+        if should_force_download and large_files:
+            old_cache_file = large_files[0]
+            backup_file = old_cache_file.with_suffix(old_cache_file.suffix + ".backup")
+            logger.info(f"Backing up old IERS cache to {backup_file.name}")
+            old_cache_file.rename(backup_file)
+            old_cache_file = backup_file
+
+        try:
+            iers_table = IERS_Auto.open()
+            logger.info(f"IERS table loaded. Length: {len(iers_table)}")
+        except Exception as e:
+            if old_cache_file and old_cache_file.exists():
+                logger.warning(f"IERS download failed: {e}. Restoring backup.")
+                orig = old_cache_file.with_suffix("")
+                if old_cache_file.suffix == ".backup":
+                    old_cache_file.rename(orig)
+                    iers_table = IERS_Auto.open()
+                    logger.info("Loaded IERS from restored backup.")
+                else:
+                    raise
+            else:
+                raise
+
+        predictive_expired, days_until = check_iers_predictive_data_age(
+            iers_table, max_age_days
+        )
+        if predictive_expired:
+            logger.warning(
+                f"IERS predictive data expires in {days_until:.1f} days - consider updating again soon."
+            )
+        else:
+            logger.info(f"IERS predictive data valid for {days_until:.1f} more days.")
+
+        if (
+            old_cache_file
+            and old_cache_file.exists()
+            and old_cache_file.suffix == ".backup"
+        ):
+            new_large = [
+                f
+                for f in download_dir.rglob("*")
+                if f.is_file() and f.stat().st_size > 1000000
+            ]
+            if new_large and new_large[0] != old_cache_file:
+                old_cache_file.unlink()
+                logger.info("Old IERS backup removed.")
+        logger.info("Astropy IERS cache warming completed successfully.")
+        return True
+    except Exception as e:
+        logger.error(f"Astropy IERS cache warming failed: {e}")
+        import traceback
+
+        logger.debug(traceback.format_exc())
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description="Warm cache for backend dependencies")
     parser.add_argument("--cache-dir", help="Directory where cache should be stored")
     parser.add_argument(
         "--skip-cartopy", action="store_true", help="Skip Cartopy cache warming"
+    )
+    parser.add_argument(
+        "--skip-astropy", action="store_true", help="Skip Astropy IERS cache warming"
     )
     parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     parser.add_argument(
@@ -332,6 +470,18 @@ def main():
             success = False
         else:
             logger.info("Cartopy cache warming completed successfully")
+
+    if not args.skip_astropy:
+        if not warm_astropy_cache(
+            cache_dir,
+            logger,
+            force_update=args.force_update,
+            max_age_days=args.max_age_days,
+        ):
+            logger.error("Astropy IERS cache warming failed or incomplete")
+            success = False
+        else:
+            logger.info("Astropy IERS cache warming completed successfully")
 
     if success:
         logger.info("Cache warming completed successfully")

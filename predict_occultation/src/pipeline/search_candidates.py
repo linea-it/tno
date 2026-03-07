@@ -174,9 +174,25 @@ def ascii_to_csv(inputFile, outputFile):
         inputFile (str): The path to the input ASCII file.
         outputFile (str): The path for the output CSV file.
     """
-    data = np.loadtxt(inputFile, skiprows=41, dtype=str, ndmin=2)
+    colNames = (
+        "occultation_date;ra_star_candidate;dec_star_candidate;ra_object;"
+        "dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;"
+        "off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde"
+    )
+
+    try:
+        data = np.loadtxt(inputFile, skiprows=41, dtype=str, ndmin=2)
+    except (ValueError, OSError):
+        # PRAIA found 0 events: file has no data rows after header. Write CSV with header only.
+        with open(outputFile, "w") as f:
+            f.write(colNames + "\n")
+        return
 
     nRows, nCols = data.shape
+    if nRows == 0:
+        with open(outputFile, "w") as f:
+            f.write(colNames + "\n")
+        return
 
     # Robustly handle date/time conversion, including seconds=60
     date = []
@@ -205,13 +221,6 @@ def ascii_to_csv(inputFile, outputFile):
     otherParameters = data[:, 18:nCols]
 
     newData = np.concatenate((dateAndPositions, otherParameters), axis=1)
-
-    # Defining the column's names
-    colNames = (
-        "occultation_date;ra_star_candidate;dec_star_candidate;ra_object;"
-        "dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;"
-        "off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde"
-    )
 
     # Saving with '%s' will convert the datetime object to its standard string format.
     # comments='' avoids numpy adding "# " prefix to header (would create column "# occultation_date").
