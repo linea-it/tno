@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import time
 import traceback
+from concurrent.futures import Future
 from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
@@ -793,31 +794,57 @@ def submit_tasks(jobid: int):
             name = a.alias
             path = str(a.get_path())
 
-            try:
-                # TODO: Passar como parametro apenas o path e o nome do arquivo json.
-                # Demais parametros podem ser lidos do arquivo json.
-                proc = run_pipeline(
-                    (
-                        workdir,
-                        name,
-                        start_date,
-                        end_date,
-                        path,
-                        PREDICT_STEP,
-                        LEAP_SECOND,
-                        BSP_PLANETARY,
-                    ),
-                    stderr=f"{path}/{name}.err",
-                    stdout=f"{path}/{name}.out",
-                )
+            # Retry submissão até 3 vezes com 5s entre tentativas (ex.: muitas submissões simultâneas)
+            max_submit_attempts = 3
+            submit_delay_seconds = 5
+            proc = None
+            for attempt in range(1, max_submit_attempts + 1):
+                try:
+                    proc = run_pipeline(
+                        (
+                            workdir,
+                            name,
+                            start_date,
+                            end_date,
+                            path,
+                            PREDICT_STEP,
+                            LEAP_SECOND,
+                            BSP_PLANETARY,
+                        ),
+                        stderr=f"{path}/{name}.err",
+                        stdout=f"{path}/{name}.out",
+                    )
+                    break
+                except Exception as e:
+                    log.warning(
+                        "Submit attempt %s/%s for asteroid %s failed: %s"
+                        % (attempt, max_submit_attempts, name, e)
+                    )
+                    if attempt < max_submit_attempts:
+                        time.sleep(submit_delay_seconds)
+                    else:
+                        log.error(
+                            "All %s submit attempts failed for asteroid %s: %s"
+                            % (max_submit_attempts, name, e)
+                        )
+                        dao_job_result.update(
+                            id=task_id,
+                            data={
+                                "status": 2,  # Failed
+                                "messages": "falha de submissao (muitas submissões simultâneas ou sem conectividade instantânea)",
+                            },
+                        )
+                        # Future sintético já concluído com falha para manter contagem no loop
+                        synthetic = Future()
+                        synthetic.set_result(1)
+                        asteroid["job"] = synthetic
+                        asteroid["done"] = False
+                        jobs_asteroids.append(asteroid)
+
+            if proc is not None:
                 asteroid["job"] = proc
                 asteroid["done"] = False
                 jobs_asteroids.append(asteroid)
-
-            except Exception:
-                step2_failures = +1
-                log.error("Error running asteroid %s" % name)
-                continue
 
         # update_progress_status(
         #     jobid,
