@@ -12,12 +12,26 @@ if _cache_dir:
     os.environ["XDG_CACHE_HOME"] = _cache_dir
     os.environ["ASTROPY_CACHE_DIR"] = os.path.join(_cache_dir, "astropy")
 
+# When using pre-populated IERS cache (CACHE_DIR), allow predictive data older than 30 days.
+import warnings
+
 import astropy.units as u
 import numpy as np
 import spiceypy as spice
 from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body, get_sun
 from astropy.time import Time
 from scipy.interpolate import interp1d
+
+if os.environ.get("CACHE_DIR"):
+    from astropy.utils.iers import conf
+
+    conf.auto_max_age = None
+    warnings.warn(
+        "IERS auto_max_age disabled (CACHE_DIR set). The IERS table may be old; "
+        "consider running cache update (e.g. python manage.py update_caches) when possible.",
+        UserWarning,
+        stacklevel=2,
+    )
 
 
 def normalize_to_nearest_hour(dt):

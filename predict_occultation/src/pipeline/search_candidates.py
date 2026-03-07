@@ -182,8 +182,9 @@ def ascii_to_csv(inputFile, outputFile):
 
     try:
         data = np.loadtxt(inputFile, skiprows=41, dtype=str, ndmin=2)
-    except (ValueError, OSError):
-        # PRAIA found 0 events: file has no data rows after header. Write CSV with header only.
+    except (ValueError, OSError, StopIteration):
+        # PRAIA found 0 events: file has no data rows after header (NumPy may raise StopIteration).
+        # Write CSV with header only.
         with open(outputFile, "w") as f:
             f.write(colNames + "\n")
         return

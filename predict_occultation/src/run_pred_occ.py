@@ -1183,8 +1183,10 @@ def complete_job(jobid: int):
     l_status = df["status"].to_list()
     count_success = int(l_status.count(1))
     count_failures = int(l_status.count(2))
-    occultations = int(df["occultations"].sum())
-    ast_with_occ = int((df["occultations"] != 0).sum())
+    # NaN/ausente = 0 ocultações (ex.: falha ou 0 eventos) para não contar em "Asteroids With Occultations"
+    occ_series = df["occultations"].fillna(0)
+    occultations = int(occ_series.sum())
+    ast_with_occ = int((occ_series != 0).sum())
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)

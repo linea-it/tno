@@ -604,13 +604,15 @@ class Asteroid:
             )
             df = _normalize_occultation_csv_columns(df)
 
+            # Garantir índice único (evita "cannot reindex on an axis with duplicate labels")
+            df = df.reset_index(drop=True)
+
             # -------------------------------------------------
             # Provenance Fields
             # Adiciona algumas informacoes de Proveniencia a cada evento de predicao
             # -------------------------------------------------
             df["job_id"] = jobid
 
-            # Altera a ordem das colunas para coincidir com a da tabela
             df = df.reindex(
                 columns=[
                     "name",
@@ -821,6 +823,13 @@ class Asteroid:
 
         try:
             exec_time = 0
+            # Garantir que occultations existe: 0 quando não há eventos ou em falha (não conta em "Asteroids With Occultations").
+            a["occultations"] = int(
+                self.predict_occultation.get("count", 0)
+                if self.predict_occultation
+                and "message" not in self.predict_occultation
+                else 0
+            )
 
             if self.bsp_jpl:
                 if "message" in self.bsp_jpl:
