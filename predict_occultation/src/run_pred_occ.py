@@ -13,14 +13,6 @@ from io import StringIO
 from pathlib import Path
 from time import sleep
 
-# CRITICAL: Configure cache environment variables BEFORE importing Astropy
-# Astropy reads these variables at import time
-cache_dir_env = os.getenv("CACHE_DIR")
-
-if cache_dir_env:
-    os.environ["XDG_CACHE_HOME"] = cache_dir_env
-    os.environ["ASTROPY_CACHE_DIR"] = os.path.join(cache_dir_env, "astropy")
-
 import astropy.config as config
 import humanize
 import pandas as pd
@@ -72,15 +64,7 @@ def get_logger(path, filename="refine.log", debug=False):
     # File Handler
     logfile = os.path.join(path, filename)
     formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
-    try:
-        file_handler = logging.FileHandler(logfile)
-    except PermissionError:
-        fallback_logfile = os.path.join("/tmp", filename)
-        print(
-            "Warning: no write permission for log file [%s]. Using fallback [%s]."
-            % (logfile, fallback_logfile)
-        )
-        file_handler = logging.FileHandler(fallback_logfile)
+    file_handler = logging.FileHandler(logfile)
     file_handler.setFormatter(formatter)
 
     # Stdout handler
@@ -292,18 +276,6 @@ def remove_job_directory(jobid):
     # Apaga o diretorio usando rm pq o diretorio tem links simbolicos.
     job_path = get_job_path(jobid)
     print(f"Clear Job path: [{job_path}]")
-
-    # Close all file handlers to release log files before deletion
-    import logging
-
-    for logger in [
-        logging.getLogger(name) for name in logging.Logger.manager.loggerDict
-    ] + [logging.getLogger()]:
-        for handler in logger.handlers[:]:
-            if isinstance(handler, logging.FileHandler):
-                handler.close()
-                logger.removeHandler(handler)
-
     try:
         shutil.rmtree(job_path, ignore_errors=False)
         print("Removed directory using shutil: [%s]" % job_path)
@@ -513,137 +485,12 @@ def submit_tasks(jobid: int):
         log.debug("Current Path: [%s]" % current_path)
         log.debug("DEBUG: [%s]" % DEBUG)
 
-        # Verify IERS cache exists before using it
-        # CRITICAL: Workers on cluster have no internet access - cache must exist!
-        parsl_env = os.getenv("PARSL_ENV", "local")
+        # Get the path to the currently used cache directory
+        log.debug("***********************************************************")
         cache_directory = config.get_cache_dir()
-        cache_path = Path(cache_directory)
-        download_dir = cache_path / "download"
-
-        log.info("============================================================")
-        log.info("IERS Cache Verification")
-        log.info(f"PARSL_ENV: {parsl_env}")
-        log.info(f"Cache directory: {cache_directory}")
-        log.info(f"ASTROPY_CACHE_DIR: {os.getenv('ASTROPY_CACHE_DIR', 'not set')}")
-        log.info(f"CACHE_DIR: {os.getenv('CACHE_DIR', 'not set')}")
-        log.info("============================================================")
-
-        cache_exists = False
-        cache_file_path = None
-        cache_file_size = 0
-
-        if download_dir.exists():
-            # Check known IERS cache path (common hash: 12c1b04d92e4e66b3df6fbd0b137d06d)
-            known_cache_path = (
-                download_dir / "url" / "12c1b04d92e4e66b3df6fbd0b137d06d" / "contents"
-            )
-            if known_cache_path.exists() and known_cache_path.is_file():
-                file_size = known_cache_path.stat().st_size
-                if file_size > 1000000:  # IERS files are typically > 1MB
-                    cache_exists = True
-                    cache_file_path = known_cache_path
-                    cache_file_size = file_size
-                    log.info(
-                        f"✓ IERS cache found (known path): {known_cache_path.relative_to(cache_path)} ({cache_file_size} bytes)"
-                    )
-
-            # If not found in known path, search for large files (>1MB)
-            if not cache_exists:
-                try:
-                    large_files = [
-                        f
-                        for f in download_dir.rglob("*")
-                        if f.is_file() and f.stat().st_size > 1000000
-                    ]
-                    if large_files:
-                        cache_exists = True
-                        cache_file_path = large_files[0]
-                        cache_file_size = cache_file_path.stat().st_size
-                        log.info(
-                            f"✓ IERS cache found (search): {cache_file_path.relative_to(cache_path)} ({cache_file_size} bytes)"
-                        )
-                except Exception as e:
-                    log.error(f"Error checking cache directory: {e}")
-                    import traceback
-
-                    log.debug(traceback.format_exc())
-        else:
-            log.warning(f"Cache download directory does not exist: {download_dir}")
-
-        if not cache_exists:
-            if parsl_env == "linea":
-                log.error("=" * 60)
-                log.error("CRITICAL ERROR: IERS cache not found!")
-                log.error(f"Cache directory checked: {cache_directory}")
-                log.error(f"Download directory: {download_dir}")
-                log.error("")
-                log.error("Workers on cluster have NO internet access.")
-                log.error(
-                    "Cache warming must be executed in entrypoint.sh before workers start."
-                )
-                log.error("Check logs: /app/logs/predict_occ_cache.log")
-                log.error("=" * 60)
-                raise RuntimeError(
-                    "IERS cache not found! Cache warming must be executed in entrypoint.sh "
-                    "before workers start. Workers on cluster have no internet access."
-                )
-            else:
-                # For local environment, attempt automatic cache warming
-                log.warning(
-                    "IERS cache not found. Attempting automatic cache warming (local only)..."
-                )
-                cache_dir = os.getenv("CACHE_DIR")
-                if cache_dir:
-                    try:
-                        import subprocess
-
-                        result = subprocess.run(
-                            [
-                                "python3",
-                                "/app/src/warm_cache.py",
-                                "--cache-dir",
-                                cache_dir,
-                            ],
-                            capture_output=True,
-                            text=True,
-                            timeout=60,
-                        )
-                        if result.returncode != 0:
-                            log.error(f"Cache warming failed: {result.stderr}")
-                            raise RuntimeError(
-                                "Failed to warm IERS cache. Cannot proceed without cache."
-                            )
-                        log.info("✓ Cache warming completed successfully")
-
-                        # Re-verify cache after warming
-                        if download_dir.exists():
-                            large_files_after = [
-                                f
-                                for f in download_dir.rglob("*")
-                                if f.is_file() and f.stat().st_size > 1000000
-                            ]
-                            if large_files_after:
-                                cache_exists = True
-                                cache_file_path = large_files_after[0]
-                                cache_file_size = cache_file_path.stat().st_size
-                                log.info(
-                                    f"✓ Cache verified after warming: {cache_file_path.relative_to(cache_path)} ({cache_file_size} bytes)"
-                                )
-                    except Exception as e:
-                        log.error(f"Could not warm cache: {e}")
-                        import traceback
-
-                        log.debug(traceback.format_exc())
-                        raise RuntimeError(f"Failed to warm IERS cache: {e}")
-                else:
-                    raise RuntimeError("CACHE_DIR not set. Cannot warm cache.")
-
-        # Open IERS table (should use existing cache - no download attempted)
-        log.info("Opening IERS table (using existing cache, no download)...")
+        log.debug(f"Astropy is using the following cache directory: {cache_directory}")
         iers_a = IERS_Auto.open()
-        log.info(f"IERS table loaded successfully. Length: {len(iers_a)}")
-
-        log.info("============================================================")
+        log.debug("***********************************************************")
 
         job.update(
             {
@@ -811,20 +658,12 @@ def submit_tasks(jobid: int):
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
         parsl_conf.executors[0].provider.init_blocks = int(num_blocks_to_init)
-        parsl_conf.executors[0].provider.max_blocks = int(
-            max_nodes
-        )  # Allow scaling up to MAX_NODES
 
         log.info(
             f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
         )
         log.info(
-            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}, "
-            f"Max Blocks: {parsl_conf.executors[0].provider.max_blocks}"
-        )
-        log.info(
-            f"Parsl will scale incrementally from min_blocks=1 up to max_blocks={parsl_conf.executors[0].provider.max_blocks} "
-            f"as tasks are submitted (currently {num_asteroids} asteroids queued)"
+            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}"
         )
 
         parsl.clear()
@@ -1183,10 +1022,8 @@ def complete_job(jobid: int):
     l_status = df["status"].to_list()
     count_success = int(l_status.count(1))
     count_failures = int(l_status.count(2))
-    # NaN/ausente = 0 ocultações (ex.: falha ou 0 eventos) para não contar em "Asteroids With Occultations"
-    occ_series = df["occultations"].fillna(0)
-    occultations = int(occ_series.sum())
-    ast_with_occ = int((occ_series != 0).sum())
+    occultations = int(df["occultations"].sum())
+    ast_with_occ = int((df["occultations"] != 0).sum())
 
     t0 = datetime.fromisoformat(job.get("start"))
     t1 = datetime.now(tz=timezone.utc)

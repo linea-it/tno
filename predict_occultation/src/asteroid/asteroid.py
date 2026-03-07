@@ -16,35 +16,6 @@ from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_f
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
-# Map PRAIA CSV column names to DB column names (e.g. when header has "# occultation_date" from numpy savetxt).
-# Applied after read_csv so consolidate/ingest work even if occ_path_coeff did not run or failed.
-PRAIA_TO_DB_COLUMNS = {
-    "# occultation_date": "date_time",
-    "occultation_date": "date_time",
-    "ra_object": "ra_target",
-    "dec_object": "dec_target",
-    "ca": "closest_approach",
-    "pa": "position_angle",
-    "vel": "velocity",
-    "g": "g_star",
-    "j": "j_star",
-    "h": "h_star",
-    "k": "k_star",
-    "off_de": "off_dec",
-    "pm": "proper_motion",
-    "f": "multiplicity_flag",
-    "e_de": "e_dec",
-    "pmde": "pmdec",
-}
-
-
-def _normalize_occultation_csv_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """Rename PRAIA-style columns to DB names if present (idempotent)."""
-    rename = {k: v for k, v in PRAIA_TO_DB_COLUMNS.items() if k in df.columns}
-    if rename:
-        return df.rename(columns=rename)
-    return df
-
 
 def serialize(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -602,10 +573,6 @@ class Asteroid:
                 predict_table_path,
                 delimiter=";",
             )
-            df = _normalize_occultation_csv_columns(df)
-
-            # Garantir índice único (evita "cannot reindex on an axis with duplicate labels")
-            df = df.reset_index(drop=True)
 
             # -------------------------------------------------
             # Provenance Fields
@@ -613,6 +580,7 @@ class Asteroid:
             # -------------------------------------------------
             df["job_id"] = jobid
 
+            # Altera a ordem das colunas para coincidir com a da tabela
             df = df.reindex(
                 columns=[
                     "name",
@@ -771,7 +739,6 @@ class Asteroid:
                 predict_table_path,
                 delimiter=";",
             )
-            df = _normalize_occultation_csv_columns(df)
 
             rowcount = dao.upinsert_occultations(df)
 
@@ -823,13 +790,6 @@ class Asteroid:
 
         try:
             exec_time = 0
-            # Garantir que occultations existe: 0 quando não há eventos ou em falha (não conta em "Asteroids With Occultations").
-            a["occultations"] = int(
-                self.predict_occultation.get("count", 0)
-                if self.predict_occultation
-                and "message" not in self.predict_occultation
-                else 0
-            )
 
             if self.bsp_jpl:
                 if "message" in self.bsp_jpl:
