@@ -638,8 +638,8 @@ def submit_tasks(jobid: int):
         # Get configuration parameters from environment variables
         envname = os.getenv("PARSL_ENV", "linea")
         try:
-            ast_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 500))
-            max_nodes = int(os.getenv("MAX_NODES", 20))
+            ast_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 28))
+            max_nodes = int(os.getenv("MAX_NODES", 28))
         except (ValueError, TypeError):
             log.error("MAX_NODES and ASTEROIDS_PER_NODE must be integers.")
             exit(1)
@@ -658,12 +658,16 @@ def submit_tasks(jobid: int):
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
         parsl_conf.executors[0].provider.init_blocks = int(num_blocks_to_init)
+        # Garante teto de scaling alinhado a MAX_NODES (parsl_config já lê do env; reforço aqui)
+        if envname == "linea":
+            parsl_conf.executors[0].provider.max_blocks = max_nodes
 
         log.info(
             f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
         )
         log.info(
-            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}"
+            f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
+            f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
         )
 
         parsl.clear()

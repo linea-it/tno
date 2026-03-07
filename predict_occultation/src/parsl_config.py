@@ -82,6 +82,9 @@ def get_config(key, jobpath):
         script_dir = pipeline_root.joinpath("script_dir")
         script_dir.mkdir(parents=True, exist_ok=True)
 
+        # max_blocks: teto de nós para scaling dinâmico (alinhado a MAX_NODES do .env)
+        max_blocks_linea = int(os.getenv("MAX_NODES", "24"))
+
         executors = {
             "linea": HighThroughputExecutor(
                 label="linea",
@@ -92,9 +95,9 @@ def get_config(key, jobpath):
                     nodes_per_block=1,  # number of nodes
                     cmd_timeout=240,  # duration for which the provider will wait for a command to be invoked on a remote system
                     launcher=SrunLauncher(debug=True, overrides=""),
-                    init_blocks=10,
+                    init_blocks=1,  # sobrescrito em run_pred_occ.py por num_blocks_to_init
                     min_blocks=1,
-                    max_blocks=10,
+                    max_blocks=max_blocks_linea,
                     parallelism=1,
                     walltime="240:00:00",
                     worker_init=f"source {cluster_env_sh}\n",
@@ -152,4 +155,5 @@ def get_config(key, jobpath):
             ),
         }
 
-    return Config(executors=[executors[key]], strategy=None)
+    # strategy='simple': scaling dinâmico entre init_blocks e max_blocks conforme fila de tarefas
+    return Config(executors=[executors[key]], strategy="simple")
