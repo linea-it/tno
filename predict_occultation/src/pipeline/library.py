@@ -6,6 +6,12 @@ import os
 import re
 from datetime import datetime, timedelta
 
+# Force Astropy to use the pipeline cache (e.g. on cluster workers). Must run before any astropy import.
+_cache_dir = os.environ.get("CACHE_DIR")
+if _cache_dir:
+    os.environ["XDG_CACHE_HOME"] = _cache_dir
+    os.environ["ASTROPY_CACHE_DIR"] = os.path.join(_cache_dir, "astropy")
+
 import astropy.units as u
 import numpy as np
 import spiceypy as spice
