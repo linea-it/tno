@@ -646,19 +646,16 @@ def submit_tasks(jobid: int):
 
         num_asteroids = len(asteroids)
 
-        # Dynamically calculate the number of nodes required based on the workload
+        # Dynamically calculate the number of nodes required based on the workload (informativo)
         if num_asteroids > 0:
             nodes_needed = math.ceil(num_asteroids / ast_per_node)
         else:
             nodes_needed = 0
 
-        # Apply the max_nodes cap and set the initial blocks for the provider
-        num_blocks_to_init = min(nodes_needed, max_nodes)
-
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        parsl_conf.executors[0].provider.init_blocks = int(num_blocks_to_init)
-        # Garante teto de scaling alinhado a MAX_NODES (parsl_config já lê do env; reforço aqui)
+        # Sempre começar com 1 nó; a estratégia "simple" do Parsl escala até max_blocks conforme a fila
+        parsl_conf.executors[0].provider.init_blocks = 1
         if envname == "linea":
             parsl_conf.executors[0].provider.max_blocks = max_nodes
 
