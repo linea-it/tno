@@ -56,8 +56,11 @@ then
     echo "Eups Setup: elimina 20240101+0"
     setup elimina 20240101+0
 
-    echo "Eups Setup: praia_occ_star_search_12 20240101+0"
-    setup praia_occ_star_search_12 20240101+0
+    # echo "Eups Setup: praia_occ_star_search_12 20240101+0" # Versão antiga sem CSV
+    # setup praia_occ_star_search_12 20240101+0
+
+    echo "Eups Setup: praia_occ_star_search_12 20260306+0 (com CSV)"
+    setup praia_occ_star_search_12 20260306+0
 
     echo "Setup conda environment"
     source ${CONDAPATH}/activate
