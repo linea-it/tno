@@ -82,57 +82,74 @@ def get_config(key, jobpath):
         script_dir = pipeline_root.joinpath("script_dir")
         script_dir.mkdir(parents=True, exist_ok=True)
 
-        # max_blocks: teto de nós para scaling dinâmico (alinhado a MAX_NODES do .env)
-        max_blocks_linea = int(os.getenv("MAX_NODES", "24"))
-
-        executors = {
-            "linea": HighThroughputExecutor(
-                label="linea",
-                worker_logdir_root=str(script_dir),
-                max_workers=28,
-                provider=SlurmProvider(
-                    partition="cpu_long",
-                    nodes_per_block=1,  # number of nodes
-                    cmd_timeout=240,  # duration for which the provider will wait for a command to be invoked on a remote system
-                    launcher=SrunLauncher(debug=True, overrides=""),
-                    init_blocks=1,  # sobrescrito em run_pred_occ.py por num_blocks_to_init
-                    min_blocks=1,
-                    max_blocks=max_blocks_linea,
-                    parallelism=1,
-                    walltime="240:00:00",
-                    worker_init=f"source {cluster_env_sh}\n",
-                    channel=SSHChannel(
-                        hostname="loginapl01",
-                        username="app.tno",
-                        key_filename=sshkey,
-                        script_dir=str(script_dir),
-                        envs={
-                            "PARSL_ENV": "linea",
-                            "CONDAPATH": str(condapath),
-                            "PIPELINE_PREDIC_OCC": str(pipeline_pred_occ),
-                            "PIPELINE_PATH": str(pipeline_path),
-                            "PYTHONPATH": ":".join(
-                                [
-                                    str(pipeline_root),
-                                    str(pipeline_pred_occ),
-                                    str(pipeline_path),
-                                ]
-                            ),
-                            "PREDICT_OUTPUTS": str(predict_outputs),
-                            "PREDICT_INPUTS": str(predict_inputs),
-                            "CACHE_DIR": str(
-                                cache_dir
-                            ),  # Meta 1.2: Cache compartilhado
-                            "XDG_CACHE_HOME": str(cache_dir),  # Meta 1.2: Para Astropy
-                            "ASTROPY_CACHE_DIR": str(
-                                cache_dir / "astropy"
-                            ),  # Meta 1.2: Cache específico do Astropy
-                            "DB_CATALOG_URI": db_uri,
-                            "DB_ADMIN_URI": admin_db_uri,
-                        },
-                    ),
+        # Cluster heterogêneo: 16 nós apl[01-16] (28 cores/nó), 12 nós apl[17-28] (52 cores/nó)
+        # init_blocks/max_blocks sobrescritos em run_pred_occ.py (small=1 no início, large=0)
+        channel = SSHChannel(
+            hostname="loginapl01",
+            username="app.tno",
+            key_filename=sshkey,
+            script_dir=str(script_dir),
+            envs={
+                "PARSL_ENV": "linea",
+                "CONDAPATH": str(condapath),
+                "PIPELINE_PREDIC_OCC": str(pipeline_pred_occ),
+                "PIPELINE_PATH": str(pipeline_path),
+                "PYTHONPATH": ":".join(
+                    [
+                        str(pipeline_root),
+                        str(pipeline_pred_occ),
+                        str(pipeline_path),
+                    ]
                 ),
-            )
+                "PREDICT_OUTPUTS": str(predict_outputs),
+                "PREDICT_INPUTS": str(predict_inputs),
+                "CACHE_DIR": str(cache_dir),
+                "XDG_CACHE_HOME": str(cache_dir),
+                "ASTROPY_CACHE_DIR": str(cache_dir / "astropy"),
+                "DB_CATALOG_URI": db_uri,
+                "DB_ADMIN_URI": admin_db_uri,
+            },
+        )
+        provider_common = {
+            "partition": "cpu_long",
+            "nodes_per_block": 1,
+            "cmd_timeout": 240,
+            "launcher": SrunLauncher(debug=True, overrides=""),
+            "parallelism": 1,
+            "walltime": "240:00:00",
+            "worker_init": f"source {cluster_env_sh}\n",
+            "channel": channel,
+        }
+        # Parsl 2023.9.25: max_workers é total por executor (não por nó); 448=16*28, 624=12*52
+        # cores_per_node: núcleos físicos por nó (apl01-16: 28, apl17-28: 52)
+        htex_small = HighThroughputExecutor(
+            label="linea_small",
+            worker_logdir_root=str(script_dir),
+            max_workers=448,
+            provider=SlurmProvider(
+                **provider_common,
+                scheduler_options="#SBATCH --nodelist=apl[01-16]\n",
+                cores_per_node=28,
+                init_blocks=1,
+                min_blocks=1,
+                max_blocks=16,
+            ),
+        )
+        htex_large = HighThroughputExecutor(
+            label="linea_large",
+            worker_logdir_root=str(script_dir),
+            max_workers=624,
+            provider=SlurmProvider(
+                **provider_common,
+                scheduler_options="#SBATCH --nodelist=apl[17-28]\n",
+                cores_per_node=52,
+                init_blocks=0,
+                min_blocks=0,
+                max_blocks=12,
+            ),
+        )
+        executors = {
+            "linea": [htex_small, htex_large],
         }
 
     if parsl_env == "local":
@@ -156,4 +173,7 @@ def get_config(key, jobpath):
         }
 
     # strategy='simple': scaling dinâmico entre init_blocks e max_blocks conforme fila de tarefas
-    return Config(executors=[executors[key]], strategy="simple")
+    executor_list = (
+        executors[key] if isinstance(executors[key], list) else [executors[key]]
+    )
+    return Config(executors=executor_list, strategy="simple")

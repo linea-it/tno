@@ -655,18 +655,31 @@ def submit_tasks(jobid: int):
 
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        # Sempre começar com 1 nó; a estratégia "simple" do Parsl escala até max_blocks conforme a fila
-        parsl_conf.executors[0].provider.init_blocks = 1
-        if envname == "linea":
-            parsl_conf.executors[0].provider.max_blocks = max_nodes
 
-        log.info(
-            f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
-        )
-        log.info(
-            f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
-            f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
-        )
+        if envname == "linea" and len(parsl_conf.executors) == 2:
+            # Cluster heterogêneo: small inicia com 1 nó, large com 0 (escala sob demanda)
+            parsl_conf.executors[0].provider.init_blocks = 1
+            parsl_conf.executors[1].provider.init_blocks = 0
+            parsl_conf.executors[0].provider.max_blocks = 16
+            parsl_conf.executors[1].provider.max_blocks = 12
+            log.info(
+                f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
+            )
+            log.info(
+                "Parsl blocks: linea_small init=1 max=16, linea_large init=0 max=12"
+            )
+        else:
+            # Um único executor (local ou linea legado)
+            parsl_conf.executors[0].provider.init_blocks = 1
+            if envname == "linea":
+                parsl_conf.executors[0].provider.max_blocks = max_nodes
+            log.info(
+                f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
+            )
+            log.info(
+                f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
+                f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
+            )
 
         parsl.clear()
         parsl.load(parsl_conf)
