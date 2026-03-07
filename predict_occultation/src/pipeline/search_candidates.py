@@ -213,8 +213,11 @@ def ascii_to_csv(inputFile, outputFile):
         "off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde"
     )
 
-    # Saving with '%s' will convert the datetime object to its standard string format
-    np.savetxt(outputFile, newData, fmt="%s", header=colNames, delimiter=";")
+    # Saving with '%s' will convert the datetime object to its standard string format.
+    # comments='' avoids numpy adding "# " prefix to header (would create column "# occultation_date").
+    np.savetxt(
+        outputFile, newData, fmt="%s", header=colNames, delimiter=";", comments=""
+    )
 
 
 def search_candidates(star_catalog, object_ephemeris, filename, object_diameter):
