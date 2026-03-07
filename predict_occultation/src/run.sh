@@ -21,7 +21,11 @@ echo 'PREDICT_INPUTS: ' $PREDICT_INPUTS
 echo 'PREDICT_OUTPUTS: ' $PREDICT_OUTPUTS
 echo "=========================================================="
 
-TMPDIR=`echo $RANDOM | md5sum | head -c 5; echo;`
+# DIR_DATA must be unique per process to avoid collisions when multiple
+# Parsl tasks run on the same node (same TMPDIR would cause one task
+# to remove the dir while another still uses it). With hundreds of
+# concurrent tasks, collisions were happening.
+TMPDIR=run_$$
 export DIR_DATA=/tmp/$TMPDIR
 echo 'DIR_DATA: '$DIR_DATA
 
