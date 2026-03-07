@@ -233,7 +233,6 @@ def run_occultation_path_coeff(
             "h_star",
             "k_star",
             "long",
-            "loc_t",
             "off_ra",
             "off_dec",
         ]
