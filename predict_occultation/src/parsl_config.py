@@ -41,7 +41,7 @@ def get_config(key, jobpath):
         admin_db_uri = os.getenv("DB_ADMIN_URI")
 
         # Meta 1.2: Diretório de cache compartilhado no Lustre
-        cache_dir = pipeline_root / "cache"
+        cache_dir = pipeline_root / "data" / "cache"
         astropy_cache_dir = cache_dir / "astropy"
 
         # CRITICAL: Verify cache exists before configuring Parsl
