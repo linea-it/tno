@@ -8,9 +8,14 @@ function Progress({ title, variant, total, current }) {
   const [currentPercentage, setCurrentPercentage] = useState(0)
 
   useEffect(() => {
-    const percentage = (current * 100) / total
-    const value = !isNaN(percentage) ? percentage : 0
-
+    const t = Number(total)
+    const c = Number(current)
+    if (t <= 0) {
+      setCurrentPercentage(0)
+      return
+    }
+    const percentage = (c * 100) / t
+    const value = Number.isFinite(percentage) ? Math.min(100, Math.max(0, percentage)) : 0
     setCurrentPercentage(value)
   }, [total, current])
 

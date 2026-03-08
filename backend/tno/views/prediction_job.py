@@ -1,7 +1,7 @@
+import math
 from datetime import datetime, timedelta
 
 import humanize
-import numpy as np
 from django.db.models import Count
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, viewsets
@@ -108,16 +108,24 @@ class PredictionJobViewSet(
 
         # Step 1 Submit tasks
         # ----------------------------------------------------
-        # Total de asteroides que o job vai processar.
         total_asteroids = job.count_asteroids
-
-        # Total de tasks submetidas.
         submited_tasks = job.predictionjobresult_set.count()
+        stage1_queued = job.predictionjobresult_set.filter(status=3).count()
+        stage1_failed = job.predictionjobresult_set.filter(status=2).count()
 
-        # Status da etapa
-        # Status da etapa
-        # 3 = completed
-        # 2 = running
+        stage1_avg_time = 0.0
+        stage1_time_estimate = 0.0
+        if job.start and submited_tasks > 0:
+            from django.utils import timezone as tz
+
+            now = tz.now()
+            start = job.start if job.start.tzinfo else tz.make_aware(job.start)
+            stage1_elapsed = (now - start).total_seconds()
+            stage1_avg_time = stage1_elapsed / submited_tasks
+            remaining_s1 = total_asteroids - submited_tasks
+            if remaining_s1 > 0:
+                stage1_time_estimate = stage1_avg_time * remaining_s1
+
         stage1_status = 3 if submited_tasks == total_asteroids else 2
 
         stages.append(
@@ -127,10 +135,10 @@ class PredictionJobViewSet(
                 "status": stage1_status,
                 "count": total_asteroids,
                 "current": submited_tasks,
-                "average_time": 0.0,  # TODO: Implementar média de tempo
-                "time_estimate": 0.0,  # TODO: Implementar estimativa de tempo
-                # "success": job.count_success,
-                # "failures": job.count_failures,
+                "average_time": stage1_avg_time,
+                "time_estimate": stage1_time_estimate,
+                "success": stage1_queued,
+                "failures": stage1_failed,
                 "updated": datetime.now().isoformat(),
             }
         )
@@ -147,29 +155,60 @@ class PredictionJobViewSet(
 
         stage2_status = 3 if completed_tasks == submited_tasks else 2
 
-        # Calculate average execution time for all completed succesfull tasks
-        # Tasks with status 1 - Success
-        completed_tasks_exec_time = job.predictionjobresult_set.filter(
+        # Completed success tasks: exec_time and ing_occ_exec_time for run vs ingestion
+        completed_success = job.predictionjobresult_set.filter(
             status__in=[1]
-        ).values_list("exec_time", flat=True)
+        ).values_list("exec_time", "ing_occ_exec_time")
+        exec_seconds = []
+        run_seconds = []
+        ing_seconds_list = []
+        for exec_t, ing_t in completed_success:
+            e = (
+                exec_t.total_seconds()
+                if isinstance(exec_t, timedelta)
+                else float(exec_t or 0)
+            )
+            i = (
+                ing_t.total_seconds()
+                if isinstance(ing_t, timedelta)
+                else float(ing_t or 0)
+            )
+            if exec_t is not None:
+                exec_seconds.append(e)
+                run_seconds.append(e - i)
+                ing_seconds_list.append(i)
+        n = len(exec_seconds)
+        avg_exec_time = sum(exec_seconds) / n if n else 0.0
+        if n > 1:
+            variance = sum((x - avg_exec_time) ** 2 for x in exec_seconds) / (n - 1)
+            std_exec_time = variance**0.5
+        else:
+            std_exec_time = 0.0
 
-        avg_exec_time = (
-            np.mean(completed_tasks_exec_time) if completed_tasks_exec_time else 0
+        avg_ing_occ_time = (
+            sum(ing_seconds_list) / len(ing_seconds_list) if ing_seconds_list else 0.0
         )
-        avg_exec_time = (
-            avg_exec_time.total_seconds()
-            if isinstance(avg_exec_time, timedelta)
-            else avg_exec_time
-        )
+        if len(run_seconds) > 1:
+            avg_run = sum(run_seconds) / len(run_seconds)
+            var_run = sum((x - avg_run) ** 2 for x in run_seconds) / (
+                len(run_seconds) - 1
+            )
+            std_run = var_run**0.5
+        else:
+            avg_run = sum(run_seconds) / len(run_seconds) if run_seconds else 0.0
+            std_run = 0.0
 
-        # Calculate estimated time for all incompleted tasks
-        incompleted_tasks = job.predictionjobresult_set.filter(
-            status__in=[1, 2, 5]
-        ).count()
-
+        remaining_tasks = submited_tasks - completed_tasks
         time_estimate = 0.0
-        if incompleted_tasks > 0:
-            time_estimate = avg_exec_time * (submited_tasks - completed_tasks)
+        if remaining_tasks > 0:
+            time_per_run = avg_run + 3.0 * std_run
+            running_tasks = job.predictionjobresult_set.filter(status=4).count()
+            ingesting_tasks = job.predictionjobresult_set.filter(status=6).count()
+            effective_parallelism = max(1, running_tasks)
+            num_waves = math.ceil(remaining_tasks / effective_parallelism)
+            time_estimate = (
+                time_per_run * num_waves + avg_ing_occ_time * ingesting_tasks
+            )
 
         stages.append(
             {

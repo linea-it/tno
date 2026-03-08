@@ -1079,13 +1079,57 @@ def complete_job(jobid: int):
     ast_with_occ = int((df["occultations"] != 0).sum())
 
     t0 = datetime.fromisoformat(job.get("start"))
-    t1 = datetime.now(tz=timezone.utc)
+    if t0.tzinfo is None:
+        t0 = t0.replace(tzinfo=timezone.utc)
+
+    # Métricas de tempo a partir do banco (fonte única, tipos corretos; correto com paralelismo)
+    dao_results = PredictOccultationJobResultDao()
+    results = dao_results.by_job_id(job["id"])
+
+    # Fim real do job = maior ing_occ_finish (último asteroide a terminar)
+    job_end_dt = None
+    for r in results:
+        fin = r.get("ing_occ_finish")
+        if fin is None:
+            continue
+        if hasattr(fin, "tzinfo") and fin.tzinfo is None:
+            fin = fin.replace(tzinfo=timezone.utc)
+        if job_end_dt is None or fin > job_end_dt:
+            job_end_dt = fin
+    if job_end_dt is None:
+        for r in results:
+            fin = r.get("pre_occ_finish")
+            if fin is None:
+                continue
+            if hasattr(fin, "tzinfo") and fin.tzinfo is None:
+                fin = fin.replace(tzinfo=timezone.utc)
+            if job_end_dt is None or fin > job_end_dt:
+                job_end_dt = fin
+    if job_end_dt is None:
+        job_end_dt = datetime.now(tz=timezone.utc)
+    t1 = job_end_dt
     tdelta = t1 - t0
 
-    # Calc average time by asteroid
-    avg_exec_time_asteroid = 0
-    if count_success > 0:
-        avg_exec_time_asteroid = int(tdelta.total_seconds() / count_success)
+    # Média de exec_time por asteroide (só status Success) — correto com paralelismo
+    exec_seconds_list = []
+    for r in results:
+        if r.get("status") != 1:
+            continue
+        et = r.get("exec_time")
+        if et is None:
+            continue
+        if hasattr(et, "total_seconds"):
+            exec_seconds_list.append(et.total_seconds())
+        else:
+            try:
+                exec_seconds_list.append(float(et))
+            except (TypeError, ValueError):
+                continue
+    avg_exec_time_asteroid = (
+        int(round(sum(exec_seconds_list) / len(exec_seconds_list)))
+        if exec_seconds_list
+        else 0
+    )
 
     # Mantem outros status exemplo falha ou abort.
     status = job.get("status")
