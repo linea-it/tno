@@ -1,3 +1,4 @@
+import collections
 from datetime import timedelta
 from typing import List, Optional, Union
 
@@ -22,14 +23,17 @@ class PredictOccultationJobResultDao(DBBase):
 
             return rows
 
-    def insert(self, data):
+    def insert(self, data, conn=None):
+        if conn is not None:
+            result = conn.execute(self.tbl.insert(), data)
+            return result.inserted_primary_key[0]
+
         engine = self.get_db_engine()
         with engine.connect() as con:
             result = con.execute(self.tbl.insert(), data)
             return result.inserted_primary_key[0]
 
-    def update(self, id, data):
-
+    def update(self, id, data, conn=None):
         if "exec_time" in data:
             data["exec_time"] = timedelta(seconds=data["exec_time"])
         if "pre_occ_exec_time" in data:
@@ -41,12 +45,18 @@ class PredictOccultationJobResultDao(DBBase):
         if "ing_occ_exec_time" in data:
             data["ing_occ_exec_time"] = timedelta(seconds=data["ing_occ_exec_time"])
 
+        if conn is not None:
+            result = conn.execute(self.tbl.update().where(self.tbl.c.id == id), data)
+            return result.rowcount
+
         engine = self.get_db_engine()
         with engine.connect() as con:
             result = con.execute(self.tbl.update().where(self.tbl.c.id == id), data)
             return result.rowcount
 
-    def by_job_id(self, job_id, status: Optional[Union[int, List[int]]] = None):
+    def by_job_id(
+        self, job_id, status: Optional[Union[int, List[int]]] = None, conn=None
+    ):
         stm = select(self.tbl.c).where(and_(self.tbl.c.job_id == job_id))
 
         if status is not None:
@@ -54,6 +64,10 @@ class PredictOccultationJobResultDao(DBBase):
                 stm = stm.where(self.tbl.c.status.in_(status))
             else:
                 stm = stm.where(self.tbl.c.status == status)
+
+        if conn is not None:
+            queryset = conn.execute(stm)
+            return [dict(collections.OrderedDict(row)) for row in queryset]
 
         return self.fetch_all_dict(stm)
 
