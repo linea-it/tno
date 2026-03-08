@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
 import { getPredictionJobResultById } from '../../services/api/PredictJobs';
+import Chip from '@mui/material/Chip';
 import List from '../../components/List';
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index';
@@ -66,7 +67,16 @@ function PredictionAsteroid() {
       setSummary([
         {
           title: 'Status',
-          value: predictionJobResult.status_name,
+          value: () => {
+            const s = predictionJobResult.status;
+            if (s === 1) return <Chip variant="outlined" label="Success" color="success" size="small" />;
+            if (s === 2) return <Chip variant="outlined" label="Failure" color="error" size="small" />;
+            if (s === 3) return <Chip variant="outlined" label="Queued" size="small" />;
+            if (s === 4) return <Chip variant="outlined" label="Running" color="info" size="small" />;
+            if (s === 5) return <Chip variant="outlined" label="Aborted" color="secondary" size="small" />;
+            if (s === 6) return <Chip variant="outlined" label="Ingesting" size="small" />;
+            return <Chip variant="outlined" label={predictionJobResult.status_name ?? 'Unknown'} size="small" />;
+          },
         },
         {
           title: 'Name',
