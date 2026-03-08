@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import moment from 'moment';
 import { useParams, useNavigate } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import Chip from '@mui/material/Chip';
-import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
 import CardHeader from '@mui/material/CardHeader';
@@ -27,10 +27,18 @@ import {
   cancelPredictionJobById,
   getPredictionJobProgressById,
 } from '../../services/api/PredictJobs';
-import useInterval from '../../hooks/useInterval'; // Re-add useInterval
+import useAdaptivePolling from '../../hooks/useAdaptivePolling';
 import ProgressList from '../../components/ProgressList/index';
 
-const UPDATE_INTERVAL_MS = 16000;
+const POLLING_ACTIVE_MS = 6000;
+
+function formatCount(n) {
+  if (n == null || Number.isNaN(Number(n))) return '0';
+  const num = Number(n);
+  if (num >= 1e6) return `${(num / 1e6).toFixed(1).replace(/\.0$/, '')}M`;
+  if (num >= 1e3) return `${(num / 1e3).toFixed(1).replace(/\.0$/, '')}k`;
+  return String(num);
+}
 
 function PredictDetail() {
   const { id } = useParams();
@@ -161,20 +169,46 @@ function PredictDetail() {
     return [1, 2, 7, 8].includes(predictionJob.status);
   }, [predictionJob.status]);
 
-  useInterval(() => {
-    if (!id) return;
+  const didFinalRefetch = useRef(false);
 
-    // TODO: é necessário rever essa lógica,
-    // precisa atualizar o progresso pelo menos uma vez depois que o job for concluido.
-    // Por enquanto, vou deixar o progresso sendo atualizado a cada 10 segundos.
-    loadDataProgress(id);
+  useEffect(() => {
+    didFinalRefetch.current = false;
+  }, [id]);
 
-    if (isRunning()) {
+  useAdaptivePolling({
+    enabled: !!id,
+    isActive: isRunning(),
+    pauseWhenHidden: true,
+    activeIntervalMs: POLLING_ACTIVE_MS,
+    idleIntervalMs: null,
+    onTick: useCallback(() => {
+      if (!id) return;
+      loadDataProgress(id);
+      if (isRunning()) {
+        getPredictionJobById({ id }).then(setPredictionJob);
+      }
+      // Tabelas não são atualizadas no polling: evita sobrescrever ordenação/paginação do usuário.
+      // Elas são carregadas no mount e no refetch único quando o job finaliza.
+    }, [id, isRunning, loadDataProgress]),
+  });
+
+  useEffect(() => {
+    if (!id || predictionJob.status == null) return;
+    const running = [1, 2, 7, 8].includes(predictionJob.status);
+    if (running) {
+      didFinalRefetch.current = false;
+      return;
+    }
+    if (didFinalRefetch.current) return;
+    didFinalRefetch.current = true;
+    const t = setTimeout(() => {
+      loadDataProgress(id);
       getPredictionJobById({ id }).then(setPredictionJob);
       loadDataSuccess(successTableState);
       loadDataFailure(failureTableState);
-    }
-  }, UPDATE_INTERVAL_MS);
+    }, 2000);
+    return () => clearTimeout(t);
+  }, [id, predictionJob.status, loadDataProgress, loadDataSuccess, loadDataFailure, successTableState, failureTableState]);
 
   useEffect(() => {
     getPredictionJobById({ id }).then((job) => {
@@ -206,9 +240,15 @@ function PredictDetail() {
 
   const tasksStatus = () => {
     if (!progress?.tasks_status) return null;
-    return progress.tasks_status.map((task, index) => (
-      <Chip key={`chip-status-${index}`} variant='outlined' label={task.label} color={task.color || 'default'} avatar={<Avatar>{task.count}</Avatar>} />
-    ));
+    return progress.tasks_status.map((task, index) => {
+      const count = task.count ?? 0;
+      const label = `${task.label} ${formatCount(count)}`;
+      return (
+        <Tooltip key={`chip-status-${index}`} title={Number(count).toLocaleString()} arrow>
+          <Chip variant='outlined' label={label} color={task.color || 'default'} sx={{ minWidth: 'max-content' }} />
+        </Tooltip>
+      );
+    });
   };
 
   const handleSuccessTableStateChange = (newState) => {
@@ -222,49 +262,45 @@ function PredictDetail() {
   };
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        <Grid container alignItems='center' spacing={2}>
-          <Grid item>
-            <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation} startIcon={<ArrowBackIosIcon />}>
-              <Typography variant='button' sx={{ margin: '0 5px' }}>
-                Back
+    <Grid container spacing={2} sx={{ minWidth: 0 }}>
+      <Grid item xs={12} sx={{ minWidth: 0 }}>
+        <Stack direction='row' flexWrap='wrap' alignItems='center' sx={{ gap: 1 }}>
+          <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation} startIcon={<ArrowBackIosIcon />} size='small'>
+            <Typography variant='button' component='span' sx={{ margin: '0 5px' }}>
+              Back
+            </Typography>
+          </Button>
+          {[1, 2].includes(predictionJob.status) ? (
+            <Button variant='contained' color='secondary' title='Abort' onClick={handleStopRun} disabled={isJobCanceled} size='small'>
+              {isJobCanceled ? <CircularProgress size={15} color='secondary' /> : <Icon className='fas fa-stop' fontSize='inherit' />}
+              <Typography variant='button' component='span' sx={{ margin: '0 5px' }}>
+                Abort
               </Typography>
             </Button>
-          </Grid>
-          {[1, 2].includes(predictionJob.status) ? (
-            <Grid item>
-              <Button variant='contained' color='secondary' title='Abort' onClick={handleStopRun} disabled={isJobCanceled}>
-                {isJobCanceled ? <CircularProgress size={15} color='secondary' /> : <Icon className='fas fa-stop' fontSize='inherit' />}
-                <Typography variant='button' sx={{ margin: '0 5px' }}>
-                  Abort
-                </Typography>
-              </Button>
-            </Grid>
           ) : null}
-        </Grid>
+        </Stack>
       </Grid>
       {'error' in predictionJob && predictionJob.error !== null && (
-        <Grid item xs={12}>
+        <Grid item xs={12} sx={{ minWidth: 0 }}>
           <Alert severity='error'>{predictionJob.error}</Alert>
         </Grid>
       )}
-      <Grid item xs={12} md={5} xl={3}>
-        <Card>
-          <CardHeader title='Summary Execution' />
-          <CardContent>
+      <Grid item xs={12} md={5} xl={3} sx={{ minWidth: 0 }}>
+        <Card sx={{ overflow: 'hidden' }}>
+          <CardHeader title='Summary Execution' titleTypographyProps={{ variant: 'subtitle1' }} />
+          <CardContent sx={{ pt: 0, '& .MuiListItemText-secondary': { wordBreak: 'break-word' } }}>
             <List data={summaryExecution} />
           </CardContent>
         </Card>
       </Grid>
-      <Grid item xs={12} md={7} xl={9}>
-        <Card>
-          <CardHeader title='Progress' />
-          <CardContent>
-            <Grid container spacing={2} direction='column'>
+      <Grid item xs={12} md={7} xl={9} sx={{ minWidth: 0 }}>
+        <Card sx={{ overflow: 'hidden' }}>
+          <CardHeader title='Progress' titleTypographyProps={{ variant: 'subtitle1' }} />
+          <CardContent sx={{ pt: 0 }}>
+            <Grid container spacing={2} direction='column' sx={{ minWidth: 0 }}>
               {progress?.progress?.length > 0 && <ProgressList stageProgress={progress.progress} />}
               <Divider sx={{ mt: 2 }} />
-              <Stack direction='row' alignItems='center' spacing={2} m={2}>
+              <Stack direction='row' flexWrap='wrap' alignItems='center' sx={{ m: 2, gap: 2 }}>
                 {tasksStatus()}
                 {isRunning() && <LastUpdated datetimeUTC={progress?.updated} />}
               </Stack>
@@ -274,10 +310,10 @@ function PredictDetail() {
       </Grid>
       <>
         {totalCount > 0 && (
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title='Asteroid Results' />
-              <CardContent>
+          <Grid item xs={12} sx={{ minWidth: 0 }}>
+            <Card sx={{ overflow: 'hidden' }}>
+              <CardHeader title='Asteroid Results' titleTypographyProps={{ variant: 'subtitle1' }} />
+              <CardContent sx={{ pt: 0, overflowX: 'auto' }}>
                 <Table
                   columns={tableColumns}
                   data={tableData}
@@ -296,10 +332,10 @@ function PredictDetail() {
           </Grid>
         )}
         {totalErrorCount > 0 && (
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader title='Asteroid Failures' />
-              <CardContent>
+          <Grid item xs={12} sx={{ minWidth: 0 }}>
+            <Card sx={{ overflow: 'hidden' }}>
+              <CardHeader title='Asteroid Failures' titleTypographyProps={{ variant: 'subtitle1' }} />
+              <CardContent sx={{ pt: 0, overflowX: 'auto' }}>
                 <Table
                   columns={tableErrorColumns}
                   data={tableErrorData}

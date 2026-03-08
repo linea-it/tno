@@ -16,8 +16,8 @@ function Progress({ title, variant, total, current }) {
 
   return (
     <>
-      <Typography variant='body1'>{title}</Typography>
-      <Box display='flex' alignItems='center'>
+      <Typography variant='body1' sx={{ wordBreak: 'break-word' }}>{title}</Typography>
+      <Box display='flex' alignItems='center' sx={{ minWidth: 0 }}>
         <Box width='100%' mr={1}>
           <LinearProgress classes={classes} variant={variant} value={currentPercentage} />
         </Box>

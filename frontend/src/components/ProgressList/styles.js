@@ -2,14 +2,24 @@ import { makeStyles } from '@mui/styles'
 
 const useStyles = makeStyles((theme) => ({
   labelInfo: {
-    fontSize: 12
+    fontSize: 12,
+    display: 'block',
+    marginBottom: 4
   },
   labelTimes: {
     fontSize: 12,
-    textAlign: 'right',
-    marginRight: '50px',
-    marginTop: '-20px',
-    display: 'block'
+    display: 'block',
+    marginTop: 4,
+    [theme.breakpoints.up('sm')]: {
+      textAlign: 'right'
+    }
+  },
+  timeLine: {
+    display: 'block',
+    fontSize: 12,
+    [theme.breakpoints.up('sm')]: {
+      textAlign: 'right'
+    }
   }
 }))
 
