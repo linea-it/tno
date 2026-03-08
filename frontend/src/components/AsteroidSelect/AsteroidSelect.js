@@ -7,8 +7,8 @@ import Grid from '@mui/material/Grid'
 
 function AsteroidSelect({ value, onChange, source, error, required }) {
   return (
-    <Grid container>
-      <Grid item xs={12} sm={6} md={6} pr={2}>
+    <Grid container spacing={2} sx={{ minWidth: 0 }}>
+      <Grid item xs={12} sm={6} md={6} sx={{ minWidth: 0 }}>
         <FilterTypeSelect
           value={value.filterType}
           onChange={(event) => {
@@ -19,7 +19,7 @@ function AsteroidSelect({ value, onChange, source, error, required }) {
           }}
         />
       </Grid>
-      <Grid item xs={12} sm={6} md={6}>
+      <Grid item xs={12} sm={6} md={6} sx={{ minWidth: 0 }}>
         {value.filterType === 'name' && (
           <AsteroidNameSelect
             source={source}

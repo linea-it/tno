@@ -72,16 +72,16 @@ function PredictEventGrid() {
   }
 
   return (
-    <Box>
+    <Box sx={{ minWidth: 0, width: '100%' }}>
       <ResultsCount isLoading={isLoading} rowsCount={data?.pages[0].count} />
-      <Grid container spacing={2} mb={2} sx={{ minWidth: 360 }}>
-        <Grid item xs={12}>
+      <Grid container spacing={2} mb={2} sx={{ minWidth: 0 }}>
+        <Grid item xs={12} sx={{ minWidth: 0 }}>
           {isLoading ? loadingPlaceHolder() : status === 'error' && <Alert severity='error'>{error.message}</Alert>}
         </Grid>
         {data?.pages.map((page, idx) => (
           <React.Fragment key={`${idx}-page`}>
             {page.results.map((row, idx) => (
-              <Grid key={`${idx}-${row.name}-${row.id}`} item xs={12} md={6} lg={4}>
+              <Grid key={`${idx}-${row.name}-${row.id}`} item xs={12} md={6} lg={4} sx={{ minWidth: 0 }}>
                 <PredictEventCard data={row} />
               </Grid>
             ))}

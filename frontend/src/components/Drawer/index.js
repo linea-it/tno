@@ -87,7 +87,8 @@ const routes = [
 
 const useCurrentPath = () => {
   const location = useLocation()
-  const [{ route }] = matchRoutes(routes, location)
+  const matches = matchRoutes(routes, location)
+  const route = matches?.[0]?.route ?? { path: '', title: '' }
 
   return route
 }

@@ -25,7 +25,7 @@ function ProgressList({ stageProgress }) {
               {Number(item.current) || 0}/{Number(item.count) || 0}
             </label>
             <br />
-            <div>
+            <div style={{ wordBreak: 'break-word', overflow: 'hidden' }}>
               <span className={classes.labelInfo}>
                 Success: {item.success != null ? item.success : '—'} / Failures: {item.failures != null ? item.failures : '—'}
               </span>

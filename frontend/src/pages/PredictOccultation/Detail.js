@@ -262,10 +262,10 @@ function PredictDetail() {
   };
 
   return (
-    <Grid container spacing={2} sx={{ minWidth: 0 }}>
+    <Grid container spacing={2} sx={{ minWidth: 0, px: { xs: 1, sm: 0 } }}>
       <Grid item xs={12} sx={{ minWidth: 0 }}>
         <Stack direction='row' flexWrap='wrap' alignItems='center' sx={{ gap: 1 }}>
-          <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation} startIcon={<ArrowBackIosIcon />} size='small'>
+          <Button variant='contained' color='primary' title='Back' onClick={handleBackNavigation} startIcon={<ArrowBackIosIcon />} size='small' sx={{ minHeight: 44 }}>
             <Typography variant='button' component='span' sx={{ margin: '0 5px' }}>
               Back
             </Typography>
@@ -288,7 +288,7 @@ function PredictDetail() {
       <Grid item xs={12} md={5} xl={3} sx={{ minWidth: 0 }}>
         <Card sx={{ overflow: 'hidden' }}>
           <CardHeader title='Summary Execution' titleTypographyProps={{ variant: 'subtitle1' }} />
-          <CardContent sx={{ pt: 0, '& .MuiListItemText-secondary': { wordBreak: 'break-word' } }}>
+          <CardContent sx={{ pt: 0, px: { xs: 1.5, sm: 2 }, '& .MuiListItemText-secondary': { wordBreak: 'break-word' } }}>
             <List data={summaryExecution} />
           </CardContent>
         </Card>
@@ -296,7 +296,7 @@ function PredictDetail() {
       <Grid item xs={12} md={7} xl={9} sx={{ minWidth: 0 }}>
         <Card sx={{ overflow: 'hidden' }}>
           <CardHeader title='Progress' titleTypographyProps={{ variant: 'subtitle1' }} />
-          <CardContent sx={{ pt: 0 }}>
+          <CardContent sx={{ pt: 0, px: { xs: 1.5, sm: 2 } }}>
             <Grid container spacing={2} direction='column' sx={{ minWidth: 0 }}>
               {progress?.progress?.length > 0 && <ProgressList stageProgress={progress.progress} />}
               <Divider sx={{ mt: 2 }} />

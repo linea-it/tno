@@ -51,6 +51,7 @@ function AsteroidNameSelect({ initialValue, onChange, source, error, required })
           {...params}
           label='Asteroid Identifier'
           variant='outlined'
+          size='small'
           fullWidth
           InputProps={{
             ...params.InputProps,
