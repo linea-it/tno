@@ -98,25 +98,28 @@ def main(
                 gaia_catalog_csv = os.path.join(data_dir, "gaia_catalog.csv")
                 count_stars = count_lines(gaia_catalog_csv) - 1
 
-                praia_result = dict(
-                    {
-                        "filename": os.path.basename(occultation_file),
-                        "size": os.path.getsize(occultation_file),
-                        "count": count,
-                        "start_period": str(start_date),
-                        "end_period": str(final_date),
-                        "start": praia_t0.isoformat(),
-                        "finish": praia_t1.isoformat(),
-                        "exec_time": praia_td.total_seconds(),
-                        "catalog": GAIA_NAME,
-                        "predict_step": int(step),
-                        "bsp_planetary": bsp_planetary_filename.split(".")[0],
-                        "leap_seconds": leap_sec_filename.split(".")[0],
-                        "nima": USED_NIMA_BSP,
-                        "maximum_visual_magnitude": maximum_visual_magnitude,
-                        "stars": count_stars,
-                    }
-                )
+                base_result = {
+                    "size": os.path.getsize(occultation_file),
+                    "count": count,
+                    "start_period": str(start_date),
+                    "end_period": str(final_date),
+                    "start": praia_t0.isoformat(),
+                    "finish": praia_t1.isoformat(),
+                    "exec_time": praia_td.total_seconds(),
+                    "catalog": GAIA_NAME,
+                    "predict_step": int(step),
+                    "bsp_planetary": bsp_planetary_filename.split(".")[0],
+                    "leap_seconds": leap_sec_filename.split(".")[0],
+                    "nima": USED_NIMA_BSP,
+                    "maximum_visual_magnitude": maximum_visual_magnitude,
+                    "stars": count_stars,
+                }
+                # Só incluir filename quando há eventos: com 0 eventos não rodamos
+                # path_coeff/consolidate, então o arquivo fica em formato PRAIA bruto
+                # e o ingest não deve rodar (evita UndefinedColumn).
+                if count > 0:
+                    base_result["filename"] = os.path.basename(occultation_file)
+                praia_result = dict(base_result)
 
             else:
                 praia_result = dict(
@@ -139,13 +142,9 @@ def main(
                     "message": msg,
                 }
             )
-            # If file was created before the failure (e.g. 0 events), set filename so ingest can run
-            if (
-                occultation_file is not None
-                and os.path.exists(occultation_file)
-                and "filename" not in praia_result
-            ):
-                praia_result["filename"] = os.path.basename(occultation_file)
+            # Opção A (INGEST_FAILURES_PLAN): não setar filename quando PRAIA falhou.
+            # O arquivo não passou por path_coeff/consolidate; ingest não deve rodar
+            # sobre CSV bruto (evita UndefinedColumn por occultation_date).
 
         a.set_predict_occultation(praia_result)
 
