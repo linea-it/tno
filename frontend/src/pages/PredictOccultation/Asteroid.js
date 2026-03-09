@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import Alert from '@mui/material/Alert';
 import Skeleton from '@mui/material/Skeleton';
 import { getPredictionJobResultById } from '../../services/api/PredictJobs';
+import Chip from '@mui/material/Chip';
 import List from '../../components/List';
 import { PredictionEventsContext } from '../../contexts/PredictionContext';
 import PredictionEventsDataGrid from '../../components/PredictionEventsDataGrid/index';
@@ -23,19 +24,20 @@ function PredictionAsteroid() {
   const [summary, setSummary] = useState([]);
   const [times, setTimes] = useState([]);
 
-  const { setQueryOptions } = useContext(PredictionEventsContext);
+  const context = useContext(PredictionEventsContext);
+  const setQueryOptions = context?.setQueryOptions;
 
   useEffect(() => {
+    if (!id) return;
     getPredictionJobResultById(id)
       .then((res) => {
-        // Check if the response is valid before using it
         if (res) {
           setPredictionJobResult(res);
-          setQueryOptions((prev) => {
-            return {
+          if (typeof setQueryOptions === 'function') {
+            setQueryOptions((prev) => ({
               ...prev,
               filters: {
-                ...prev.filters,
+                ...(prev?.filters ?? {}),
                 filterType: 'name',
                 filterValue: [{ name: res.name }],
                 jobid: res.job,
@@ -48,15 +50,13 @@ function PredictionAsteroid() {
                 solar_time_before: undefined,
                 closestApproachUncertainty: undefined,
               },
-            };
-          });
+            }));
+          }
         } else {
-          // Handle case where no result was found for the given ID
           setPredictionJobResult(null);
         }
       })
       .catch((error) => {
-        // Catch network or server errors to prevent crashing
         console.error("Failed to fetch prediction job result:", error);
         setPredictionJobResult(null);
       });
@@ -67,7 +67,16 @@ function PredictionAsteroid() {
       setSummary([
         {
           title: 'Status',
-          value: predictionJobResult.status_name,
+          value: () => {
+            const s = predictionJobResult.status;
+            if (s === 1) return <Chip variant="outlined" label="Success" color="success" size="small" />;
+            if (s === 2) return <Chip variant="outlined" label="Failure" color="error" size="small" />;
+            if (s === 3) return <Chip variant="outlined" label="Queued" size="small" />;
+            if (s === 4) return <Chip variant="outlined" label="Running" color="info" size="small" />;
+            if (s === 5) return <Chip variant="outlined" label="Aborted" color="secondary" size="small" />;
+            if (s === 6) return <Chip variant="outlined" label="Ingesting" size="small" />;
+            return <Chip variant="outlined" label={predictionJobResult.status_name ?? 'Unknown'} size="small" />;
+          },
         },
         {
           title: 'Name',
@@ -127,11 +136,11 @@ function PredictionAsteroid() {
   };
 
   return (
-    <Grid container spacing={2}>
+    <Grid container spacing={2} sx={{ minWidth: 0, px: { xs: 1, sm: 0 }, pb: { xs: 2, sm: 0 } }}>
       <Grid item xs={12}>
         <Grid container alignItems="center" spacing={2}>
           <Grid item>
-            <Button variant="contained" color="primary" title="Back" onClick={handleBackNavigation}>
+            <Button variant="contained" color="primary" title="Back" onClick={handleBackNavigation} size="small" sx={{ minHeight: 44 }}>
               <Icon className="fas fa-undo" fontSize="inherit" />
               <Typography variant="button" sx={{ margin: '0 5px' }}>
                 Back
@@ -141,36 +150,35 @@ function PredictionAsteroid() {
         </Grid>
       </Grid>
       {predictionJobResult &&
-        'messages' in predictionJobResult &&
         predictionJobResult.status === 2 &&
-        predictionJobResult.messages !== null && (
+        predictionJobResult.messages != null && (
           <Grid item xs={12}>
-            <Alert severity="error">{predictionJobResult?.messages}</Alert>
+            <Alert severity="error">{predictionJobResult.messages}</Alert>
           </Grid>
         )}
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
         {!predictionJobResult && loadingCard(400)}
         {predictionJobResult && (
-          <Card>
+          <Card sx={{ overflow: 'hidden' }}>
             <CardHeader title="Summary" titleTypographyProps={{ variant: 'h6' }} />
-            <CardContent>
+            <CardContent sx={{ px: { xs: 1.5, sm: 2 } }}>
               <List data={summary} />
             </CardContent>
           </Card>
         )}
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
         {!predictionJobResult && loadingCard(400)}
         {predictionJobResult && (
-          <Card>
+          <Card sx={{ overflow: 'hidden' }}>
             <CardHeader title="Execution Statistics" titleTypographyProps={{ variant: 'h6' }} />
-            <CardContent>
+            <CardContent sx={{ px: { xs: 1.5, sm: 2 } }}>
               <List data={times} />
             </CardContent>
           </Card>
         )}
       </Grid>
-      <Grid item xs={12} sx={{ mt: 2 }}>
+      <Grid item xs={12} sx={{ mt: 2, minWidth: 0, overflow: 'hidden' }}>
         {!predictionJobResult && loadingCard(600)}
         {predictionJobResult && <PredictionEventsDataGrid disabledSearch />}
       </Grid>

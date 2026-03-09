@@ -16,6 +16,121 @@ from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_f
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
+# Colunas NOT NULL no banco (tno_occultation) que validamos no ingest.
+# Apenas as que existirem no DataFrame são usadas.
+INGEST_NOT_NULL_COLUMNS = [
+    "date_time",
+    "ra_star_candidate",
+    "dec_star_candidate",
+    "ra_target",
+    "dec_target",
+    "closest_approach",
+    "position_angle",
+    "velocity",
+    "delta",
+    "g",
+    "long",
+]
+
+
+def _validate_ingest_dataframe(df, job_id, asteroid_name):
+    """
+    Validates the DataFrame before insert: detects raw (PRAIA) CSV, applies numeric
+    coercion to NOT NULL columns, and marks invalid rows.
+
+    Returns:
+        tuple: (df_valid, failures, skip_insert)
+        - df_valid: DataFrame with valid rows only (may be empty).
+        - failures: list of dict with job_id, asteroid, event_id, date_time, reason, error_type.
+        - skip_insert: True if CSV is raw (not processed) and should not be inserted.
+    """
+    failures = []
+    skip_insert = False
+
+    # Defense: CSV not processed (PRAIA format) must not be inserted
+    if "occultation_date" in df.columns or "date_time" not in df.columns:
+        for idx, row in df.iterrows():
+            event_id = str(row.get("gaia_source_id", row.get("date_time", idx)))
+            date_time_val = row.get("date_time", row.get("occultation_date", ""))
+            failures.append(
+                {
+                    "job_id": job_id,
+                    "asteroid": asteroid_name,
+                    "event_id": event_id,
+                    "date_time": date_time_val,
+                    "reason": "csv not processed / PRAIA format",
+                    "error_type": "UndefinedColumn",
+                }
+            )
+        return df.iloc[0:0], failures, True
+
+    # Colunas NOT NULL que existem no DataFrame (numéricas serão coercidas)
+    not_null_cols = [c for c in INGEST_NOT_NULL_COLUMNS if c in df.columns]
+    if not not_null_cols:
+        return df, [], False
+
+    # Colunas NOT NULL que são string: null ou vazio/whitespace = inválido
+    string_not_null = [
+        "date_time",
+        "ra_star_candidate",
+        "dec_star_candidate",
+        "ra_target",
+        "dec_target",
+    ]
+    # Coerção numérica para colunas que devem ser float
+    numeric_not_null = [
+        "closest_approach",
+        "position_angle",
+        "velocity",
+        "delta",
+        "g",
+        "long",
+    ]
+    df = df.copy()
+    for col in not_null_cols:
+        if col in numeric_not_null and col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Máscara de linhas válidas: sem NaN e sem string vazia em colunas NOT NULL
+    valid_mask = pd.Series(True, index=df.index)
+    for col in not_null_cols:
+        if col in string_not_null:
+            # NOT NULL string: rejeitar NaN e string vazia/whitespace
+            valid_mask &= df[col].notna() & (df[col].astype(str).str.strip() != "")
+        else:
+            valid_mask &= df[col].notna()
+
+    invalid_mask = ~valid_mask
+    if invalid_mask.any():
+        for idx in df.index[invalid_mask]:
+            row = df.loc[idx]
+            bad_cols = [
+                c
+                for c in not_null_cols
+                if pd.isna(row.get(c))
+                or (c in string_not_null and str(row.get(c, "")).strip() == "")
+            ]
+            reason = (
+                "; ".join(f"{c} null or empty" for c in bad_cols)
+                if bad_cols
+                else "null in required column"
+            )
+            event_id = str(row.get("gaia_source_id", row.get("date_time", idx)))
+            date_time_val = row.get("date_time", "")
+            failures.append(
+                {
+                    "job_id": job_id,
+                    "asteroid": asteroid_name,
+                    "event_id": event_id,
+                    "date_time": date_time_val,
+                    "reason": reason,
+                    "error_type": "NotNullViolation",
+                }
+            )
+
+    df_valid = df.loc[valid_mask].copy()
+    return df_valid, failures, skip_insert
+
 
 def serialize(obj):
     """JSON serializer for objects not serializable by default json code"""
@@ -712,15 +827,13 @@ class Asteroid:
             # Atualiza o Json do Asteroid
             self.write_asteroid_json()
 
-    def ingest_predictions(self):
+    def ingest_predictions(self, conn=None, job_path=None):
         log = self.get_log()
         t0 = dt.now(tz=timezone.utc)
 
         try:
             dao = OccultationDao()
 
-            # Não executou a etapa de predição.
-            # Não há arquivo com os resultados.
             if "filename" not in self.predict_occultation:
                 log.warning("There is no file with the predictions.")
                 return 0
@@ -728,33 +841,81 @@ class Asteroid:
             predict_table_path = pathlib.Path(
                 self.path, self.predict_occultation["filename"]
             )
-
-            # Arquivo com resultados da predicao nao foi criado
-            # Foi executado mais não gerou resultados.
             if not predict_table_path.exists():
                 return 0
 
-            # Le o arquivo occultation table e cria um dataframe
-            df = pd.read_csv(
-                predict_table_path,
-                delimiter=";",
+            df = pd.read_csv(predict_table_path, delimiter=";")
+            if df.empty:
+                del df
+                del dao
+                return 0
+
+            job_id = int(getattr(self, "job_id", 0))
+            asteroid_name = getattr(self, "name", "")
+
+            df_valid, failures, skip_insert = _validate_ingest_dataframe(
+                df, job_id, asteroid_name
             )
-
-            rowcount = dao.upinsert_occultations(df)
-
             del df
+
+            # Write failures to ingest_predictions.log (one line per failure)
+            if failures:
+                for f in failures:
+                    log.info(
+                        "INGEST_FAILURE job_id=%s asteroid=%s event_id=%s date_time=%s reason=%s error_type=%s",
+                        f.get("job_id"),
+                        f.get("asteroid"),
+                        f.get("event_id"),
+                        f.get("date_time"),
+                        f.get("reason"),
+                        f.get("error_type"),
+                    )
+
+            if skip_insert:
+                log.warning(
+                    "Asteroid [%s] CSV in raw format (not processed); ingest skipped."
+                    % asteroid_name
+                )
+                rejected = len(failures)
+                self.ingest_occultations.update({"count": 0})
+                if rejected:
+                    log.info(
+                        "Asteroid [%s] Rejected [%s] rows (PRAIA format)."
+                        % (asteroid_name, rejected)
+                    )
+                del dao
+                return 0
+
+            if df_valid.empty:
+                rowcount = 0
+                log.info(
+                    "Asteroid [%s] No valid rows; rejected [%s]."
+                    % (asteroid_name, len(failures))
+                )
+            else:
+                rowcount = dao.upinsert_occultations(df_valid, conn=conn)
+                # pandas to_sql(method=...) pode retornar None; usar len(df_valid) como fallback
+                if rowcount is None:
+                    rowcount = len(df_valid)
+                rejected = len(failures)
+                log.info(
+                    "Asteroid [%s] Ingested [%s] predictions events."
+                    % (asteroid_name, rowcount)
+                )
+                if rejected:
+                    log.info(
+                        "Asteroid [%s] Rejected [%s] rows (see INGEST_FAILURE lines above)."
+                        % (asteroid_name, rejected)
+                    )
+
+            del df_valid
             del dao
 
             self.ingest_occultations.update({"count": rowcount})
-            log.info(
-                "Asteroid [%s] Ingested [%s] predictions events."
-                % (self.name, rowcount)
-            )
-
             return rowcount
+
         except Exception as e:
             msg = "Failed in Ingest Occultations stage. Error: %s" % e
-
             self.ingest_occultations.update({"message": msg})
             log.error("Asteroid [%s] %s" % (self.name, msg))
             self.set_failure()
@@ -763,7 +924,6 @@ class Asteroid:
         finally:
             t1 = dt.now(tz=timezone.utc)
             tdelta = t1 - t0
-
             self.ingest_occultations.update(
                 {
                     "start": t0.isoformat(),
@@ -771,8 +931,6 @@ class Asteroid:
                     "exec_time": tdelta.total_seconds(),
                 }
             )
-
-            # Atualiza o Json do Asteroid
             self.write_asteroid_json()
 
     def consiladate(self):

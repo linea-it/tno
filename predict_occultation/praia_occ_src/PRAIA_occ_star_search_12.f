@@ -51,7 +51,52 @@ c
 c
 c     Last update: M. Assafin - 10/Dec/2017
 c
+c     Update Julio Camargo - 02/Aug/2024:
+c      Changed line 678 (now 683-688): included else conditon
+c      Included before line 708 (now 714): ifcat(nn)='g3'
+c      Short modification on lines 804-815 (now 815-826)
+c      Changed numb. format from f6.2 to f13.2 on write 'Delta' on line 974
 c
+c     Update Guga Rossi - 28/Oct/2024
+c      Numb. format from f5.3 to f6.3 on write 'C/A' on line 974 (now 976)
+c      Add space between 'P/A', 'vel', and 'Delta' on line 974 (now 976)
+c
+c    Update Guga Rossi 27/Nov/2024
+c     Add new file output (output 89) with the same values as output 88
+c       but separated with coma (CSV)
+c
+c    Update Guga Rossi 18/Fev/2025
+c     - remove blank spaces from csv output file (89)
+c     - include header on csv output file (89)
+c     - change in csv output file format (89) = date, RA, DEC
+c       old format 196:
+c 196  format(1x,i2.2,';',i2.2,';',i4,';',i2.2,';',i2.2,';',f3.0,';',
+c     ?i2.2,';',i2.2,';',f7.4,';',a1,i2.2,';',i2.2,';',f6.3,';',
+c     ?i2.2,';',i2.2,';',f7.4,';',a1,i2.2,';',i2.2,';',f6.3,';',
+c     ?f6.3,';',f6.2,';',f7.2,';',f13.2,';',f4.1,';',f4.1,';',f4.1,';',
+c     ?f4.1,';',f7.0,';',i2.2,';',i2.2,';',';',f7.1,';',f7.1,';',
+c     ?a2,';',a2,';',i1,';'i4,';',i4,';',i4,';',i4)
+c
+c
+c    Update Guga Rossi 17/Mar/2025
+c
+c     - remove blank spaces in between numbers from csv output file(89)
+c        - update format (196) and write on (89)
+c        - e.g. 1.234 => 001.234
+c     - Update header on output file (88)
+c
+c    Update Rodrigo Boufleur 06/Mar/2026
+c     - Gaia DR3: header output 88 - R magnitude/UCAC2 replaced by G (Gaia);
+c       ct line set to "only Gaia DR3 stars are used"; ifcat(nn)='g3' default
+c     - Header and notes: G column labeled as G* (normalized to 20 km/s);
+c       notes state G* from Gaia, G*, J*, H*, K* normalized; CSV header G*_mag
+c     - Output 89 (CSV): open/close, header with column names, format 196,
+c       write(89,196) with date, RA, DEC, C/A, P/A, velocity, distance, G/J/H/K, etc.
+c     - Format 195 (output 88): C/A f5.3->f6.3; Delta/vel/G column widths updated
+c     - Long separator and data header lines in output 88 rewritten with write(88,'(a)')
+c     - ifpm: else branch added (ifpm='--' when capma.le.10.d0)
+c
+
 
       IMPLICIT REAL *8 (A-H,O-Z)
 
@@ -675,7 +720,11 @@ c
 
 
       ifpm(nn)='ok'
-      if (capma(nn).gt.10.d0) ifpm(nn)='no'
+      if (capma(nn).gt.10.d0) then
+       ifpm(nn)='no'
+      else
+       ifpm(nn)='--'
+      endif
 
 
 c
@@ -701,6 +750,7 @@ c
 
       kflag(nn)=iflag(k)
 
+      ifcat(nn)='g3'
       if (icat(k).eq.1) ifcat(nn)='uc'
       if (icat(k).eq.2) ifcat(nn)='2m'
       if (icat(k).eq.9) ifcat(nn)='fs'
@@ -745,6 +795,7 @@ c
       open (3,file=output)
 
       open (88,file=dplot)
+      open (89,file=TRIM(dplot)//'.csv')
 
 c
 c     Explanation Header of data plot file
@@ -757,9 +808,9 @@ c
      ?'
       write (88,*)'vel: velocity in plane of sky, in km/sec, positive= p
      ?rograde, negative= retrograde'
-      write (88,*)'R: instrumental magnitude in UCAC2 system'
-      write (88,*)'J, H, K: 2MASS magnitudes (50.0 = not in 2MASS)'
-      write (88,*)'R*, J*, H*, K* are normalized magnitudes to a common'
+      write (88,*)'G* from Gaia G magnitude; J, H, K from 2MASS (50.0 = no
+     ?t in 2MASS)'
+      write (88,*)'G*, J*, H*, K* are normalized magnitudes to a common'
       write (88,*)'shadown velocity of 20 km/sec by the relationship:'
       write (88,*)'Mag* = Mag_actual + 2.5*log10[velocity/20 (km/sec)]'
       write (88,*)'Delta: Planet range to Earth, AU'
@@ -767,8 +818,10 @@ c
      ?ve towards East'
       write (88,*)'loc. t.= UT + long: local solar time at sub-planet po
      ?int, hh:mm'
-      write (88,*)'-----------------------------------------------------
-     ?---------------------------------------------------------------'
+      write (88,'(a)') '--------------------------------------------' //
+     ?'-------------------------------------------------------------' //
+     ?'-------------------------------------------------------------' //
+     ?'--------------------------------------------'
       write (88,*)'Selection criteria:'
       write (88,*)'Maximum geocentrique closest approach considered:', s
      ?radius,' arcsec'
@@ -787,7 +840,7 @@ c
       write (88,*)'C = ',aofde,' (mas/yr)'
       write (88,*)'D = ',bofde,' (mas)'
       write (88,*)'pm = proper motion applied? (ok, no)'
-      write (88,*)'ct = uc (UCAC2); 2m (2MASS); fs (field star)'
+      write (88,*)'ct = only Gaia DR3 stars are used'
       write (88,*)'f = multiplicity flag'
       write (88,*)'0 - no multiple entries per star in astrometry'
       write (88,*)'1 - single position from 2 or more uc/2m entries'
@@ -801,19 +854,27 @@ c
      ?estimation)'
       write (88,*)'pmra, pmde: star proper motion (mas); (9999 = no prop
      ?er motion)'
-      write (88,*)'-----------------------------------------------------
-     ?------------------------------------------------------------------
-     ?------------------------------------------------------------------
-     ?-------'
-      write (88,*)' d  m year  h:m:s UT     ra___dec___J2000_candidate
-     ?   ra_dec_J2000_target_geocen     C/A    P/A     vel  Delta  R*
-     ?J*   H*   K*   long  loc. t.  off_ra   off_de pm ct f E_ra E_de pm
-     ?ra pmde'
-      write (88,*)'-----------------------------------------------------
-     ?------------------------------------------------------------------
-     ?------------------------------------------------------------------
-     ?-------'
+      write (88,'(a)') '--------------------------------------------' //
+     ?'-------------------------------------------------------------' //
+     ?'-------------------------------------------------------------' //
+     ?'--------------------------------------------'
+      write (88,'(a)') ' dd mm year  h:m:s UT    ra____dec____J2000_' //
+     ?'candidate   ra_dec_J2000_target_geocentr    _C/A_' //
+     ?'   _P/A_  ____vel___  ___delta__  __G*__ _J*_ _H*_ _K*_' //
+     ?'  _long._ loc.t    off_ra   off_de   pm ct f E_ra E_de' //
+     ?' pmra pmde'
+      write (88,'(a)') '--------------------------------------------' //
+     ?'-------------------------------------------------------------' //
+     ?'-------------------------------------------------------------' //
+     ?'--------------------------------------------'
 
+c
+c     Explanation Header of csv data file
+c
+      write (89,*)'Date-Time;RA_J2000;DEC_J2000;RA_geocenter;DEC_geocent
+     ?er;C/A;P/A;Velocity;Distance;G*_mag;J*_mag;H*_mag;K*_mag;Long;local;of
+     ?f_RA;off_DEC;pm;cat;flag;E_ra;E_de;pmra;pmde'
+c
 
       do 200 m=1,ntotal
 
@@ -960,8 +1021,56 @@ c
      ?iderro(k),ipma,ipmd
 
  195  format(1x,2(i2.2,1x),i4,1x,2(1x,i2.2),1x,f3.0,2(3x,2(i2.2,1x),
-     ?f7.4,1x,a1,2(i2.2,1x),1x,f6.3),3x,f5.3,2x,f6.2,f7.2,f6.2,4(1x,
-     ?f4.1),f7.0,1x,i2.2,':',i2.2,1x,2(2x,f7.1),2(1x,a2),1x,i1,4(1x,i4))
+     ?f7.4,1x,a1,2(i2.2,1x),1x,f6.3),3x,f6.3,2x,f6.2,2x,f10.4,
+     ?2x,f10.3,1x,f8.3,3(1x,f4.1),1x,f8.2,1x,i2.2,':',i2.2,
+     ?1x,2(2x,f7.1),2x,2(1x,a2),1x,i1,4(1x,i4))
+
+
+
+
+c      write (88,*)'UT ra____dec____J2000_candidate
+c     ?  ra_dec_J2000_target_geocentr    _C/A_   _P/A_  __vel__  ____
+c     ?Delta____ _R*_ _J*_ _H*_ _K*_ _long._ loc. t.  off_ra   off_de
+c     ? pm ct f E_ra E_de pmra pmde'
+
+c      write (89,196) iutdi0,iutme0,iutan0,iuth0,iutm0,sut0,iah,iam,sa,
+c     ?isig,idg,idm,ds,iahb,iamb,sab,isigb,idgb,idmb,dsb,dista(k),
+c     ?pang(k),vsky(k),pdis(k),cadmg(k),camgj(k),camgh(k),camgk(k),alo,
+c     ?iuths,iutms,dofra(k),dofde(k),ifpm(k),ifcat(k),kflag(k),iaerro(k),
+c     ?iderro(k),ipma,ipmd
+
+      write (89,196) iutan0,iutme0,iutdi0,iuth0,iutm0,int(sut0),
+     ?iah,iam,int(sa),abs(int((sa-int(sa))*10000d0)),
+     ?isig,idg,idm,int(ds),abs(int((ds-int(ds))*1000d0)),
+     ?iahb,iamb,int(sab),abs(int((sab-int(sab))*10000d0)),
+     ?isigb,idgb,idmb,int(dsb),abs(int((dsb-int(dsb))*1000d0)),
+     ?int(dista(k)),abs(int((dista(k)-int(dista(k)))*1000d0)),
+     ?int(pang(k)),abs(int((pang(k)-int(pang(k)))*100d0)),
+     ?int(vsky(k)),abs(int((vsky(k)-int(vsky(k)))*10000d0)),
+     ?int(pdis(k)),abs(int((pdis(k)-int(pdis(k)))*1000d0)),
+     ?int(cadmg(k)),abs(int((cadmg(k)-int(cadmg(k)))*1000d0)),
+     ?int(camgj(k)),abs(int((camgj(k)-int(camgj(k)))*10d0)),
+     ?int(camgh(k)),abs(int((camgh(k)-int(camgh(k)))*10d0)),
+     ?int(camgk(k)),abs(int((camgk(k)-int(camgk(k)))*10d0)),
+     ?int(alo),abs(int((alo-int(alo))*100d0)),iuths,iutms,
+     ?int(dofra(k)),abs(int((dofra(k)-int(dofra(k)))*10d0)),
+     ?int(dofde(k)),abs(int((dofde(k)-int(dofde(k)))*10d0)),
+     ?ifpm(k),ifcat(k),kflag(k),
+     ?iaerro(k),iderro(k),ipma,ipmd
+
+ 196  format(1x,i4,'-',i2.2,'-',i2.2,' ',i2.2,':',i2.2,':',i2.2,'.0Z;',
+     ?i2.2,' ',i2.2,' ',i2.2,'.',i4.4,';',
+     ?a1,i2.2,' ',i2.2,' ',i2.2,'.',i3.3,';',
+     ?i2.2,' ',i2.2,' ',i2.2,'.',i4.4,';',
+     ?a1,i2.2,' ',i2.2,' ',i2.2,'.',i3.3,';',
+     ?i2.2,'.',i3.3,';',i3.3,'.',i2.2,';',i4.3,'.',i4.4,';',
+     ?i10.10,'.',i3.3,';',
+     ?i2.2,'.',i3.3,';',i2.2,'.',i1.1,';',
+     ?i2.2,'.',i1.1,';',i2.2,'.',i1.1,';',
+     ?i6.6,'.',i2.2,';',i2.2,' ',i2.2,';',
+     ?i5.5,'.',i1.1,';',i5.5,'.',i1.1,';',
+     ?a2,';',a2,';',i1,';'i4.3,';',i4.3,';',i4.3,';',i4.3)
+
 
 
  200  continue
@@ -970,7 +1079,7 @@ c
 
       close (3)
       close (88)
-
+      close (89)
 
       write (*,*) 'Number of events = ',ntotal
       write (*,*)

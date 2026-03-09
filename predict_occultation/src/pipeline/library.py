@@ -6,12 +6,32 @@ import os
 import re
 from datetime import datetime, timedelta
 
+# Force Astropy to use the pipeline cache (e.g. on cluster workers). Must run before any astropy import.
+_cache_dir = os.environ.get("CACHE_DIR")
+if _cache_dir:
+    os.environ["XDG_CACHE_HOME"] = _cache_dir
+    os.environ["ASTROPY_CACHE_DIR"] = os.path.join(_cache_dir, "astropy")
+
+# When using pre-populated IERS cache (CACHE_DIR), allow predictive data older than 30 days.
+import warnings
+
 import astropy.units as u
 import numpy as np
 import spiceypy as spice
 from astropy.coordinates import AltAz, EarthLocation, SkyCoord, get_body, get_sun
 from astropy.time import Time
 from scipy.interpolate import interp1d
+
+if os.environ.get("CACHE_DIR"):
+    from astropy.utils.iers import conf
+
+    conf.auto_max_age = None
+    warnings.warn(
+        "IERS auto_max_age disabled (CACHE_DIR set). The IERS table may be old; "
+        "consider running cache update (e.g. python manage.py update_caches) when possible.",
+        UserWarning,
+        stacklevel=2,
+    )
 
 
 def normalize_to_nearest_hour(dt):
@@ -665,19 +685,30 @@ def compute_magnitude_drop(asteroid_visual_magnitude, star_visual_magnitude):
     """
     Compute the magnitude drop of an asteroid relative to a star.
 
+    Accepts scalars or array-like (e.g. pandas Series). When inputs come from
+    Series.apply() they may have dtype object; conversion to float64 ensures
+    np.log10 receives a proper array. NaN in inputs propagate to the result.
+
     Parameters:
-    - asteroid_visual_magnitude (float): The visual magnitude of the asteroid.
-    - star_visual_magnitude (float): The visual magnitude of the star.
+    - asteroid_visual_magnitude: Visual magnitude(s) of the asteroid (float or array-like).
+    - star_visual_magnitude: Visual magnitude(s) of the star (float or array-like).
 
     Returns:
-    - float: The magnitude drop of the asteroid relative to the star.
+    - float or np.ndarray: Magnitude drop(s). Scalar if both inputs are scalars.
     """
     if asteroid_visual_magnitude is None or star_visual_magnitude is None:
         return None
 
-    delta_magnitude = asteroid_visual_magnitude - star_visual_magnitude
-    drop_magnitude = 2.5 * np.log10(1 + 10 ** (delta_magnitude * 0.4))
-    return drop_magnitude
+    # Convert to float64 so ufuncs (np.log10) always get a proper array; handles Series with dtype object
+    a = np.asarray(asteroid_visual_magnitude, dtype=np.float64)
+    s = np.asarray(star_visual_magnitude, dtype=np.float64)
+    delta_magnitude = a - s
+    drop_magnitude = 2.5 * np.log10(1.0 + np.power(10.0, delta_magnitude * 0.4))
+    return (
+        drop_magnitude
+        if (a.ndim == 0 and s.ndim == 0)
+        else np.atleast_1d(drop_magnitude).ravel()
+    )
 
 
 def get_moon_and_sun_separation(ra, dec, instant):

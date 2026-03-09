@@ -141,28 +141,10 @@ def run_praia_occ(
 
 
 def fix_table(filename):
-
-    inoutFile = open(filename, "r+b")
-    contents = inoutFile.readlines()
-
-    contents[4] = b" G: G magnitude from Gaia\n"
-    contents[5] = contents[5][:41] + b"cluded)\n"
-    contents[6] = b" G" + contents[6][2:]
-    contents[17] = contents[17][:27] + b"\n"
-    contents[26] = contents[26][:6] + b"only Gaia DR1 stars are used\n"
-    contents[27] = contents[27][:-1] + b" (not applicable here)\n"
-    contents[35] = contents[35][:34] + b"10)\n"
-    contents[36] = contents[36][:41] + b"\n"
-    contents[37] = contents[37][:36] + b"/yr); (0 when not provided by Gaia DR1)\n"
-    contents[39] = contents[39][:115] + b"G" + contents[39][116:]
-
-    for i in range(41, len(contents)):
-        contents[i] = contents[i][:169] + b"-- -" + contents[i][173:]
-
-    inoutFile.seek(0)  # go at the begining of the read/write file
-    inoutFile.truncate()  # clean the file (delete all content)
-    inoutFile.writelines(contents)  # write the new content in the blank file
-    inoutFile.close()
+    """Leave PRAIA table output unchanged. Header and content are correct from Fortran."""
+    # Previously this patched header lines by index; with the new PRAIA output
+    # (Gaia DR3, G*, separators) those patches corrupted the file. No patches applied.
+    pass
 
 
 def get_position_from_occ_table(data_array, index_list):
@@ -192,9 +174,26 @@ def ascii_to_csv(inputFile, outputFile):
         inputFile (str): The path to the input ASCII file.
         outputFile (str): The path for the output CSV file.
     """
-    data = np.loadtxt(inputFile, skiprows=41, dtype=str, ndmin=2)
+    colNames = (
+        "occultation_date;ra_star_candidate;dec_star_candidate;ra_object;"
+        "dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;"
+        "off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde"
+    )
+
+    try:
+        data = np.loadtxt(inputFile, skiprows=41, dtype=str, ndmin=2)
+    except (ValueError, OSError, StopIteration):
+        # PRAIA found 0 events: file has no data rows after header (NumPy may raise StopIteration).
+        # Write CSV with header only.
+        with open(outputFile, "w") as f:
+            f.write(colNames + "\n")
+        return
 
     nRows, nCols = data.shape
+    if nRows == 0:
+        with open(outputFile, "w") as f:
+            f.write(colNames + "\n")
+        return
 
     # Robustly handle date/time conversion, including seconds=60
     date = []
@@ -224,15 +223,11 @@ def ascii_to_csv(inputFile, outputFile):
 
     newData = np.concatenate((dateAndPositions, otherParameters), axis=1)
 
-    # Defining the column's names
-    colNames = (
-        "occultation_date;ra_star_candidate;dec_star_candidate;ra_object;"
-        "dec_object;ca;pa;vel;delta;g;j;h;k;long;loc_t;"
-        "off_ra;off_de;pm;ct;f;e_ra;e_de;pmra;pmde"
+    # Saving with '%s' will convert the datetime object to its standard string format.
+    # comments='' avoids numpy adding "# " prefix to header (would create column "# occultation_date").
+    np.savetxt(
+        outputFile, newData, fmt="%s", header=colNames, delimiter=";", comments=""
     )
-
-    # Saving with '%s' will convert the datetime object to its standard string format
-    np.savetxt(outputFile, newData, fmt="%s", header=colNames, delimiter=";")
 
 
 def search_candidates(star_catalog, object_ephemeris, filename, object_diameter):

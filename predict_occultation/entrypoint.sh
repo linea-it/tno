@@ -7,6 +7,29 @@ umask ug=rwx,o=r
 echo "Checking mandatory environment variables."
 /opt/conda/bin/python3 /app/check_enviroment.py
 
+# ============================================================
+# CRIAR DIRETÓRIO DE CACHE SEMPRE (antes de qualquer coisa)
+# CACHE_DIR deve ser definido no arquivo .env
+# Este diretório de cache é usado para todos os tipos de cache (Astropy, etc.)
+# ============================================================
+if [[ -z "$CACHE_DIR" ]]; then
+    echo "ERROR: CACHE_DIR is not set!"
+    echo "       CACHE_DIR must be defined in .env file."
+    echo "       This cache directory is used for all types of cache (Astropy, etc.)"
+    exit 1
+fi
+
+echo "Cache directory: ${CACHE_DIR}"
+
+echo "Creating cache directory: ${CACHE_DIR}"
+if [ "$(id -u)" = "0" ]; then
+    mkdir -p ${CACHE_DIR}/astropy
+    chown -R 1000:1000 ${CACHE_DIR} 2>/dev/null || true
+else
+    mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
+    mkdir -p ${CACHE_DIR}/astropy || echo "WARNING: Could not create astropy subdirectory"
+fi
+
 if [[ "$PARSL_ENV" = "linea" ]]
 then
     echo "Setting up LIneA Remote envs"
@@ -15,8 +38,40 @@ then
     export PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
     export SSHKEY=/home/app.tno/.ssh/id_rsa
 
+    # Cache warming (in container with internet, before rsync)
+    # CRITICAL: This must happen before workers start, as workers have no internet access
+    echo "============================================================"
+    echo "Cache warming for pipeline dependencies"
+    echo "Cache directory: ${CACHE_DIR}"
+    echo "Log file: /app/logs/predict_occ_cache.log"
+    echo "============================================================"
+
+    # Use Python from py3 environment (astropy is installed there)
+    if ! /opt/conda/envs/py3/bin/python3 /app/src/warm_cache.py --cache-dir ${CACHE_DIR}; then
+        echo "ERROR: Cache warming failed!"
+        echo "Check logs: /app/logs/predict_occ_cache.log"
+        exit 1
+    fi
+
+    # Verify cache contains IERS file (critical for cluster workers)
+    cache_file=$(find ${CACHE_DIR}/astropy/download -type f -size +1M 2>/dev/null | head -1)
+    if [ -z "$cache_file" ]; then
+        echo "ERROR: IERS cache file not found after warming!"
+        echo "       Cache directory: ${CACHE_DIR}/astropy/download"
+        echo "       Check logs: /app/logs/predict_occ_cache.log"
+        echo "       Workers on cluster cannot download IERS data without cache!"
+        exit 1
+    fi
+
+    # Log cache file details for verification
+    file_size=$(stat -c%s "$cache_file" 2>/dev/null || echo "unknown")
+    echo "✓ IERS cache verified: $(basename "$cache_file") (${file_size} bytes)"
+    echo "Cache warming completed successfully"
+    echo "============================================================"
+
+    # Rsync code to Lustre (exclude cache to avoid overwriting)
     echo "Running Rsync: /app/src/ ${PIPELINE_PREDIC_OCC}"
-    rsync -r /app/src/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/
+    rsync -r --update /app/src/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/ --exclude cache/
 
     # ulimit -s 100000
     # ulimit -u 100000
@@ -45,6 +100,28 @@ then
         source ${REMOTE_PIPELINE_ROOT}/miniconda/bin/activate
         $remote_conda_bin env create -f environment.py3.yml
         echo "Remote Conda enviroment Created!"
+    fi
+else
+    # Cache warming for local environment
+    echo "============================================================"
+    echo "Cache warming for pipeline dependencies (local)"
+    echo "Cache directory: ${CACHE_DIR}"
+    echo "Log file: /app/logs/predict_occ_cache.log"
+    echo "============================================================"
+
+    # Use Python from py3 environment (astropy is installed there)
+    # For local, cache warming failure is non-critical (can download during execution)
+    # but we still log it
+    if ! /opt/conda/envs/py3/bin/python3 /app/src/warm_cache.py --cache-dir ${CACHE_DIR}; then
+        echo "WARNING: Cache warming failed (non-critical for local environment)"
+        echo "Check logs: /app/logs/predict_occ_cache.log"
+        echo "Pipeline may download IERS data during execution if needed"
+    else
+        echo "Cache warming completed successfully"
+    fi
+    echo "============================================================"
+    if [ "$(id -u)" = "0" ]; then
+        chown -R 1000:1000 ${CACHE_DIR} 2>/dev/null || true
     fi
 fi
 

@@ -91,6 +91,10 @@ COPY --from=praia_occ /tmp/praia_occ/* /usr/local/bin
 # Python 3.8 environment
 COPY --chown=:conda --chmod=775 --from=py3_build /opt/conda/envs/py3 /opt/conda/envs/py3
 
+# Install colorlog in base Python for entrypoint.sh scripts
+# This ensures warm_cache.py can use colorlog when called from entrypoint.sh
+RUN /opt/conda/bin/pip install colorlog==6.8.2
+
 RUN set -x && \
     apt-get update --fix-missing && \
     apt-get install -y --no-install-recommends \
@@ -137,6 +141,10 @@ RUN chmod -R =2775 ${PIPELINE_ROOT} \
     && mkdir -p ${APP_HOME}/logs \
     && chmod =2775 ${APP_HOME}/logs \
     && chown -R ${USERNAME}:ton ${APP_HOME}/logs \
+    # Criar diretório de cache
+    && mkdir -p ${APP_HOME}/cache \
+    && chmod =2775 ${APP_HOME}/cache \
+    && chown -R ${USERNAME}:ton ${APP_HOME}/cache \
     && mv de440.bsp ${PIPELINE_PATH}/$BSP_PLANETARY_NAME \
     && mv naif0012.tls ${PIPELINE_PATH}/$LEAP_SECOND_NAME
 

@@ -217,13 +217,16 @@ const PredictOccultationMap = ({ occultationId }) => {
           <Box
             sx={{
               display: 'flex',
+              flexDirection: { xs: 'column', sm: 'row' },
+              flexWrap: 'wrap',
+              gap: 1,
               justifyContent: 'space-between',
-              alignItems: 'center',
+              alignItems: 'stretch',
               padding: '6px'
             }}
           >
             {/* Botão de Download do arquivo KMZ */}
-            <Stack sx={{ flex: 1, mx: 0.5, maxWidth: { xs: '100%', sm: '200px' }, alignSelf: 'stretch' }}>
+            <Stack sx={{ flex: { xs: '1 1 100%', sm: 1 }, minWidth: 0, maxWidth: { xs: '100%', sm: '200px' } }}>
               <DownloadKMZButton
                 {...{
                   id: occultationId,
@@ -241,7 +244,7 @@ const PredictOccultationMap = ({ occultationId }) => {
             </Stack>
 
             {/* Botão de Download do mapa no formato do Sora */}
-            <Stack sx={{ flex: 1, mx: 0.5, maxWidth: { xs: '100%', sm: '200px' }, alignSelf: 'stretch' }}>
+            <Stack sx={{ flex: { xs: '1 1 100%', sm: 1 }, minWidth: 0, maxWidth: { xs: '100%', sm: '200px' } }}>
               <OccultationMapDownload occultationId={occultationId} />
             </Stack>
           </Box>

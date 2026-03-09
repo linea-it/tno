@@ -73,37 +73,36 @@ function PredictEventCard({ data }) {
   }
 
   return (
-    <Card sx={{ display: 'flex', height: 170 }}>
+    <Card sx={{ display: 'flex', minHeight: 170, overflow: 'hidden' }}>
       <CardMedia
         component='img'
         sx={{
-          width: 150,
-          objectFit: 'contain'
+          width: { xs: 100, sm: 130, md: 150 },
+          objectFit: 'contain',
+          flexShrink: 0
         }}
         image={!data?.map_url ? 'https://placehold.co/250?text=No%20Image' : data.map_url}
         onError={handleImageError}
       />
-      <Box sx={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
         <CardHeader
-          sx={{
-            pb: 0
-          }}
+          sx={{ pb: 0, px: { xs: 1, sm: 2 }, '& .MuiCardHeader-content': { minWidth: 0 }, '& .MuiCardHeader-title': { overflow: 'hidden', textOverflow: 'ellipsis' } }}
           title={getDisplayName(data.name, data.number)}
           titleTypographyProps={{ variant: 'body1' }}
           subheader={formatDateTime(data.date_time)}
           subheaderTypographyProps={{ variant: 'body2' }}
         />
-        <CardContent sx={{ flex: '1 0 auto', pt: 1 }}>
-          <Chip label={data.dynclass} color='info' size='small'></Chip>
+        <CardContent sx={{ flex: '1 0 auto', pt: 1, px: { xs: 1, sm: 2 } }}>
+          <Chip label={data.dynclass} color='info' size='small' sx={{ maxWidth: '100%' }} />
           <Stack spacing={1} sx={{ pt: 1 }}>
             <Stack direction='row' spacing={2}>
               {starMag(data.g_star)}
             </Stack>
-            <Stack direction='row' justifyContent='flex-end' alignItems='center' spacing={1}>
-              <Button size='small' onClick={handleShare}>
+            <Stack direction='row' flexWrap='wrap' justifyContent='flex-end' alignItems='center' spacing={1} useFlexGap>
+              <Button size='small' onClick={handleShare} sx={{ minHeight: 44 }}>
                 Share
               </Button>
-              <Button size='small' href={getDetailUrl()} target='_blank'>
+              <Button size='small' href={getDetailUrl()} target='_blank' sx={{ minHeight: 44 }}>
                 More
               </Button>
             </Stack>

@@ -44,10 +44,20 @@ if __name__ == "__main__":
     print("******************************************************************")
     print("HOME: %s" % os.environ.get("HOME"))
     print("ASTROPY CACHE: %s" % os.environ.get("XDG_CACHE_HOME"))
+
+    # CRITICAL: Configure cache environment variables BEFORE importing Astropy
+    # Astropy reads these variables at import time
+    cache_dir_env = os.getenv("CACHE_DIR")
+
+    if cache_dir_env:
+        os.environ["XDG_CACHE_HOME"] = cache_dir_env
+        os.environ["ASTROPY_CACHE_DIR"] = os.path.join(cache_dir_env, "astropy")
+
     import astropy.config as config
 
     # Get the path to the currently used cache directory
     cache_directory = config.get_cache_dir()
+
     print(f"Astropy is using the following cache directory: {cache_directory}")
 
     print("******************************************************************")

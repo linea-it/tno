@@ -16,6 +16,17 @@ timestamp() {
 
 echo "$(timestamp) - Starting daemon..."
 
+# Loop 0 - Cache update (every 12 hours = 43200 seconds)
+(
+    while true; do
+        echo "$(timestamp) - [Cache Update] - Checking and updating cache if needed..."
+        if [[ -n "$CACHE_DIR" ]]; then
+            python3 /app/src/warm_cache.py --cache-dir ${CACHE_DIR} || true
+        fi
+        sleep 43200  # 12 hours
+    done
+) >> /app/logs/cache_update.log 2>&1 &
+
 # Loop 1 - submit_worker
 (
     while true; do

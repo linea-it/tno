@@ -144,7 +144,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Ephemeris Source',
-        value: `${occultation.bsp_source ? occultation.bsp_source : null}`
+        value: [occultation.bsp_source, occultation.ephemeris_version].filter(Boolean).join(' ') || null
       }
     ])
 
@@ -291,41 +291,51 @@ function PredictionEventDetail() {
   }, [occultation, starObj])
 
   return (
-    <Container maxWidth='lg'>
+    <Container maxWidth='lg' sx={{ px: { xs: 1.5, sm: 2 }, py: { xs: 2, sm: 3 }, minWidth: 0 }}>
       {isDev && <AlertEnvironment />}
-      <Typography variant='h4' align='center' sx={{ marginTop: 3 }}>
+      <Typography
+        variant='h4'
+        align='center'
+        sx={{ marginTop: { xs: 2, sm: 3 }, fontSize: { xs: '1.5rem', sm: '2rem' }, wordBreak: 'break-word' }}
+      >
         Occultation by {occultation.name} {occultation.number ? `(${occultation.number})` : ''}
       </Typography>
-      <Typography variant='h5' align='center' color='text.secondary'>
+      <Typography variant='h5' align='center' color='text.secondary' sx={{ fontSize: { xs: '1.1rem', sm: '1.5rem' } }}>
         {moment(occultation.date_time).format('ll')}
       </Typography>
-      <Grid container spacing={2} sx={{ marginTop: '10px' }}>
+      <Grid container spacing={2} sx={{ marginTop: '10px', minWidth: 0 }}>
         {occultation.id !== undefined && (
-          <Grid item xs={12}>
+          <Grid item xs={12} sx={{ minWidth: 0 }}>
             <PredictOccultationMap occultationId={occultation.id} />
           </Grid>
         )}
-        <Grid item xs={12} md={6} lg={6}>
-          <Card sx={{ height: '100%' }}>
+        <Grid item xs={12} md={6} lg={6} sx={{ minWidth: 0 }}>
+          <Card sx={{ height: '100%', overflow: 'hidden' }}>
             <CardHeader
               title='Occultation Prediction Circumstances'
+              titleTypographyProps={{ variant: 'subtitle1', sx: { fontSize: { xs: '1rem', sm: '1.25rem' } } }}
               action={
-                <IconButton href='/docs/user-guide/occultation-details-page/' target='_blank' aria-label='help'>
+                <IconButton
+                  href='/docs/user-guide/occultation-details-page/'
+                  target='_blank'
+                  aria-label='help'
+                  sx={{ minWidth: 44, minHeight: 44 }}
+                >
                   <HelpOutlineIcon />
                 </IconButton>
               }
             />
-            <CardContent>
+            <CardContent sx={{ px: { xs: 1.5, sm: 2 }, '& .MuiListItemText-secondary': { wordBreak: 'break-word' } }}>
               <List data={circumstances} />
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12} md={6}>
-          <Card sx={{ height: '100%' }}>
-            <CardHeader title='Object' />
-            <CardContent>
+        <Grid item xs={12} md={6} sx={{ minWidth: 0 }}>
+          <Card sx={{ height: '100%', overflow: 'hidden' }}>
+            <CardHeader title='Object' titleTypographyProps={{ variant: 'subtitle1', sx: { fontSize: { xs: '1rem', sm: '1.25rem' } } }} />
+            <CardContent sx={{ px: { xs: 1.5, sm: 2 }, '& .MuiListItemText-secondary': { wordBreak: 'break-word' } }}>
               <List data={object} />
-              <Box sx={{ marginLeft: 2 }}>
+              <Box sx={{ marginLeft: { xs: 0, sm: 2 }, mt: 2 }}>
                 {occultation.name && (
                   <>
                     <Typography sx={{ marginBottom: '5px' }}>More information:</Typography>
@@ -333,7 +343,7 @@ function PredictionEventDetail() {
                       href={`https://ssp.imcce.fr/forms/ssocard/${encodeURI(occultation.name.replace(/\s/g, '_'))}`}
                       target='_blank'
                       rel='noopener noreferrer'
-                      sx={{ textDecoration: 'none' }}
+                      sx={{ textDecoration: 'none', display: 'inline-block', py: 0.5, minHeight: 44 }}
                     >
                       SsODNet service at IMCCE
                     </Link>
@@ -342,7 +352,7 @@ function PredictionEventDetail() {
                       href={`https://ssd.jpl.nasa.gov/tools/sbdb_lookup.html#/?sstr=${encodeURI(occultation.name)}`}
                       target='_blank'
                       rel='noopener noreferrer'
-                      sx={{ textDecoration: 'none' }}
+                      sx={{ textDecoration: 'none', display: 'inline-block', py: 0.5, minHeight: 44 }}
                     >
                       Small-Body Database Lookup NASA/JPL
                     </Link>
@@ -352,19 +362,19 @@ function PredictionEventDetail() {
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
-          <Card sx={{ height: '100%' }}>
-            <CardHeader title='Occulted Star' />
-            <CardContent>
+        <Grid item xs={12} sx={{ minWidth: 0 }}>
+          <Card sx={{ height: '100%', overflow: 'hidden' }}>
+            <CardHeader title='Occulted Star' titleTypographyProps={{ variant: 'subtitle1', sx: { fontSize: { xs: '1rem', sm: '1.25rem' } } }} />
+            <CardContent sx={{ px: { xs: 1.5, sm: 2 }, '& .MuiListItemText-secondary': { wordBreak: 'break-word' } }}>
               <List data={star} />
             </CardContent>
           </Card>
         </Grid>
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title='Aladin Sky Atlas' />
-            <CardContent>
-              <Box height={800}>
+        <Grid item xs={12} sx={{ minWidth: 0 }}>
+          <Card sx={{ overflow: 'hidden' }}>
+            <CardHeader title='Aladin Sky Atlas' titleTypographyProps={{ variant: 'subtitle1', sx: { fontSize: { xs: '1rem', sm: '1.25rem' } } }} />
+            <CardContent sx={{ px: { xs: 1.5, sm: 2 } }}>
+              <Box sx={{ height: { xs: 320, sm: 500, md: 800 }, minHeight: 280 }}>
                 {occultation?.id !== undefined && <AladinV3 ra={occultation?.ra_star_deg} dec={occultation?.dec_star_deg} />}
               </Box>
             </CardContent>

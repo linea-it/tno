@@ -8,16 +8,21 @@ function Progress({ title, variant, total, current }) {
   const [currentPercentage, setCurrentPercentage] = useState(0)
 
   useEffect(() => {
-    const percentage = (current * 100) / total
-    const value = !isNaN(percentage) ? percentage : 0
-
+    const t = Number(total)
+    const c = Number(current)
+    if (t <= 0) {
+      setCurrentPercentage(0)
+      return
+    }
+    const percentage = (c * 100) / t
+    const value = Number.isFinite(percentage) ? Math.min(100, Math.max(0, percentage)) : 0
     setCurrentPercentage(value)
   }, [total, current])
 
   return (
     <>
-      <Typography variant='body1'>{title}</Typography>
-      <Box display='flex' alignItems='center'>
+      <Typography variant='body1' sx={{ wordBreak: 'break-word' }}>{title}</Typography>
+      <Box display='flex' alignItems='center' sx={{ minWidth: 0 }}>
         <Box width='100%' mr={1}>
           <LinearProgress classes={classes} variant={variant} value={currentPercentage} />
         </Box>

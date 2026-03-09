@@ -5,6 +5,7 @@ class LeapSecond(models.Model):
     class Meta:
         verbose_name = "Leap Second"
         verbose_name_plural = "Leap Second"
+        ordering = ["id"]
 
     name = models.CharField(
         max_length=100,

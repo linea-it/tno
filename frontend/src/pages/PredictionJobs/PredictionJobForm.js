@@ -214,45 +214,49 @@ function PredictionJobForm() {
 
   return (
     <React.Fragment>
-      <Card>
-        <CardHeader title='Predict Occultation Run'></CardHeader>
-        <CardContent>
+      <Card sx={{ overflow: 'hidden' }}>
+        <CardHeader title='Predict Occultation Run' titleTypographyProps={{ variant: 'h6', sx: { fontSize: { xs: '1.1rem', sm: '1.25rem' } } }} />
+        <CardContent sx={{ px: { xs: 1.5, sm: 2, md: 3 }, '&:last-child': { pb: 2 } }}>
           <Box component='form' noValidate autoComplete='off'>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ minWidth: 0 }}>
                 {dateInterval}
                 <Divider />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sx={{ minWidth: 0 }}>
                 {asteroidSelect}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
                 {ephemerisStep}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
                 {starCatalog}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
                 {planetaryEphemeris}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
                 {leapSecond}
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
                 {debugSwitch}
               </Grid>
             </Grid>
             {mutation.isError && errorAlert()}
           </Box>
         </CardContent>
-        <CardActions>
-          <Button onClick={handleClear} variant='outlined' sx={{ ml: 'auto' }}>
+        <CardActions
+          sx={{
+            flexWrap: 'wrap',
+            gap: 1,
+            px: { xs: 1.5, sm: 2, md: 3 },
+            pb: { xs: 1, sm: 2 }
+          }}
+        >
+          <Button onClick={handleClear} variant='outlined' sx={{ ml: { xs: 0, sm: 'auto' }, minHeight: 44 }}>
             Clear
           </Button>
-          {/* <LoadingButton onClick={handleExecute} loading={mutation.isLoading} variant='contained'>
-            Execute and add another
-          </LoadingButton> */}
-          <LoadingButton onClick={handleExecute} loading={mutation.isLoading} variant='contained'>
+          <LoadingButton onClick={handleExecute} loading={mutation.isLoading} variant='contained' sx={{ minHeight: 44 }}>
             Execute
           </LoadingButton>
         </CardActions>

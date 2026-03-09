@@ -10,6 +10,8 @@ import humanize
 import numpy as np
 from django.conf import settings
 from django.db.models import Q
+
+# Cartopy usa o diretório padrão da biblioteca (cache aquecido no entrypoint)
 from sora.prediction.occmap import plot_occ_map
 from tno.models import Occultation
 
@@ -278,11 +280,17 @@ def sora_occultation_map(
 
     logger = logging.getLogger("predict_maps")
 
+    map_start = datetime.now(timezone.utc)
+    logger.info(
+        f"Starting map generation for {name} (DPI: {dpi}, Resolution: {resolution})"
+    )
+
     radius = float(diameter / 2) if diameter != None else 0
     coord = f"{ra_star_candidate}{dec_star_candidate}"
-    # Time format is isoformat in UTC withou +00:00
+    # Time format is isoformat in UTC without +00:00
     # ex: 2023-09-26T00:54:13.683590Z
     time = date_time.isoformat().replace("+00:00", "Z")
+
     plot_occ_map(
         name=name,
         radius=radius,
@@ -312,6 +320,14 @@ def sora_occultation_map(
 
     if not filepath.exists():
         raise Exception(f"Map file was not generated. {filepath}")
+
+    map_finish = datetime.now(timezone.utc)
+    map_duration = (map_finish - map_start).total_seconds()
+    file_size = filepath.stat().st_size
+
+    logger.info(
+        f"Map generation completed in {map_duration:.2f}s (DPI: {dpi}, Size: {file_size / 1024:.2f} KB)"
+    )
 
     return str(filename)
 

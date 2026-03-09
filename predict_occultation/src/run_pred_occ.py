@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import time
 import traceback
+from concurrent.futures import Future
 from datetime import datetime, timezone
 from io import StringIO
 from pathlib import Path
@@ -177,34 +178,39 @@ def ingest_predictions(jobid: int):
     log.info("-" * 60)
     log.info("Ingest Predictions started")
 
-    # Get all tasks with status 8 Registering
     dao_job_result = PredictOccultationJobResultDao()
-    tasks = dao_job_result.by_job_id(jobid, status=6)
+    engine = dao_job_result.get_db_engine()
+    conn = engine.connect()
+    try:
+        # Get all tasks with status 6 (Ingesting) using shared connection
+        tasks = dao_job_result.by_job_id(jobid, status=6, conn=conn)
 
-    log.info(f"Tasks to register: {len(tasks)}")
+        log.info(f"Tasks to register: {len(tasks)}")
 
-    ASTEROID_PATH = current_path.joinpath("asteroids")
-    for task in tasks:
-        log.info(
-            f"Registering results for task_id: {task['id']} asteroid_name: {task['name']}"
-        )
+        ASTEROID_PATH = current_path.joinpath("asteroids")
+        for task in tasks:
+            log.info(
+                f"Registering results for task_id: {task['id']} asteroid_name: {task['name']}"
+            )
 
-        # Create Asteroid instance
-        a = Asteroid(
-            name=task["name"],
-            base_path=ASTEROID_PATH,
-            log=log,
-        )
+            # Create Asteroid instance
+            a = Asteroid(
+                name=task["name"],
+                base_path=ASTEROID_PATH,
+                log=log,
+            )
 
-        # Ingesting predictions in database.
-        a.ingest_predictions()
+            # Ingesting predictions in database (reusing same connection)
+            a.ingest_predictions(conn=conn, job_path=current_path)
 
-        # Consolidating asteroid results/errors
-        consolidated = a.consiladate()
+            # Consolidating asteroid results/errors
+            consolidated = a.consiladate()
 
-        log.info("Updating task with consolidated data")
-        dao_job_result.update(id=task["id"], data=consolidated)
-        log.info(f"task updated to status: {consolidated['status']}")
+            log.info("Updating task with consolidated data")
+            dao_job_result.update(id=task["id"], data=consolidated, conn=conn)
+            log.info(f"task updated to status: {consolidated['status']}")
+    finally:
+        conn.close()
 
 
 def predict_job_queue():
@@ -638,185 +644,232 @@ def submit_tasks(jobid: int):
         # Get configuration parameters from environment variables
         envname = os.getenv("PARSL_ENV", "linea")
         try:
-            ast_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 500))
-            max_nodes = int(os.getenv("MAX_NODES", 20))
+            ast_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 28))
+            max_nodes = int(os.getenv("MAX_NODES", 28))
         except (ValueError, TypeError):
             log.error("MAX_NODES and ASTEROIDS_PER_NODE must be integers.")
             exit(1)
 
         num_asteroids = len(asteroids)
 
-        # Dynamically calculate the number of nodes required based on the workload
+        # Dynamically calculate the number of nodes required based on the workload (informativo)
         if num_asteroids > 0:
             nodes_needed = math.ceil(num_asteroids / ast_per_node)
         else:
             nodes_needed = 0
 
-        # Apply the max_nodes cap and set the initial blocks for the provider
-        num_blocks_to_init = min(nodes_needed, max_nodes)
-
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
-        parsl_conf.executors[0].provider.init_blocks = int(num_blocks_to_init)
 
-        log.info(
-            f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
-        )
-        log.info(
-            f"Requesting Init Blocks: {parsl_conf.executors[0].provider.init_blocks}"
-        )
+        if envname == "linea" and len(parsl_conf.executors) == 2:
+            # Cluster heterogêneo: small inicia com 1 nó, large com 0 (escala sob demanda)
+            parsl_conf.executors[0].provider.init_blocks = 1
+            parsl_conf.executors[1].provider.init_blocks = 0
+            parsl_conf.executors[0].provider.max_blocks = 16
+            parsl_conf.executors[1].provider.max_blocks = 12
+            log.info(
+                f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
+            )
+            log.info(
+                "Parsl blocks: linea_small init=1 max=16, linea_large init=0 max=12"
+            )
+        else:
+            # Um único executor (local ou linea legado)
+            parsl_conf.executors[0].provider.init_blocks = 1
+            if envname == "linea":
+                parsl_conf.executors[0].provider.max_blocks = max_nodes
+            log.info(
+                f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
+            )
+            log.info(
+                f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
+                f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
+            )
 
         parsl.clear()
         parsl.load(parsl_conf)
 
-        for asteroid in asteroids:
-            log.info(
-                "---------------< Submiting: %s / %s >---------------"
-                % (current_idx + 1, step1_count)
-            )
-            log.info("Asteroid: [%s]" % asteroid["name"])
+        conn = dao_job_result.get_db_engine().connect()
+        try:
+            for asteroid in asteroids:
+                log.info(
+                    "---------------< Submiting: %s / %s >---------------"
+                    % (current_idx + 1, step1_count)
+                )
+                log.info("Asteroid: [%s]" % asteroid["name"])
 
-            is_abort = check_abort_job(jobid)
-            if is_abort:
-                raise AbortError("Job ID %s aborted!" % str(jobid), -1)
+                is_abort = check_abort_job(jobid)
+                if is_abort:
+                    raise AbortError("Job ID %s aborted!" % str(jobid), -1)
 
-            # Ao instanciar a Classe Asteroid, o diretório do asteroid será criado
-            # e um arquivo json com as informações do asteroid será criado.
-            a = Asteroid(
-                name=asteroid["name"],
-                base_path=ASTEROID_PATH,
-                log=log,
-                # Remove Arquivos da execução anterior, inputs, resultados e logs
-                # Necessário em dev quando se está usando rerun
-                new_run=True,
-                inputs_path=INPUTS_PATH,
-            )
+                # Ao instanciar a Classe Asteroid, o diretório do asteroid será criado
+                # e um arquivo json com as informações do asteroid será criado.
+                a = Asteroid(
+                    name=asteroid["name"],
+                    base_path=ASTEROID_PATH,
+                    log=log,
+                    # Remove Arquivos da execução anterior, inputs, resultados e logs
+                    # Necessário em dev quando se está usando rerun
+                    new_run=True,
+                    inputs_path=INPUTS_PATH,
+                )
 
-            a.set_job_id(int(jobid))
+                a.set_job_id(int(jobid))
 
-            # ========================= Download dos Inputs Externos ============================
+                # ========================= Download dos Inputs Externos ============================
 
-            # Dates File ----------------------------------------------------
-            log.info(f"Copying dates.txt file to asteroid directory.")
-            ast_dates_file = pathlib.Path(a.get_path()).joinpath("dates.txt")
-            shutil.copy(dates_filepath, ast_dates_file)
-            log.debug(f"Asteorid Date file: [{ast_dates_file}].")
+                # Dates File ----------------------------------------------------
+                log.info(f"Copying dates.txt file to asteroid directory.")
+                ast_dates_file = pathlib.Path(a.get_path()).joinpath("dates.txt")
+                shutil.copy(dates_filepath, ast_dates_file)
+                log.debug(f"Asteorid Date file: [{ast_dates_file}].")
 
-            # BSP JPL -------------------------------------------------------
-            # Caso HAJA posições para o DES o BSP precisará ter um periodo inicial que contenham o periodo do DES
-            # Para isso basta deixar o bsp_start_date = None e o periodo será setado na hora do download.
-            # Se NÃO tiver posições no DES o BSP tera como inicio a data solicitada para predição.
-            bsp_start_date = str(PREDICT_START.date())
-            bsp_end_date = str(PREDICT_END.date())
-            have_bsp_jpl = a.check_bsp_jpl(
-                start_period=bsp_start_date,
-                end_period=bsp_end_date,
-            )
-
-            # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a
-            # compatibilidade com versão anterior
-            if not have_bsp_jpl:
-                try:
-                    a.download_jpl_bsp(
-                        start_period=bsp_start_date,
-                        end_period=bsp_end_date,
-                    )
-                except Exception as e:
-                    log.error(f"Error downloading BSP JPL: {str(e)}")
-
-                # checa novamente o bsp
-                if not a.check_bsp_jpl(
+                # BSP JPL -------------------------------------------------------
+                # Caso HAJA posições para o DES o BSP precisará ter um periodo inicial que contenham o periodo do DES
+                # Para isso basta deixar o bsp_start_date = None e o periodo será setado na hora do download.
+                # Se NÃO tiver posições no DES o BSP tera como inicio a data solicitada para predição.
+                bsp_start_date = str(PREDICT_START.date())
+                bsp_end_date = str(PREDICT_END.date())
+                have_bsp_jpl = a.check_bsp_jpl(
                     start_period=bsp_start_date,
                     end_period=bsp_end_date,
-                ):
-
-                    log.warning(
-                        "Asteroid [%s] Ignored for not having BSP JPL."
-                        % asteroid["name"]
-                    )
-
-                    current_idx += 1
-                    step1_failures += 1
-
-                    # Registra na tabela results que o asteroid foi ignorado.
-                    dao_job_result.insert(
-                        {
-                            "name": a.name,
-                            "number": a.number,
-                            "base_dynclass": a.base_dynclass,
-                            "dynclass": a.dynclass,
-                            "status": 2,  # Failed
-                            "job_id": jobid,
-                            "messages": "Asteroid Ignored for not having BSP JPL.",
-                        }
-                    )
-
-                    # Ignora as proximas etapas para este asteroid.
-                    continue
-
-            # TODO: Por enquanto estamos Copiando o BSP JPL para pasta do Asteroid.
-            log.info(f"Copying bsp file to asteroid directory.")
-            ast_bsp_origin = pathlib.Path(a.get_bsp_path()).parent
-            ast_bsp_destiny = pathlib.Path(a.get_path())
-            for file in ast_bsp_origin.iterdir():
-                file_destiny = ast_bsp_destiny.joinpath(file.name)
-                log.debug(f"Coping: {file} -> {file_destiny}")
-                shutil.copyfile(file, file_destiny)
-
-            # STAR CATALOG
-            a.set_star_catalog(**STAR_CATALOG)
-
-            step1_success += 1
-            current_idx += 1
-
-            # ======================= Submeter o Job por asteroide ==========================
-            # Adicionar os asteroids a tabela job result ( que agora passa a representar as job tasks.)
-            # Cada asteroid será adicionado com status queued e depois atualizado para running e depois para completed.
-            # Cada asteroid terá um job_id que será o id do job principal.
-            task_id = dao_job_result.insert(
-                {
-                    "name": a.name,
-                    "number": a.number,
-                    "base_dynclass": a.base_dynclass,
-                    "dynclass": a.dynclass,
-                    "status": 3,  # Queued
-                    "job_id": jobid,
-                }
-            )
-            a.set_task_id(task_id)
-
-            log.debug(f"Task ID:  {task_id}")
-            log.debug("Submitting the Job. [%s]" % str(a.get_path()))
-            start_date = str(PREDICT_START.date())
-            end_date = str(PREDICT_END.date())
-            name = a.alias
-            path = str(a.get_path())
-
-            try:
-                # TODO: Passar como parametro apenas o path e o nome do arquivo json.
-                # Demais parametros podem ser lidos do arquivo json.
-                proc = run_pipeline(
-                    (
-                        workdir,
-                        name,
-                        start_date,
-                        end_date,
-                        path,
-                        PREDICT_STEP,
-                        LEAP_SECOND,
-                        BSP_PLANETARY,
-                    ),
-                    stderr=f"{path}/{name}.err",
-                    stdout=f"{path}/{name}.out",
                 )
-                asteroid["job"] = proc
-                asteroid["done"] = False
-                jobs_asteroids.append(asteroid)
 
-            except Exception:
-                step2_failures = +1
-                log.error("Error running asteroid %s" % name)
-                continue
+                # TODO: Duvida fazer o download do bsp? caso ele não exista para manter a
+                # compatibilidade com versão anterior
+                if not have_bsp_jpl:
+                    try:
+                        a.download_jpl_bsp(
+                            start_period=bsp_start_date,
+                            end_period=bsp_end_date,
+                        )
+                    except Exception as e:
+                        log.error(f"Error downloading BSP JPL: {str(e)}")
+
+                    # checa novamente o bsp
+                    if not a.check_bsp_jpl(
+                        start_period=bsp_start_date,
+                        end_period=bsp_end_date,
+                    ):
+
+                        log.warning(
+                            "Asteroid [%s] Ignored for not having BSP JPL."
+                            % asteroid["name"]
+                        )
+
+                        current_idx += 1
+                        step1_failures += 1
+
+                        # Registra na tabela results que o asteroid foi ignorado.
+                        dao_job_result.insert(
+                            {
+                                "name": a.name,
+                                "number": a.number,
+                                "base_dynclass": a.base_dynclass,
+                                "dynclass": a.dynclass,
+                                "status": 2,  # Failed
+                                "job_id": jobid,
+                                "messages": "Asteroid Ignored for not having BSP JPL.",
+                            },
+                            conn=conn,
+                        )
+
+                        # Ignora as proximas etapas para este asteroid.
+                        continue
+
+                # TODO: Por enquanto estamos Copiando o BSP JPL para pasta do Asteroid.
+                log.info(f"Copying bsp file to asteroid directory.")
+                ast_bsp_origin = pathlib.Path(a.get_bsp_path()).parent
+                ast_bsp_destiny = pathlib.Path(a.get_path())
+                for file in ast_bsp_origin.iterdir():
+                    file_destiny = ast_bsp_destiny.joinpath(file.name)
+                    log.debug(f"Coping: {file} -> {file_destiny}")
+                    shutil.copyfile(file, file_destiny)
+
+                # STAR CATALOG
+                a.set_star_catalog(**STAR_CATALOG)
+
+                step1_success += 1
+                current_idx += 1
+
+                # ======================= Submeter o Job por asteroide ==========================
+                # Adicionar os asteroids a tabela job result ( que agora passa a representar as job tasks.)
+                # Cada asteroid será adicionado com status queued e depois atualizado para running e depois para completed.
+                # Cada asteroid terá um job_id que será o id do job principal.
+                task_id = dao_job_result.insert(
+                    {
+                        "name": a.name,
+                        "number": a.number,
+                        "base_dynclass": a.base_dynclass,
+                        "dynclass": a.dynclass,
+                        "status": 3,  # Queued
+                        "job_id": jobid,
+                    },
+                    conn=conn,
+                )
+                a.set_task_id(task_id)
+
+                log.debug(f"Task ID:  {task_id}")
+                log.debug("Submitting the Job. [%s]" % str(a.get_path()))
+                start_date = str(PREDICT_START.date())
+                end_date = str(PREDICT_END.date())
+                name = a.alias
+                path = str(a.get_path())
+
+                # Retry submissão até 3 vezes com 5s entre tentativas (ex.: muitas submissões simultâneas)
+                max_submit_attempts = 3
+                submit_delay_seconds = 5
+                proc = None
+                for attempt in range(1, max_submit_attempts + 1):
+                    try:
+                        proc = run_pipeline(
+                            (
+                                workdir,
+                                name,
+                                start_date,
+                                end_date,
+                                path,
+                                PREDICT_STEP,
+                                LEAP_SECOND,
+                                BSP_PLANETARY,
+                            ),
+                            stderr=f"{path}/{name}.err",
+                            stdout=f"{path}/{name}.out",
+                        )
+                        break
+                    except Exception as e:
+                        log.warning(
+                            "Submit attempt %s/%s for asteroid %s failed: %s"
+                            % (attempt, max_submit_attempts, name, e)
+                        )
+                        if attempt < max_submit_attempts:
+                            time.sleep(submit_delay_seconds)
+                        else:
+                            log.error(
+                                "All %s submit attempts failed for asteroid %s: %s"
+                                % (max_submit_attempts, name, e)
+                            )
+                            dao_job_result.update(
+                                id=task_id,
+                                data={
+                                    "status": 2,  # Failed
+                                    "messages": "falha de submissao (muitas submissões simultâneas ou sem conectividade instantânea)",
+                                },
+                                conn=conn,
+                            )
+                            # Future sintético já concluído com falha para manter contagem no loop
+                            synthetic = Future()
+                            synthetic.set_result(1)
+                            asteroid["job"] = synthetic
+                            asteroid["done"] = False
+                            jobs_asteroids.append(asteroid)
+
+                if proc is not None:
+                    asteroid["job"] = proc
+                    asteroid["done"] = False
+                    jobs_asteroids.append(asteroid)
+        finally:
+            conn.close()
 
         # update_progress_status(
         #     jobid,
@@ -1026,13 +1079,57 @@ def complete_job(jobid: int):
     ast_with_occ = int((df["occultations"] != 0).sum())
 
     t0 = datetime.fromisoformat(job.get("start"))
-    t1 = datetime.now(tz=timezone.utc)
+    if t0.tzinfo is None:
+        t0 = t0.replace(tzinfo=timezone.utc)
+
+    # Métricas de tempo a partir do banco (fonte única, tipos corretos; correto com paralelismo)
+    dao_results = PredictOccultationJobResultDao()
+    results = dao_results.by_job_id(job["id"])
+
+    # Fim real do job = maior ing_occ_finish (último asteroide a terminar)
+    job_end_dt = None
+    for r in results:
+        fin = r.get("ing_occ_finish")
+        if fin is None:
+            continue
+        if hasattr(fin, "tzinfo") and fin.tzinfo is None:
+            fin = fin.replace(tzinfo=timezone.utc)
+        if job_end_dt is None or fin > job_end_dt:
+            job_end_dt = fin
+    if job_end_dt is None:
+        for r in results:
+            fin = r.get("pre_occ_finish")
+            if fin is None:
+                continue
+            if hasattr(fin, "tzinfo") and fin.tzinfo is None:
+                fin = fin.replace(tzinfo=timezone.utc)
+            if job_end_dt is None or fin > job_end_dt:
+                job_end_dt = fin
+    if job_end_dt is None:
+        job_end_dt = datetime.now(tz=timezone.utc)
+    t1 = job_end_dt
     tdelta = t1 - t0
 
-    # Calc average time by asteroid
-    avg_exec_time_asteroid = 0
-    if count_success > 0:
-        avg_exec_time_asteroid = int(tdelta.total_seconds() / count_success)
+    # Média de exec_time por asteroide (só status Success) — correto com paralelismo
+    exec_seconds_list = []
+    for r in results:
+        if r.get("status") != 1:
+            continue
+        et = r.get("exec_time")
+        if et is None:
+            continue
+        if hasattr(et, "total_seconds"):
+            exec_seconds_list.append(et.total_seconds())
+        else:
+            try:
+                exec_seconds_list.append(float(et))
+            except (TypeError, ValueError):
+                continue
+    avg_exec_time_asteroid = (
+        int(round(sum(exec_seconds_list) / len(exec_seconds_list)))
+        if exec_seconds_list
+        else 0
+    )
 
     # Mantem outros status exemplo falha ou abort.
     status = job.get("status")

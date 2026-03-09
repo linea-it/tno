@@ -80,10 +80,19 @@ class OccultationDao(DBBase):
 
         return rowcount
 
-    def upinsert_occultations(self, df):
-
+    def upinsert_occultations(self, df, conn=None):
         # Add updated_at column
         df["updated_at"] = pd.to_datetime("now", utc=True)
+
+        if conn is not None:
+            rowcount = df.to_sql(
+                "tno_occultation",
+                con=conn,
+                if_exists="append",
+                method=occultations_upsert,
+                index=False,
+            )
+            return rowcount
 
         engine = self.get_db_engine()
         with engine.connect() as conn:
@@ -94,5 +103,4 @@ class OccultationDao(DBBase):
                 method=occultations_upsert,
                 index=False,
             )
-
             return rowcount

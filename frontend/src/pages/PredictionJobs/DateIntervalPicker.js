@@ -80,10 +80,10 @@ function DateIntervalPicker({ value, onChange, error }) {
   )
 
   return (
-    <Box sx={{ mb: 2 }}>
+    <Box sx={{ mb: 2, minWidth: 0 }}>
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'en-gb'}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
             <DatePicker
               name='predict_start_date'
               label='Initial date'
@@ -91,15 +91,24 @@ function DateIntervalPicker({ value, onChange, error }) {
                 textField: {
                   fullWidth: true,
                   error: 'predict_start_date' in error,
-                  required: true
+                  required: true,
+                  size: 'small'
                 }
               }}
               value={value[0]}
               onChange={(newValue) => onChange([newValue, value[1]])}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, width: '100%' }}
             />
-            <Stack direction='row' justifyContent='center' alignItems='center' spacing={2}>
-              <ButtonGroup variant='outlined'>
+            <Stack
+              direction='row'
+              flexWrap='wrap'
+              justifyContent='center'
+              alignItems='center'
+              gap={0.5}
+              useFlexGap
+              sx={{ '& .MuiButtonGroup-root': { flexWrap: 'wrap', justifyContent: 'center' } }}
+            >
+              <ButtonGroup variant='outlined' size='small' sx={{ flexWrap: 'wrap', '& .MuiButton-root': { minHeight: 36 } }}>
                 {firstQuarter}
                 {secondQuarter}
                 {thirdQuarter}
@@ -107,7 +116,7 @@ function DateIntervalPicker({ value, onChange, error }) {
               </ButtonGroup>
             </Stack>
           </Grid>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} sm={6} sx={{ minWidth: 0 }}>
             <DatePicker
               name='predict_end_date'
               label='Final date'
@@ -115,16 +124,24 @@ function DateIntervalPicker({ value, onChange, error }) {
                 textField: {
                   fullWidth: true,
                   error: 'predict_end_date' in error,
-                  required: true
+                  required: true,
+                  size: 'small'
                 }
               }}
               value={value[1]}
               onChange={(newValue) => onChange([value[0], newValue])}
-              sx={{ mb: 2 }}
+              sx={{ mb: 2, width: '100%' }}
               error={'predict_end_date' in error}
             />
-            <Stack direction='row' justifyContent='center' alignItems='center' spacing={2}>
-              <ButtonGroup variant='outlined'>
+            <Stack
+              direction='row'
+              flexWrap='wrap'
+              justifyContent='center'
+              alignItems='center'
+              gap={0.5}
+              useFlexGap
+            >
+              <ButtonGroup variant='outlined' size='small' sx={{ flexWrap: 'wrap', '& .MuiButton-root': { minHeight: 36 } }}>
                 {oneMonth}
                 {sixMonth}
                 {oneYear}

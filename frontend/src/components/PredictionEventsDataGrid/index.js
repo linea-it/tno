@@ -8,15 +8,18 @@ import PredictEventToolbar from './Toolbar'
 import PredictEventList from './EventsList'
 
 export function PredictionEventsDataGrid({ disabledSearch }) {
-  const { viewLayoyt } = useContext(PredictionEventsContext)
+  const context = useContext(PredictionEventsContext)
+  const viewLayoyt = context?.viewLayoyt ?? 'grid'
 
   return (
-    <Card>
+    <Card sx={{ overflow: 'hidden', minWidth: 0 }}>
       <CardContent
         sx={{
           minHeight: 500,
           pl: { xs: 1, sm: 2 },
-          pr: { xs: 1, sm: 2 }
+          pr: { xs: 1, sm: 2 },
+          overflow: 'auto',
+          minWidth: 0
         }}
       >
         {!disabledSearch && <PredictEventToolbar />}

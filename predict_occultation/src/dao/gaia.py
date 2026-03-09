@@ -331,47 +331,49 @@ class GaiaDao(Dao):
 
             # Build queries
             n_chunks = len(polygons)
-            for i, chunk in enumerate(polygons):
-                where_clause = 'q3c_poly_query("ra", "dec", ARRAY['
-                for pos in chunk:
-                    where_clause += f"[{pos[0]}, {pos[1]}], "
-                where_clause = where_clause[:-2] + "])"
-                if i == 0:
-                    q3c_radial = f' OR q3c_radial_query("ra", "dec", {chunk[0][0]}, {chunk[0][1] - (chunk[0][1] - chunk[-1][1])/2}, {abs(chunk[-1][1]-chunk[-2][1])})'
-                elif i == n_chunks - 1:
-                    q3c_radial = f' OR q3c_radial_query("ra", "dec", {chunk[0][0]}, {chunk[1][1] + (chunk[2][1] - chunk[1][1])/2}, {abs(chunk[2][1]-chunk[1][1])})'
-                else:
-                    q3c_radial = ""
+            engine = self.get_db_engine()
+            with engine.connect() as conn:
+                for i, chunk in enumerate(polygons):
+                    where_clause = 'q3c_poly_query("ra", "dec", ARRAY['
+                    for pos in chunk:
+                        where_clause += f"[{pos[0]}, {pos[1]}], "
+                    where_clause = where_clause[:-2] + "])"
+                    if i == 0:
+                        q3c_radial = f' OR q3c_radial_query("ra", "dec", {chunk[0][0]}, {chunk[0][1] - (chunk[0][1] - chunk[-1][1])/2}, {abs(chunk[-1][1]-chunk[-2][1])})'
+                    elif i == n_chunks - 1:
+                        q3c_radial = f' OR q3c_radial_query("ra", "dec", {chunk[0][0]}, {chunk[1][1] + (chunk[2][1] - chunk[1][1])/2}, {abs(chunk[2][1]-chunk[1][1])})'
+                    else:
+                        q3c_radial = ""
 
-                where_clause = where_clause + q3c_radial
+                    where_clause = where_clause + q3c_radial
 
-                if max_mag:
-                    where_clause = "%s AND (%s)" % (
-                        self.mag_max_clause(max_mag),
+                    if max_mag:
+                        where_clause = "%s AND (%s)" % (
+                            self.mag_max_clause(max_mag),
+                            where_clause,
+                        )
+
+                    stm = """SELECT %s FROM %s WHERE %s """ % (
+                        columns,
+                        self.tablename,
                         where_clause,
                     )
 
-                stm = """SELECT %s FROM %s WHERE %s """ % (
-                    columns,
-                    self.tablename,
-                    where_clause,
-                )
+                    print(text(stm))
+                    df_rows = pd.read_sql(text(stm), con=conn)
 
-                print(text(stm))
-                df_rows = pd.read_sql(text(stm), con=self.get_db_engine())
+                    if df_results is None:
+                        df_results = df_rows
+                    else:
+                        # Concatena o resultado da nova query com os resultados anteriores.
+                        # Tratando possiveis duplicatas.
+                        df_results = (
+                            pd.concat([df_results, df_rows])
+                            .drop_duplicates(subset=["source_id"])
+                            .reset_index(drop=True)
+                        )
 
-                if df_results is None:
-                    df_results = df_rows
-                else:
-                    # Concatena o resultado da nova query com os resultados anteriores.
-                    # Tratando possiveis duplicatas.
-                    df_results = (
-                        pd.concat([df_results, df_rows])
-                        .drop_duplicates(subset=["source_id"])
-                        .reset_index(drop=True)
-                    )
-
-                del df_rows
+                    del df_rows
             print("-----------------------------------")
 
             if df_results.shape[0] >= 2100000:
@@ -397,38 +399,40 @@ class GaiaDao(Dao):
             print("GAIA Querys:")
             print("-----------------------------------")
             # Agrupar clausulas em grupos para diminuir a quantidade de querys
-            for gpos in self.chunks_positions(positions, self.POSITION_GROUP):
-                print(gpos)
-                clauses = []
+            engine = self.get_db_engine()
+            with engine.connect() as conn:
+                for gpos in self.chunks_positions(positions, self.POSITION_GROUP):
+                    print(gpos)
+                    clauses = []
 
-                for pos in gpos:
-                    clauses.append(self.q3c_clause(pos[0], pos[1], radius))
+                    for pos in gpos:
+                        clauses.append(self.q3c_clause(pos[0], pos[1], radius))
 
-                where = " OR ".join(clauses)
+                    where = " OR ".join(clauses)
 
-                if max_mag:
-                    where = "%s AND (%s)" % (self.mag_max_clause(max_mag), where)
+                    if max_mag:
+                        where = "%s AND (%s)" % (self.mag_max_clause(max_mag), where)
 
-                stm = """SELECT %s FROM %s WHERE %s """ % (
-                    columns,
-                    self.tablename,
-                    where,
-                )
+                    stm = """SELECT %s FROM %s WHERE %s """ % (
+                        columns,
+                        self.tablename,
+                        where,
+                    )
 
-                print(text(stm))
-                df_rows = pd.read_sql(text(stm), con=self.get_db_engine())
-                print("Rows found: %d" % df_rows.shape[0])
+                    print(text(stm))
+                    df_rows = pd.read_sql(text(stm), con=conn)
+                    print("Rows found: %d" % df_rows.shape[0])
 
-                # Concatena o resultado da nova query com os resultados anteriores.
-                # Tratando possiveis duplicatas.
-                df_results = (
-                    pd.concat([df_results, df_rows])
-                    .drop_duplicates()
-                    .reset_index(drop=True)
-                )
+                    # Concatena o resultado da nova query com os resultados anteriores.
+                    # Tratando possiveis duplicatas.
+                    df_results = (
+                        pd.concat([df_results, df_rows])
+                        .drop_duplicates()
+                        .reset_index(drop=True)
+                    )
 
-                del df_rows
-                del clauses
+                    del df_rows
+                    del clauses
             print("-----------------------------------")
 
             if df_results.shape[0] >= 2100000:

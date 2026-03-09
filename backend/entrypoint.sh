@@ -7,10 +7,32 @@ set -o pipefail
 # exits if any of your variables is not set
 set -o nounset
 
+# Set umask to ensure group-writable directories (matching predict_occultation pattern)
+umask ug=rwx,o=r
 
 echo "Running Entrypoint.sh"
-# mkdir -p  /logs /archive /archive/tmp /archive/predict_occultations /archive/astropy_cache /archive/public /archive/public/database_subset /archive/public/maps /archive/skybot_output /archive/asteroid_table
-# chmod -R g+w  /logs /archive /archive/tmp /archive/predict_occultations /archive/astropy_cache /archive/public /archive/public/database_subset /archive/public/maps /archive/skybot_output /archive/asteroid_table
+
+# Create cache directory
+if [[ -z "$CACHE_DIR" ]]; then
+    echo "CACHE_DIR not set, using default: /app/cache"
+    export CACHE_DIR="/app/cache"
+fi
+
+echo "Cache directory: ${CACHE_DIR}"
+
+echo "Creating cache directory: ${CACHE_DIR}"
+mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
+
+# Cache warming: Cartopy baixa para o diretório padrão da biblioteca (não usamos local customizado)
+echo "Cache warming for backend dependencies (Cartopy uses its default location)"
+
+if ! python3 /usr/src/app/warm_cache.py; then
+    echo "WARNING: Cache warming failed!"
+    echo "Check logs: /logs/cache.log"
+    echo "Backend may download Cartopy data during execution if needed"
+else
+    echo "Cache warming completed successfully"
+fi
 
 # postgres_ready() {
 # python << END
