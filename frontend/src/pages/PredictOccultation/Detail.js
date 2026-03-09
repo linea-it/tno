@@ -19,7 +19,6 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import List from '../../components/List';
 import Table from '../../components/Table';
 import ColumnStatus from '../../components/Table/ColumnStatus';
-import LastUpdated from '../../components/LastUpdated'; // Use LastUpdated again
 import {
   getPredictionJobById,
   getPredictionJobResultsByJobId,
@@ -302,7 +301,6 @@ function PredictDetail() {
               <Divider sx={{ mt: 2 }} />
               <Stack direction='row' flexWrap='wrap' alignItems='center' sx={{ m: 2, gap: 2 }}>
                 {tasksStatus()}
-                {isRunning() && <LastUpdated datetimeUTC={progress?.updated} />}
               </Stack>
             </Grid>
           </CardContent>

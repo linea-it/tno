@@ -145,6 +145,11 @@ class PredictionJobViewSet(
 
         # Update job progress stage 2 - Running tasks
         # ----------------------------------------------------
+        # Until all tasks are submitted, use total_asteroids as denominator so progress
+        # and Estimated Remaining Time reflect the full job, not just submitted so far.
+        stage2_count = (
+            total_asteroids if submited_tasks < total_asteroids else submited_tasks
+        )
         # tasks with status: 1 - Success, 2 - Failed, 5 - Aborted
         completed_tasks = job.predictionjobresult_set.filter(
             status__in=[1, 2, 5]
@@ -198,7 +203,8 @@ class PredictionJobViewSet(
             avg_run = sum(run_seconds) / len(run_seconds) if run_seconds else 0.0
             std_run = 0.0
 
-        remaining_tasks = submited_tasks - completed_tasks
+        # Remaining = full total minus completed, so estimate covers whole job until all submitted
+        remaining_tasks = stage2_count - completed_tasks
         time_estimate = 0.0
         if remaining_tasks > 0:
             time_per_run = avg_run + 3.0 * std_run
@@ -215,7 +221,7 @@ class PredictionJobViewSet(
                 "step": 2,
                 "task": "Predict Occultation",
                 "status": stage2_status,
-                "count": submited_tasks,
+                "count": stage2_count,
                 "current": completed_tasks,
                 "average_time": avg_exec_time,
                 "time_estimate": time_estimate,
