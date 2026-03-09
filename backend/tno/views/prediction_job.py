@@ -106,12 +106,12 @@ class PredictionJobViewSet(
 
         job = self.get_object()
 
-        # Step 1 Submit tasks
+        # Step 1 Submit tasks (Data acquisition and preparation)
         # ----------------------------------------------------
+        # In this stage we only create/queue tasks; there is no per-task failure.
+        # "success" = number of tasks successfully submitted (created); "failures" = 0.
         total_asteroids = job.count_asteroids
         submited_tasks = job.predictionjobresult_set.count()
-        stage1_queued = job.predictionjobresult_set.filter(status=3).count()
-        stage1_failed = job.predictionjobresult_set.filter(status=2).count()
 
         stage1_avg_time = 0.0
         stage1_time_estimate = 0.0
@@ -137,8 +137,8 @@ class PredictionJobViewSet(
                 "current": submited_tasks,
                 "average_time": stage1_avg_time,
                 "time_estimate": stage1_time_estimate,
-                "success": stage1_queued,
-                "failures": stage1_failed,
+                "success": submited_tasks,
+                "failures": 0,
                 "updated": datetime.now().isoformat(),
             }
         )

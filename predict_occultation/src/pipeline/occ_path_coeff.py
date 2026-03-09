@@ -452,11 +452,17 @@ def run_occultation_path_coeff(
 
         df["catalog"] = obj_data["predict_occultation"]["catalog"]
         df["predict_step"] = obj_data["predict_occultation"]["predict_step"]
-        df["bsp_source"] = bsp_header["ephemeris_info"].get(
-            "orbit_source", "Unavailable"
+        # bsp_source: fixed "Horizons SPK"; ephemeris_version: part after ':' from header (e.g. JPL#67)
+        raw_orbit_source = bsp_header["ephemeris_info"].get("orbit_source") or ""
+        if ":" in str(raw_orbit_source):
+            df["bsp_source"] = "Horizons SPK"
+            df["ephemeris_version"] = str(raw_orbit_source).split(":", 1)[1].strip()
+        else:
+            df["bsp_source"] = raw_orbit_source if raw_orbit_source else "Unavailable"
+            df["ephemeris_version"] = None
+        print(
+            f"BSP source: {df['bsp_source'].iloc[0]}, ephemeris_version: {df['ephemeris_version'].iloc[0]}"
         )
-        print(f"BSP source: {df['bsp_source'].iloc[0]}")
-        # df["bsp_source"] = obj_data["bsp_jpl"]["source"]
         df["bsp_planetary"] = obj_data["predict_occultation"]["bsp_planetary"]
         df["leap_seconds"] = obj_data["predict_occultation"]["leap_seconds"]
         df["nima"] = obj_data["predict_occultation"]["nima"]
@@ -473,7 +479,6 @@ def run_occultation_path_coeff(
             "dec_star_to_date",
             "ra_target_apparent",
             "dec_target_apparent",
-            "ephemeris_version",
             "probability_of_centrality",
         ]:
             df[col] = None

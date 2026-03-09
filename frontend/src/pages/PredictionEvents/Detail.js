@@ -144,7 +144,7 @@ function PredictionEventDetail() {
       },
       {
         title: 'Ephemeris Source',
-        value: `${occultation.bsp_source ? occultation.bsp_source : null}`
+        value: [occultation.bsp_source, occultation.ephemeris_version].filter(Boolean).join(' ') || null
       }
     ])
 

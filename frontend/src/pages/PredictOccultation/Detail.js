@@ -30,7 +30,7 @@ import {
 import useAdaptivePolling from '../../hooks/useAdaptivePolling';
 import ProgressList from '../../components/ProgressList/index';
 
-const POLLING_ACTIVE_MS = 100;
+const POLLING_ACTIVE_MS = 10000;
 
 function formatCount(n) {
   if (n == null || Number.isNaN(Number(n))) return '0';
