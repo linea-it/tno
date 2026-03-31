@@ -853,6 +853,18 @@ class Asteroid:
             job_id = int(getattr(self, "job_id", 0))
             asteroid_name = getattr(self, "name", "")
 
+            if "have_path_coeff" in df.columns:
+                total_before_filter = len(df)
+                df = df[
+                    df["have_path_coeff"].astype(str).str.strip().str.lower() == "true"
+                ].copy()
+                filtered_no_path_coeff = total_before_filter - len(df)
+                if filtered_no_path_coeff:
+                    log.info(
+                        "Asteroid [%s] Filtered [%s] rows with have_path_coeff=false."
+                        % (asteroid_name, filtered_no_path_coeff)
+                    )
+
             df_valid, failures, skip_insert = _validate_ingest_dataframe(
                 df, job_id, asteroid_name
             )
@@ -977,7 +989,9 @@ class Asteroid:
                 else:
                     a.update(
                         {
-                            "occultations": int(self.predict_occultation["count"]),
+                            "occultations": int(
+                                self.ingest_occultations.get("count", 0)
+                            ),
                             "stars": int(self.predict_occultation["stars"]),
                             "pre_occ_start": self.predict_occultation["start"],
                             "pre_occ_finish": self.predict_occultation["finish"],
