@@ -34,7 +34,9 @@ if [[ "$PARSL_ENV" = "linea" ]]
 then
     echo "Setting up LIneA Remote envs"
 
-    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}
+    # Keep pipeline sources isolated under a dedicated subdirectory
+    # to avoid syncing files directly into REMOTE_PIPELINE_ROOT.
+    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}/predict_occultation
     export PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
     export SSHKEY=/home/app.tno/.ssh/id_rsa
 
@@ -70,6 +72,7 @@ then
     echo "============================================================"
 
     # Rsync code to Lustre (exclude cache to avoid overwriting)
+    mkdir -p "${PIPELINE_PREDIC_OCC}"
     echo "Running Rsync: /app/src/ ${PIPELINE_PREDIC_OCC}"
     rsync -r --update /app/src/ ${PIPELINE_PREDIC_OCC}/ --exclude outputs/ --exclude cache/
 

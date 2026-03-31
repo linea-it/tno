@@ -26,8 +26,9 @@ echo "PARSL_ENV: ${PARSL_ENV:-not set}"
 
 if [[ "$PARSL_ENV" = "linea" ]]
 then
-    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}
-    export PIPELINE_PATH=${REMOTE_PIPELINE_ROOT}/pipeline
+    # Keep pipeline sources isolated under a dedicated subdirectory.
+    export PIPELINE_PREDIC_OCC=${REMOTE_PIPELINE_ROOT}/predict_occultation
+    export PIPELINE_PATH=${PIPELINE_PREDIC_OCC}/pipeline
     export REMOTE_CONDA_PATH=${REMOTE_PIPELINE_ROOT}/miniconda/bin
 
     ulimit -s 100000
