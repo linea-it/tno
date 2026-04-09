@@ -25,7 +25,7 @@ echo "=========================================================="
 # Parsl tasks run on the same node (same TMPDIR would cause one task
 # to remove the dir while another still uses it). With hundreds of
 # concurrent tasks, collisions were happening.
-TMPDIR=run_$$
+TMPDIR=`echo $RANDOM | md5sum | head -c 10; echo;`
 export DIR_DATA=/tmp/$TMPDIR
 echo 'DIR_DATA: '$DIR_DATA
 

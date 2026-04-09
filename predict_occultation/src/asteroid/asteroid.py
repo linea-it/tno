@@ -1,5 +1,6 @@
 import configparser
 import datetime
+import functools
 import json
 import logging
 import os
@@ -16,21 +17,25 @@ from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_f
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 
-# Colunas NOT NULL no banco (tno_occultation) que validamos no ingest.
-# Apenas as que existirem no DataFrame são usadas.
-INGEST_NOT_NULL_COLUMNS = [
-    "date_time",
-    "ra_star_candidate",
-    "dec_star_candidate",
-    "ra_target",
-    "dec_target",
-    "closest_approach",
-    "position_angle",
-    "velocity",
-    "delta",
-    "g",
-    "long",
-]
+
+@functools.lru_cache(maxsize=1)
+def _get_ingest_not_null_columns():
+    """
+    Resolve colunas NOT NULL da tabela tno_occultation via schema.
+    Opera em modo fail-fast: se não conseguir resolver, lança erro explícito.
+    """
+    try:
+        dao = OccultationDao()
+        schema_cols = tuple(col.name for col in dao.tbl.columns if not col.nullable)
+        if not schema_cols:
+            raise RuntimeError(
+                "SchemaResolutionError: no NOT NULL columns found for tno_occultation."
+            )
+        return schema_cols
+    except Exception as e:
+        raise RuntimeError(
+            f"SchemaResolutionError: unable to resolve NOT NULL columns for tno_occultation. {e}"
+        ) from e
 
 
 def _validate_ingest_dataframe(df, job_id, asteroid_name):
@@ -64,10 +69,25 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
             )
         return df.iloc[0:0], failures, True
 
-    # Colunas NOT NULL que existem no DataFrame (numéricas serão coercidas)
-    not_null_cols = [c for c in INGEST_NOT_NULL_COLUMNS if c in df.columns]
-    if not not_null_cols:
-        return df, [], False
+    # hash_id é obrigatório para manter a semântica de upsert.
+    if "hash_id" not in df.columns:
+        for idx, row in df.iterrows():
+            event_id = str(row.get("gaia_source_id", row.get("date_time", idx)))
+            date_time_val = row.get("date_time", "")
+            failures.append(
+                {
+                    "job_id": job_id,
+                    "asteroid": asteroid_name,
+                    "event_id": event_id,
+                    "date_time": date_time_val,
+                    "reason": "missing required column hash_id for upsert",
+                    "error_type": "MissingHashIdColumn",
+                }
+            )
+        return df.iloc[0:0], failures, False
+
+    # Colunas NOT NULL obtidas do schema que existem no DataFrame
+    not_null_cols = [c for c in _get_ingest_not_null_columns() if c in df.columns]
 
     # Colunas NOT NULL que são string: null ou vazio/whitespace = inválido
     string_not_null = [
@@ -76,6 +96,7 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
         "dec_star_candidate",
         "ra_target",
         "dec_target",
+        "hash_id",
     ]
     # Coerção numérica para colunas que devem ser float
     numeric_not_null = [
@@ -99,6 +120,8 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
             valid_mask &= df[col].notna() & (df[col].astype(str).str.strip() != "")
         else:
             valid_mask &= df[col].notna()
+    # hash_id é obrigatório por regra de negócio do upsert
+    valid_mask &= df["hash_id"].notna() & (df["hash_id"].astype(str).str.strip() != "")
 
     invalid_mask = ~valid_mask
     if invalid_mask.any():
@@ -110,6 +133,8 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
                 if pd.isna(row.get(c))
                 or (c in string_not_null and str(row.get(c, "")).strip() == "")
             ]
+            if pd.isna(row.get("hash_id")) or str(row.get("hash_id", "")).strip() == "":
+                bad_cols.append("hash_id")
             reason = (
                 "; ".join(f"{c} null or empty" for c in bad_cols)
                 if bad_cols
@@ -905,7 +930,25 @@ class Asteroid:
                     % (asteroid_name, len(failures))
                 )
             else:
-                rowcount = dao.upinsert_occultations(df_valid, conn=conn)
+                ingest_mode = os.getenv("INGEST_UPSERT_MODE", "to_sql").strip().lower()
+                if ingest_mode == "copy_staging":
+                    if conn is None:
+                        log.warning(
+                            "Asteroid [%s] copy_staging requested but no DB connection was provided; using to_sql fallback."
+                            % asteroid_name
+                        )
+                        rowcount = dao.upinsert_occultations(df_valid, conn=conn)
+                    else:
+                        rowcount = dao.upinsert_occultations_copy_staging(
+                            df_valid, conn=conn
+                        )
+                else:
+                    rowcount = dao.upinsert_occultations(df_valid, conn=conn)
+
+                log.info(
+                    "Asteroid [%s] Ingest upsert mode [%s]."
+                    % (asteroid_name, ingest_mode)
+                )
                 # pandas to_sql(method=...) pode retornar None; usar len(df_valid) como fallback
                 if rowcount is None:
                     rowcount = len(df_valid)
