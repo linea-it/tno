@@ -752,24 +752,11 @@ def submit_tasks(jobid: int):
 
         if envname == "linea" and len(parsl_conf.executors) == 2:
             # Cluster heterogêneo: small inicia com 1 nó, large com 0 (escala sob demanda)
+            # max_blocks vem de parsl_config.get_config (PARSL_LINEA_*_MAX_BLOCKS)
             parsl_conf.executors[0].provider.init_blocks = 1
             parsl_conf.executors[1].provider.init_blocks = 0
-            try:
-                small_max_blocks = int(
-                    os.getenv("PARSL_LINEA_SMALL_MAX_BLOCKS", "16").strip() or "16"
-                )
-            except (ValueError, TypeError):
-                small_max_blocks = 16
-            try:
-                large_max_blocks = int(
-                    os.getenv("PARSL_LINEA_LARGE_MAX_BLOCKS", "12").strip() or "12"
-                )
-            except (ValueError, TypeError):
-                large_max_blocks = 12
-            small_max_blocks = max(1, small_max_blocks)
-            large_max_blocks = max(1, large_max_blocks)
-            parsl_conf.executors[0].provider.max_blocks = small_max_blocks
-            parsl_conf.executors[1].provider.max_blocks = large_max_blocks
+            small_max_blocks = parsl_conf.executors[0].provider.max_blocks
+            large_max_blocks = parsl_conf.executors[1].provider.max_blocks
             log.info(
                 f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
             )

@@ -8,6 +8,15 @@ from parsl.launchers import SrunLauncher
 from parsl.providers import LocalProvider, SlurmProvider
 
 
+def _env_int_min_one(name, default):
+    """Lê int positivo (mínimo 1) para max_blocks dos executores linea."""
+    try:
+        v = int(os.getenv(name, str(default)).strip() or str(default))
+    except (ValueError, TypeError):
+        v = default
+    return max(1, v)
+
+
 def get_config(key, jobpath):
     """
     Creates an instance of the Parsl configuration
@@ -83,8 +92,9 @@ def get_config(key, jobpath):
         script_dir.mkdir(parents=True, exist_ok=True)
 
         # Cluster heterogêneo: 16 nós apl[01-16] (28 cores/nó), 12 nós apl[17-28] (52 cores/nó)
-        # init_blocks fixos; max_blocks padrão abaixo — valores efetivos em run_pred_occ.py via
-        # PARSL_LINEA_SMALL_MAX_BLOCKS e PARSL_LINEA_LARGE_MAX_BLOCKS (default 16 e 12).
+        # max_blocks: PARSL_LINEA_SMALL_MAX_BLOCKS (default 16), PARSL_LINEA_LARGE_MAX_BLOCKS (default 12)
+        linea_small_max_blocks = _env_int_min_one("PARSL_LINEA_SMALL_MAX_BLOCKS", 16)
+        linea_large_max_blocks = _env_int_min_one("PARSL_LINEA_LARGE_MAX_BLOCKS", 12)
         channel = SSHChannel(
             hostname="loginapl01",
             username="app.tno",
@@ -133,7 +143,7 @@ def get_config(key, jobpath):
                 cores_per_node=28,
                 init_blocks=1,
                 min_blocks=1,
-                max_blocks=16,
+                max_blocks=linea_small_max_blocks,
             ),
         )
         htex_large = HighThroughputExecutor(
@@ -146,7 +156,7 @@ def get_config(key, jobpath):
                 cores_per_node=52,
                 init_blocks=0,
                 min_blocks=0,
-                max_blocks=12,
+                max_blocks=linea_large_max_blocks,
             ),
         )
         executors = {
