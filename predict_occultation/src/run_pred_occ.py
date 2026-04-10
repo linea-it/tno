@@ -39,6 +39,25 @@ except Exception as error:
     raise Exception("Predict Occultation pipeline not installed!")
 
 import parsl
+from sqlalchemy.exc import DBAPIError
+
+
+def _is_insufficient_resources_error(exc):
+    try:
+        from psycopg2 import errors as pg_errors
+    except ImportError:
+        return False
+    cur = exc
+    seen = set()
+    while cur is not None and id(cur) not in seen:
+        seen.add(id(cur))
+        if isinstance(cur, pg_errors.InsufficientResources):
+            return True
+        if isinstance(cur, DBAPIError) and getattr(cur, "orig", None) is not None:
+            cur = cur.orig
+            continue
+        cur = getattr(cur, "__cause__", None)
+    return False
 
 
 class AbortError(Exception):
@@ -178,6 +197,9 @@ def ingest_predictions(jobid: int):
     log.info("-" * 60)
     log.info("Ingest Predictions started")
 
+    max_ir_retries = int(os.getenv("INGEST_INSUFFICIENT_RESOURCES_RETRIES", "3"))
+    ir_backoff = float(os.getenv("INGEST_INSUFFICIENT_RESOURCES_BACKOFF_SECONDS", "2"))
+
     dao_job_result = PredictOccultationJobResultDao()
     engine = dao_job_result.get_db_engine()
     conn = engine.connect()
@@ -193,22 +215,82 @@ def ingest_predictions(jobid: int):
                 f"Registering results for task_id: {task['id']} asteroid_name: {task['name']}"
             )
 
-            # Create Asteroid instance
-            a = Asteroid(
-                name=task["name"],
-                base_path=ASTEROID_PATH,
-                log=log,
-            )
+            task_id = task["id"]
+            name = task["name"]
 
-            # Ingesting predictions in database (reusing same connection)
-            a.ingest_predictions(conn=conn, job_path=current_path)
+            try:
+                a = Asteroid(
+                    name=name,
+                    base_path=ASTEROID_PATH,
+                    log=log,
+                )
+            except Exception as e:
+                log.error("Cannot load asteroid [%s]: %s" % (name, e))
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                fail = {
+                    "name": name,
+                    "status": 2,
+                    "messages": "Failed to load asteroid data: %s" % e,
+                }
+                dao_job_result.update(id=task_id, data=fail, conn=conn)
+                try:
+                    conn.commit()
+                except Exception:
+                    conn.rollback()
+                continue
 
-            # Consolidating asteroid results/errors
-            consolidated = a.consiladate()
-
-            log.info("Updating task with consolidated data")
-            dao_job_result.update(id=task["id"], data=consolidated, conn=conn)
-            log.info(f"task updated to status: {consolidated['status']}")
+            attempt = 0
+            while True:
+                try:
+                    a.ingest_predictions(conn=conn, job_path=current_path)
+                    consolidated = a.consiladate()
+                    log.info("Updating task with consolidated data")
+                    dao_job_result.update(id=task_id, data=consolidated, conn=conn)
+                    conn.commit()
+                    log.info(f"task updated to status: {consolidated['status']}")
+                    break
+                except DBAPIError as e:
+                    try:
+                        conn.rollback()
+                    except Exception:
+                        pass
+                    if _is_insufficient_resources_error(e) and attempt < max_ir_retries - 1:
+                        attempt += 1
+                        wait_s = ir_backoff * attempt
+                        log.warning(
+                            "InsufficientResources for task %s, retry %s/%s after %ss: %s"
+                            % (task_id, attempt, max_ir_retries, wait_s, e)
+                        )
+                        time.sleep(wait_s)
+                        continue
+                    log.error(
+                        "DBAPIError for task %s after %s attempts: %s"
+                        % (task_id, attempt + 1, e)
+                    )
+                    consolidated = a.consiladate()
+                    dao_job_result.update(id=task_id, data=consolidated, conn=conn)
+                    try:
+                        conn.commit()
+                    except Exception:
+                        conn.rollback()
+                    break
+                except Exception as e:
+                    try:
+                        conn.rollback()
+                    except Exception:
+                        pass
+                    log.error("Error ingesting task %s: %s" % (task_id, e))
+                    traceback.print_exc()
+                    consolidated = a.consiladate()
+                    dao_job_result.update(id=task_id, data=consolidated, conn=conn)
+                    try:
+                        conn.commit()
+                    except Exception:
+                        conn.rollback()
+                    break
     finally:
         conn.close()
 
@@ -685,6 +767,50 @@ def submit_tasks(jobid: int):
                 f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
                 f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
             )
+
+        # Limite opcional de workers Parsl (soma dos executores) para reduzir pico no catálogo Gaia.
+        try:
+            cap = int(os.getenv("MAX_CONCURRENT_ASTEROID_TASKS", "0") or "0")
+        except (TypeError, ValueError):
+            cap = 0
+        if cap == 1:
+            log.warning(
+                "MAX_CONCURRENT_ASTEROID_TASKS=1 is invalid for dual executors; ignoring cap."
+            )
+            cap = 0
+        if cap > 0:
+            if envname == "linea" and len(parsl_conf.executors) == 2:
+                s0 = parsl_conf.executors[0].max_workers
+                s1 = parsl_conf.executors[1].max_workers
+                total = s0 + s1
+                if total > cap:
+                    new0 = max(1, int(s0 * cap / total))
+                    new1 = cap - new0
+                    if new1 < 1:
+                        new1 = 1
+                        new0 = cap - 1
+                    parsl_conf.executors[0].max_workers = new0
+                    parsl_conf.executors[1].max_workers = new1
+                    log.info(
+                        "MAX_CONCURRENT_ASTEROID_TASKS=%s scaled Parsl max_workers: "
+                        "linea_small %s->%s, linea_large %s->%s (sum=%s)",
+                        cap,
+                        s0,
+                        new0,
+                        s1,
+                        new1,
+                        new0 + new1,
+                    )
+            elif len(parsl_conf.executors) == 1:
+                ex = parsl_conf.executors[0]
+                if ex.max_workers > cap:
+                    log.info(
+                        "MAX_CONCURRENT_ASTEROID_TASKS=%s capped executor max_workers %s->%s",
+                        cap,
+                        ex.max_workers,
+                        cap,
+                    )
+                    ex.max_workers = cap
 
         parsl.clear()
         parsl.load(parsl_conf)
