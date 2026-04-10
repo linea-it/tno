@@ -91,11 +91,11 @@ def get_config(key, jobpath):
         script_dir = pipeline_root.joinpath("script_dir")
         script_dir.mkdir(parents=True, exist_ok=True)
 
-        # Cluster heterogêneo: 16 nós apl[01-16] (28 cores/nó), 12 nós apl[17-28] (52 cores/nó)
-        # max_blocks: PARSL_LINEA_SMALL_MAX_BLOCKS (16), PARSL_LINEA_LARGE_MAX_BLOCKS (12)
+        # Cluster heterogêneo: até 16 nós apl[01-16], 12 nós apl[17-28] (ajustável por env)
+        # max_blocks: default 1 se PARSL_LINEA_SMALL_MAX_BLOCKS / PARSL_LINEA_LARGE_MAX_BLOCKS omitidos
         # cores_per_node: PARSL_LINEA_SMALL_CORES_PER_NODE (28), PARSL_LINEA_LARGE_CORES_PER_NODE (52)
-        linea_small_max_blocks = _env_int_min_one("PARSL_LINEA_SMALL_MAX_BLOCKS", 16)
-        linea_large_max_blocks = _env_int_min_one("PARSL_LINEA_LARGE_MAX_BLOCKS", 12)
+        linea_small_max_blocks = _env_int_min_one("PARSL_LINEA_SMALL_MAX_BLOCKS", 1)
+        linea_large_max_blocks = _env_int_min_one("PARSL_LINEA_LARGE_MAX_BLOCKS", 1)
         linea_small_cores_per_node = _env_int_min_one(
             "PARSL_LINEA_SMALL_CORES_PER_NODE", 28
         )
