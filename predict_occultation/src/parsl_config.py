@@ -83,7 +83,8 @@ def get_config(key, jobpath):
         script_dir.mkdir(parents=True, exist_ok=True)
 
         # Cluster heterogêneo: 16 nós apl[01-16] (28 cores/nó), 12 nós apl[17-28] (52 cores/nó)
-        # init_blocks/max_blocks sobrescritos em run_pred_occ.py (small=1 no início, large=0)
+        # init_blocks fixos; max_blocks padrão abaixo — valores efetivos em run_pred_occ.py via
+        # PARSL_LINEA_SMALL_MAX_BLOCKS e PARSL_LINEA_LARGE_MAX_BLOCKS (default 16 e 12).
         channel = SSHChannel(
             hostname="loginapl01",
             username="app.tno",

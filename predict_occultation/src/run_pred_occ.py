@@ -747,13 +747,30 @@ def submit_tasks(jobid: int):
             # Cluster heterogêneo: small inicia com 1 nó, large com 0 (escala sob demanda)
             parsl_conf.executors[0].provider.init_blocks = 1
             parsl_conf.executors[1].provider.init_blocks = 0
-            parsl_conf.executors[0].provider.max_blocks = 16
-            parsl_conf.executors[1].provider.max_blocks = 12
+            try:
+                small_max_blocks = int(
+                    os.getenv("PARSL_LINEA_SMALL_MAX_BLOCKS", "16").strip() or "16"
+                )
+            except (ValueError, TypeError):
+                small_max_blocks = 16
+            try:
+                large_max_blocks = int(
+                    os.getenv("PARSL_LINEA_LARGE_MAX_BLOCKS", "12").strip() or "12"
+                )
+            except (ValueError, TypeError):
+                large_max_blocks = 12
+            small_max_blocks = max(1, small_max_blocks)
+            large_max_blocks = max(1, large_max_blocks)
+            parsl_conf.executors[0].provider.max_blocks = small_max_blocks
+            parsl_conf.executors[1].provider.max_blocks = large_max_blocks
             log.info(
                 f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
             )
             log.info(
-                "Parsl blocks: linea_small init=1 max=16, linea_large init=0 max=12"
+                "Parsl blocks: linea_small init=1 max=%s, linea_large init=0 max=%s "
+                "(env PARSL_LINEA_SMALL_MAX_BLOCKS / PARSL_LINEA_LARGE_MAX_BLOCKS)",
+                small_max_blocks,
+                large_max_blocks,
             )
         else:
             # Um único executor (local ou linea legado)
@@ -767,50 +784,6 @@ def submit_tasks(jobid: int):
                 f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
                 f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
             )
-
-        # Limite opcional de workers Parsl (soma dos executores) para reduzir pico no catálogo Gaia.
-        try:
-            cap = int(os.getenv("MAX_CONCURRENT_ASTEROID_TASKS", "0") or "0")
-        except (TypeError, ValueError):
-            cap = 0
-        if cap == 1:
-            log.warning(
-                "MAX_CONCURRENT_ASTEROID_TASKS=1 is invalid for dual executors; ignoring cap."
-            )
-            cap = 0
-        if cap > 0:
-            if envname == "linea" and len(parsl_conf.executors) == 2:
-                s0 = parsl_conf.executors[0].max_workers
-                s1 = parsl_conf.executors[1].max_workers
-                total = s0 + s1
-                if total > cap:
-                    new0 = max(1, int(s0 * cap / total))
-                    new1 = cap - new0
-                    if new1 < 1:
-                        new1 = 1
-                        new0 = cap - 1
-                    parsl_conf.executors[0].max_workers = new0
-                    parsl_conf.executors[1].max_workers = new1
-                    log.info(
-                        "MAX_CONCURRENT_ASTEROID_TASKS=%s scaled Parsl max_workers: "
-                        "linea_small %s->%s, linea_large %s->%s (sum=%s)",
-                        cap,
-                        s0,
-                        new0,
-                        s1,
-                        new1,
-                        new0 + new1,
-                    )
-            elif len(parsl_conf.executors) == 1:
-                ex = parsl_conf.executors[0]
-                if ex.max_workers > cap:
-                    log.info(
-                        "MAX_CONCURRENT_ASTEROID_TASKS=%s capped executor max_workers %s->%s",
-                        cap,
-                        ex.max_workers,
-                        cap,
-                    )
-                    ex.max_workers = cap
 
         parsl.clear()
         parsl.load(parsl_conf)
