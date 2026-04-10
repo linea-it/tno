@@ -9,7 +9,7 @@ from parsl.providers import LocalProvider, SlurmProvider
 
 
 def _env_int_min_one(name, default):
-    """Lê int positivo (mínimo 1) para max_blocks dos executores linea."""
+    """Lê int positivo (mínimo 1) para max_blocks e cores_per_node (executores linea)."""
     try:
         v = int(os.getenv(name, str(default)).strip() or str(default))
     except (ValueError, TypeError):
@@ -92,9 +92,18 @@ def get_config(key, jobpath):
         script_dir.mkdir(parents=True, exist_ok=True)
 
         # Cluster heterogêneo: 16 nós apl[01-16] (28 cores/nó), 12 nós apl[17-28] (52 cores/nó)
-        # max_blocks: PARSL_LINEA_SMALL_MAX_BLOCKS (default 16), PARSL_LINEA_LARGE_MAX_BLOCKS (default 12)
+        # max_blocks: PARSL_LINEA_SMALL_MAX_BLOCKS (16), PARSL_LINEA_LARGE_MAX_BLOCKS (12)
+        # cores_per_node: PARSL_LINEA_SMALL_CORES_PER_NODE (28), PARSL_LINEA_LARGE_CORES_PER_NODE (52)
         linea_small_max_blocks = _env_int_min_one("PARSL_LINEA_SMALL_MAX_BLOCKS", 16)
         linea_large_max_blocks = _env_int_min_one("PARSL_LINEA_LARGE_MAX_BLOCKS", 12)
+        linea_small_cores_per_node = _env_int_min_one(
+            "PARSL_LINEA_SMALL_CORES_PER_NODE", 28
+        )
+        linea_large_cores_per_node = _env_int_min_one(
+            "PARSL_LINEA_LARGE_CORES_PER_NODE", 52
+        )
+        linea_small_max_workers = linea_small_max_blocks * linea_small_cores_per_node
+        linea_large_max_workers = linea_large_max_blocks * linea_large_cores_per_node
         channel = SSHChannel(
             hostname="loginapl01",
             username="app.tno",
@@ -131,16 +140,15 @@ def get_config(key, jobpath):
             "worker_init": f"source {cluster_env_sh}\n",
             "channel": channel,
         }
-        # Parsl 2023.9.25: max_workers é total por executor (não por nó); 448=16*28, 624=12*52
-        # cores_per_node: núcleos físicos por nó (apl01-16: 28, apl17-28: 52)
+        # Parsl: max_workers = max_blocks * cores_per_node (1 nó por bloco)
         htex_small = HighThroughputExecutor(
             label="linea_small",
             worker_logdir_root=str(script_dir),
-            max_workers=448,
+            max_workers=linea_small_max_workers,
             provider=SlurmProvider(
                 **provider_common,
                 scheduler_options="#SBATCH --nodelist=apl[01-16]\n",
-                cores_per_node=28,
+                cores_per_node=linea_small_cores_per_node,
                 init_blocks=1,
                 min_blocks=1,
                 max_blocks=linea_small_max_blocks,
@@ -149,11 +157,11 @@ def get_config(key, jobpath):
         htex_large = HighThroughputExecutor(
             label="linea_large",
             worker_logdir_root=str(script_dir),
-            max_workers=624,
+            max_workers=linea_large_max_workers,
             provider=SlurmProvider(
                 **provider_common,
                 scheduler_options="#SBATCH --nodelist=apl[17-28]\n",
-                cores_per_node=52,
+                cores_per_node=linea_large_cores_per_node,
                 init_blocks=0,
                 min_blocks=0,
                 max_blocks=linea_large_max_blocks,

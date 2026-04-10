@@ -755,16 +755,20 @@ def submit_tasks(jobid: int):
             # max_blocks vem de parsl_config.get_config (PARSL_LINEA_*_MAX_BLOCKS)
             parsl_conf.executors[0].provider.init_blocks = 1
             parsl_conf.executors[1].provider.init_blocks = 0
-            small_max_blocks = parsl_conf.executors[0].provider.max_blocks
-            large_max_blocks = parsl_conf.executors[1].provider.max_blocks
+            ex0, ex1 = parsl_conf.executors[0], parsl_conf.executors[1]
             log.info(
                 f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
             )
             log.info(
-                "Parsl blocks: linea_small init=1 max=%s, linea_large init=0 max=%s "
-                "(env PARSL_LINEA_SMALL_MAX_BLOCKS / PARSL_LINEA_LARGE_MAX_BLOCKS)",
-                small_max_blocks,
-                large_max_blocks,
+                "Parsl linea_small: init=1 max_blocks=%s cores_per_node=%s max_workers=%s; "
+                "linea_large: init=0 max_blocks=%s cores_per_node=%s max_workers=%s "
+                "(PARSL_LINEA_*_MAX_BLOCKS, PARSL_LINEA_*_CORES_PER_NODE)",
+                ex0.provider.max_blocks,
+                ex0.provider.cores_per_node,
+                ex0.max_workers,
+                ex1.provider.max_blocks,
+                ex1.provider.cores_per_node,
+                ex1.max_workers,
             )
         else:
             # Um único executor (local ou linea legado)
