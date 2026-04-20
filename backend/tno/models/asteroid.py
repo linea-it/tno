@@ -34,6 +34,7 @@ class Asteroid(models.Model):
         max_length=35,
         verbose_name="Alias used internally as an internal name, formed by the name without special characters and with the addition of sequential numbers if necessary.",
         help_text="",
+        db_index=True,
         null=True,
         blank=True,
         default=None,

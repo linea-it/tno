@@ -82,3 +82,9 @@ POSTGRES_DB=${DATABASE_ADMIN_DB}
 # -------------------------------------
 MAX_NODES=24
 ASTEROIDS_PER_NODE=500
+
+# LIneA Orchestration Slurm API
+# -------------------------------------
+ORCHESTRATION_API=http://host.docker.internal:8088
+ORCHESTRATION_CLIENT_ID=<ORCHESTRATION_CLIENT_ID>
+ORCHESTRATION_CLIENT_SECRET=<ORCHESTRATION_CLIENT_SECRET>

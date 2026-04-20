@@ -54,6 +54,11 @@ from tno.views import (
     UserViewSet,
 )
 
+from predict_occultation.api.views import (
+    PredictionTaskViewSet,
+    WorkersHeartbeatViewSet,
+)
+
 if settings.DEBUG:
     router = DefaultRouter()
 else:
@@ -96,6 +101,9 @@ router.register(r"subscription", SubscriptionViewSet)
 router.register(r"event_filter", EventFilterViewSet, basename="event_filter")
 router.register(r"submission", SubmissionViewSet, basename="submission")
 
+
+router.register(r"predict_occultation/task", PredictionTaskViewSet, basename="predict_occultation_task")
+router.register(r"predict_occultation/worker", WorkersHeartbeatViewSet, basename="predict_occultation_worker")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

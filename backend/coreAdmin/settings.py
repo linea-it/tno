@@ -13,8 +13,9 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 import os
 import urllib.parse
 from pathlib import Path
-
+import colorlog
 import environ
+import sys
 from kombu import Exchange, Queue
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -221,6 +222,7 @@ INSTALLED_APPS = [
     "skybot",
     "des",
     "newsletter",
+    "predict_occultation",
 ]
 
 MIDDLEWARE = [
@@ -502,6 +504,17 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "standard": {"format": "%(asctime)s [%(levelname)s] %(message)s"},
+        'colored': {
+            '()': colorlog.ColoredFormatter,
+            'format': '%(log_color)s[%(levelname)s] %(message)s',
+            'log_colors': {
+                'DEBUG': 'cyan',
+                'INFO': 'green',
+                'WARNING': 'yellow',
+                'ERROR': 'red',
+                'CRITICAL': 'bold_red,bg_white',
+            },
+        }
     },
     "handlers": {
         "file": {
@@ -510,6 +523,12 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "django.log"),
             "maxBytes": 1024 * 1024 * 5,  # 5 MB
             "backupCount": 5,
+        },
+        'console': {
+            'level': LOGGING_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'colored',  # Use the colored formatter
+            'stream': sys.stdout,  # Direct to stdout
         },
         # "proccess": {
         #     "level": LOGGING_LEVEL,
@@ -601,6 +620,32 @@ LOGGING = {
             "filename": os.path.join(LOG_DIR, "asteroid_cache.log"),
             "formatter": "standard",
         },
+        # ------------------------------------------
+        # Prediction Occultation Workers
+        "predict_occ_prepare_worker": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "predict_occ_prepare_worker.log"),
+            "formatter": "standard",
+        },
+        "predict_occ_submit_worker": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "predict_occ_submit_worker.log"),
+            "formatter": "standard",
+        },
+        "predict_occ_ingest_worker": {
+            "level": LOGGING_LEVEL,
+            "class": "logging.handlers.RotatingFileHandler",
+            "maxBytes": 1024 * 1024 * 5,  # 5 MB
+            "backupCount": 5,
+            "filename": os.path.join(LOG_DIR, "predict_occ_ingest_worker.log"),
+            "formatter": "standard",
+        },                        
     },
     "loggers": {
         "django": {
@@ -663,5 +708,22 @@ LOGGING = {
             "level": LOGGING_LEVEL,
             "propagate": False,
         },
+        # ------------------------------------------
+        # Prediction Occultation Workers
+        "predict_occ_prepare_worker": {
+            "handlers": ["predict_occ_prepare_worker", "console"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "predict_occ_submit_worker": {
+            "handlers": ["predict_occ_submit_worker", "console"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },
+        "predict_occ_ingest_worker": {
+            "handlers": ["predict_occ_ingest_worker", "console"],
+            "level": LOGGING_LEVEL,
+            "propagate": False,
+        },                
     },
 }

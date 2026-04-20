@@ -73,6 +73,7 @@ const routes = [
   // { path: '/dashboard/data-preparation/des/statistics', title: 'Skybot Statistics' },
   // { path: '/dashboard/data-preparation/des/orbittrace', title: 'Orbit Trace' },
   // { path: '/dashboard/data-preparation/des/management', title: 'DES Management' },
+  { path: '/dashboard/prediction-of-occultation/tasks', title: 'Predict Occultation Tasks' },
   { path: '/dashboard/prediction-of-occultation', title: 'Predict Occultation' },
   { path: '/dashboard/data-preparation/predict-detail/:id', title: 'Predict Occultation Details' },
   { path: '/dashboard/data-preparation/predict-asteroid/:id', title: 'Predict Occultation Asteroid' },

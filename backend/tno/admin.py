@@ -3,6 +3,7 @@ from tno.models import (
     Asteroid,
     AsteroidCache,
     AsteroidJob,
+    BspAsteroid,
     BspPlanetary,
     Catalog,
     DynclassCache,
@@ -61,6 +62,13 @@ class AsteroidAdmin(admin.ModelAdmin):
 class AsteroidCacheAdmin(admin.ModelAdmin):
     list_display = ("id", "name", "number", "principal_designation", "alias")
     search_fields = ("name", "number", "principal_designation")
+
+
+@admin.register(BspAsteroid)
+class BspAsteroidAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "number", "principal_designation", "alias", "base_dynclass", "dynclass", "source", "filename", "start_period", "end_period")
+    search_fields = ("name", "number", "principal_designation")
+
 
 
 @admin.register(DynclassCache)
