@@ -1,7 +1,6 @@
 import unittest
 
 import pandas as pd
-
 from asteroid.asteroid import _sanitize_numeric_columns_for_ingest_inplace
 
 
