@@ -112,6 +112,10 @@ def get_config(key, jobpath):
         slurm_account = (
             os.getenv("PARSL_SLURM_ACCOUNT", "hpc-public").strip() or "hpc-public"
         )
+        # Slurm --time / walltime (SlurmProvider); default 12:00:00 se omitido ou vazio
+        slurm_walltime = (
+            os.getenv("PARSL_SLURM_WALLTIME", "12:00:00").strip() or "12:00:00"
+        )
         channel = SSHChannel(
             hostname="loginapl01",
             username="app.tno",
@@ -145,7 +149,7 @@ def get_config(key, jobpath):
             "cmd_timeout": 240,
             "launcher": SrunLauncher(debug=True, overrides=""),
             "parallelism": 1,
-            "walltime": "240:00:00",
+            "walltime": slurm_walltime,
             "worker_init": f"source {cluster_env_sh}\n",
             "channel": channel,
         }
