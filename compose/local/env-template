@@ -1,5 +1,6 @@
 # Docker Compose
 # -------------------------------------
+# UID/GID do processo Django/uWSGI após o entrypoint (logs e cache ficam graváveis para este utilizador)
 TNO_UID=1000
 TNO_GID=1000
 TNO_PORT=80
@@ -61,6 +62,7 @@ PREDICTION_JOB_AUTO_UPDATE=False
 PARSL_ENV=local
 PREDICT_OUTPUTS=/app/outputs/predict_occultations
 PREDICT_INPUTS=/app/inputs/
+CACHE_DIR=/app/cache
 # DATABASE used Predict Occultation container
 # A configuração é diferente por que o container precisa de rede do tipo host, então ele não reconhece o database.
 # A porta do banco de dados precisa estar exposta para o host.
@@ -78,7 +80,11 @@ POSTGRES_PASSWORD=${DATABASE_ADMIN_PASSWORD}
 POSTGRES_DB=${DATABASE_ADMIN_DB}
 
 
-# HPC Parsl dynamic allocation
+# HPC Parsl — Linea (PARSL_*; ver predict_occultation/src/parsl_config.py)
 # -------------------------------------
-MAX_NODES=24
-ASTEROIDS_PER_NODE=500
+PARSL_SLURM_PARTITION=cpu
+PARSL_SLURM_ACCOUNT=hpc-public
+PARSL_LINEA_SMALL_MAX_BLOCKS=1
+PARSL_LINEA_LARGE_MAX_BLOCKS=1
+PARSL_LINEA_SMALL_CORES_PER_NODE=28
+PARSL_LINEA_LARGE_CORES_PER_NODE=52

@@ -1,34 +1,21 @@
 #!/bin/bash --login
 set -o errexit
+set -o pipefail
+set -o nounset
+
 umask ug=rwx,o=r
 
 # Verifica as variaveis de ambiente
-# Usando o conda interno do container
 echo "Checking mandatory environment variables."
 /opt/conda/bin/python3 /app/check_enviroment.py
 
-# ============================================================
-# CRIAR DIRETÓRIO DE CACHE SEMPRE (antes de qualquer coisa)
-# CACHE_DIR deve ser definido no arquivo .env
-# Este diretório de cache é usado para todos os tipos de cache (Astropy, etc.)
-# ============================================================
 if [[ -z "$CACHE_DIR" ]]; then
     echo "ERROR: CACHE_DIR is not set!"
     echo "       CACHE_DIR must be defined in .env file."
-    echo "       This cache directory is used for all types of cache (Astropy, etc.)"
     exit 1
 fi
 
 echo "Cache directory: ${CACHE_DIR}"
-
-echo "Creating cache directory: ${CACHE_DIR}"
-if [ "$(id -u)" = "0" ]; then
-    mkdir -p ${CACHE_DIR}/astropy
-    chown -R 1000:1000 ${CACHE_DIR} 2>/dev/null || true
-else
-    mkdir -p ${CACHE_DIR} || echo "WARNING: Could not create cache directory ${CACHE_DIR}"
-    mkdir -p ${CACHE_DIR}/astropy || echo "WARNING: Could not create astropy subdirectory"
-fi
 
 if [[ "$PARSL_ENV" = "linea" ]]
 then
@@ -123,9 +110,6 @@ else
         echo "Cache warming completed successfully"
     fi
     echo "============================================================"
-    if [ "$(id -u)" = "0" ]; then
-        chown -R 1000:1000 ${CACHE_DIR} 2>/dev/null || true
-    fi
 fi
 
 # Baixa os arquivos bsp planetary e leap_second caso não existam.

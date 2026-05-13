@@ -1,6 +1,7 @@
 # Docker Compose
 # -------------------------------------
 TNO_IMAGE_TAG=teste
+# UID/GID após o entrypoint (imagem com gosu). Arranque root só para logs/cache montados.
 TNO_UID=31670
 TNO_GID=15010
 TNO_SSHKEY=/lustre/t1/scratch/users/app.tno/.ssh/id_rsa
@@ -38,11 +39,16 @@ PARSL_ENV=linea
 REMOTE_PIPELINE_ROOT=${TNO_PROJ_DIR:-.}
 PREDICT_OUTPUTS=${TNO_PROJ_DIR:-.}/data/predict_occultations
 PREDICT_INPUTS=${TNO_PROJ_DIR:-.}/data/asteroids
+CACHE_DIR=/app/cache
 DB_ADMIN_URI=${DB_ADMIN_URI}
 DB_CATALOG_URI=${DB_CATALOG_URI}
 
 
-# HPC Parsl dynamic allocation
+# HPC Parsl — Linea (PARSL_*; ver predict_occultation/src/parsl_config.py)
 # -------------------------------------
-MAX_NODES=24
-ASTEROIDS_PER_NODE=500
+PARSL_SLURM_PARTITION=cpu
+PARSL_SLURM_ACCOUNT=hpc-public
+PARSL_LINEA_SMALL_MAX_BLOCKS=1
+PARSL_LINEA_LARGE_MAX_BLOCKS=1
+PARSL_LINEA_SMALL_CORES_PER_NODE=28
+PARSL_LINEA_LARGE_CORES_PER_NODE=52

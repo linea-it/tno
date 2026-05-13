@@ -133,6 +133,11 @@ def warm_astropy_cache(
     """
     Warm Astropy IERS cache by downloading finals2000A.all.
 
+    NÃO manipula arquivos internos do astropy manualmente.
+    O astropy gere o seu próprio cache (download/url/{hash}/contents).
+    Para forçar refresh, apaga-se o diretório inteiro e deixa-se o astropy
+    recriar tudo — sem backups manuais, sem renomeações frágeis.
+
     Args:
         cache_dir: Directory where cache should be stored
         logger: Logger instance
@@ -147,108 +152,73 @@ def warm_astropy_cache(
 
         astropy_cache_dir = cache_dir / "astropy"
         astropy_cache_dir.mkdir(parents=True, exist_ok=True)
-
         logger.info(f"Warming Astropy cache in: {astropy_cache_dir}")
 
         # Import Astropy AFTER setting environment variables
         import astropy.config as config
         from astropy.utils.iers import IERS_Auto
 
-        # Check if cache already exists before attempting to load
         actual_cache_dir = Path(config.get_cache_dir())
-        download_dir = actual_cache_dir / "download"
-        cache_exists = False
-        is_expired = True  # Default to expired if cache doesn't exist
-        age_days = 0.0
-        large_files = []
 
-        if download_dir.exists():
-            # Find IERS file (typically > 1MB)
-            all_files = [f for f in download_dir.rglob("*") if f.is_file()]
-            large_files = [f for f in all_files if f.stat().st_size > 1000000]
+        # Se force_update ou cache expirado, apagar o cache antigo por completo.
+        # O astropy recria a estrutura interna corretamente no IERS_Auto.open().
+        if force_update:
+            if astropy_cache_dir.exists():
+                import shutil
 
-            if large_files:
-                cache_file = large_files[0]
-                file_size = cache_file.stat().st_size
-                cache_exists = True
-
-                # Check cache age
-                is_expired, age_days = check_cache_age(cache_file, max_age_days)
-
-                logger.info(
-                    f"Cache already exists: {cache_file.relative_to(actual_cache_dir)} ({file_size} bytes, age: {age_days:.1f} days)"
-                )
-
-                if force_update:
-                    logger.info(
-                        "Force update requested - will download latest IERS data"
-                    )
-                elif is_expired:
-                    logger.warning(
-                        f"Cache is expired (age: {age_days:.1f} days > {max_age_days} days) - will update"
-                    )
-                else:
-                    logger.info(
-                        f"Cache is still valid (age: {age_days:.1f} days <= {max_age_days} days)"
-                    )
-                    logger.info("Loading IERS data from existing cache...")
-            else:
-                logger.info(
-                    "Cache directory exists but no IERS file found. Downloading IERS data (finals2000A.all)..."
-                )
+                logger.info("Force update: removing entire astropy cache directory.")
+                shutil.rmtree(str(astropy_cache_dir), ignore_errors=True)
+                astropy_cache_dir.mkdir(parents=True, exist_ok=True)
         else:
-            logger.info(
-                "Cache directory does not exist. Downloading IERS data (finals2000A.all)..."
-            )
-
-        # Determine if we should force download
-        should_force_download = force_update or (cache_exists and is_expired)
-
-        # Store old cache file path for fallback (don't delete until new one is confirmed)
-        old_cache_file = None
-        if should_force_download and cache_exists and large_files:
-            old_cache_file = large_files[0]
-            logger.info(
-                f"Cache update needed - will verify new download before removing old cache"
-            )
-            logger.info(f"Old cache file: {old_cache_file.name} (kept as fallback)")
-
-        # IERS_Auto.open() will use existing cache if available, or download if not
-        # If we need to force update, we'll need to clear the cache AFTER successful download
-        if should_force_download:
-            logger.info("Forcing IERS data update...")
-            # Temporarily rename old cache to force download, but keep it as backup
-            if old_cache_file and old_cache_file.exists():
-                backup_file = old_cache_file.with_suffix(
-                    old_cache_file.suffix + ".backup"
-                )
-                logger.info(f"Temporarily backing up old cache to: {backup_file.name}")
-                old_cache_file.rename(backup_file)
-                old_cache_file = backup_file  # Update reference to backup file
-
-        # Try to download/load IERS data
-        try:
-            iers_table = IERS_Auto.open()
-            logger.info(f"IERS table loaded. Length: {len(iers_table)}")
-        except Exception as e:
-            # If download fails and we have a backup, restore it
-            if old_cache_file and old_cache_file.exists():
-                logger.error(f"Failed to load/update IERS data: {e}")
-                logger.warning("Restoring old cache file as fallback...")
-                # Restore backup
-                original_name = old_cache_file.with_suffix("")
-                if old_cache_file.suffix == ".backup":
-                    old_cache_file.rename(original_name)
-                    logger.info(f"Old cache restored: {original_name.name}")
-                    # Try loading again with restored cache
-                    iers_table = IERS_Auto.open()
+            # Verificar idade do cache apenas pelo ficheiro mais recente >= 1MB
+            download_dir = actual_cache_dir / "download"
+            if download_dir.exists():
+                all_files = [f for f in download_dir.rglob("*") if f.is_file()]
+                large_files = [f for f in all_files if f.stat().st_size > 1_000_000]
+                if large_files:
+                    cache_file = large_files[0]
+                    is_expired, age_days = check_cache_age(cache_file, max_age_days)
                     logger.info(
-                        f"IERS table loaded from restored cache. Length: {len(iers_table)}"
+                        f"IERS cache exists ({cache_file.stat().st_size} bytes, "
+                        f"age: {age_days:.1f} days)"
                     )
-                else:
-                    raise
-            else:
-                raise
+                    if not is_expired:
+                        # Carregar a tabela para verificar predictive data age
+                        try:
+                            iers_table = IERS_Auto.open()
+                            predictive_expired, days_until = (
+                                check_iers_predictive_data_age(iers_table, max_age_days)
+                            )
+                            if not predictive_expired:
+                                logger.info(
+                                    f"IERS cache still valid (predictive data: "
+                                    f"{days_until:.1f} days). Skipping download."
+                                )
+                                return True
+                            logger.warning(
+                                f"IERS predictive data expires in {days_until:.1f} days, "
+                                f"will update."
+                            )
+                        except Exception as e:
+                            logger.warning(
+                                f"Could not load existing IERS cache: {e}. Will re-download."
+                            )
+                    else:
+                        logger.warning(
+                            f"IERS cache expired (>{max_age_days} days), will update."
+                        )
+                    # Remover cache antigo para forçar re-download limpo
+                    if astropy_cache_dir.exists():
+                        import shutil
+
+                        logger.info("Removing old astropy cache for clean re-download.")
+                        shutil.rmtree(str(astropy_cache_dir), ignore_errors=True)
+                        astropy_cache_dir.mkdir(parents=True, exist_ok=True)
+
+        # IERS_Auto.open() gere o download e cache internamente.
+        # Não há manipulação manual de ficheiros — o astropy faz tudo.
+        iers_table = IERS_Auto.open()
+        logger.info(f"IERS table loaded. Length: {len(iers_table)}")
 
         # Check predictive data age (how far into the future the data predicts)
         predictive_expired, days_until_expiry = check_iers_predictive_data_age(
@@ -264,70 +234,8 @@ def warm_astropy_cache(
                 f"IERS predictive data valid for {days_until_expiry:.1f} more days"
             )
 
-        # Verify cache after loading
-        if download_dir.exists():
-            # Find IERS file (typically > 1MB)
-            all_files = [f for f in download_dir.rglob("*") if f.is_file()]
-            large_files = [f for f in all_files if f.stat().st_size > 1000000]
-
-            if large_files:
-                cache_file = large_files[0]
-                file_size = cache_file.stat().st_size
-
-                # If we successfully downloaded new cache, remove old backup
-                # Only remove backup if we have a NEW cache file (not the backup itself)
-                if (
-                    old_cache_file
-                    and old_cache_file.exists()
-                    and old_cache_file.suffix == ".backup"
-                ):
-                    # Verify new cache is different from old one (by checking it's not the backup)
-                    if cache_file != old_cache_file:
-                        logger.info(
-                            f"New cache verified successfully. Removing old backup: {old_cache_file.name}"
-                        )
-                        old_cache_file.unlink()
-                        logger.info(f"Old cache backup removed successfully")
-                    else:
-                        logger.warning(
-                            "New cache file is same as backup - keeping backup as fallback"
-                        )
-
-                if cache_exists and not should_force_download:
-                    logger.info(
-                        f"Cache verified: {cache_file.relative_to(actual_cache_dir)} ({file_size} bytes)"
-                    )
-                elif should_force_download:
-                    logger.info(
-                        f"Cache updated: {cache_file.relative_to(actual_cache_dir)} ({file_size} bytes)"
-                    )
-                else:
-                    logger.info(
-                        f"Cache file created: {cache_file.relative_to(actual_cache_dir)} ({file_size} bytes)"
-                    )
-                return True
-            else:
-                # No cache file found after download attempt
-                logger.warning(
-                    f"No IERS files found in cache (found {len(all_files)} files total)"
-                )
-        else:
-            # Download directory doesn't exist
-            logger.warning(f"Download directory does not exist: {download_dir}")
-
-        # If we have a backup and no new cache was found, restore it
-        if (
-            old_cache_file
-            and old_cache_file.exists()
-            and old_cache_file.suffix == ".backup"
-        ):
-            logger.warning("Restoring old cache file as fallback...")
-            original_name = old_cache_file.with_suffix("")
-            old_cache_file.rename(original_name)
-            logger.info(f"Old cache restored: {original_name.name}")
-            return True  # Return True because we have restored cache
-
-        return False
+        logger.info("Astropy IERS cache warming completed successfully.")
+        return True
 
     except Exception as e:
         logger.error(f"Astropy cache warming failed: {e}")

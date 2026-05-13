@@ -63,3 +63,7 @@ database_subset/
 
 # Parsl Runinfo
 predict_occultation/runinfo
+
+# Cursor / graphify local
+.cursorignore
+graphify-out/

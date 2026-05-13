@@ -8,6 +8,16 @@ from parsl.launchers import SrunLauncher
 from parsl.providers import LocalProvider, SlurmProvider
 
 
+def _env_int_min_zero(name, default):
+    """Lê int não-negativo (mínimo 0) para max_blocks e cores_per_node (executores linea).
+    Valor 0 desabilita o executor correspondente."""
+    try:
+        v = int(os.getenv(name, str(default)).strip() or str(default))
+    except (ValueError, TypeError):
+        v = default
+    return max(0, v)
+
+
 def get_config(key, jobpath):
     """
     Creates an instance of the Parsl configuration
@@ -82,8 +92,26 @@ def get_config(key, jobpath):
         script_dir = pipeline_root.joinpath("script_dir")
         script_dir.mkdir(parents=True, exist_ok=True)
 
-        # Cluster heterogêneo: 16 nós apl[01-16] (28 cores/nó), 12 nós apl[17-28] (52 cores/nó)
-        # init_blocks/max_blocks sobrescritos em run_pred_occ.py (small=1 no início, large=0)
+        # Cluster heterogêneo: até 16 nós apl[01-16], 12 nós apl[17-28] (ajustável por env)
+        # max_blocks: default 1 se PARSL_LINEA_SMALL_MAX_BLOCKS / PARSL_LINEA_LARGE_MAX_BLOCKS omitidos
+        # cores_per_node: PARSL_LINEA_SMALL_CORES_PER_NODE (28), PARSL_LINEA_LARGE_CORES_PER_NODE (52)
+        # Use 0 para desabilitar um executor específico (útil quando a partição Slurm não cobre certos nós)
+        linea_small_max_blocks = _env_int_min_zero("PARSL_LINEA_SMALL_MAX_BLOCKS", 1)
+        linea_large_max_blocks = _env_int_min_zero("PARSL_LINEA_LARGE_MAX_BLOCKS", 1)
+        linea_small_cores_per_node = _env_int_min_zero(
+            "PARSL_LINEA_SMALL_CORES_PER_NODE", 28
+        )
+        linea_large_cores_per_node = _env_int_min_zero(
+            "PARSL_LINEA_LARGE_CORES_PER_NODE", 52
+        )
+        linea_small_max_workers = linea_small_max_blocks * linea_small_cores_per_node
+        linea_large_max_workers = linea_large_max_blocks * linea_large_cores_per_node
+        # Slurm --partition (SlurmProvider); default cpu se omitido ou vazio
+        slurm_partition = os.getenv("PARSL_SLURM_PARTITION", "cpu").strip() or "cpu"
+        # Slurm --account (SlurmProvider); default hpc-public se omitido ou vazio
+        slurm_account = (
+            os.getenv("PARSL_SLURM_ACCOUNT", "hpc-public").strip() or "hpc-public"
+        )
         channel = SSHChannel(
             hostname="loginapl01",
             username="app.tno",
@@ -111,7 +139,8 @@ def get_config(key, jobpath):
             },
         )
         provider_common = {
-            "partition": "cpu_long",
+            "partition": slurm_partition,
+            "account": slurm_account,
             "nodes_per_block": 1,
             "cmd_timeout": 240,
             "launcher": SrunLauncher(debug=True, overrides=""),
@@ -120,36 +149,48 @@ def get_config(key, jobpath):
             "worker_init": f"source {cluster_env_sh}\n",
             "channel": channel,
         }
-        # Parsl 2023.9.25: max_workers é total por executor (não por nó); 448=16*28, 624=12*52
-        # cores_per_node: núcleos físicos por nó (apl01-16: 28, apl17-28: 52)
-        htex_small = HighThroughputExecutor(
-            label="linea_small",
-            worker_logdir_root=str(script_dir),
-            max_workers=448,
-            provider=SlurmProvider(
-                **provider_common,
-                scheduler_options="#SBATCH --nodelist=apl[01-16]\n",
-                cores_per_node=28,
-                init_blocks=1,
-                min_blocks=1,
-                max_blocks=16,
-            ),
-        )
-        htex_large = HighThroughputExecutor(
-            label="linea_large",
-            worker_logdir_root=str(script_dir),
-            max_workers=624,
-            provider=SlurmProvider(
-                **provider_common,
-                scheduler_options="#SBATCH --nodelist=apl[17-28]\n",
-                cores_per_node=52,
-                init_blocks=0,
-                min_blocks=0,
-                max_blocks=12,
-            ),
-        )
+        # Parsl: max_workers = max_blocks * cores_per_node (1 nó por bloco)
+        # Executor só é criado se max_blocks > 0 E cores_per_node > 0
+        # Isso permite desabilitar um executor definindo seus valores como 0 no .env
+        linea_executors = []
+        if linea_small_max_blocks > 0 and linea_small_cores_per_node > 0:
+            htex_small = HighThroughputExecutor(
+                label="linea_small",
+                worker_logdir_root=str(script_dir),
+                max_workers=linea_small_max_workers,
+                provider=SlurmProvider(
+                    **provider_common,
+                    scheduler_options="#SBATCH --nodelist=apl[01-16]\n",
+                    cores_per_node=linea_small_cores_per_node,
+                    init_blocks=1,
+                    min_blocks=1,
+                    max_blocks=linea_small_max_blocks,
+                ),
+            )
+            linea_executors.append(htex_small)
+        if linea_large_max_blocks > 0 and linea_large_cores_per_node > 0:
+            htex_large = HighThroughputExecutor(
+                label="linea_large",
+                worker_logdir_root=str(script_dir),
+                max_workers=linea_large_max_workers,
+                provider=SlurmProvider(
+                    **provider_common,
+                    scheduler_options="#SBATCH --nodelist=apl[17-28]\n",
+                    cores_per_node=linea_large_cores_per_node,
+                    init_blocks=0,
+                    min_blocks=0,
+                    max_blocks=linea_large_max_blocks,
+                ),
+            )
+            linea_executors.append(htex_large)
+        if not linea_executors:
+            raise RuntimeError(
+                "No LineA executors configured. "
+                "At least one of PARSL_LINEA_SMALL_MAX_BLOCKS or PARSL_LINEA_LARGE_MAX_BLOCKS "
+                "must be > 0 with corresponding CORES_PER_NODE > 0."
+            )
         executors = {
-            "linea": [htex_small, htex_large],
+            "linea": linea_executors,
         }
 
     if parsl_env == "local":

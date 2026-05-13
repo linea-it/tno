@@ -11,11 +11,14 @@ from datetime import timedelta, timezone
 from io import StringIO
 from typing import List, Optional
 
+import numpy as np
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
 from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.sql import sqltypes
 
 
 @functools.lru_cache(maxsize=1)
@@ -36,6 +39,49 @@ def _get_ingest_not_null_columns():
         raise RuntimeError(
             f"SchemaResolutionError: unable to resolve NOT NULL columns for tno_occultation. {e}"
         ) from e
+
+
+@functools.lru_cache(maxsize=1)
+def _get_occultation_numeric_column_names():
+    """Nomes de colunas numéricas em tno_occultation (schema), para coerção na ingestão."""
+    dao = OccultationDao()
+    names = []
+    for col in dao.tbl.columns:
+        if isinstance(col.type, sqltypes.Boolean):
+            continue
+        if isinstance(
+            col.type,
+            (
+                sqltypes.Integer,
+                sqltypes.SmallInteger,
+                sqltypes.BigInteger,
+                sqltypes.Float,
+                sqltypes.Numeric,
+                sqltypes.REAL,
+            ),
+        ):
+            names.append(col.name)
+    return tuple(names)
+
+
+def _sanitize_numeric_columns_for_ingest_inplace(df, numeric_column_names):
+    """
+    Substitui strings sentinela (ex.: ****) por NaN e aplica pd.to_numeric nas colunas listadas.
+    Modifica df in-place.
+    """
+    for col in numeric_column_names:
+        if col not in df.columns:
+            continue
+        s = df[col]
+        str_mask = s.map(lambda x: isinstance(x, str))
+        if str_mask.any():
+            str_idx = s.index[str_mask]
+            stripped = s.loc[str_idx].astype(str).str.strip()
+            sentinel = stripped.str.fullmatch(r"\*+").fillna(False)
+            sent_idx = stripped.index[sentinel]
+            if len(sent_idx):
+                df.loc[sent_idx, col] = np.nan
+        df[col] = pd.to_numeric(df[col], errors="coerce")
 
 
 def _validate_ingest_dataframe(df, job_id, asteroid_name):
@@ -86,6 +132,13 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
             )
         return df.iloc[0:0], failures, False
 
+    df = df.copy()
+
+    numeric_names = [
+        c for c in _get_occultation_numeric_column_names() if c in df.columns
+    ]
+    _sanitize_numeric_columns_for_ingest_inplace(df, numeric_names)
+
     # Colunas NOT NULL obtidas do schema que existem no DataFrame
     not_null_cols = [c for c in _get_ingest_not_null_columns() if c in df.columns]
 
@@ -107,7 +160,6 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
         "g",
         "long",
     ]
-    df = df.copy()
     for col in not_null_cols:
         if col in numeric_not_null and col in df.columns:
             df[col] = pd.to_numeric(df[col], errors="coerce")
@@ -890,6 +942,27 @@ class Asteroid:
                         % (asteroid_name, filtered_no_path_coeff)
                     )
 
+            # Limpeza: remove linhas com sentinelas mascaradas (****, ******,
+            # **********) em qualquer coluna, que quebram o COPY/ingest no
+            # PostgreSQL.
+            masked = pd.Series(False, index=df.index)
+            for col in df.columns:
+                masked |= (
+                    df[col].astype(str).str.contains(r"\*{2,}", regex=True, na=False)
+                )
+            if masked.any():
+                n_masked = int(masked.sum())
+                log.info(
+                    "Asteroid [%s] Removed [%s] rows with masked sentinels (****)."
+                    % (asteroid_name, n_masked)
+                )
+                df = df.loc[~masked].copy()
+                if df.empty:
+                    del df
+                    del dao
+                    self.ingest_occultations.update({"count": 0})
+                    return 0
+
             df_valid, failures, skip_insert = _validate_ingest_dataframe(
                 df, job_id, asteroid_name
             )
@@ -974,6 +1047,13 @@ class Asteroid:
             self.ingest_occultations.update({"message": msg})
             log.error("Asteroid [%s] %s" % (self.name, msg))
             self.set_failure()
+            if conn is not None:
+                try:
+                    conn.rollback()
+                except Exception:
+                    pass
+                if isinstance(e, DBAPIError):
+                    raise
             return 0
 
         finally:
