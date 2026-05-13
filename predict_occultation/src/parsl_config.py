@@ -106,6 +106,10 @@ def get_config(key, jobpath):
         linea_large_max_workers = linea_large_max_blocks * linea_large_cores_per_node
         # Slurm --partition (SlurmProvider); default cpu se omitido ou vazio
         slurm_partition = os.getenv("PARSL_SLURM_PARTITION", "cpu").strip() or "cpu"
+        # Slurm --account (SlurmProvider); default hpc-public se omitido ou vazio
+        slurm_account = (
+            os.getenv("PARSL_SLURM_ACCOUNT", "hpc-public").strip() or "hpc-public"
+        )
         channel = SSHChannel(
             hostname="loginapl01",
             username="app.tno",
@@ -134,6 +138,7 @@ def get_config(key, jobpath):
         )
         provider_common = {
             "partition": slurm_partition,
+            "account": slurm_account,
             "nodes_per_block": 1,
             "cmd_timeout": 240,
             "launcher": SrunLauncher(debug=True, overrides=""),

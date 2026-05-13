@@ -83,6 +83,7 @@ POSTGRES_DB=${DATABASE_ADMIN_DB}
 # HPC Parsl — Linea (PARSL_*; ver predict_occultation/src/parsl_config.py)
 # -------------------------------------
 PARSL_SLURM_PARTITION=cpu
+PARSL_SLURM_ACCOUNT=hpc-public
 PARSL_LINEA_SMALL_MAX_BLOCKS=1
 PARSL_LINEA_LARGE_MAX_BLOCKS=1
 PARSL_LINEA_SMALL_CORES_PER_NODE=28
