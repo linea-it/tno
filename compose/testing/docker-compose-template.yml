@@ -6,7 +6,7 @@ services:
   backend:
     &backend
     image: linea/tno:backend_${TNO_IMAGE_TAG:-8fa8fae}
-    user: ${TNO_UID:-31670}:${TNO_GID:-15010}
+    user: "${TNO_UID:-31670}:${TNO_GID:-15010}"
     group_add:
       - "15007"
       - "15010"
@@ -17,8 +17,6 @@ services:
       - ${TNO_PROJ_DIR:-.}/data/cache:/app/cache
     env_file:
       - .env
-    environment:
-      - CACHE_DIR=/app/cache
     command: /start.sh
     depends_on:
       - rabbit
@@ -61,8 +59,6 @@ services:
       - ${TNO_PROJ_DIR:-.}/logs:/app/logs
     env_file:
       - .env
-    environment:
-      - CACHE_DIR=/app/cache
 
   # Celery Workers (Tarefas do backend em background)
   celery_worker:
