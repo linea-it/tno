@@ -209,9 +209,12 @@ def ingest_predictions(jobid: int):
 
     dao_job_result = PredictOccultationJobResultDao()
     engine = dao_job_result.get_db_engine()
+
+    # Conexão única reutilizada no loop para não saturar o pool (ingestão de
+    # milhares de asteroides). Cada task usa conn.begin() para isolar sua
+    # transação com commit/rollback automáticos.
     conn = engine.connect()
     try:
-        # Get all tasks with status 6 (Ingesting) using shared connection
         tasks = dao_job_result.by_job_id(jobid, status=6, conn=conn)
 
         log.info(f"Tasks to register: {len(tasks)}")
@@ -233,38 +236,31 @@ def ingest_predictions(jobid: int):
                 )
             except Exception as e:
                 log.error("Cannot load asteroid [%s]: %s" % (name, e))
-                try:
-                    conn.rollback()
-                except Exception:
-                    pass
                 fail = {
                     "name": name,
                     "status": 2,
                     "messages": "Failed to load asteroid data: %s" % e,
                 }
-                dao_job_result.update(id=task_id, data=fail, conn=conn)
-                try:
-                    conn.commit()
-                except Exception:
-                    conn.rollback()
+                with conn.begin():
+                    dao_job_result.update(id=task_id, data=fail, conn=conn)
                 continue
 
             attempt = 0
             while True:
                 try:
-                    a.ingest_predictions(conn=conn, job_path=current_path)
-                    consolidated = a.consiladate()
-                    log.info("Updating task with consolidated data")
-                    dao_job_result.update(id=task_id, data=consolidated, conn=conn)
-                    conn.commit()
+                    with conn.begin():
+                        a.ingest_predictions(conn=conn, job_path=current_path)
+                        consolidated = a.consiladate()
+                        log.info("Updating task with consolidated data")
+                        dao_job_result.update(id=task_id, data=consolidated, conn=conn)
                     log.info(f"task updated to status: {consolidated['status']}")
                     break
                 except DBAPIError as e:
-                    try:
-                        conn.rollback()
-                    except Exception:
-                        pass
-                    if _is_insufficient_resources_error(e) and attempt < max_ir_retries - 1:
+                    # conn.begin() já fez rollback automaticamente
+                    if (
+                        _is_insufficient_resources_error(e)
+                        and attempt < max_ir_retries - 1
+                    ):
                         attempt += 1
                         wait_s = ir_backoff * attempt
                         log.warning(
@@ -278,25 +274,16 @@ def ingest_predictions(jobid: int):
                         % (task_id, attempt + 1, e)
                     )
                     consolidated = a.consiladate()
-                    dao_job_result.update(id=task_id, data=consolidated, conn=conn)
-                    try:
-                        conn.commit()
-                    except Exception:
-                        conn.rollback()
+                    with conn.begin():
+                        dao_job_result.update(id=task_id, data=consolidated, conn=conn)
                     break
                 except Exception as e:
-                    try:
-                        conn.rollback()
-                    except Exception:
-                        pass
+                    # conn.begin() já fez rollback automaticamente
                     log.error("Error ingesting task %s: %s" % (task_id, e))
                     traceback.print_exc()
                     consolidated = a.consiladate()
-                    dao_job_result.update(id=task_id, data=consolidated, conn=conn)
-                    try:
-                        conn.commit()
-                    except Exception:
-                        conn.rollback()
+                    with conn.begin():
+                        dao_job_result.update(id=task_id, data=consolidated, conn=conn)
                     break
     finally:
         conn.close()
@@ -730,37 +717,32 @@ def submit_tasks(jobid: int):
 
         # =========================== Parsl ===========================
         log.info("Setting Parsl configurations")
-        # Get configuration parameters from environment variables
         envname = os.getenv("PARSL_ENV", "linea")
-        try:
-            ast_per_node = int(os.getenv("ASTEROIDS_PER_NODE", 28))
-            max_nodes = int(os.getenv("MAX_NODES", 28))
-        except (ValueError, TypeError):
-            log.error("MAX_NODES and ASTEROIDS_PER_NODE must be integers.")
-            exit(1)
-
         num_asteroids = len(asteroids)
-
-        # Dynamically calculate the number of nodes required based on the workload (informativo)
-        if num_asteroids > 0:
-            nodes_needed = math.ceil(num_asteroids / ast_per_node)
-        else:
-            nodes_needed = 0
 
         parsl_conf = get_config(envname, current_path)
         parsl_conf.run_dir = os.path.join(current_path, "runinfo")
 
         if envname == "linea" and len(parsl_conf.executors) == 2:
-            # Cluster heterogêneo: small inicia com 1 nó, large com 0 (escala sob demanda)
-            # max_blocks vem de parsl_config.get_config (PARSL_LINEA_*_MAX_BLOCKS)
-            parsl_conf.executors[0].provider.init_blocks = 1
+            # Cluster heterogêneo: ambos executores iniciam com 0 nós (escala
+            # sob demanda), reduzindo alocação ociosa quando não há asteroids.
+            # Caps (max_blocks) vêm de parsl_config.get_config (PARSL_LINEA_*_MAX_BLOCKS).
+            parsl_conf.executors[0].provider.init_blocks = 0
             parsl_conf.executors[1].provider.init_blocks = 0
             ex0, ex1 = parsl_conf.executors[0], parsl_conf.executors[1]
+            # cores_hint deriva de cores_per_node da config Parsl (fonte única de
+            # verdade), em vez de variáveis de ambiente separadas.
+            cores_hint = ex0.provider.cores_per_node
+            if num_asteroids > 0:
+                nodes_needed = math.ceil(num_asteroids / cores_hint)
+            else:
+                nodes_needed = 0
             log.info(
-                f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
+                f"Asteroids: {num_asteroids}, Nodes Needed (≈1 asteroide/core small): "
+                f"{nodes_needed}"
             )
             log.info(
-                "Parsl linea_small: init=1 max_blocks=%s cores_per_node=%s max_workers=%s; "
+                "Parsl linea_small: init=0 max_blocks=%s cores_per_node=%s max_workers=%s; "
                 "linea_large: init=0 max_blocks=%s cores_per_node=%s max_workers=%s "
                 "(PARSL_LINEA_*_MAX_BLOCKS, PARSL_LINEA_*_CORES_PER_NODE)",
                 ex0.provider.max_blocks,
@@ -771,16 +753,26 @@ def submit_tasks(jobid: int):
                 ex1.max_workers,
             )
         else:
-            # Um único executor (local ou linea legado)
+            # Um único executor (local ou linea legado): max_blocks já vem de
+            # parsl_config. cores_hint deriva da config Parsl (cores_per_node ou
+            # fallback max_workers), mantendo única fonte de verdade.
+            ex0 = parsl_conf.executors[0]
             parsl_conf.executors[0].provider.init_blocks = 1
-            if envname == "linea":
-                parsl_conf.executors[0].provider.max_blocks = max_nodes
+            prov = ex0.provider
+            cores_hint = getattr(prov, "cores_per_node", None)
+            if cores_hint is None:
+                cores_hint = max(ex0.max_workers, 1)
+            if num_asteroids > 0:
+                nodes_needed = math.ceil(num_asteroids / cores_hint)
+            else:
+                nodes_needed = 0
             log.info(
-                f"Asteroids: {num_asteroids}, Nodes Needed: {nodes_needed}, Max Nodes: {max_nodes}"
+                f"Asteroids: {num_asteroids}, Nodes Needed (heurística cores): "
+                f"{nodes_needed}"
             )
             log.info(
-                f"Parsl blocks: init_blocks={parsl_conf.executors[0].provider.init_blocks}, "
-                f"max_blocks={parsl_conf.executors[0].provider.max_blocks}"
+                f"Parsl blocks: init_blocks={prov.init_blocks}, "
+                f"max_blocks={prov.max_blocks}"
             )
 
         parsl.clear()
@@ -1256,7 +1248,32 @@ def complete_job(jobid: int):
     if not job["debug"]:
         log.debug("Removing asteroid directory.")
         asteroid_path = pathlib.Path(job["path"]).joinpath("asteroids")
-        shutil.rmtree(asteroid_path)
+        # Verifica existência, tenta shutil.rmtree e faz fallback para rm -rf.
+        # Symlinks, overlay/NFS ou ENOTEMPTY podem falhar com shutil (Python 3.8).
+        # Se ambos falharem, loga warning sem interromper o job.
+        if asteroid_path.exists():
+            try:
+                shutil.rmtree(asteroid_path)
+            except OSError as err:
+                # Mesmo motivo de remove_job_directory: symlinks, overlay/NFS ou
+                # ENOTEMPTY durante rmtree podem falhar com shutil no Python 3.8.
+                log.warning(
+                    "shutil.rmtree falhou (%s); usando rm -rf em [%s]",
+                    err,
+                    asteroid_path,
+                )
+                try:
+                    subprocess.run(
+                        ["rm", "-rf", "--", str(asteroid_path)],
+                        check=True,
+                    )
+                except subprocess.CalledProcessError as rm_err:
+                    log.warning(
+                        "rm -rf tambem falhou (%s); limpando registro apenas. "
+                        "Diretorio [%s] pode precisar de remocao manual.",
+                        rm_err,
+                        asteroid_path,
+                    )
         log.info("Directory of asteroids has been removed!")
 
     log.debug(f"Total Asteroids: [{job['count_asteroids']}]")
