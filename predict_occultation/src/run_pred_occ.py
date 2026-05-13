@@ -775,6 +775,17 @@ def submit_tasks(jobid: int):
                 f"max_blocks={prov.max_blocks}"
             )
 
+        # Log Slurm partition e account quando submetendo no cluster LineA
+        if envname == "linea":
+            provider = parsl_conf.executors[0].provider
+            slurm_partition = getattr(provider, "partition", "N/A")
+            slurm_account = getattr(provider, "account", "N/A")
+            log.info(
+                "Slurm submission config: partition=%s, account=%s",
+                slurm_partition,
+                slurm_account,
+            )
+
         parsl.clear()
         parsl.load(parsl_conf)
 
