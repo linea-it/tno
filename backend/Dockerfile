@@ -13,6 +13,7 @@ ENV PYTHONUNBUFFERED=1
 # Install Packages
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+    gosu \
     # gcc \
     python3-dev \
     build-essential \
@@ -54,18 +55,21 @@ RUN mkdir -p /usr/src/app \
     /archive/maps \
     /archive/skybot_outputs \
     /logs \
+    /app/cache \
     /.astropy/cache \
     /.config/matplotlib \
-    && chown -R $USER_UID:$USER_GID \
+    && chown -R ${USERUID}:${USERGID} \
     /usr/src/app \
     /archive \
     /logs \
+    /app/cache \
     /.astropy \
     /.config \
     && chmod -R 777 /usr/src/app/django_static \
     && chmod -R g+w  \
     /archive \
     /logs \
+    /app/cache \
     /.astropy \
     /.config
 
@@ -82,8 +86,8 @@ COPY --chmod=0775 ./start_beat.sh /start_beat.sh
 COPY --chmod=0775 ./start_flower.sh /start_flower.sh
 
 
-# Switch to non-priviliged user and run app
-USER $USERNAME
+# O container corre como o user não-root definido em TNO_UID:TNO_GID via docker-compose.
+USER ${USERNAME}
 
 # NÃO adicionar o script /start.sh no entrypoint
 # O /start.sh deve ser adicionado no docker-compose command.
