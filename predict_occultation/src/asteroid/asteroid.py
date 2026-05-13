@@ -13,12 +13,12 @@ from typing import List, Optional
 
 import numpy as np
 import pandas as pd
-from sqlalchemy.exc import DBAPIError
-from sqlalchemy.sql import sqltypes
 from asteroid.external_inputs import AsteroidExternalInputs
 from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.sql import sqltypes
 
 
 @functools.lru_cache(maxsize=1)
@@ -133,6 +133,7 @@ def _validate_ingest_dataframe(df, job_id, asteroid_name):
         return df.iloc[0:0], failures, False
 
     df = df.copy()
+
     numeric_names = [
         c for c in _get_occultation_numeric_column_names() if c in df.columns
     ]
@@ -940,6 +941,27 @@ class Asteroid:
                         "Asteroid [%s] Filtered [%s] rows with have_path_coeff=false."
                         % (asteroid_name, filtered_no_path_coeff)
                     )
+
+            # Limpeza: remove linhas com sentinelas mascaradas (****, ******,
+            # **********) em qualquer coluna, que quebram o COPY/ingest no
+            # PostgreSQL.
+            masked = pd.Series(False, index=df.index)
+            for col in df.columns:
+                masked |= (
+                    df[col].astype(str).str.contains(r"\*{2,}", regex=True, na=False)
+                )
+            if masked.any():
+                n_masked = int(masked.sum())
+                log.info(
+                    "Asteroid [%s] Removed [%s] rows with masked sentinels (****)."
+                    % (asteroid_name, n_masked)
+                )
+                df = df.loc[~masked].copy()
+                if df.empty:
+                    del df
+                    del dao
+                    self.ingest_occultations.update({"count": 0})
+                    return 0
 
             df_valid, failures, skip_insert = _validate_ingest_dataframe(
                 df, job_id, asteroid_name
