@@ -102,11 +102,12 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=(IsAuthenticated,))
     def info(self, request):
 
-        return Response(
-            self.serializer_class(
-                request.user.subscription, context={"request": request}
-            ).data
-        )
+        try:
+            sub = request.user.subscription
+        except User.subscription.RelatedObjectDoesNotExist:
+            return Response({"email": request.user.email})
+
+        return Response(self.serializer_class(sub, context={"request": request}).data)
 
     @action(detail=False, methods=["post"], permission_classes=(IsAuthenticated,))
     def unsubscribe(self, request):
