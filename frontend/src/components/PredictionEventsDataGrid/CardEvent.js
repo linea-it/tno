@@ -2,15 +2,16 @@ import React, { useState } from 'react'
 import Card from '@mui/material/Card'
 import CardHeader from '@mui/material/CardHeader'
 import CardContent from '@mui/material/CardContent'
-import CardMedia from '@mui/material/CardMedia'
 import PropTypes from 'prop-types'
 import Box from '@mui/material/Box'
 import moment from 'moment'
 import Stack from '@mui/material/Stack'
-import StarBorderPurple500Icon from '@mui/icons-material/StarBorderPurple500'
+import FlareOutlinedIcon from '@mui/icons-material/FlareOutlined'
 import { blue } from '@mui/material/colors'
 import Chip from '@mui/material/Chip'
+import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
+import OccultationThumbnail from '../OccultationThumbnail'
 import Snackbar from '@mui/material/Snackbar'
 
 function PredictEventCard({ data }) {
@@ -33,14 +34,14 @@ function PredictEventCard({ data }) {
         sx={{
           color: blue[400],
           lineHeight: 1.5,
-          fontSize: '0.75rem',
+          fontSize: '0.85rem',
           fontFamily: 'Public Sans, sans-serif',
           fontWeight: 400,
           gap: 1
         }}
       >
-        <StarBorderPurple500Icon fontSize='small' />
-        {`G (Gaia) ${value.toFixed(3)}`}
+        <FlareOutlinedIcon fontSize='small'/>
+        {`${value.toFixed(2)} (G)`}
       </Stack>
     )
   }
@@ -66,48 +67,48 @@ function PredictEventCard({ data }) {
     return `/prediction-event-detail/${data.id}`
   }
 
-  const handleImageError = (e) => {
-    console.log('handleImageError')
-    e.target.onerror = null
-    e.target.src = 'https://placehold.co/250?text=No%20Image'
-  }
-
   return (
-    <Card sx={{ display: 'flex', minHeight: 170, overflow: 'hidden' }}>
-      <CardMedia
-        component='img'
-        sx={{
-          width: { xs: 100, sm: 130, md: 150 },
-          objectFit: 'contain',
-          flexShrink: 0
-        }}
-        image={!data?.map_url ? 'https://placehold.co/250?text=No%20Image' : data.map_url}
-        onError={handleImageError}
-      />
-      <Box sx={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
+    <Card sx={{ display: 'flex', alignItems: 'center', minHeight: 150, overflow: 'hidden' }}>
+      <Box sx={{ px: 1.5, flexShrink: 0 }}>
+        <OccultationThumbnail event={data} width={160} height={142} />
+      </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0, flex: 1, py: 1 }}>
         <CardHeader
-          sx={{ pb: 0, px: { xs: 1, sm: 2 }, '& .MuiCardHeader-content': { minWidth: 0 }, '& .MuiCardHeader-title': { overflow: 'hidden', textOverflow: 'ellipsis' } }}
+          sx={{ pb: 0.5, px: { xs: 1, sm: 2 }, '& .MuiCardHeader-content': { minWidth: 0 }, '& .MuiCardHeader-title': { overflow: 'hidden', textOverflow: 'ellipsis' } }}
           title={getDisplayName(data.name, data.number)}
-          titleTypographyProps={{ variant: 'body1' }}
+          titleTypographyProps={{ variant: 'body1', color: 'primary.main' }}
           subheader={formatDateTime(data.date_time)}
           subheaderTypographyProps={{ variant: 'body2' }}
         />
-        <CardContent sx={{ flex: '1 0 auto', pt: 1, px: { xs: 1, sm: 2 } }}>
-          <Chip label={data.dynclass} color='info' size='small' sx={{ maxWidth: '100%' }} />
-          <Stack spacing={1} sx={{ pt: 1 }}>
-            <Stack direction='row' spacing={2}>
-              {starMag(data.g_star)}
+        <CardContent sx={{ py: '0 !important', px: { xs: 1, sm: 2 } }}>
+          <Stack spacing={0.5}>
+            <Stack direction='row' alignItems='center' spacing={1.5} flexWrap='nowrap'>
+              <Chip label={data.dynclass} color='info' size='small' sx={{ maxWidth: '100%', flexShrink: 1, minWidth: 0 }} />
+              <Box sx={{ flexShrink: 0 }}>{starMag(data.g_star)}</Box>
             </Stack>
-            <Stack direction='row' flexWrap='wrap' justifyContent='flex-end' alignItems='center' spacing={1} useFlexGap>
-              <Button size='small' onClick={handleShare} sx={{ minHeight: 44 }}>
-                Share
-              </Button>
-              <Button size='small' href={getDetailUrl()} target='_blank' sx={{ minHeight: 44 }}>
-                More
-              </Button>
+            <Stack direction='row' spacing={1.5} flexWrap='wrap'>
+              <Typography variant='caption' color='text.secondary'>
+                C/A {data.closest_approach?.toFixed(2)}″
+              </Typography>
+              <Typography variant='caption' color='text.secondary'>
+                Vel {data.velocity?.toFixed(1)} km/s
+              </Typography>
             </Stack>
+            <Typography variant='caption' color='text.secondary'>
+              LT {data.loc_t?.slice(0, 5)}
+            </Typography>
           </Stack>
         </CardContent>
+        <Box sx={{ px: { xs: 1, sm: 2 }, pt: 1 }}>
+          <Stack direction='row' flexWrap='wrap' spacing={1} justifyContent='space-between'>
+            <Button size='small' onClick={handleShare} sx={{ minHeight: 36 }}>
+              Share
+            </Button>
+            <Button size='small' href={getDetailUrl()} target='_blank' sx={{ minHeight: 36 }}>
+              More
+            </Button>
+          </Stack>
+        </Box>
       </Box>
       <Snackbar open={snackbarOpen} autoHideDuration={2500} onClose={handleCloseSnackbar} message='URL copied to clipboard' />
     </Card>

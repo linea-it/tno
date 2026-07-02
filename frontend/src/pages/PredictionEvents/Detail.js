@@ -306,7 +306,7 @@ function PredictionEventDetail() {
       <Grid container spacing={2} sx={{ marginTop: '10px', minWidth: 0 }}>
         {occultation.id !== undefined && (
           <Grid item xs={12} sx={{ minWidth: 0 }}>
-            <PredictOccultationMap occultationId={occultation.id} />
+            <PredictOccultationMap occultationId={occultation.id} event={occultation} />
           </Grid>
         )}
         <Grid item xs={12} md={6} lg={6} sx={{ minWidth: 0 }}>

@@ -36,7 +36,6 @@ function SubmitSkybotJobs() {
     setChecked(event.target.checked)
   }
   const handleCheckJob = () => {
-    console.log(data)
     navigate(`/dashboard/data-preparation/des/discovery/${data.data.job}`)
   }
 

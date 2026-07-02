@@ -18,13 +18,19 @@ function PredictEventList() {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const columns = PredictionEventsColumns
   const baseVisibility = predictionEventsColumnVisibilityModel
-  const columnVisibilityModel = useMemo(
+  const initialVisibilityModel = useMemo(
     () =>
       isMobile
         ? { ...baseVisibility, ...MOBILE_HIDDEN_COLUMNS.reduce((acc, f) => ({ ...acc, [f]: false }), {}) }
         : baseVisibility,
     [isMobile, baseVisibility]
   )
+
+  const [columnVisibilityModel, setColumnVisibilityModel] = React.useState(initialVisibilityModel)
+
+  React.useEffect(() => {
+    setColumnVisibilityModel(initialVisibilityModel)
+  }, [isMobile]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const { queryOptions, setQueryOptions } = useContext(PredictionEventsContext)
 
@@ -54,6 +60,7 @@ function PredictEventList() {
       <ResultsCount isLoading={isLoading} rowsCount={rowCountState} />
       <DataGrid
         columnVisibilityModel={columnVisibilityModel}
+        onColumnVisibilityModelChange={(newModel) => setColumnVisibilityModel(newModel)}
         sx={{
           minHeight: '500px',
           '& .MuiDataGrid-cell': { minHeight: 44 },
@@ -61,7 +68,7 @@ function PredictEventList() {
         }}
         disableColumnFilter
         disableRowSelectionOnClick
-        getRowHeight={() => 75}
+        getRowHeight={() => 100}
         pagination
         rows={data?.results !== undefined ? data.results : []}
         columns={columns}
