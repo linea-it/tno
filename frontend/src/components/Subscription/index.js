@@ -34,7 +34,6 @@ export default function Subscribe() {
           setEmailSuccess(true)
         })
         .catch((res) => {
-          console.log(res)
           if (res.response.data.detail) {
             setErrorMsg(res.response.data.detail)
           }
