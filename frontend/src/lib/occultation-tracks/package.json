@@ -1,0 +1,33 @@
+{
+  "name": "occultation-tracks",
+  "version": "1.0.0",
+  "description": "Módulo ES para geração de thumbnails SVG de ocultações estelares",
+  "type": "module",
+  "main": "index.js",
+  "module": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "default": "./index.js"
+    },
+    "./countries": "./data/ne_110m_countries.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "*.js",
+    "data/*.json",
+    "README.md"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "test": "node --test __tests__/core.test.mjs"
+  },
+  "keywords": [
+    "occultation",
+    "astronomy",
+    "svg",
+    "thumbnail",
+    "stellar"
+  ],
+  "license": "MIT"
+}
