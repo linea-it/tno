@@ -247,7 +247,9 @@ export function localCircumstances({
       - perpendicularDistEarthRadii * perpendicularDistEarthRadii,
     );
   }
-  const durationSec = 2 * chordEarthRadii * 86400 / shadowSpeedNorm;
+  const durationSec = chordEarthRadii > 0
+    ? 2 * chordEarthRadii * 86400 / shadowSpeedNorm
+    : null;
 
   let penumbraChordEarthRadii = 0;
   if (penumbraRadiusEarthRadii > 0
@@ -257,7 +259,9 @@ export function localCircumstances({
       - perpendicularDistEarthRadii * perpendicularDistEarthRadii,
     );
   }
-  const penumbraDurationSec = 2 * penumbraChordEarthRadii * 86400 / shadowSpeedNorm;
+  const penumbraDurationSec = penumbraChordEarthRadii > 0
+    ? 2 * penumbraChordEarthRadii * 86400 / shadowSpeedNorm
+    : null;
 
   const sunElevationDeg = deg(Math.asin(sunDirX * u1 + sunDirY * v1 + sunDirZ * w1));
   const starElevationDeg = deg(Math.asin(w1));
@@ -275,7 +279,7 @@ export function localCircumstances({
 
   const bodyRadiusKm = bodyRadiusEarthRadii * R_EARTH_KM;
   const uncertaintyKm = uncertaintyEarthRadii * R_EARTH_KM;
-  const probabilityPercent = uncertaintyKm > 0 && uncertaintyKm < 999
+  const probabilityPercent = uncertaintyKm > 0 && uncertaintyKm < 999 && bodyRadiusEarthRadii != null && bodyRadiusEarthRadii > 0
     ? occultationProbability(distanceKm, bodyRadiusKm, uncertaintyKm)
     : null;
 
@@ -294,8 +298,8 @@ export function localCircumstances({
   return {
     dtimeDays,
     distanceKm,
-    durationSec: round1(durationSec),
-    penumbraDurationSec: round1(penumbraDurationSec),
+    durationSec: durationSec != null ? round1(durationSec) : null,
+    penumbraDurationSec: penumbraDurationSec != null ? round1(penumbraDurationSec) : null,
     starElevationDeg: round1(starElevationDeg),
     sunElevationDeg: round1(sunElevationDeg),
     moonElevationDeg: round1(moonElevationDeg),

@@ -101,9 +101,12 @@ function resolveStarCoords(raw) {
   };
 }
 
+/* Precisamos usar Math.abs para tratar erros que foram
+reportados negativamente.
+*/
 function resolveDiameterErrors(raw) {
-  const errMin = getNumericEventValue(raw, 'diameter_err_min', null, 0);
-  const errMax = getNumericEventValue(raw, 'diameter_err_max', null, 0);
+  const errMin = Math.abs(getNumericEventValue(raw, 'diameter_err_min', null, 0));
+  const errMax = Math.abs(getNumericEventValue(raw, 'diameter_err_max', null, 0));
   if (errMin > 0 && errMax > 0) return (errMin + errMax) / 4;
   if (errMax > 0) return errMax / 2;
   if (errMin > 0) return errMin / 2;

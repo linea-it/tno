@@ -176,12 +176,14 @@ function ClickPopup({ clickPoint, circumstances, circumstancesError, eventName }
 
       content += `<div style="${ROW}"><span style="color:#757575">Mid time</span><span>${formatTime(circumstances.midTimeMs)}</span></div>`
 
-      content += `<div style="${ROW}"><span style="color:#757575">Duration</span><span>${circumstances.durationSec} s</span></div>`
+      if (circumstances.durationSec != null) {
+        content += `<div style="${ROW}"><span style="color:#757575">Duration</span><span>${circumstances.durationSec} s</span></div>`
+      }
 
       content += `<div style="${ROW}"><span style="color:#757575">Distance from center (&rho;)</span><span>${Math.abs(circumstances.distanceKm).toFixed(1)} km</span></div>`
 
       if (circumstances.deltaSigma != null) {
-        content += `<div style="${ROW}"><span style="color:#757575">Distance in sigmas (&Delta;d)</span><span>${circumstances.deltaSigma.toFixed(1)} &sigma;</span></div>`
+        content += `<div style="${ROW}"><span style="color:#757575">Distance from center in &sigma; (&Delta;d)</span><span>${circumstances.deltaSigma.toFixed(1)} &sigma;</span></div>`
       }
 
       content += `<div style="border-top:1px solid #E0E0E0;margin:4px 0"></div>`
@@ -203,7 +205,9 @@ function ClickPopup({ clickPoint, circumstances, circumstancesError, eventName }
       lines.push(`${toDms(clickPoint.lat, true)}  ${toDms(clickPoint.lon, false)}`)
       lines.push(`ρ: ${Math.abs(circumstances.distanceKm).toFixed(1)} km  Δd: ${(circumstances.deltaSigma || 0).toFixed(1)} σ`)
       lines.push(`Mid time: ${formatTime(circumstances.midTimeMs)}`)
-      lines.push(`Duration: ${circumstances.durationSec} s`)
+      if (circumstances.durationSec != null) {
+        lines.push(`Duration: ${circumstances.durationSec} s`)
+      }
       if (circumstances.probabilityPercent != null) {
         lines.push(`Probability: ${circumstances.probabilityPercent}%`)
       }
@@ -317,14 +321,14 @@ export default function Map2DView({
     const v = result.circumstances._speedKmPerSec
     const s = result.circumstances.sigmaKm
 
-    let durationSec = 0
-    if (r != null && v != null && v > 0 && absDistKm < r) {
+    let durationSec = result.circumstances.durationSec
+    if (r > 0 && v != null && v > 0 && absDistKm < r) {
       const chordKm = 2 * Math.sqrt(r * r - absDistKm * absDistKm)
       durationSec = Math.round(chordKm / v)
     }
 
     let probPercent = result.circumstances.probabilityPercent
-    if (r != null && s != null && s > 0) {
+    if (r > 0 && s != null && s > 0) {
       const x1 = (absDistKm + r) / s
       const x2 = (absDistKm - r) / s
       probPercent = Math.round((fctrep(x1) - fctrep(x2)) * 1000) / 10

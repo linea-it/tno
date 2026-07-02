@@ -32,8 +32,8 @@
  *   - deltaSigma         (ρ / σ posicional)
  *
  * Incerteza posicional (σ):
- *   σ = objectRadiusErrorKm + closestApproachErrorKm
- *   (NÃO inclui o raio do corpo — é a incerteza da posição do centro da sombra)
+ *   σ = √(objectRadiusErrorKm² + closestApproachErrorKm²)
+ *   (soma em quadratura — NÃO inclui o raio do corpo, é a incerteza da posição do centro da sombra)
  *
  * Raio do corpo (r):
  *   r = shadowDiameterKm / 2  (se disponível)
@@ -111,7 +111,10 @@ export function computeLocalCircumstances(interactive, clickLat, clickLon) {
     const shadowVelX = (velXM / earthRadiusM) * SECONDS_PER_DAY
     const shadowVelY = (velYM / earthRadiusM) * SECONDS_PER_DAY
 
-    const positionalSigmaKm = occEvent.objectRadiusErrorKm + occEvent.closestApproachErrorKm
+    const positionalSigmaKm = Math.sqrt(
+      occEvent.objectRadiusErrorKm * occEvent.objectRadiusErrorKm
+      + occEvent.closestApproachErrorKm * occEvent.closestApproachErrorKm,
+    )
 
     const circumstances = localCircumstances({
       clickLonDeg: clickLon,
