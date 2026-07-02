@@ -30,7 +30,6 @@ export function DashboardPageRoutes() {
   const { user } = useAuth()
 
   const PrivateRoute = ({ auth: { user }, children }) => {
-    console.log('PrivateRoute', user)
     if (user && user.dashboard === true) {
       return children
     }

@@ -35,9 +35,6 @@ export const sendPasswordLessCode = (email) => api.post(`/pwl/auth/email/`, { em
 
 export const passwordLessSignIn = (email, token) =>
   api.post(`/pwl/auth/token/`, { email: email, token: token }).then((res) => {
-    console.log('Autehntication success')
-    console.log('Token:', res.data.token)
-
     setCookie(null, 'solarsystem.token', res.data.token, {
       maxAge: 30 * 24 * 60 * 60
     })
