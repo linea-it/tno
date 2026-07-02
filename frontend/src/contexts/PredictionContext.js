@@ -16,8 +16,8 @@ export function PredictionEventsProvider({ children }) {
       filters: {
         dt_after_local: dayjs(),
         date_time_after: dayjs().utc().format(),
-        dt_before_local: dayjs().add(7, 'day'),
-        date_time_before: dayjs().utc().add(7, 'day').format(),
+        dt_before_local: dayjs().add(1, 'hour'),
+        date_time_before: dayjs().utc().add(1, 'hour').format(),
         filterType: '',
         filterValue: undefined,
         maginitudeMax: 15,
@@ -61,7 +61,7 @@ export function PredictionEventsProvider({ children }) {
         clearFilter,
         viewLayoyt,
         setViewLayoyt,
-        isMobile
+        isMobile,
       }}
     >
       {children}
