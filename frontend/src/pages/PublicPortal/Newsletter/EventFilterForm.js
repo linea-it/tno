@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
-import FlareOutlinedIcon from '@mui/icons-material/FlareOutlined'
+import StarBorder from '@mui/icons-material/StarBorder'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import TuneOutlinedIcon from '@mui/icons-material/TuneOutlined'
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined'
@@ -92,7 +92,7 @@ export default function EventFilterForm({ data, onChange }) {
       {/* 3. Magnitude */}
       <Accordion defaultExpanded disableGutters sx={accordionSx}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <FlareOutlinedIcon sx={{ mr: 1, color: 'text.secondary' }} />
+          <StarBorder sx={{ mr: 1, color: 'text.secondary' }} />
           <Typography variant='subtitle2'>Magnitude</Typography>
         </AccordionSummary>
         <AccordionDetails>
