@@ -15,7 +15,7 @@ function ResultsCount({ isLoading, rowsCount }) {
         </Typography>
       )}
       <Typography variant='body2' sx={{ mb: 2 }} color='text.secondary'>
-        Occultation predictions found.
+        events
       </Typography>
     </Stack>
   )

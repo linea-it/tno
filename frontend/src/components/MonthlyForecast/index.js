@@ -5,6 +5,8 @@ import CardHeader from '@mui/material/CardHeader'
 import Typography from '@mui/material/Typography'
 import Skeleton from '@mui/material/Skeleton'
 import Box from '@mui/material/Box'
+import Stack from '@mui/material/Stack'
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
 import AlertGenericError from '../AlertGenericError/index'
 import { useQuery } from 'react-query'
 import { getHighlightsMonthlyForecast } from '../../services/api/Occultation'
@@ -20,25 +22,35 @@ function MonthlyForecast() {
     staleTime: 1 * 60 * 60 * 1000
   })
 
-  if (isLoading) return <Skeleton variant='rectangular' width='100%' height={250} />
+  if (isLoading) return <Skeleton variant='rectangular' width='100%' height={180} />
 
   if (isError)
     return (
-      <Box sx={{ height: 250 }}>
+      <Box sx={{ height: 180 }}>
         <AlertGenericError />
       </Box>
     )
 
   return (
-    <Card sx={{ height: 250, borderRadius: '10px' }}>
-      <CardHeader title='UPCOMING THIS MONTH' titleTypographyProps={{ variant: 'h6', fontSize: '1.0rem', color: '#4f4e4e' }} />
-      <CardContent>
-        <Typography variant='h3' sx={{ fontWeight: 700, fontSize: '1.8rem', textAlign: 'left', paddingBottom: '20px', color: '#4383cc' }}>
-          {data?.month_count}
-        </Typography>
-        <Typography variant='body2' sx={{ margin: '5px 0', fontSize: '1rem' }}>
-          <strong>Next Month:</strong> {data?.next_month_count}
-        </Typography>
+    <Card sx={{ borderRadius: '10px', display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <CardHeader
+        avatar={<CalendarMonthIcon color='primary' />}
+        title='UPCOMING THIS MONTH'
+        titleTypographyProps={{ variant: 'subtitle2', color: 'text.secondary' }}
+      />
+      <CardContent sx={{ flex: 1, pt: 0 }}>
+        <Stack spacing={2}>
+          <Box>
+            <Typography variant='h4' sx={{ fontWeight: 700, color: 'primary.main' }}>
+              {data?.month_count?.toLocaleString('en-US')}
+            </Typography>
+          </Box>
+          <Stack spacing={0.5}>
+            <Typography variant='body2'>
+              <strong>Next Month:</strong> {data?.next_month_count?.toLocaleString('en-US')}
+            </Typography>
+          </Stack>
+        </Stack>
       </CardContent>
     </Card>
   )

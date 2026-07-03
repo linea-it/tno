@@ -7,6 +7,7 @@ import InputLabel from '@mui/material/InputLabel'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import MenuItem from '@mui/material/MenuItem'
+import CircularProgress from '@mui/material/CircularProgress'
 import { geoFilterIsValid } from '../../services/api/Occultation'
 import Grid from '@mui/material/Grid'
 import Alert from '@mui/material/Alert'
@@ -16,9 +17,11 @@ import LocationOnIcon from '@mui/icons-material/LocationOn'
 import LocationOffIcon from '@mui/icons-material/LocationOff'
 import TravelExploreIcon from '@mui/icons-material/TravelExplore'
 import SearchOffIcon from '@mui/icons-material/SearchOff'
+
 function GeoFilter({ value, onChange }) {
   const [error, setError] = useState(false)
   const [enabled, setEnabled] = useState(false)
+  const [searching, setSearching] = useState(false)
 
   const options1 = Array.from({ length: 10 }, (_, i) => i * 10 + 10) // 10-100
   const options2 = Array.from({ length: 18 }, (_, i) => i * 50 + 150) // 150-1000
@@ -28,24 +31,25 @@ function GeoFilter({ value, onChange }) {
   const options = options1.concat(options2).concat(options3).concat(options4)
 
   const setUserLocation = () => {
-    const newValue = value
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
         const latitude = position.coords.latitude
         const longitude = position.coords.longitude
-        // console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
-        newValue.latitude = latitude.toFixed(4)
-        newValue.longitude = longitude.toFixed(4)
-        onChange(newValue)
+        onChange({
+          ...value,
+          latitude: latitude.toFixed(4),
+          longitude: longitude.toFixed(4),
+        })
       })
     }
   }
 
   const handleClearLocation = () => {
-    const newValue = value
-    newValue.latitude = undefined
-    newValue.longitude = undefined
-    onChange(newValue)
+    onChange({
+      ...value,
+      latitude: undefined,
+      longitude: undefined,
+    })
   }
 
   const handleChange = (newValue) => {
@@ -66,9 +70,16 @@ function GeoFilter({ value, onChange }) {
 
   return (
     <Grid container spacing={2}>
+      {enabled && (
+        <Grid item xs={12}>
+          <Alert severity='warning'>
+            Geo search times out after 30s. Narrow your filters if more than ~2,000 records match before clicking Search by Location.
+          </Alert>
+        </Grid>
+      )}
       <Grid item xs={12}>
         <Stack direction='row' spacing={2} alignItems='stretch'>
-          <FormControlLabel control={<Switch checked={enabled} onChange={handleEnabled} />} label='Geo Location' />
+          <FormControlLabel control={<Switch checked={enabled} onChange={handleEnabled} />} label='Enable' />
           {navigator.geolocation && value.latitude === undefined && value.longitude === undefined && (
             <Button variant='text' startIcon={<LocationOnIcon />} disabled={!enabled} onClick={setUserLocation}>
               My location
@@ -161,6 +172,8 @@ function GeoFilter({ value, onChange }) {
                   ...value,
                   geo: true
                 })
+                setSearching(true)
+                setTimeout(() => setSearching(false), 3000)
               }}
               size='large'
               disabled={!enabled || value.latitude === undefined || value.longitude === undefined}
@@ -171,33 +184,31 @@ function GeoFilter({ value, onChange }) {
         )}
         {value.geo === true && (
           <Stack direction='row' justifyContent='flex-start' alignItems='center' spacing={2} sx={{ height: '100%' }}>
-            <Button
-              variant='contained'
-              startIcon={<SearchOffIcon />}
-              onClick={(event) => {
-                handleChange({
-                  ...value,
-                  geo: false
-                })
-              }}
-              size='large'
-              disabled={!enabled || value.latitude === undefined || value.longitude === undefined}
-            >
-              Stop Search
-            </Button>
+            {searching ? (
+              <Button variant='contained' disabled size='large' startIcon={<CircularProgress size={18} />}>
+                Searching…
+              </Button>
+            ) : (
+              <Button
+                variant='outlined'
+                color='error'
+                startIcon={<SearchOffIcon />}
+                onClick={(event) => {
+                  handleChange({
+                    ...value,
+                    geo: false
+                  })
+                }}
+                size='large'
+                disabled={!enabled || value.latitude === undefined || value.longitude === undefined}
+              >
+                Clear Filter
+              </Button>
+            )}
           </Stack>
         )}
       </Grid>
 
-      {enabled === true && (
-        <Grid item xs={12}>
-          <Alert severity='info'>
-            The Geo Filter feature is experimental and should be used with caution. To prevent timeouts, we recommend to use date and
-            magnitude constraints to restrict the supplied list to be filtered to a maximum of 2000 records. You can find this information
-            below as 'Retrieved Predictions' after applying a filter.
-          </Alert>
-        </Grid>
-      )}
     </Grid>
   )
 }

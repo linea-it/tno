@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>occultation-tracks — thumbnail</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #121212;
+      color: #eee;
+      padding: 24px;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 500;
+      margin: 0 0 16px 0;
+    }
+    .controls {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .controls input {
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 4px;
+      color: #eee;
+      padding: 6px 8px;
+      width: 260px;
+    }
+    .controls button {
+      background: #1976d2;
+      border: 0;
+      border-radius: 4px;
+      color: #fff;
+      cursor: pointer;
+      padding: 7px 12px;
+    }
+    .status {
+      color: #aaa;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      min-height: 1.2em;
+    }
+    .card {
+      background: transparent;
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    /* Paleta gerada via JS a partir de mapPalette */
+    svg {
+      shape-rendering: geometricPrecision;
+    }
+    .track-central,
+    .track-body,
+    .track-uncertainty,
+    .graticule-line,
+    .country-border,
+    .globe-stroke {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .track-central { fill: none; stroke-width: 1.0; }
+    .track-body { fill: none; stroke-width: 0.25; }
+    .track-uncertainty { fill: none; stroke-width: 0.25; stroke-dasharray: 0.25; opacity: 1; }
+    .ocean-fill { stroke: none; }
+    .land-fill { fill: #78909C; stroke: none; }
+    .day-fill { stroke: none; opacity: 0.15; }
+    .twilight-fill { stroke: none; opacity: 0.30; }
+    .night-fill { stroke: none; opacity: 0.26; }
+    .globe-stroke { fill: none; stroke-width: 0.25; opacity: 0.9; }
+    .graticule-line { fill: none; stroke-width: 0.35; }
+    .country-border { fill: none; stroke-width: 0.35; }
+    .central-dot { paint-order: stroke fill; }
+    /* classes com cores aplicadas via JS a partir de mapPalette */
+    .meta {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 12px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>occultation-tracks — thumbnail (200×130)</h1>
+  <form id="controls" class="controls">
+    <input id="event-id" placeholder="ID LINEA (vazio = fixture BX12)" value="6p9v3C2EBzWY3gMdPS1YzQ">
+    <button type="submit">Carregar</button>
+  </form>
+  <div id="status" class="status"></div>
+  <div id="app" class="card"></div>
+  <div id="meta-container" class="meta"></div>
+
+  <script type="module">
+    import {
+      buildThumbnailGeometry,
+      buildSvgPath,
+      MIN_CENTRAL_MARKER_DIAMETER_PX,
+      mapPalette,
+    } from '../index.js';
+    import countriesGeoJson from '../data/ne_110m_countries.json' with { type: 'json' };
+
+    // Gera CSS dinâmico a partir de mapPalette (fonte única de verdade)
+    const paletteStyle = document.createElement('style');
+    paletteStyle.textContent = `
+      .track-central { stroke: ${mapPalette.centerLine}; }
+      .track-body { stroke: ${mapPalette.bodyLimit}; }
+      .track-uncertainty { stroke: ${mapPalette.uncertainty}; }
+      .ocean-fill { fill: ${mapPalette.ocean}; }
+      .day-fill { fill: ${mapPalette.day}; }
+      .twilight-fill { fill: ${mapPalette.twilight}; }
+      .night-fill { fill: ${mapPalette.night}; }
+      .globe-stroke { stroke: ${mapPalette.globeBorder}; }
+      .graticule-line { stroke: ${mapPalette.graticule}; }
+      .country-border { stroke: ${mapPalette.borders}; }
+      .central-dot { fill: ${mapPalette.eventPoint}; stroke: ${mapPalette.eventPoint}; }
+    `;
+    document.head.appendChild(paletteStyle);
+
+    const app = document.getElementById('app');
+    const status = document.getElementById('status');
+    const form = document.getElementById('controls');
+    const input = document.getElementById('event-id');
+    const metaContainer = document.getElementById('meta-container');
+
+    // O endpoint da API é externo ao módulo. Para uso standalone, passe id vazio
+    // e o demo carrega a fixture local (BX12). Ajuste a URL conforme sua API.
+    const API_BASE = '/api/occultation-event';
+
+    async function loadEvent(eventId) {
+      const id = eventId.trim();
+      const url = id
+        ? `${API_BASE}?id=${encodeURIComponent(id)}`
+        : '../__tests__/fixtures/event.json';
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status} ao buscar ${url}`);
+      }
+      return response.json();
+    }
+
+    function buildGeometry(event) {
+      // Tamanho original: 200x130
+      return buildThumbnailGeometry(event, {
+        width: 200,
+        height: 130,
+        samples: 81,
+        countries: countriesGeoJson,
+        computeNightFraction: true,
+      });
+    }
+
+    function createSvg(geom) {
+      const svgNs = 'http://www.w3.org/2000/svg';
+      const svg = document.createElementNS(svgNs, 'svg');
+      svg.setAttribute('viewBox', `0 0 ${geom.view.width} ${geom.view.height}`);
+      svg.setAttribute('width', String(geom.view.width));
+      svg.setAttribute('height', String(geom.view.height));
+
+      const defs = document.createElementNS(svgNs, 'defs');
+      const clipPath = document.createElementNS(svgNs, 'clipPath');
+      clipPath.setAttribute('id', 'globe-clip');
+      const clipCircle = document.createElementNS(svgNs, 'circle');
+      clipCircle.setAttribute('cx', geom.globe.cx);
+      clipCircle.setAttribute('cy', geom.globe.cy);
+      clipCircle.setAttribute('r', geom.globe.r);
+      clipPath.appendChild(clipCircle);
+      defs.appendChild(clipPath);
+      svg.appendChild(defs);
+
+      const globeGroup = document.createElementNS(svgNs, 'g');
+      globeGroup.setAttribute('clip-path', 'url(#globe-clip)');
+
+      if (geom.globeLayer?.ocean?.path) {
+        const ocean = document.createElementNS(svgNs, 'path');
+        ocean.setAttribute('class', 'ocean-fill');
+        ocean.setAttribute('d', geom.globeLayer.ocean.path);
+        globeGroup.appendChild(ocean);
+      }
+
+      function appendClosedPaths(segments, className) {
+        for (const seg of segments) {
+          if (seg.length < 3) continue;
+          const path = document.createElementNS(svgNs, 'path');
+          path.setAttribute('class', className);
+          path.setAttribute('d', `${buildSvgPath(seg)} Z`);
+          globeGroup.appendChild(path);
+        }
+      }
+
+      function appendOpenPaths(segments, className) {
+        for (const seg of segments) {
+          if (seg.length < 2) continue;
+          const path = document.createElementNS(svgNs, 'path');
+          path.setAttribute('class', className);
+          path.setAttribute('d', buildSvgPath(seg));
+          globeGroup.appendChild(path);
+        }
+      }
+
+      if (geom.globeLayer) {
+        appendClosedPaths(geom.globeLayer.land, 'land-fill');
+      }
+
+      if (geom.dayNight?.dayFill?.path) {
+        const day = document.createElementNS(svgNs, 'path');
+        day.setAttribute('class', 'day-fill');
+        day.setAttribute('d', geom.dayNight.dayFill.path);
+        globeGroup.appendChild(day);
+      }
+
+      if (geom.dayNight?.twilightFill?.path) {
+        const twilight = document.createElementNS(svgNs, 'path');
+        twilight.setAttribute('class', 'twilight-fill');
+        twilight.setAttribute('d', geom.dayNight.twilightFill.path);
+        globeGroup.appendChild(twilight);
+      }
+
+      if (geom.dayNight?.nightFill?.path) {
+        const night = document.createElementNS(svgNs, 'path');
+        night.setAttribute('class', 'night-fill');
+        night.setAttribute('d', geom.dayNight.nightFill.path);
+        globeGroup.appendChild(night);
+      }
+
+      if (geom.globeLayer) {
+        appendOpenPaths(geom.globeLayer.borders, 'country-border');
+        appendOpenPaths(geom.globeLayer.graticule.parallels, 'graticule-line');
+        appendOpenPaths(geom.globeLayer.graticule.meridians, 'graticule-line');
+      }
+
+      svg.appendChild(globeGroup);
+
+      const outline = document.createElementNS(svgNs, 'circle');
+      outline.setAttribute('class', 'globe-stroke');
+      outline.setAttribute('cx', geom.globe.cx);
+      outline.setAttribute('cy', geom.globe.cy);
+      outline.setAttribute('r', geom.globe.r);
+      svg.appendChild(outline);
+
+      function appendPaths(segments, className) {
+        for (const seg of segments) {
+          const path = document.createElementNS(svgNs, 'path');
+          path.setAttribute('class', className);
+          path.setAttribute('d', buildSvgPath(seg));
+          svg.appendChild(path);
+        }
+      }
+
+      appendPaths(geom.uncertaintyUpper, 'track-uncertainty');
+      appendPaths(geom.uncertaintyLower, 'track-uncertainty');
+      appendPaths(geom.upperLimit, 'track-body');
+      appendPaths(geom.lowerLimit, 'track-body');
+      appendPaths(geom.centralPath, 'track-central');
+
+      const minCentralRadiusPx = MIN_CENTRAL_MARKER_DIAMETER_PX / 2;
+      if (geom.centralPoint.visible) {
+        const dot = document.createElementNS(svgNs, 'circle');
+        dot.setAttribute('class', 'central-dot');
+        dot.setAttribute('cx', String(geom.centralPoint.x));
+        dot.setAttribute('cy', String(geom.centralPoint.y));
+        dot.setAttribute('r', String(Math.max(geom.centralPoint.r, minCentralRadiusPx)));
+        svg.appendChild(dot);
+      }
+
+      return svg;
+    }
+
+    function render(event) {
+      app.textContent = '';
+      const geom = buildGeometry(event);
+
+      if (!geom.isDrawable) {
+        app.textContent = 'Evento não desenhável: ' + (geom.reasons || []).join(', ');
+        return;
+      }
+
+      const svg = createSvg(geom);
+      app.appendChild(svg);
+
+      const nightPct = (geom.dayNight.nightFraction * 100).toFixed(0);
+      metaContainer.textContent =
+        `${event.name || event.id} — central: ${geom.centralPoint.latDeg.toFixed(2)}°, ${geom.centralPoint.lonDeg.toFixed(2)}° — noite: ~${nightPct}%`;
+    }
+
+    async function loadAndRender(eventId = '') {
+      try {
+        status.textContent = eventId.trim() ? `Carregando ${eventId.trim()}...` : 'Carregando fixture local...';
+        const event = await loadEvent(eventId);
+        render(event);
+        status.textContent = eventId.trim()
+          ? `Carregado: ${event.name || event.id || eventId.trim()}`
+          : 'Fixture local carregada.';
+      } catch (error) {
+        app.textContent = '';
+        status.textContent = error.message;
+      }
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      loadAndRender(input.value);
+    });
+
+    loadAndRender(input.value);
+  </script>
+</body>
+</html>

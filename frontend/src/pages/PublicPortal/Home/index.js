@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Grid from '@mui/material/Grid'
 import Box from '@mui/material/Box'
-import Card from '@mui/material/Card'
-import CardContent from '@mui/material/CardContent'
 import PredictionEventsFilter from '../../../components/PredictionEventsFilter/index'
 import PredictionEventsDataGrid from '../../../components/PredictionEventsDataGrid/index'
 import PredictionHighlights from '../../../components/PredictionHighlights/index'
@@ -10,6 +7,7 @@ import PublicBanner from '../Banner/index'
 import Container from '@mui/material/Container'
 import { whichEnvironment } from '../../../services/api/Auth'
 import AlertEnvironment from '../../../components/AlertEnvironment/index'
+
 function Main() {
   const [isDev, setIsDev] = useState(false)
 
@@ -19,7 +17,7 @@ function Main() {
         setIsDev(res.is_dev)
       })
       .catch(() => {
-        // TODO: Aviso de erro
+        // isDev permanece false — banner de ambiente não exibido
       })
   }, [])
 
@@ -27,24 +25,14 @@ function Main() {
     <>
       {isDev && <AlertEnvironment />}
       <PublicBanner />
-      <Container maxWidth='lg'>
+      <Container maxWidth='lg' sx={{ mt: 3 }}>
         <PredictionHighlights />
-        <Box mt={3}>
-          <Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <Card>
-                  <CardContent>
-                    <PredictionEventsFilter />
-                  </CardContent>
-                </Card>
-              </Grid>
-              <Grid item xs={12}>
-                {isDev && <AlertEnvironment />}
-                <PredictionEventsDataGrid />
-              </Grid>
-            </Grid>
-          </Grid>
+        <Box sx={{ mt: 3 }}>
+          <PredictionEventsFilter />
+          <Box sx={{ mt: 2 }}>
+            {isDev && <AlertEnvironment />}
+            <PredictionEventsDataGrid />
+          </Box>
         </Box>
       </Container>
     </>

@@ -1,16 +1,11 @@
 import Box from '@mui/material/Box'
 import moment from 'moment'
+import OccultationThumbnail from '../OccultationThumbnail'
+
 function ImageCell(props) {
   return (
     <Box component='a' href={`/prediction-event-detail/${props.row.id}`} target='_blank' sx={{ justify: 'center', alignItems: 'center' }}>
-      <Box
-        component='img'
-        // width={props.colDef.computedWidth}
-        width='auto'
-        height={68}
-        alt=''
-        src={props.value !== null ? props.value : 'https://placehold.co/100x75?text=No%20Image'}
-      />
+      <OccultationThumbnail event={props.row} width={135} height={90} />
     </Box>
   )
 }
@@ -38,7 +33,7 @@ export const NameCol = {
   },
   renderCell: (params) => {
     return (
-      <Box component='a' href={`/prediction-event-detail/${params.row.id}`} target='_blank' sx={{ textDecoration: 'none' }}>
+      <Box component='a' href={`/prediction-event-detail/${params.row.id}`} target='_blank' sx={{ textDecoration: 'none', color: 'primary.main' }}>
         {params.value}
       </Box>
     )
@@ -114,6 +109,7 @@ export const PredictionEventsColumns = [
     headerName: 'Map',
     headerAlign: 'center',
     align: 'center',
+    width: 145,
     ...ImageCol
   },
   {
@@ -138,7 +134,7 @@ export const PredictionEventsColumns = [
     field: 'dynclass',
     headerName: 'Dynamic class',
     description: 'Dynamic class',
-    width: 180,
+    width: 140,
     headerAlign: 'center',
     align: 'center'
   },
@@ -146,7 +142,7 @@ export const PredictionEventsColumns = [
     field: 'date_time',
     headerName: 'C/A Instant',
     description: 'Instant of the Closest Approach in UTC',
-    width: 200,
+    width: 170,
     type: 'dateTime',
     headerAlign: 'center',
     align: 'center',
@@ -165,7 +161,8 @@ export const PredictionEventsColumns = [
     type: 'number',
     headerAlign: 'center',
     align: 'center',
-    ...floatFixedPrecision3
+    ...floatFixedPrecision3,
+    width: 85,
   },
   {
     field: 'position_angle',
@@ -183,7 +180,8 @@ export const PredictionEventsColumns = [
     type: 'number',
     headerAlign: 'center',
     align: 'center',
-    ...floatFixedPrecision2
+    ...floatFixedPrecision2,
+    width: 85,
   },
   {
     field: 'delta',
@@ -232,10 +230,15 @@ export const PredictionEventsColumns = [
   },
   {
     field: 'loc_t',
-    headerName: 'Local Solar Time',
+    headerName: 'Local Time',
     description: 'Local solar time at sub-planet point (hh:mm)',
     headerAlign: 'center',
-    align: 'center'
+    align: 'center',
+    width: 85,
+    valueFormatter: (params) => {
+      if (params.value == null) return ''
+      return params.value.slice(0, 5) // HH:MM
+    }
   },
   {
     field: 'off_ra',
@@ -269,7 +272,8 @@ export const PredictionEventsColumns = [
     type: 'number',
     headerAlign: 'center',
     align: 'center',
-    ...floatFixedPrecision2
+    ...floatFixedPrecision2,
+    width: 85,
   },
   // {
   //   field: 'j_star',
@@ -432,7 +436,7 @@ export const predictionEventsColumnVisibilityModel = {
   dynclass: true,
   date_time: true,
   closest_approach: true,
-  position_angle: false,
+  position_angle: true,
   velocity: true,
   delta: false,
   diameter: false,

@@ -45,20 +45,22 @@ export default class AladinV3 extends React.Component {
     this.libA.init.then(() => {
       this.aladin = this.libA.aladin(`#${this.id}`, {
         survey: 'P/allWISE/color', // set initial image survey
-        // survey: 'P/DSS2/color', // set initial image survey
         projection: 'SIN', // set a projection
         fov: 0.12, // initial field of view in degrees
-        // target: 'NGC 2175', // initial target
-        cooFrame: 'ICRS', // set galactic frame reticleColor: '#ff89ff', // change reticle color
+        cooFrame: 'ICRS',
         showReticle: false,
         showCooGrid: false,
-        fullScreen: false
+        fullScreen: false,
+        // Força URL fixa — evita falha getFasterMirrorUrl quando CDS mirror list inacessível
+        aladinBaseUrl: 'https://aladin.cds.unistra.fr/AladinLite/api/v1/latest/',
       })
 
       // Cria um catalogo com um unico source
       this.drawCatalog()
       // Centraliza a imagem na posição
       this.goToPosition(this.props.ra, this.props.dec)
+    }).catch((err) => {
+      console.error('Aladin initialization failed:', err)
     })
   }
 
@@ -68,7 +70,7 @@ export default class AladinV3 extends React.Component {
     // Cria um Catalogo contendo a coordenada ra e dec como source.
     // https://aladin.cds.unistra.fr/AladinLite/doc/API/examples/cat-custom-shape/
 
-    if (this.props.ra !== undefined && this.props.dec !== undefined) {
+    if (this.props.ra != null && this.props.dec != null) {
       // create catalog layer with custom draw function
       const cat = this.libA.catalog({
         name: 'Occulted Star',
@@ -86,7 +88,7 @@ export default class AladinV3 extends React.Component {
     // Centraliza a imagem na coordenada.
     // https://aladin.cds.unistra.fr/AladinLite/doc/API/  (Managing the view)
 
-    if (ra !== undefined && dec !== undefined) {
+    if (ra != null && dec != null) {
       this.aladin.gotoRaDec(ra, dec)
     }
   }

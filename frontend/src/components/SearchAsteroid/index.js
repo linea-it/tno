@@ -28,7 +28,6 @@ function SearchInput(props) {
   }
 
   const handleDebounce = (value) => {
-    console.log('TESTE: %o', value)
     if (value === '') {
       value = undefined
     }
@@ -49,7 +48,7 @@ function SearchInput(props) {
       }
     })
   }
-  const handleMouseDownPassword = (event) => {
+  const handleMouseDownClear = (event) => {
     event.preventDefault()
   }
 
@@ -71,9 +70,9 @@ function SearchInput(props) {
           queryOptions.search && (
             <InputAdornment position='end'>
               <IconButton
-                aria-label='toggle password visibility'
+                aria-label='clear search'
                 onClick={handleClearSearch}
-                onMouseDown={handleMouseDownPassword}
+                onMouseDown={handleMouseDownClear}
                 edge='end'
               >
                 <ClearIcon />

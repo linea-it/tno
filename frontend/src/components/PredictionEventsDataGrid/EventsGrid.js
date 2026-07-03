@@ -81,7 +81,7 @@ function PredictEventGrid() {
         {data?.pages.map((page, idx) => (
           <React.Fragment key={`${idx}-page`}>
             {page.results.map((row, idx) => (
-              <Grid key={`${idx}-${row.name}-${row.id}`} item xs={12} md={6} lg={4} sx={{ minWidth: 0 }}>
+              <Grid key={`${idx}-${row.name}-${row.id}`} item xs={12} sm={6} lg={4} sx={{ minWidth: 0 }}>
                 <PredictEventCard data={row} />
               </Grid>
             ))}

@@ -184,7 +184,6 @@ function OrbitTraceAsteroid() {
   }
 
   const handleBackNavigation = () => navigate(-1)
-  console.log(summary)
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>

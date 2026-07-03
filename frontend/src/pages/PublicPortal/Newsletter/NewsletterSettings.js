@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Grid from '@mui/material/Grid'
 import Container from '@mui/material/Container'
-import Card from '@mui/material/Card'
-import CardHeader from '@mui/material/CardHeader'
-import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Breadcrumbs from '@mui/material/Breadcrumbs'
 import Link from '@mui/material/Link'
 import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
 import AddIcon from '@mui/icons-material/Add'
 import { getSubscriptionInfo } from '../../../services/api/Newsletter'
 import SubscriptionStatus from './SubscriptionStatus'
@@ -19,7 +16,7 @@ function NewsletterSettings() {
   const navigate = useNavigate()
   const [info, setInfo] = useState({ id: undefined, unsubscribe: false })
 
-  const loadData = (e) => {
+  const loadData = () => {
     getSubscriptionInfo()
       .then((res) => {
         setInfo(res.data)
@@ -49,75 +46,36 @@ function NewsletterSettings() {
   }
 
   return (
-    <Container maxWidth='lg' sx={{ minHeight: 500 }}>
-      <Grid container direction='row' justifyContent='center' alignItems='center'>
-        <Grid item xs={12} mt={2}>
-          <Breadcrumbs aria-label='breadcrumb'>
-            <Link underline='hover' color='inherit' href='/'>
-              Home
-            </Link>
-            <Typography color='text.primary'>Newsletter Settings</Typography>
-          </Breadcrumbs>
-        </Grid>
-        <Grid item xs={12} mt={4} sx={{ textAlign: 'center' }}>
-          <Typography color='text.primary' variant='h4' gutterBottom>
-            Hello, {info?.email}!
+    <Container maxWidth='lg' sx={{ minHeight: 500, py: 4 }}>
+      <Stack spacing={4}>
+        <Breadcrumbs aria-label='breadcrumb'>
+          <Link underline='hover' color='inherit' href='/'>
+            Home
+          </Link>
+          <Typography color='text.primary'>Newsletter Settings</Typography>
+        </Breadcrumbs>
+
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent='space-between' alignItems={{ xs: 'flex-start', sm: 'center' }}>
+          <Typography variant='body2' color='text.secondary'>
+            Signed in as <strong style={{ color: 'inherit' }}>{info?.email}</strong>
           </Typography>
-        </Grid>
-        <Grid item xs={12} mt={2}>
-          <Card>
-            <CardHeader title='Filter Settings' subheader='Manage your filter preferences and email frequency settings.'></CardHeader>
-            <CardContent></CardContent>
-          </Card>
-        </Grid>
-        {/* <Grid item xs={12} mt={2}>
-          <Card>
-            <CardContent>
-              <NewsletterEventFiltersSettings subscriptionId={info.id} />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} mt={2}>
-          <EventFiltersResults subscriptionId={info.id}></EventFiltersResults>
-        </Grid> */}
-        <Grid item xs={12} mt={2}>
-          <Card>
-            <CardHeader
-              title='Email Filters'
-              subheader='Manage your filter preferences and email frequency settings.'
-              action={
-                <Button variant='contained' color='primary' startIcon={<AddIcon />} onClick={handleAddFilterClick}>
-                  New Filter
-                </Button>
-              }
-            ></CardHeader>
-            <CardContent>
-              <UserEventFilters />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} mt={2}>
-          <Card>
-            <CardHeader title='Email Subscription' subheader='Enable or disable email notifications.'></CardHeader>
-            <CardContent>
-              <SubscriptionStatus value={info?.unsubscribe} onChange={loadData} />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item xs={12} mt={2}>
-          <DeleteAccount />
-        </Grid>
-        {/* <Grid item xs={12} mt={2}>
-          <Card>
-            <CardHeader title='Assinatura' subheader='Ative ou desative o recebimento de emails.'></CardHeader>
-            <CardContent>
-              <Grid item xs={12}>
-                <UpdateEmail subscriptionId={info.id} />
-              </Grid>
-            </CardContent>
-          </Card>
-        </Grid> */}
-      </Grid>
+          <SubscriptionStatus value={info?.unsubscribe} onChange={loadData} />
+        </Stack>
+
+        <Stack spacing={2}>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} justifyContent='space-between' alignItems={{ xs: 'flex-start', sm: 'center' }}>
+            <Typography variant='subtitle1' fontWeight={500}>
+              Your Filters
+            </Typography>
+            <Button variant='contained' size='small' startIcon={<AddIcon />} onClick={handleAddFilterClick}>
+              New Filter
+            </Button>
+          </Stack>
+          <UserEventFilters />
+        </Stack>
+
+        <DeleteAccount />
+      </Stack>
     </Container>
   )
 }

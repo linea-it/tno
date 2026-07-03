@@ -28,9 +28,7 @@ function PublicLogin() {
           window.location.replace('/newsletter_settings/')
         }
       })
-      .catch(() => {
-        console.log('Not logged')
-      })
+      .catch(() => {})
   }, [])
 
   const resetForm = () => {
@@ -65,7 +63,6 @@ function PublicLogin() {
   const handleSignin = () => {
     passwordLessSignIn(email, token)
       .then(() => {
-        console.log('Sign-in successful')
         // Trigger loggedUser after successful sign-in
         return loggedUser()
       })
