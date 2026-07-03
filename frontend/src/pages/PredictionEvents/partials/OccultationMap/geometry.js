@@ -6,6 +6,25 @@
 const DEG_TO_KM = 111.32
 const DEG_TO_M = 111320
 
+function unwrapLongitudeToReference(lon, referenceLon) {
+  let unwrapped = lon
+  while (unwrapped - referenceLon > 180) unwrapped -= 360
+  while (unwrapped - referenceLon < -180) unwrapped += 360
+  return unwrapped
+}
+
+function unwrapPathLongitudes(points) {
+  if (!points?.length) return []
+
+  const unwrapped = [[points[0][0], points[0][1]]]
+  for (let i = 1; i < points.length; i++) {
+    const [lat, lon] = points[i]
+    const previousLon = unwrapped[i - 1][1]
+    unwrapped.push([lat, unwrapLongitudeToReference(lon, previousLon)])
+  }
+  return unwrapped
+}
+
 function latLonToLocal(lat, lon, refLat, refLon) {
   const cosRef = Math.cos((refLat * Math.PI) / 180)
   let dLon = lon - refLon
@@ -17,11 +36,23 @@ function latLonToLocal(lat, lon, refLat, refLon) {
   }
 }
 
+function localToLatLon({ x, y }, refLat, refLon) {
+  const cosRef = Math.cos((refLat * Math.PI) / 180)
+  return [
+    refLat + y / DEG_TO_M,
+    normalizeLon(refLon + x / (DEG_TO_M * cosRef)),
+  ]
+}
+
 function perpDistanceToSegmentM(a, b, p) {
   const abx = b.x - a.x
   const aby = b.y - a.y
   const lenSq = abx * abx + aby * aby
-  if (lenSq === 0) return { distM: Math.sqrt((p.x - a.x) ** 2 + (p.y - a.y) ** 2), sign: 1 }
+  if (lenSq === 0) {
+    const dx = p.x - a.x
+    const dy = p.y - a.y
+    return { distM: Math.sqrt(dx * dx + dy * dy), sign: 1, dx, dy }
+  }
 
   let t = ((p.x - a.x) * abx + (p.y - a.y) * aby) / lenSq
   t = Math.max(0, Math.min(1, t))
@@ -35,21 +66,22 @@ function perpDistanceToSegmentM(a, b, p) {
   const crossZ = abx * dy - aby * dx
   const sign = crossZ >= 0 ? 1 : -1
 
-  return { distM, sign }
+  return { distM, sign, dx, dy }
 }
 
 export function perpendicularDistanceKm(points, clickLat, clickLon) {
   if (!points || points.length < 2) return null
 
-  const midLat = points.reduce((s, p) => s + p[0], 0) / points.length
-  const midLon = points.reduce((s, p) => s + p[1], 0) / points.length
-  const p = latLonToLocal(clickLat, clickLon, midLat, midLon)
+  const unwrappedPoints = unwrapPathLongitudes(points)
+  const midLat = unwrappedPoints.reduce((s, p) => s + p[0], 0) / unwrappedPoints.length
+  const midLon = unwrappedPoints.reduce((s, p) => s + p[1], 0) / unwrappedPoints.length
+  const p = latLonToLocal(clickLat, unwrapLongitudeToReference(clickLon, midLon), midLat, midLon)
 
   let minDistM = Infinity
   let bestSign = 1
-  for (let i = 0; i < points.length - 1; i++) {
-    const a = latLonToLocal(points[i][0], points[i][1], midLat, midLon)
-    const b = latLonToLocal(points[i + 1][0], points[i + 1][1], midLat, midLon)
+  for (let i = 0; i < unwrappedPoints.length - 1; i++) {
+    const a = latLonToLocal(unwrappedPoints[i][0], unwrappedPoints[i][1], midLat, midLon)
+    const b = latLonToLocal(unwrappedPoints[i + 1][0], unwrappedPoints[i + 1][1], midLat, midLon)
     const { distM, sign } = perpDistanceToSegmentM(a, b, p)
     if (distM < minDistM) {
       minDistM = distM
@@ -64,32 +96,26 @@ function normalizeLon(lon) {
   return (((((lon + 180) % 360) + 360) % 360) - 180)
 }
 
-export function shiftPathPerpendicular(points, distanceKm) {
-  if (!points || points.length < 2 || !distanceKm) return points
+export function shiftPathThroughClick(points, clickLat, clickLon) {
+  if (!points || points.length < 2) return points
 
-  return points.map(([lat, lon], i) => {
-    const prev = i > 0 ? points[i - 1] : points[0]
-    const next = i < points.length - 1 ? points[i + 1] : points[points.length - 1]
+  const unwrappedPoints = unwrapPathLongitudes(points)
+  const midLat = unwrappedPoints.reduce((s, p) => s + p[0], 0) / unwrappedPoints.length
+  const midLon = unwrappedPoints.reduce((s, p) => s + p[1], 0) / unwrappedPoints.length
+  const p = latLonToLocal(clickLat, unwrapLongitudeToReference(clickLon, midLon), midLat, midLon)
 
-    const cosLat = Math.cos((lat * Math.PI) / 180)
+  let best = null
+  for (let i = 0; i < unwrappedPoints.length - 1; i++) {
+    const a = latLonToLocal(unwrappedPoints[i][0], unwrappedPoints[i][1], midLat, midLon)
+    const b = latLonToLocal(unwrappedPoints[i + 1][0], unwrappedPoints[i + 1][1], midLat, midLon)
+    const result = perpDistanceToSegmentM(a, b, p)
+    if (!best || result.distM < best.distM) best = result
+  }
 
-    // Normalize longitude delta to [-180, 180] to handle antimeridian crossing
-    let dlonDeg = next[1] - prev[1]
-    if (dlonDeg > 180) dlonDeg -= 360
-    else if (dlonDeg < -180) dlonDeg += 360
+  if (!best) return points
 
-    const dlatKm = (next[0] - prev[0]) * DEG_TO_KM
-    const dlonKm = dlonDeg * DEG_TO_KM * cosLat
-
-    const len = Math.sqrt(dlatKm * dlatKm + dlonKm * dlonKm)
-    if (len === 0) return [lat, lon]
-
-    const perpLatKm = dlonKm / len
-    const perpLonKm = -dlatKm / len
-
-    const shiftLatDeg = (distanceKm * perpLatKm) / DEG_TO_KM
-    const shiftLonDeg = (distanceKm * perpLonKm) / (DEG_TO_KM * cosLat)
-
-    return [lat + shiftLatDeg, normalizeLon(lon + shiftLonDeg)]
+  return unwrappedPoints.map(([lat, lon]) => {
+    const point = latLonToLocal(lat, lon, midLat, midLon)
+    return localToLatLon({ x: point.x + best.dx, y: point.y + best.dy }, midLat, midLon)
   })
 }

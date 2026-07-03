@@ -8,7 +8,7 @@ import Legend from '../../../../components/OccultationMap/Legend'
 import MotionArrow from '../../../../components/OccultationMap/MotionArrow'
 import FlyToMap from '../../../../components/OccultationMap/FlyToMap'
 import { computeLocalCircumstances } from './localCircumstancesHelper'
-import { perpendicularDistanceKm, shiftPathPerpendicular } from './geometry'
+import { perpendicularDistanceKm, shiftPathThroughClick } from './geometry'
 import { splitLeafletPathByLongitudeJump, createPeriodicLeafletSegments } from './leafletHelpers'
 import { fctrep } from '../../../../lib/occultation-tracks/index'
 import { SORA } from './palette'
@@ -342,7 +342,7 @@ export default function Map2DView({
       deltaSigma: s > 0 ? absDistKm / s : null,
     })
 
-    const shifted = shiftPathPerpendicular(geometry.paths.lineCenter, rho)
+    const shifted = shiftPathThroughClick(geometry.paths.lineCenter, lat, lon)
     const segments = splitLeafletPathByLongitudeJump(shifted)
     setOffsetPath(createPeriodicLeafletSegments(segments))
   }, [clickEnabled, interactive, geometry])
