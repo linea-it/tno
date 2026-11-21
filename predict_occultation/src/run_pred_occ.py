@@ -48,6 +48,11 @@ except Exception as error:
 import parsl
 from sqlalchemy.exc import DBAPIError
 
+# Backpressure do ingest (issue #1213): ingere tasks status 6 apenas quando a
+# contagem de tasks do job em status 3 (queued) + 4 (running) estiver abaixo
+# deste limite. Reavaliado a cada tick do ingest_worker (~30s via daemon.sh).
+INGEST_GATE_MAX_QUEUED_RUNNING = 50
+
 
 def _is_insufficient_resources_error(exc):
     try:
@@ -209,6 +214,16 @@ def ingest_predictions(jobid: int):
 
     dao_job_result = PredictOccultationJobResultDao()
     engine = dao_job_result.get_db_engine()
+
+    # Gate de backpressure: não disputa recursos de banco com a fila de
+    # predições enquanto houver >= 50 tasks do job queued/running (status 3/4).
+    queued_running = dao_job_result.count_by_job_id(jobid, status=[3, 4])
+    if queued_running >= INGEST_GATE_MAX_QUEUED_RUNNING:
+        log.info(
+            "Skipping ingest for job %s: %s tasks queued/running (status 3/4) >= %s"
+            % (jobid, queued_running, INGEST_GATE_MAX_QUEUED_RUNNING)
+        )
+        return
 
     # Conexão única reutilizada no loop para não saturar o pool (ingestão de
     # milhares de asteroides). Cada task usa conn.begin() para isolar sua
