@@ -338,10 +338,12 @@ def load_ssoBFT(local_filename, log):
     pandas.DataFrame: The loaded and processed DataFrame.
     """
     log.info(f"Loading ssoBFT file: {local_filename}")
+    # IMCCE ssoBFT schema (2025+): number/name/class.
+    # Keep internal names sso_* for the rest of the pipeline.
     columns_to_include = [
-        "sso_number",
-        "sso_name",
-        "sso_class",
+        "number",
+        "name",
+        "class",
         "albedo.value",
         "albedo.error.min",
         "albedo.error.max",
@@ -374,6 +376,9 @@ def load_ssoBFT(local_filename, log):
         # Rename the columns in the DataFrame
         data.rename(
             columns={
+                "number": "sso_number",
+                "name": "sso_name",
+                "class": "sso_class",
                 "albedo.value": "albedo",
                 "albedo.error.min": "albedo_err_min",
                 "albedo.error.max": "albedo_err_max",
