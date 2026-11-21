@@ -302,13 +302,30 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_unique_asteroids(self, request):
         record = Highlights.objects.last()
+        if record is None:
+            return Response(
+                {
+                    "count": 0,
+                    "unique_asteroids": 0,
+                    "earliest": None,
+                    "latest": None,
+                }
+            )
 
         return Response(
             {
                 "count": record.occultations_count,
                 "unique_asteroids": record.unique_asteroids,
-                "earliest": record.earliest_occultation.isoformat(),
-                "latest": record.latest_occultation.isoformat(),
+                "earliest": (
+                    record.earliest_occultation.isoformat()
+                    if record.earliest_occultation
+                    else None
+                ),
+                "latest": (
+                    record.latest_occultation.isoformat()
+                    if record.latest_occultation
+                    else None
+                ),
             }
         )
 
@@ -316,6 +333,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_weekly_forecast(self, request):
         record = Highlights.objects.last()
+        if record is None:
+            return Response({"today_count": 0, "week_count": 0, "next_week_count": 0})
 
         return Response(
             {
@@ -329,6 +348,8 @@ class OccultationViewSet(viewsets.ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"], permission_classes=(AllowAny,))
     def highlights_monthly_forecast(self, request):
         record = Highlights.objects.last()
+        if record is None:
+            return Response({"month_count": 0, "next_month_count": 0})
 
         return Response(
             {
