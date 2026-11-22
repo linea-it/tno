@@ -14,7 +14,12 @@ from typing import List, Optional
 import numpy as np
 import pandas as pd
 from asteroid.external_inputs import AsteroidExternalInputs
-from asteroid.jpl import findSPKID, get_asteroid_uncertainty_from_jpl, get_bsp_from_jpl
+from asteroid.jpl import (
+    commit_staged_files,
+    findSPKID,
+    get_asteroid_uncertainty_from_jpl,
+    get_bsp_from_jpl,
+)
 from dao import AsteroidDao, ObservationDao, OccultationDao
 from library import date_to_jd, dec2DMS, has_expired, ra2HMS
 from sqlalchemy.exc import DBAPIError
@@ -547,12 +552,20 @@ class Asteroid:
 
         bsp_filepath = self.get_bsp_path()
         bsp_filename = self.get_bsp_filename()
+        parent = bsp_filepath.parent
+        uncert_name = "apmag_and_uncertainties.json"
+        uncert_final = parent / uncert_name
+        info_final = parent / "bsp_jpl_info.json"
+        bsp_tmp = parent / f".{bsp_filename}.new"
+        uncert_tmp = parent / f".{uncert_name}.new"
+        info_tmp = parent / ".bsp_jpl_info.json.new"
+        staged = (bsp_tmp, uncert_tmp, info_tmp)
+        committed = False
 
-        if force is True and bsp_filepath.exists():
-            # Remove o arquivo se já existir e force=True
-            # Um novo download será realizado.
-            bsp_filepath.unlink()
-            log.debug("Removed old bsp: [%s]" % (not bsp_filepath.exists()))
+        if force is True:
+            log.debug(
+                "force=True: previous BSP stays until the new BSP and uncertainty both succeed."
+            )
 
         if start_period is None:
             start_period = self.__BSP_START_PERIOD
@@ -567,17 +580,21 @@ class Asteroid:
                 self.provisional_designation,
                 start_period,
                 end_period,
-                bsp_filepath.parent,
-                bsp_filename,
+                parent,
+                bsp_tmp.name,
             )
-            mag_and_uncert_path = get_asteroid_uncertainty_from_jpl(
+            get_asteroid_uncertainty_from_jpl(
                 self.provisional_designation,
                 start_period,
                 end_period,
-                bsp_filepath.parent,
-                "apmag_and_uncertainties.json",
+                parent,
+                uncert_tmp.name,
                 step=12,
             )
+            if not uncert_tmp.is_file() or uncert_tmp.stat().st_size == 0:
+                raise Exception(
+                    "Uncertainties unavailable. BSP update aborted; previous files kept."
+                )
             t1 = dt.now(tz=timezone.utc)
             tdelta = t1 - t0
 
@@ -594,20 +611,27 @@ class Asteroid:
                 {
                     "source": "JPL",
                     "spkid": spkid,
-                    "filename": bsp_path.name,
-                    "size": bsp_path.stat().st_size,
+                    "filename": bsp_filename,
+                    "size": bsp_tmp.stat().st_size,
                     "start_period": start_period,
                     "end_period": end_period,
                     "dw_start": t0.isoformat(),
                     "dw_finish": t1.isoformat(),
                     "dw_time": tdelta.total_seconds(),
-                    "mag_and_uncert_file": mag_and_uncert_path.name,
+                    "mag_and_uncert_file": uncert_name,
                 }
             )
 
-            bsp_info = pathlib.Path(bsp_filepath.parent, "bsp_jpl_info.json")
-            with open(bsp_info, "w") as json_file:
+            with open(info_tmp, "w") as json_file:
                 json.dump(data, json_file, default=serialize)
+            commit_staged_files(
+                [
+                    (uncert_tmp, uncert_final),
+                    (bsp_tmp, bsp_filepath),
+                    (info_tmp, info_final),
+                ]
+            )
+            committed = True
 
             log.info(f"Asteroid BSP Downloaded in {tdelta}")
 
@@ -616,6 +640,11 @@ class Asteroid:
             download_exception_warning = "Failed to Download BSP. Error: [%s]" % e
             log.warning(download_exception_warning)
             return (None, download_exception_warning)
+        finally:
+            if not committed:
+                for staged_path in staged:
+                    if staged_path.exists():
+                        staged_path.unlink()
 
     def check_bsp_jpl(self, end_period, start_period=None):
         log = self.get_log()
