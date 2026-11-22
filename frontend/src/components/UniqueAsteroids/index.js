@@ -50,12 +50,12 @@ function UniqueAsteroids() {
             <Typography variant='body2'>
               <strong>Unique Asteroids:</strong> {data?.unique_asteroids?.toLocaleString('en-US')}
             </Typography>
-            {data?.earliest !== undefined && (
+            {data?.earliest && (
               <Typography variant='body2'>
                 <strong>Earliest:</strong> {moment(data?.earliest).utc().format('DD MMM YYYY HH:mm')} UTC
               </Typography>
             )}
-            {data?.latest !== undefined && (
+            {data?.latest && (
               <Typography variant='body2'>
                 <strong>Latest:</strong> {moment(data?.latest).utc().format('DD MMM YYYY HH:mm')} UTC
               </Typography>
