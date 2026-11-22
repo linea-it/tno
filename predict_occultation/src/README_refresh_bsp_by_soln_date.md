@@ -4,9 +4,9 @@
 
 **Temporary file for manual support only.**
 
-This script is **not** part of the production predict daemon (`daemon.sh` / workers).  
-It is a one-off maintenance helper to classify and refresh local JPL BSP inputs by hand.  
-Do not wire it into Celery, cron, or CI unless that is an explicit product decision later.  
+This script is **not** part of the production predict daemon (`daemon.sh` / workers).
+It is a one-off maintenance helper to classify and refresh local JPL BSP inputs by hand.
+Do not wire it into Celery, cron, or CI unless that is an explicit product decision later.
 It may be removed or replaced when a proper operational workflow exists.
 
 ## What it does
@@ -35,7 +35,7 @@ Every Horizons download (`--from-updated` or classify `--download`) uses a fixed
 
 Example on 2026-11-21: `2025-11-21` .. `2029-11-21`.
 
-The script prints `BSP period: ...` at the start of a download run.  
+The script prints `BSP period: ...` at the start of a download run.
 It does **not** reuse the old `start_period` / `end_period` from `bsp_jpl_info.json` for new SPK/uncertainty fetches.
 
 ## Horizons COMMAND handling
@@ -88,7 +88,7 @@ python3 predict_occultation/src/refresh_bsp_by_soln_date.py \
   --out-dir /tmp/bsp_refresh_out
 ```
 
-First run fetches the full SBDB dump (~1–2 min) and writes  
+First run fetches the full SBDB dump (~1–2 min) and writes
 `/tmp/bsp_refresh_out/sbdb_soln_cache.json`. Later runs reuse that cache unless you pass `--refresh-sbdb`.
 
 ### 2. Force redownload from `updated.json`
@@ -162,7 +162,7 @@ python3 predict_occultation/src/refresh_bsp_by_soln_date.py \
   --commands-out /tmp/submit_unchanged.sh
 ```
 
-Run the generated `.sh` **from the host** in `compose/local` (backend up).  
+Run the generated `.sh` **from the host** in `compose/local` (backend up).
 Each block already wraps `docker compose exec -T backend python manage.py shell`:
 
 ```bash

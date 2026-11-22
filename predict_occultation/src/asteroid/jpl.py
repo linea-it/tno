@@ -131,19 +131,13 @@ def get_asteroid_uncertainty_from_jpl(
                     {
                         "JDUT": float(columns[0]),
                         "APmag": (
-                            float(columns[1])
-                            if columns[1] != "n.a."
-                            else float("nan")
+                            float(columns[1]) if columns[1] != "n.a." else float("nan")
                         ),
                         "RA_3sigma": (
-                            float(columns[3])
-                            if columns[3] != "n.a."
-                            else float("nan")
+                            float(columns[3]) if columns[3] != "n.a." else float("nan")
                         ),
                         "DEC_3sigma": (
-                            float(columns[4])
-                            if columns[4] != "n.a."
-                            else float("nan")
+                            float(columns[4]) if columns[4] != "n.a." else float("nan")
                         ),
                     }
                 )
@@ -223,10 +217,7 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
             last_error = f"Unable to decode JSON. {e}"
             continue
 
-        if (
-            "error" in payload
-            and "SPK creation is not available" in payload["error"]
-        ):
+        if "error" in payload and "SPK creation is not available" in payload["error"]:
             key = _expand_horizons_identifier(identifier).upper()
             if key in satellites_bsp or identifier.upper() in satellites_bsp:
                 sat_url = satellites_bsp.get(key) or satellites_bsp[identifier.upper()]
@@ -235,7 +226,9 @@ def get_bsp_from_jpl(identifier, initial_date, final_date, directory, filename):
                     with open(spk_file, "wb") as f:
                         f.write(sat.content)
                     return spk_file
-                last_error = f"Failed to download satellite BSP. Status code: {sat.status_code}"
+                last_error = (
+                    f"Failed to download satellite BSP. Status code: {sat.status_code}"
+                )
                 continue
             last_error = payload["error"]
             continue
