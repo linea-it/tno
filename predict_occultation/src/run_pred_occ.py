@@ -49,9 +49,10 @@ import parsl
 from sqlalchemy.exc import DBAPIError
 
 # Backpressure do ingest (issue #1213): ingere tasks status 6 apenas quando a
-# contagem de tasks do job em status 3 (queued) + 4 (running) estiver abaixo
-# deste limite. Reavaliado a cada tick do ingest_worker (~30s via daemon.sh).
-INGEST_GATE_MAX_QUEUED_RUNNING = 50
+# contagem de tasks do job em status 4 (running) estiver abaixo deste limite.
+# Status 3 (queued) não entra na conta. Reavaliado a cada tick do
+# ingest_worker (~30s via daemon.sh).
+INGEST_GATE_MAX_RUNNING = 50
 
 
 def _is_insufficient_resources_error(exc):
@@ -216,12 +217,12 @@ def ingest_predictions(jobid: int):
     engine = dao_job_result.get_db_engine()
 
     # Gate de backpressure: não disputa recursos de banco com a fila de
-    # predições enquanto houver >= 50 tasks do job queued/running (status 3/4).
-    queued_running = dao_job_result.count_by_job_id(jobid, status=[3, 4])
-    if queued_running >= INGEST_GATE_MAX_QUEUED_RUNNING:
+    # predições enquanto houver >= 50 tasks do job em running (status 4).
+    running = dao_job_result.count_by_job_id(jobid, status=4)
+    if running >= INGEST_GATE_MAX_RUNNING:
         log.info(
-            "Skipping ingest for job %s: %s tasks queued/running (status 3/4) >= %s"
-            % (jobid, queued_running, INGEST_GATE_MAX_QUEUED_RUNNING)
+            "Skipping ingest for job %s: %s tasks running (status 4) >= %s"
+            % (jobid, running, INGEST_GATE_MAX_RUNNING)
         )
         return
 
@@ -923,6 +924,7 @@ def submit_tasks(jobid: int):
                     conn=conn,
                 )
                 a.set_task_id(task_id)
+                asteroid["task_id"] = task_id
 
                 log.debug(f"Task ID:  {task_id}")
                 log.debug("Submitting the Job. [%s]" % str(a.get_path()))
@@ -1050,8 +1052,25 @@ def submit_tasks(jobid: int):
                             "Asteroid [%s] - Bash exit with code %s"
                             % (proc["name"], str(status))
                         )
+                        exit_message = (
+                            "Pipeline exited with code %s while task was still queued."
+                            % status
+                        )
                     else:
                         step2_success += 1
+                        exit_message = "Pipeline exited while task was still queued."
+
+                    task_id = proc.get("task_id")
+                    if task_id is not None and dao_job_result.mark_failed_if_queued(
+                        task_id, exit_message
+                    ):
+                        log.warning(
+                            "Asteroid [%s] stayed Queued after the pipeline exited. Marked Failed."
+                            % proc["name"]
+                        )
+                        if not status:
+                            step2_success -= 1
+                            step2_failures += 1
 
                 is_done.append(proc.get("done"))
             # log.debug(

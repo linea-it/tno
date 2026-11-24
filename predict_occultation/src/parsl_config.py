@@ -166,8 +166,8 @@ def get_config(key, jobpath):
                     **provider_common,
                     scheduler_options="#SBATCH --nodelist=apl[01-16]\n",
                     cores_per_node=linea_small_cores_per_node,
-                    init_blocks=1,
-                    min_blocks=1,
+                    init_blocks=0,
+                    min_blocks=0,
                     max_blocks=linea_small_max_blocks,
                 ),
             )
@@ -217,8 +217,9 @@ def get_config(key, jobpath):
             ),
         }
 
-    # strategy='simple': scaling dinâmico entre init_blocks e max_blocks conforme fila de tarefas
+    # htex_auto_scale: scale-out igual ao simple e scale-in dos blocos ociosos.
+    # simple não devolve nós quando há mais slots do que tarefas.
     executor_list = (
         executors[key] if isinstance(executors[key], list) else [executors[key]]
     )
-    return Config(executors=executor_list, strategy="simple")
+    return Config(executors=executor_list, strategy="htex_auto_scale")

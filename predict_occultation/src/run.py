@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import argparse
+import json
 import os
 import traceback
 from datetime import datetime
 
+from dao import PredictOccultationJobResultDao
 from pipeline.predict_occ import main
 
 parser = argparse.ArgumentParser()
@@ -35,6 +37,28 @@ parser.add_argument(
     required=False,
     help="Path where the inputs are and where the outputs will be. must be the path as it is mounted on the volume, should be used when it is not possible to mount the volume as /data. example the inputs are in /archive/asteroids/Eris and this path is mounted inside the container the parameter --path must have this value --path /archive/asteroids/Eris, the program will create a link from this path to /data.",
 )
+
+
+def mark_queued_task_failed(asteroid_path, name, error):
+    """Mark the task Failed when the pipeline dies before leaving Queued."""
+    if not asteroid_path:
+        return
+    alias = str(name).replace(" ", "").replace("_", "")
+    filepath = os.path.join(asteroid_path, "%s.json" % alias)
+    if not os.path.exists(filepath):
+        return
+    try:
+        with open(filepath) as json_file:
+            task_id = json.load(json_file).get("task_id")
+        if not task_id:
+            return
+        PredictOccultationJobResultDao().mark_failed_if_queued(
+            task_id,
+            "Pipeline failed while task was queued: %s" % error,
+        )
+    except Exception:
+        traceback.print_exc()
+
 
 if __name__ == "__main__":
     t0 = datetime.now()
@@ -121,6 +145,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(e)
         traceback.print_exc()
+        mark_queued_task_failed(args.path, args.name, e)
 
     finally:
         # Volta para o diretório original
