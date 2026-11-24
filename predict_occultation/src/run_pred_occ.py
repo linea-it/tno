@@ -1058,9 +1058,7 @@ def submit_tasks(jobid: int):
                         )
                     else:
                         step2_success += 1
-                        exit_message = (
-                            "Pipeline exited while task was still queued."
-                        )
+                        exit_message = "Pipeline exited while task was still queued."
 
                     task_id = proc.get("task_id")
                     if task_id is not None and dao_job_result.mark_failed_if_queued(
