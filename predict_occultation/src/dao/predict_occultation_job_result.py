@@ -33,6 +33,21 @@ class PredictOccultationJobResultDao(DBBase):
             result = con.execute(self.tbl.insert(), data)
             return result.inserted_primary_key[0]
 
+    def mark_failed_if_queued(self, id, message):
+        """Set Failed only while the row is still Queued.
+
+        A finished pipeline must not stay Queued. Rows already Running or
+        Ingesting are left unchanged.
+        """
+        message = str(message)[:4000]
+        stm = self.tbl.update().where(
+            and_(self.tbl.c.id == int(id), self.tbl.c.status == 3)
+        )
+        engine = self.get_db_engine()
+        with engine.connect() as con:
+            result = con.execute(stm, {"status": 2, "messages": message})
+            return result.rowcount
+
     def update(self, id, data, conn=None):
         if "exec_time" in data:
             data["exec_time"] = timedelta(seconds=data["exec_time"])
